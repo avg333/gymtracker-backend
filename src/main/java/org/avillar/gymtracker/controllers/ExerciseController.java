@@ -9,49 +9,39 @@ import org.avillar.gymtracker.model.LoadType;
 import org.avillar.gymtracker.model.MuscleGroup;
 import org.avillar.gymtracker.model.MuscleSubGroup;
 import org.avillar.gymtracker.services.ExerciseService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
 public class ExerciseController {
 
     private final ExerciseService exerciseService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public ExerciseController(ExerciseService exerciseService) {
+    public ExerciseController(ExerciseService exerciseService, ModelMapper modelMapper) {
         this.exerciseService = exerciseService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/muscleGroups")
     public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups() {
         final List<MuscleGroup> muscleGroups = this.exerciseService.getAllMuscleGroups();
-        final List<MuscleGroupDto> muscleGroupDtos = new ArrayList<>();
-        for (final MuscleGroup muscleGroup : muscleGroups) {
-            MuscleGroupDto muscleGroupDto = new MuscleGroupDto(muscleGroup.getId(), muscleGroup.getName(), muscleGroup.getDescription());
-            muscleGroupDtos.add(muscleGroupDto);
-        }
-        return muscleGroupDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                new ResponseEntity<>(muscleGroupDtos, HttpStatus.OK);
+        return muscleGroups.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
+                new ResponseEntity<>(muscleGroups.stream().map(muscleGroup -> modelMapper.map(muscleGroup, MuscleGroupDto.class)).toList(), HttpStatus.OK);
     }
 
     @GetMapping("/loadType")
     public ResponseEntity<List<LoadTypeDto>> getAllLoadTypes() {
         final List<LoadType> loadTypes = this.exerciseService.getAllLoadTypes();
-        final List<LoadTypeDto> loadTypesDto = new ArrayList<>();
-        for (final LoadType loadType : loadTypes) {
-            final LoadTypeDto loadTypeDto = new LoadTypeDto(loadType.getId(), loadType.getName(), loadType.getDescription());
-            loadTypesDto.add(loadTypeDto);
-        }
-        return loadTypesDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                new ResponseEntity<>(loadTypesDto, HttpStatus.OK);
+        return loadTypes.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
+                new ResponseEntity<>(loadTypes.stream().map(loadType -> modelMapper.map(loadType, LoadTypeDto.class)).toList(), HttpStatus.OK);
     }
 
     @GetMapping("/muscleSubGroup")
@@ -61,15 +51,8 @@ public class ExerciseController {
 
         final List<MuscleSubGroup> muscleSubGroups = this.exerciseService.getMuscleSubgroupsByMuscleGroup(muscleGroup);
 
-        final List<MuscleSubGroupDto> muscleSubGroupDtos = new ArrayList<>();
-        for (final MuscleSubGroup muscleSubGroup : muscleSubGroups) {
-            final MuscleSubGroupDto muscleGroupDto = new MuscleSubGroupDto(muscleSubGroup.getId(),
-                    muscleSubGroup.getName(), muscleSubGroup.getDescription());
-            muscleSubGroupDtos.add(muscleGroupDto);
-        }
-
-        return muscleSubGroupDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                new ResponseEntity<>(muscleSubGroupDtos, HttpStatus.OK);
+        return muscleSubGroups.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
+                new ResponseEntity<>(muscleSubGroups.stream().map(muscleSubGroup -> modelMapper.map(muscleSubGroup, MuscleSubGroupDto.class)).toList(), HttpStatus.OK);
     }
 
     @GetMapping("/exercises")
@@ -93,24 +76,12 @@ public class ExerciseController {
         final Exercise exercise = this.exerciseService.getExerciseById(id);
 
         return exercise == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(
-                new ExerciseDto(exercise.getId(), exercise.getName(), exercise.getDescription(),
-                        exercise.getUnilateral(), new ArrayList<>(), exercise.getLoadType().getId()), HttpStatus.OK);
+                modelMapper.map(exercise, ExerciseDto.class), HttpStatus.OK);
     }
 
     @PostMapping("/exercise")
     public ResponseEntity<Exercise> addExercise(final ExerciseDto exerciseDto) {
-        Exercise exercise = new Exercise();
-        exercise.setName(exerciseDto.name());
-        exercise.setDescription(exerciseDto.description());
-        exercise.setUnilateral(exerciseDto.unilateral());
-        final LoadType loadType = new LoadType();
-        loadType.setId(1L);
-        exercise.setLoadType(loadType);
-        final Set<MuscleGroup> muscleGroups = new LinkedHashSet<>() {};
-        final MuscleGroup muscleGroup = new MuscleGroup();
-        muscleGroup.setId(5L);
-        muscleGroups.add(muscleGroup);
-        exercise.setMuscleGroups(muscleGroups);
+        Exercise exercise = modelMapper.map(exerciseDto, Exercise.class);
 
         exercise = this.exerciseService.addExercise(exercise);
 
@@ -120,15 +91,11 @@ public class ExerciseController {
 
     @PutMapping("/exercise/{id}")
     public ResponseEntity<ExerciseDto> updateExercise(@PathVariable Long id, @RequestParam ExerciseDto exerciseDto) {
-        Exercise exercise = new Exercise();
+        Exercise exercise = modelMapper.map(exerciseDto, Exercise.class);
         exercise.setId(id);
-        exercise.setName(exerciseDto.name());
-        exercise.setDescription(exerciseDto.description());
-        exercise.setUnilateral(exerciseDto.unilateral());
         exercise = this.exerciseService.updateExercise(exercise);
 
-        return exercise == null
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+        return exercise == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
                 : new ResponseEntity<>(exerciseDto, HttpStatus.OK);
     }
 
@@ -143,14 +110,6 @@ public class ExerciseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        final List<ExerciseDto> exerciseDtos = new ArrayList<>();
-
-        for (final Exercise exercise : exercises) {
-            final ExerciseDto exerciseDto = new ExerciseDto(exercise.getId(), exercise.getName(), exercise.getDescription(),
-                    exercise.getUnilateral(), List.of(1L), exercise.getLoadType().getId());
-            exerciseDtos.add(exerciseDto);
-        }
-
-        return new ResponseEntity<>(exerciseDtos, HttpStatus.OK);
+        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseDto.class)).toList(), HttpStatus.OK);
     }
 }

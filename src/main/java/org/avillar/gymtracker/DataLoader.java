@@ -42,7 +42,7 @@ public class DataLoader implements ApplicationRunner {
         loadType1.setName("bar");
         loadType2.setName("dumbbell");
         loadType3.setName("cable");
-        loadType3.setName("bodyweight");
+        loadType4.setName("bodyweight");
         loadTypeRepository.saveAll(Arrays.asList(loadType1, loadType2, loadType3, loadType4));
 
         final MuscleGroup muscleGroup1 = new MuscleGroup();

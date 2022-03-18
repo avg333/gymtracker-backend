@@ -30,27 +30,4 @@ public class MuscleGroup {
     @ManyToMany(mappedBy = "muscleGroups")
     private List<Exercise> exercises = new ArrayList<>();
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MuscleGroup that = (MuscleGroup) o;
-        return id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "MuscleGroup{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", muscleSubGroups=" + muscleSubGroups +
-                ", exercises=" + exercises +
-                '}';
-    }
 }
