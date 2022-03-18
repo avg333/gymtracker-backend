@@ -104,15 +104,12 @@ public class ExerciseController {
         exercise.setDescription(exerciseDto.description());
         exercise.setUnilateral(exerciseDto.unilateral());
         final LoadType loadType = new LoadType();
-        loadType.setId(exerciseDto.idLoadType());
+        loadType.setId(1L);
         exercise.setLoadType(loadType);
-        final Set<MuscleGroup> muscleGroups = new LinkedHashSet<>() {
-        };
-        for(final Long idMuscleGroup: exerciseDto.idMuscleGroup()){
-            final MuscleGroup muscleGroup = new MuscleGroup();
-            muscleGroup.setId(idMuscleGroup);
-            muscleGroups.add(muscleGroup);
-        }
+        final Set<MuscleGroup> muscleGroups = new LinkedHashSet<>() {};
+        final MuscleGroup muscleGroup = new MuscleGroup();
+        muscleGroup.setId(5L);
+        muscleGroups.add(muscleGroup);
         exercise.setMuscleGroups(muscleGroups);
 
         exercise = this.exerciseService.addExercise(exercise);

@@ -11,6 +11,11 @@ public class ViewsController {
         return "exercises";
     }
 
+    @GetMapping("/addExercise")
+    public String addExercisePage(){
+        return "addExercise";
+    }
+
     @GetMapping("/programs")
     public String programsPage(){
         return null;
