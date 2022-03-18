@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exercises</title>
+    <meta name="author" content="Adrian Villar">
+    <meta name="description" content="Exercise list with a search form">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <form class="form-horizontal" action="http://localhost:8080/api/exercises"  method="get">
+        <fieldset>
+            <legend>Form search exercises</legend>
+
+            <div class="form-group">
+                <div class="col-md-4">
+                    <label for="selectMg">MG</label>
+                    <select id="selectMg" name="selectMg" class="form-control" onchange="loadSMg()"></select>
+
+                    <label for="selectSMg">SMG</label>
+                    <select id="selectSMg" name="selectMg" class="form-control" disabled></select>
+
+                    <label for="selectLt">Lt</label>
+                    <select id="selectLt" name="selectLt" class="form-control"></select>
+
+                    <label for="selectUni">Uni</label>
+                    <input id="selectUni" name="selectUni" class="form-control" type="checkbox"/>
+
+                    <button id="searchButton" name="singlebutton" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+        
+    <script >
+        window.onload = function() {
+            loadData();
+        };
+
+        function loadData() {
+            populateSelectOptions('selectMg', 'muscleGroups', loadSMg);
+            populateSelectOptions('selectLt', 'loadType');
+            return false;
+        }
+
+        function loadSMg() {
+            const idSel = $('#selectMg').find("option:selected").val();
+            if (idSel) populateSelectOptions('selectSMg', 'muscleSubGroup?idMuscleGroup=' + idSel);
+
+            $('#selectSMg').prop( "disabled", $('#selectSMg option').length === 0 );
+        }
+
+        function populateSelectOptions(selectId, api, postSuccessFun) {
+            $('#' + selectId).find('option').remove().end();
+
+            $.ajax({
+                type:'GET',
+                url:'http://localhost:8080/api/' + api,
+                dataType:'json',
+                success: function(data){
+                    console.log(data);
+                    $.each(data,function(key, data) {
+                        $("#" + selectId).append('<option value='+data.id+'>'+data.name+'</option>');
+                    });
+                    if (postSuccessFun){
+                        postSuccessFun();
+                    }
+                },
+                error: function() {
+
+                }
+            });
+        }
+    </script>
+</body>
+</html>
