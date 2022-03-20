@@ -3,8 +3,8 @@ package org.avillar.gymtracker.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,6 +14,6 @@ public class MuscleGroupDto{
     private Long id;
     private String name;
     private String description;
-    private List<MuscleSubGroupDto> muscleSubGroups = new ArrayList<>();
-    private List<ExerciseDto> exercises = new ArrayList<>();
+    private Set<MuscleSubGroupDto> muscleSubGroups = new LinkedHashSet<>();
+    private Set<ExerciseDto> exercises = new LinkedHashSet<>();
 }

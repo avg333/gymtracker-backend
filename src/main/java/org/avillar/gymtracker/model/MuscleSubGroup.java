@@ -1,12 +1,13 @@
 package org.avillar.gymtracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -20,11 +21,13 @@ public class MuscleSubGroup {
     private String name;
     private String description;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "muscle_group_id")
     private MuscleGroup muscleGroup;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "muscleSubGroups")
-    private List<Exercise> exercises = new ArrayList<>();
+    private Set<Exercise> exercises = new LinkedHashSet<>();
 
 }

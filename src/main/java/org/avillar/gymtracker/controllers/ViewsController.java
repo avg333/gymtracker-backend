@@ -13,7 +13,7 @@ public class ViewsController {
 
     @GetMapping("/addExercise")
     public String addExercisePage(){
-        return "addExercise";
+        return "newexercise";
     }
 
     @GetMapping("/programs")

@@ -6,7 +6,9 @@ import lombok.Setter;
 import org.avillar.gymtracker.model.Exercise;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,5 +18,5 @@ public class LoadTypeDto {
     private Long id;
     private String name;
     private String description;
-    private List<ExerciseDto> exercises = new ArrayList<>();
+    private Set<ExerciseDto> exercises = new LinkedHashSet<>();
 }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  <link href="style.css" rel="stylesheet" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+</head>
+
+<body>
+  <div class="modal" tabindex="-1" role="dialog">
+    <form>
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">New exercise</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="exerciseId" value="10"/>
+            <div class="formbuilder-text">
+              <label for="name" class="formbuilder-text-label">Name: </label>
+              <input type="text" class="form-control" name="name" id="name" placeholder="Exercise name" required>
+            </div>
+            <div class="formbuilder-text">
+              <label for="description" class="formbuilder-text-label">Description: </label>
+              <input type="text" class="form-control" name="description" id="description"
+                placeholder="Exercise description">
+            </div>
+            <div class="formbuilder-select">
+              <label for="musclegroup" class="formbuilder-text-label">Muscle group: </label>
+              <select class="form-control" name="musclegroup" id="musclegroup" required>
+                <option disabled selected value>Select an option</option>
+                <option value="option-1">Chest</option>
+                <option value="option-3">Back</option>
+              </select>
+            </div>
+            <div class="formbuilder-select">
+              <label for="submusclegroup" class="formbuilder-text-label">Subuscle group: </label>
+              <select class="form-control" name="submusclegroup" id="submusclegroup" disabled>
+                <option disabled selected value>Select an option</option>
+              </select>
+            </div>
+            <div class="formbuilder-select">
+              <label for="loadtype" class="formbuilder-text-label">Load type: </label>
+              <select class="form-control" name="loadtype" id="loadtype" required>
+                <option disabled selected value>Select an option</option>
+                <option value="option-1">Cable</option>
+                <option value="option-2">Barbell</option>
+              </select>
+            </div>
+            <div class="formbuilder-checkbox-group">
+              <label for="unilateral" class="formbuilder-checkbox-group-label">Unilateral</label>
+              <input id="unilateral" value="true" type="checkbox" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script></script>
+</body>
+
+</html>

@@ -6,9 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -24,10 +23,10 @@ public class MuscleGroup {
 
     @JsonIgnore
     @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true)
-    private List<MuscleSubGroup> muscleSubGroups = new ArrayList<>();
+    private Set<MuscleSubGroup> muscleSubGroups = new LinkedHashSet<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "muscleGroups")
-    private List<Exercise> exercises = new ArrayList<>();
+    private Set<Exercise> exercises = new LinkedHashSet<>();
 
 }

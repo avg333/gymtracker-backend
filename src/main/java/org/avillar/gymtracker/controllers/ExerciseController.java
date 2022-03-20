@@ -10,6 +10,7 @@ import org.avillar.gymtracker.model.MuscleGroup;
 import org.avillar.gymtracker.model.MuscleSubGroup;
 import org.avillar.gymtracker.services.ExerciseService;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class ExerciseController {
     public ExerciseController(ExerciseService exerciseService, ModelMapper modelMapper) {
         this.exerciseService = exerciseService;
         this.modelMapper = modelMapper;
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
     @GetMapping("/muscleGroups")

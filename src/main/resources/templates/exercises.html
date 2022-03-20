@@ -1,78 +1,91 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Exercises</title>
-    <meta name="author" content="Adrian Villar">
-    <meta name="description" content="Exercise list with a search form">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add new exercise</title>
+  <meta name="author" content="Adrian Villar">
+  <meta name="description" content="Form for add a new exercise">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 </head>
 
 <body>
-    <form class="form-horizontal" action="http://localhost:8080/api/exercises"  method="get">
-        <fieldset>
-            <legend>Form search exercises</legend>
+  <form>
+    <div class="rendered-form">
+      <input type="text" class="form-control" name="exerciseName" id="exerciseName" placeholder="Exercise name" />
+      <select class="form-control" name="musclegroup" id="musclegroup">
+        <option disabled selected value>Muscle group</option>
+        <option value="option-1">Chest</option>
+        <option value="option-3">Back</option>
+      </select>
+      <select class="form-control" name="submusclegroup" id="submusclegroup" disabled>
+        <option disabled selected value>Sub muscle group</option>
+      </select>
+      <select class="form-control" name="loadtype" id="loadtype">
+        <option disabled selected value>Load type</option>
+        <option value="option-1">Cable</option>
+        <option value="option-2">Barbell</option>
+      </select>
+      <label for="unilateral" class="formbuilder-checkbox-group-label">Unilateral</label>
+      <input id="unilateral" value="true" type="checkbox" />
+      <button class="btn-default btn" name="searchButton" >
+        Search
+      </button>
+      <button type="button" class="btn-success btn" name="newExerciseButton">
+        New
+      </button>
+    </div>
+  </form>
 
-            <div class="form-group">
-                <div class="col-md-4">
-                    <label for="selectMg">MG</label>
-                    <select id="selectMg" name="selectMg" class="form-control" onchange="loadSMg()"></select>
+  <br />
 
-                    <label for="selectSMg">SMG</label>
-                    <select id="selectSMg" name="selectMg" class="form-control" disabled></select>
+  <table border="1">
+    <tr>
+      <td>Name</td>
+      <td>Description</td>
+      <td>Muscle group</td>
+      <td>Sub muscle group</td>
+      <td>Load type</td>
+      <td>Unilateral</td>
+      <td>Actions</td>
+    </tr>
 
-                    <label for="selectLt">Lt</label>
-                    <select id="selectLt" name="selectLt" class="form-control"></select>
+    <tr>
+      <td>Dumbbell flat press</td>
+      <td></td>
+      <td>Chest</td>
+      <td>Middle</td>
+      <td>Dumbbell</td>
+      <td>No</td>
+      <td>Edit - Delete</td>
+    </tr>
+  </table>
 
-                    <label for="selectUni">Uni</label>
-                    <input id="selectUni" name="selectUni" class="form-control" type="checkbox"/>
+  <script>
+    function populateOptions(api, idSelect, emptyValue) {
+      const select = $("#" + idSelect);
+      select.empty();
+      select.append("<option disabled selected value>" + emptyValue + "</option>");
 
-                    <button id="searchButton" name="singlebutton" class="btn btn-primary">Search</button>
-                </div>
-            </div>
-        </fieldset>
-    </form>
-        
-    <script >
-        window.onload = function() {
-            loadData();
-        };
-
-        function loadData() {
-            populateSelectOptions('selectMg', 'muscleGroups', loadSMg);
-            populateSelectOptions('selectLt', 'loadType');
-            return false;
+      $.ajax({
+        url: 'http://localhost:8080/api/' + api,
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+          $.each(data.values, function (i, item) {
+            select.append('<option value="' + item.id + '">' + item.name + '</option>');
+          });
         }
+      });
+    }
 
-        function loadSMg() {
-            const idSel = $('#selectMg').find("option:selected").val();
-            if (idSel) populateSelectOptions('selectSMg', 'muscleSubGroup?idMuscleGroup=' + idSel);
-
-            $('#selectSMg').prop( "disabled", $('#selectSMg option').length === 0 );
-        }
-
-        function populateSelectOptions(selectId, api, postSuccessFun) {
-            $('#' + selectId).find('option').remove().end();
-
-            $.ajax({
-                type:'GET',
-                url:'http://localhost:8080/api/' + api,
-                dataType:'json',
-                success: function(data){
-                    console.log(data);
-                    $.each(data,function(key, data) {
-                        $("#" + selectId).append('<option value='+data.id+'>'+data.name+'</option>');
-                    });
-                    if (postSuccessFun){
-                        postSuccessFun();
-                    }
-                },
-                error: function() {
-
-                }
-            });
-        }
-    </script>
+    $(document).ready(function () {
+      populateOptions("muscleGroups", "musclegroup", "Muscle group");
+      populateOptions("subMuscleGroups", "submusclegroup", "Sub muscle group");
+      populateOptions("loadtypes", "loadtype", "Load types");
+    });
+  </script>
 </body>
+
 </html>
