@@ -14,6 +14,4 @@ public class MuscleGroupDto{
     private Long id;
     private String name;
     private String description;
-    private Set<MuscleSubGroupDto> muscleSubGroups = new LinkedHashSet<>();
-    private Set<ExerciseDto> exercises = new LinkedHashSet<>();
 }

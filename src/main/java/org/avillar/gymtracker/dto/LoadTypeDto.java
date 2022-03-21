@@ -18,5 +18,4 @@ public class LoadTypeDto {
     private Long id;
     private String name;
     private String description;
-    private Set<ExerciseDto> exercises = new LinkedHashSet<>();
 }

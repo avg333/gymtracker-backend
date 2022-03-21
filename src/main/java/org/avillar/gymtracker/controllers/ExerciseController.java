@@ -1,9 +1,6 @@
 package org.avillar.gymtracker.controllers;
 
-import org.avillar.gymtracker.dto.ExerciseDto;
-import org.avillar.gymtracker.dto.LoadTypeDto;
-import org.avillar.gymtracker.dto.MuscleGroupDto;
-import org.avillar.gymtracker.dto.MuscleSubGroupDto;
+import org.avillar.gymtracker.dto.*;
 import org.avillar.gymtracker.model.Exercise;
 import org.avillar.gymtracker.model.LoadType;
 import org.avillar.gymtracker.model.MuscleGroup;
@@ -16,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -82,8 +81,23 @@ public class ExerciseController {
     }
 
     @PostMapping("/exercise")
-    public ResponseEntity<Exercise> addExercise(final ExerciseDto exerciseDto) {
-        Exercise exercise = modelMapper.map(exerciseDto, Exercise.class);
+    public ResponseEntity<Exercise> addExercise(final NewExerciseDto exerciseDto) {
+        Exercise exercise = new Exercise();
+        exercise.setName(exerciseDto.name());
+        exercise.setDescription(exerciseDto.description());
+        final MuscleGroup muscleGroup = new MuscleGroup();
+        muscleGroup.setId(exerciseDto.idMuscleGroup());
+        final Set<MuscleGroup> muscleGroups = new LinkedHashSet<>();
+        muscleGroups.add(muscleGroup);
+        exercise.setMuscleGroups(muscleGroups);
+        final MuscleSubGroup muscleSubGroup = new MuscleSubGroup();
+        muscleGroup.setId(exerciseDto.idSubMuscleGroup());
+        final Set<MuscleSubGroup> muscleSubGroups = new LinkedHashSet<>();
+        muscleSubGroups.add(muscleSubGroup);
+        exercise.setMuscleSubGroups(muscleSubGroups);
+        final LoadType loadType = new LoadType();
+        loadType.setId(exerciseDto.idLoadType());
+        exercise.setLoadType(loadType);
 
         exercise = this.exerciseService.addExercise(exercise);
 
