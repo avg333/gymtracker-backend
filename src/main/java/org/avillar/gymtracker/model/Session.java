@@ -21,16 +21,13 @@ public class Session {
     private String description;
     @Temporal(TemporalType.TIMESTAMP)
     private java.util.Date date;
+    @ManyToOne
+    @JoinColumn(name = "program_id")
+    private Program program;
+    private Long order;
 
     @OneToMany(mappedBy = "session", orphanRemoval = true)
     private List<Set> sets = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "program_id")
-    private Program program;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
 }

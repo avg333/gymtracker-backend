@@ -76,7 +76,7 @@
       select.append("<option selected value>Load types</option>");
 
       $.ajax({
-        url: 'http://localhost:8080/api/loadType',
+        url: 'http://localhost:8080/api/loadTypes',
         type: 'get',
         dataType: 'json',
         success: function (data) {
@@ -96,10 +96,9 @@
       if (!idMuscleGroup) return;
 
       $.ajax({
-        url: 'http://localhost:8080/api/muscleSubGroup',
+        url: 'http://localhost:8080/api/muscleGroups/' + idMuscleGroup + "/muscleSubGroups",
         type: 'get',
         dataType: 'json',
-        data: {'idMuscleGroup': idMuscleGroup},
         success: function (data) {
           $.each(data, function (i, item) {
             select.append('<option value="' + item.id + '">' + item.name + '</option>');

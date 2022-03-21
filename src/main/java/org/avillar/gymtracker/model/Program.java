@@ -15,16 +15,13 @@ import java.util.List;
 public class Program {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String description;
+    private String level;
 
     @OneToMany(mappedBy = "program", orphanRemoval = true)
     private List<Session> sessions = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
 }

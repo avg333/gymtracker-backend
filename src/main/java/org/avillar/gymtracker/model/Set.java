@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -18,21 +19,17 @@ public class Set {
     private String name;
     private String description;
     @Temporal(TemporalType.TIMESTAMP)
-    private java.util.Date date;
+    private Date date;
 
+    @ManyToOne
+    @JoinColumn(name = "exercise_id")
+    private Exercise exercise;
     @ManyToOne
     @JoinColumn(name = "session_id")
     private Session session;
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "exercise_id")
-    private Exercise exercise;
-
-    private Double weight;
+    private double weight;
     private int reps;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private double rir;
 
 }

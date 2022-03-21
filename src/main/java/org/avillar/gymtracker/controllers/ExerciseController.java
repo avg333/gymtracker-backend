@@ -31,56 +31,49 @@ public class ExerciseController {
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
-    @GetMapping("/muscleGroups")
+    @GetMapping("muscleGroups")
     public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups() {
         final List<MuscleGroup> muscleGroups = this.exerciseService.getAllMuscleGroups();
-        return muscleGroups.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                new ResponseEntity<>(muscleGroups.stream().map(muscleGroup -> modelMapper.map(muscleGroup, MuscleGroupDto.class)).toList(), HttpStatus.OK);
+        return new ResponseEntity<>(muscleGroups.stream().map(muscleGroup -> modelMapper.map(muscleGroup, MuscleGroupDto.class)).toList(), HttpStatus.OK);
     }
 
-    @GetMapping("/loadType")
+    @GetMapping("loadTypes")
     public ResponseEntity<List<LoadTypeDto>> getAllLoadTypes() {
         final List<LoadType> loadTypes = this.exerciseService.getAllLoadTypes();
-        return loadTypes.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                new ResponseEntity<>(loadTypes.stream().map(loadType -> modelMapper.map(loadType, LoadTypeDto.class)).toList(), HttpStatus.OK);
+        return new ResponseEntity<>(loadTypes.stream().map(loadType -> modelMapper.map(loadType, LoadTypeDto.class)).toList(), HttpStatus.OK);
     }
 
-    @GetMapping("/muscleSubGroup")
-    public ResponseEntity<List<MuscleSubGroupDto>> getMuscleSubGroupByFilter(@RequestParam Long idMuscleGroup) {
+    @GetMapping("muscleGroups/{id}/muscleSubGroups")
+    public ResponseEntity<List<MuscleSubGroupDto>> getMuscleSubGroupByFilter(@PathVariable Long id) {
         final MuscleGroup muscleGroup = new MuscleGroup();
-        muscleGroup.setId(idMuscleGroup);
+        muscleGroup.setId(id);
 
         final List<MuscleSubGroup> muscleSubGroups = this.exerciseService.getMuscleSubgroupsByMuscleGroup(muscleGroup);
-
-        return muscleSubGroups.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                new ResponseEntity<>(muscleSubGroups.stream().map(muscleSubGroup -> modelMapper.map(muscleSubGroup, MuscleSubGroupDto.class)).toList(), HttpStatus.OK);
+        return new ResponseEntity<>(muscleSubGroups.stream().map(muscleSubGroup -> modelMapper.map(muscleSubGroup, MuscleSubGroupDto.class)).toList(), HttpStatus.OK);
     }
 
-    @GetMapping("/exercises")
+    @GetMapping("exercises")
     public ResponseEntity<List<ExerciseDto>> getAllExercises() {
         final List<Exercise> exercises = this.exerciseService.getAllExercises();
-        return getListResponseEntity(exercises);
+        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseDto.class)).toList(), HttpStatus.OK);
     }
 
-    @GetMapping("/exercise")
+    @GetMapping("exercise")
     public ResponseEntity<List<ExerciseDto>> getExercisesWithFilter(@RequestParam(required = false) Long idMg,
                                                                     @RequestParam(required = false) Long idLt,
                                                                     @RequestParam(required = false) Boolean uni) {
         final LoadType loadType = null;
         final List<Exercise> exercises = this.exerciseService.getExercisesByFilters();
 
-        return getListResponseEntity(exercises);
-    }
+        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseDto.class)).toList(), HttpStatus.OK);    }
 
-    @GetMapping("/exercise/{id}")
+    @GetMapping("exercises/{id}")
     public ResponseEntity<ExerciseDto> getExerciseById(@PathVariable Long id) {
         final Exercise exercise = this.exerciseService.getExerciseById(id);
-
-        return exercise == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(
-                modelMapper.map(exercise, ExerciseDto.class), HttpStatus.OK);
+        return new ResponseEntity<>(modelMapper.map(exercise, ExerciseDto.class), HttpStatus.OK);
     }
 
-    @PostMapping("/exercise")
+    @PostMapping("exercises")
     public ResponseEntity<Exercise> addExercise(final NewExerciseDto exerciseDto) {
         Exercise exercise = new Exercise();
         exercise.setName(exerciseDto.name());
@@ -105,7 +98,7 @@ public class ExerciseController {
                 : new ResponseEntity<>(exercise, HttpStatus.CREATED);
     }
 
-    @PutMapping("/exercise/{id}")
+    @PutMapping("exercises/{id}")
     public ResponseEntity<ExerciseDto> updateExercise(@PathVariable Long id, @RequestParam ExerciseDto exerciseDto) {
         Exercise exercise = modelMapper.map(exerciseDto, Exercise.class);
         exercise.setId(id);
@@ -115,17 +108,10 @@ public class ExerciseController {
                 : new ResponseEntity<>(exerciseDto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/exercise/{id}")
+    @DeleteMapping("exercises/{id}")
     public ResponseEntity<Void> deleteExercise(@PathVariable Long id) {
         return new ResponseEntity<>(this.exerciseService.deleteExercise(id)
                 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    private ResponseEntity<List<ExerciseDto>> getListResponseEntity(List<Exercise> exercises) {
-        if (exercises.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseDto.class)).toList(), HttpStatus.OK);
-    }
 }

@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,11 +40,7 @@ public class Exercise {
             inverseJoinColumns = @JoinColumn(name = "muscle_sub_groups_id"))
     private java.util.Set<MuscleSubGroup> muscleSubGroups = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "exercise", orphanRemoval = true)
-    private Set set;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @OneToMany(mappedBy = "exercise", orphanRemoval = true)
+    private List<Set> sets = new ArrayList<>();
 
 }
