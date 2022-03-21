@@ -1,18 +1,16 @@
 package org.avillar.gymtracker.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class MuscleGroup {
 
     @Id

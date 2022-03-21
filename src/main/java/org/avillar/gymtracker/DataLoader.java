@@ -13,9 +13,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class DataLoader implements ApplicationRunner {
@@ -35,81 +33,95 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        final LoadType loadType1 = new LoadType();
-        final LoadType loadType2 = new LoadType();
-        final LoadType loadType3 = new LoadType();
-        final LoadType loadType4 = new LoadType();
-        loadType1.setName("bar");
-        loadType2.setName("dumbbell");
-        loadType3.setName("cable");
-        loadType4.setName("bodyweight");
-        loadTypeRepository.saveAll(Arrays.asList(loadType1, loadType2, loadType3, loadType4));
+        final LoadType bar = new LoadType();
+        final LoadType dumbbell = new LoadType();
+        final LoadType cable = new LoadType();
+        final LoadType bodyweight = new LoadType();
+        final LoadType machine = new LoadType();
+        final LoadType multipower = new LoadType();
+        bar.setName("bar");
+        dumbbell.setName("dumbbell");
+        cable.setName("cable");
+        bodyweight.setName("bodyweight");
+        machine.setName("machine");
+        multipower.setName("multipower");
+        loadTypeRepository.saveAll(Arrays.asList(bar, dumbbell, cable, bodyweight, machine, multipower));
 
-        final MuscleGroup muscleGroup1 = new MuscleGroup();
-        final MuscleGroup muscleGroup2 = new MuscleGroup();
-        final MuscleGroup muscleGroup3 = new MuscleGroup();
-        final MuscleGroup muscleGroup4 = new MuscleGroup();
-        final MuscleGroup muscleGroup5 = new MuscleGroup();
-        muscleGroup1.setName("chest");
-        muscleGroup2.setName("back");
-        muscleGroup3.setName("shoulders");
-        muscleGroup4.setName("biceps");
-        muscleGroup5.setName("triceps");
-        muscleGroupRepository.saveAll(Arrays.asList(muscleGroup1, muscleGroup2, muscleGroup3, muscleGroup4, muscleGroup5));
+        final MuscleGroup chest = new MuscleGroup();
+        final MuscleGroup lats = new MuscleGroup();
+        final MuscleGroup shoulders = new MuscleGroup();
+        final MuscleGroup lowerBack = new MuscleGroup();
+        final MuscleGroup biceps = new MuscleGroup();
+        final MuscleGroup triceps = new MuscleGroup();
+        final MuscleGroup abs = new MuscleGroup();
+        final MuscleGroup glute = new MuscleGroup();
+        final MuscleGroup quadriceps = new MuscleGroup();
+        final MuscleGroup hamstrings = new MuscleGroup();
+        final MuscleGroup calves = new MuscleGroup();
+        chest.setName("chest");
+        lats.setName("lats");
+        shoulders.setName("shoulders");
+        lowerBack.setName("lower back");
+        biceps.setName("biceps");
+        triceps.setName("triceps");
+        abs.setName("abs");
+        glute.setName("glute");
+        quadriceps.setName("quadriceps");
+        hamstrings.setName("hamstrings");
+        calves.setName("calves");
+        muscleGroupRepository.saveAll(Arrays.asList(chest, lats, shoulders, lowerBack, biceps, triceps, abs, glute,
+                quadriceps, hamstrings, calves));
 
-        final MuscleSubGroup muscleSubGroup1 = new MuscleSubGroup();
-        final MuscleSubGroup muscleSubGroup2 = new MuscleSubGroup();
-        final MuscleSubGroup muscleSubGroup3 = new MuscleSubGroup();
-        muscleSubGroup1.setName("upper");
-        muscleSubGroup2.setName("lower");
-        muscleSubGroup3.setName("middle");
-        muscleSubGroup1.setMuscleGroup(muscleGroup1);
-        muscleSubGroup2.setMuscleGroup(muscleGroup1);
-        muscleSubGroup3.setMuscleGroup(muscleGroup1);
-        final MuscleSubGroup muscleSubGroup4 = new MuscleSubGroup();
-        final MuscleSubGroup muscleSubGroup5 = new MuscleSubGroup();
-        muscleSubGroup4.setName("upper");
-        muscleSubGroup5.setName("lower");
-        muscleSubGroup4.setMuscleGroup(muscleGroup2);
-        muscleSubGroup5.setMuscleGroup(muscleGroup2);
-        final MuscleSubGroup muscleSubGroup6 = new MuscleSubGroup();
-        final MuscleSubGroup muscleSubGroup7 = new MuscleSubGroup();
-        final MuscleSubGroup muscleSubGroup8 = new MuscleSubGroup();
-        muscleSubGroup6.setName("anterior");
-        muscleSubGroup7.setName("lateral");
-        muscleSubGroup8.setName("posterior");
-        muscleSubGroup6.setMuscleGroup(muscleGroup3);
-        muscleSubGroup7.setMuscleGroup(muscleGroup3);
-        muscleSubGroup8.setMuscleGroup(muscleGroup3);
-        muscleSubGroupRepository.saveAll(Arrays.asList(muscleSubGroup1, muscleSubGroup2, muscleSubGroup3,
-                muscleSubGroup4, muscleSubGroup5, muscleSubGroup6, muscleSubGroup7, muscleSubGroup8));
+        final MuscleSubGroup chestUpper = new MuscleSubGroup();
+        final MuscleSubGroup chestLower = new MuscleSubGroup();
+        final MuscleSubGroup chestMiddle = new MuscleSubGroup();
+        chestUpper.setName("upper");
+        chestLower.setName("lower");
+        chestMiddle.setName("middle");
+        chestUpper.setMuscleGroup(chest);
+        chestLower.setMuscleGroup(chest);
+        chestMiddle.setMuscleGroup(chest);
+        final MuscleSubGroup tricepsLateral = new MuscleSubGroup();
+        final MuscleSubGroup tricepsLong = new MuscleSubGroup();
+        final MuscleSubGroup tricepsMedial = new MuscleSubGroup();
+        tricepsLateral.setName("lateral");
+        tricepsLong.setName("long");
+        tricepsMedial.setName("medial");
+        tricepsLateral.setMuscleGroup(triceps);
+        tricepsLong.setMuscleGroup(triceps);
+        tricepsMedial.setMuscleGroup(triceps);
+        final MuscleSubGroup shoulderAnterior = new MuscleSubGroup();
+        final MuscleSubGroup shoulderLateral = new MuscleSubGroup();
+        final MuscleSubGroup shoulderPosterior = new MuscleSubGroup();
+        shoulderAnterior.setName("anterior");
+        shoulderLateral.setName("lateral");
+        shoulderPosterior.setName("posterior");
+        shoulderAnterior.setMuscleGroup(shoulders);
+        shoulderLateral.setMuscleGroup(shoulders);
+        shoulderPosterior.setMuscleGroup(shoulders);
+        muscleSubGroupRepository.saveAll(Arrays.asList(chestUpper, chestLower, chestMiddle, tricepsLateral, tricepsLong,
+                tricepsMedial, shoulderAnterior, shoulderLateral, shoulderPosterior));
 
-        final Exercise exercise1 = new Exercise();
-        final Exercise exercise2 = new Exercise();
-        final Exercise exercise3 = new Exercise();
-        final Exercise exercise4 = new Exercise();
-        final Exercise exercise5 = new Exercise();
-        exercise1.setName("dumbbell press");
-        exercise2.setName("cru");
-        exercise1.setUnilateral(false);
-        exercise2.setUnilateral(false);
-        exercise1.setMuscleGroups(Set.of(muscleGroup1));
-        exercise2.setMuscleGroups(Set.of(muscleGroup1));
-        exercise1.setLoadType(loadType2);
-        exercise2.setLoadType(loadType1);
-        exercise3.setName("lateral raise");
-        exercise4.setName("seated press");
-        exercise3.setUnilateral(true);
-        exercise4.setUnilateral(false);
-        exercise3.setLoadType(loadType2);
-        exercise4.setLoadType(loadType2);
-        exercise3.setMuscleGroups(Set.of(muscleGroup3));
-        exercise4.setMuscleGroups(Set.of(muscleGroup3));
-        exercise5.setName("seated cable row");
-        exercise5.setUnilateral(false);
-        exercise5.setMuscleGroups(Set.of(muscleGroup2));
-        exercise5.setLoadType(loadType2);
-        exerciseRepository.saveAll(Arrays.asList(exercise1, exercise2, exercise3,
-                exercise4, exercise5));
+        final List<Exercise> exercises = new ArrayList<>();
+        exercises.add(new Exercise("press con mancuernas", null, false, dumbbell, new HashSet<>(List.of(chest)), null));
+        exercises.add(new Exercise("press con mancuernas inclinado", null, false, dumbbell, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
+        exercises.add(new Exercise("press banca", null, false, bar, new HashSet<>(List.of(chest)), null));
+        exercises.add(new Exercise("press banca inclinado", null, false, bar, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
+        exercises.add(new Exercise("press en multipower", null, false, multipower, new HashSet<>(List.of(chest)), null));
+        exercises.add(new Exercise("press en multipower inclinado", null, false, multipower, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
+        exercises.add(new Exercise("cruces de poleas", null, false, cable, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
+        exercises.add(new Exercise("pec deck", null, false, machine, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
+        exercises.add(new Exercise("flexiones", null, false, bodyweight, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestLower))));
+        exercises.add(new Exercise("fondos", null, false, bodyweight, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestLower))));
+
+        exercises.add(new Exercise("press militar", null, false, bar, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderAnterior))));
+        exercises.add(new Exercise("press sentado con mancuernas", null, false, dumbbell, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderAnterior))));
+        exercises.add(new Exercise("elevaciones laterales con mancuernas", null, false, dumbbell, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
+        exercises.add(new Exercise("elevaciones laterales con cable", null, false, cable, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
+        exercises.add(new Exercise("pajaros con mancuernas", null, false, dumbbell, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
+        exercises.add(new Exercise("reverse pec deck", null, false, cable, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
+
+
+        exerciseRepository.saveAll(exercises);
     }
 }

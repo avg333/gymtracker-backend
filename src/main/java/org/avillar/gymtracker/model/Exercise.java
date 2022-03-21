@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.model;
 
 import com.sun.istack.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,15 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Exercise {
+
+    public Exercise(String name, String description, Boolean unilateral, LoadType loadType, java.util.Set<MuscleGroup> muscleGroups, java.util.Set<MuscleSubGroup> muscleSubGroups) {
+        this.name = name;
+        this.description = description;
+        this.unilateral = unilateral;
+        this.loadType = loadType;
+        this.muscleGroups = muscleGroups;
+        this.muscleSubGroups = muscleSubGroups;
+    }
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)

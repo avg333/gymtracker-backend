@@ -53,45 +53,31 @@ public class ExerciseController {
     }
 
     @GetMapping("exercises")
-    public ResponseEntity<List<ExerciseDto>> getAllExercises() {
+    public ResponseEntity<List<ExerciseOutDto>> getAllExercises() {
         final List<Exercise> exercises = this.exerciseService.getAllExercises();
-        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseDto.class)).toList(), HttpStatus.OK);
+        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseOutDto.class)).toList(), HttpStatus.OK);
     }
 
     @GetMapping("exercise")
-    public ResponseEntity<List<ExerciseDto>> getExercisesWithFilter(@RequestParam(required = false) Long idMg,
+    public ResponseEntity<List<ExerciseOutDto>> getExercisesWithFilter(@RequestParam(required = false) Long idMg,
                                                                     @RequestParam(required = false) Long idLt,
                                                                     @RequestParam(required = false) Boolean uni) {
         final LoadType loadType = null;
         final List<Exercise> exercises = this.exerciseService.getExercisesByFilters();
 
-        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseDto.class)).toList(), HttpStatus.OK);    }
+        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseOutDto.class)).toList(), HttpStatus.OK);
+    }
 
     @GetMapping("exercises/{id}")
-    public ResponseEntity<ExerciseDto> getExerciseById(@PathVariable Long id) {
+    public ResponseEntity<ExerciseOutDto> getExerciseById(@PathVariable Long id) {
         final Exercise exercise = this.exerciseService.getExerciseById(id);
-        return new ResponseEntity<>(modelMapper.map(exercise, ExerciseDto.class), HttpStatus.OK);
+        return new ResponseEntity<>(modelMapper.map(exercise, ExerciseOutDto.class), HttpStatus.OK);
     }
 
     @PostMapping("exercises")
-    public ResponseEntity<Exercise> addExercise(final NewExerciseDto exerciseDto) {
-        Exercise exercise = new Exercise();
-        exercise.setName(exerciseDto.name());
-        exercise.setDescription(exerciseDto.description());
-        final MuscleGroup muscleGroup = new MuscleGroup();
-        muscleGroup.setId(exerciseDto.idMuscleGroup());
-        final Set<MuscleGroup> muscleGroups = new LinkedHashSet<>();
-        muscleGroups.add(muscleGroup);
-        exercise.setMuscleGroups(muscleGroups);
-        final MuscleSubGroup muscleSubGroup = new MuscleSubGroup();
-        muscleGroup.setId(exerciseDto.idSubMuscleGroup());
-        final Set<MuscleSubGroup> muscleSubGroups = new LinkedHashSet<>();
-        muscleSubGroups.add(muscleSubGroup);
-        exercise.setMuscleSubGroups(muscleSubGroups);
-        final LoadType loadType = new LoadType();
-        loadType.setId(exerciseDto.idLoadType());
-        exercise.setLoadType(loadType);
-
+    public ResponseEntity<Exercise> addExercise(final ExerciseInDto exerciseDto) {
+        Exercise exercise = modelMapper.map(exerciseDto, Exercise.class);
+        exercise.setId(null);
         exercise = this.exerciseService.addExercise(exercise);
 
         return exercise == null ? new ResponseEntity<>(HttpStatus.UPGRADE_REQUIRED)
@@ -99,7 +85,7 @@ public class ExerciseController {
     }
 
     @PutMapping("exercises/{id}")
-    public ResponseEntity<ExerciseDto> updateExercise(@PathVariable Long id, @RequestParam ExerciseDto exerciseDto) {
+    public ResponseEntity<ExerciseInDto> updateExercise(@PathVariable Long id, @RequestParam ExerciseInDto exerciseDto) {
         Exercise exercise = modelMapper.map(exerciseDto, Exercise.class);
         exercise.setId(id);
         exercise = this.exerciseService.updateExercise(exercise);

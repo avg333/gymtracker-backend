@@ -25,7 +25,8 @@
       </select>
       <label for="unilateral" class="formbuilder-checkbox-group-label">Unilateral</label>
       <input id="unilateral" value="true" type="checkbox"  onchange="loadTableData();"/>
-      <a href="addExercise"><button type="button">New</button></a>
+      <a href="newExercise"><button type="button">New</button></a>
+      <button>Search</button>
     </div>
   </form>
 
@@ -33,23 +34,13 @@
 
   <table border="1" id="exercisesTable">
     <tr>
-      <td>Name</td>
-      <td>Description</td>
-      <td>Muscle group</td>
-      <td>Sub muscle group</td>
-      <td>Load type</td>
-      <td>Unilateral</td>
-      <td>Actions</td>
-    </tr>
-
-    <tr>
-      <td>Dumbbell flat press</td>
-      <td></td>
-      <td>Chest</td>
-      <td>Middle</td>
-      <td>Dumbbell</td>
-      <td>No</td>
-      <td>Edit - Delete</td>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Muscle group</th>
+      <th>Sub muscle group</th>
+      <th>Load type</th>
+      <th>Unilateral</th>
+      <th>Actions</th>
     </tr>
   </table>
 
@@ -112,17 +103,20 @@
     }
     function loadTableData(){
       const table = $("#exercisesTable");
+      $('#exercisesTable > tr > td').remove();
 
       $.ajax({
         url: 'http://localhost:8080/api/exercises',
         type: 'get',
         dataType: 'json',
+        data: $("#idSearchForm").serialize(),
         success: function (data) {
           $.each(data, function (i, item) {
             table.append("<tr>" +
                     "<td>"+item.name+"</td><td>"+item.description+"</td>" +
-                    "<td>"+item.muscleGroups.name+"</td><td>"+item.muscleSubGroups.name+"</td>" +
-                    "<td>"+item.loadTypeDto.name+"</td><td>"+item.unilateral.name+"</td></tr>");
+                    "<td>"+item.muscleGroups+"</td><td>"+item.muscleSubGroups+"</td>" +
+                    "<td>"+item.loadTypeDto+"</td><td>"+item.unilateral+"</td>" +
+                    "<td><a href='newExercise'>Edit</a> - <a href='addExercise'>Delete</a></td></tr>");
           });
         }
       });
