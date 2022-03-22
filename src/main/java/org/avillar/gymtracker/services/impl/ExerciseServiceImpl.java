@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExerciseServiceImpl implements ExerciseService {
@@ -59,8 +60,8 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     //TODO: ACABAR ESTA FUNCION
     @Override
-    public List<Exercise> getExercisesByFilters(){
-        return this.exerciseRepository.findAll();
+    public List<Exercise> getExercisesByFilters(String exerciseName, Long idMuscleGroup, Long idSubMuscleGroup, Long idLoadType, Boolean unilateral){
+        return this.exerciseRepository.findByFilters(idMuscleGroup, idLoadType, unilateral);
     }
 
     @Override

@@ -13,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -59,11 +57,12 @@ public class ExerciseController {
     }
 
     @GetMapping("exercise")
-    public ResponseEntity<List<ExerciseOutDto>> getExercisesWithFilter(@RequestParam(required = false) Long idMg,
-                                                                    @RequestParam(required = false) Long idLt,
-                                                                    @RequestParam(required = false) Boolean uni) {
-        final LoadType loadType = null;
-        final List<Exercise> exercises = this.exerciseService.getExercisesByFilters();
+    public ResponseEntity<List<ExerciseOutDto>> getExercisesWithFilter(@RequestParam(required = false) String exerciseName,
+                                                                       @RequestParam(required = false) Long idMuscleGroup,
+                                                                       @RequestParam(required = false) Long idSubMuscleGroup,
+                                                                       @RequestParam(required = false) Long idLoadType,
+                                                                       @RequestParam(required = false) Boolean unilateral) {
+        final List<Exercise> exercises = this.exerciseService.getExercisesByFilters(exerciseName, idMuscleGroup, idSubMuscleGroup, idLoadType, unilateral);
 
         return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseOutDto.class)).toList(), HttpStatus.OK);
     }

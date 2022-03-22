@@ -24,7 +24,7 @@ public class Session {
     @ManyToOne
     @JoinColumn(name = "program_id")
     private Program program;
-    private Long order;
+    private Long sessionOrder;
 
     @OneToMany(mappedBy = "session", orphanRemoval = true)
     private List<Set> sets = new ArrayList<>();

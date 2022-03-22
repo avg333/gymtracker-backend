@@ -6,6 +6,7 @@ import org.avillar.gymtracker.model.MuscleGroup;
 import org.avillar.gymtracker.model.MuscleSubGroup;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ExerciseService {
     List<MuscleGroup> getAllMuscleGroups();
@@ -19,7 +20,7 @@ public interface ExerciseService {
     Exercise getExerciseById(Long id);
 
     //TODO: ACABAR ESTA FUNCION
-    List<Exercise> getExercisesByFilters();
+    List<Exercise> getExercisesByFilters(String exerciseName,Long idMuscleGroup, Long idSubMuscleGroup, Long idLoadType, Boolean unilateral);
 
     Exercise addExercise(Exercise exercise);
 

@@ -14,13 +14,13 @@
   <form id="idSearchForm">
     <div class="rendered-form">
       <input type="text" class="form-control" name="exerciseName" id="exerciseName" placeholder="Exercise name" />
-      <select class="form-control" name="musclegroup" id="musclegroup" onchange="loadSubMuscleGroups();loadTableData();">
+      <select class="form-control" name="idMuscleGroup" id="musclegroup" onchange="loadSubMuscleGroups();loadTableData();">
         <option disabled selected value>Muscle group</option>
       </select>
-      <select class="form-control" name="submusclegroup" id="submusclegroup" disabled onchange="loadTableData();">
+      <select class="form-control" name="idSubMuscleGroup" id="submusclegroup" disabled onchange="loadTableData();">
         <option selected value>Sub muscle group</option>
       </select>
-      <select class="form-control" name="loadtype" id="loadtype" onchange="loadTableData();">
+      <select class="form-control" name="idLoadType" id="loadtype" onchange="loadTableData();">
         <option disabled selected value>Load type</option>
       </select>
       <label for="unilateral" class="formbuilder-checkbox-group-label">Unilateral</label>
@@ -106,7 +106,7 @@
       $('#exercisesTable > tr > td').remove();
 
       $.ajax({
-        url: 'http://localhost:8080/api/exercises',
+        url: 'http://localhost:8080/api/exercise',
         type: 'get',
         dataType: 'json',
         data: $("#idSearchForm").serialize(),
