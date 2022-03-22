@@ -1,8 +1,10 @@
 package org.avillar.gymtracker.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class ExerciseOutDto {
 
     private Long id;
