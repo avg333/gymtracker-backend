@@ -59,10 +59,10 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     //TODO: ACABAR ESTA FUNCION
-    @Override
-    public List<Exercise> getExercisesByFilters(String exerciseName, Long idMuscleGroup, Long idSubMuscleGroup, Long idLoadType, Boolean unilateral){
-        return this.exerciseRepository.findByFilters(idMuscleGroup, idLoadType, unilateral);
-    }
+//    @Override
+//    public List<Exercise> getExercisesByFilters(String exerciseName, Long idMuscleGroup, Long idSubMuscleGroup, Long idLoadType, Boolean unilateral){
+//        return this.exerciseRepository.findByFilters(idMuscleGroup, idLoadType, unilateral);
+//    }
 
     @Override
     public Exercise addExercise(final Exercise exercise) {

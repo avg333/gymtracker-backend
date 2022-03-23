@@ -2,131 +2,174 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Exercises</title>
-  <meta name="author" content="Adrian Villar">
-  <meta name="description" content="Exercise list with a search form">
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exercises</title>
+    <meta name="author" content="Adrian Villar">
+    <meta name="description" content="Exercise list with a search form">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+
 </head>
 
 <body>
-  <form id="idSearchForm">
-    <div class="rendered-form">
-      <input type="text" class="form-control" name="exerciseName" id="exerciseName" placeholder="Exercise name" />
-      <select class="form-control" name="idMuscleGroup" id="musclegroup" onchange="loadSubMuscleGroups();loadTableData();">
-        <option disabled selected value>Muscle group</option>
-      </select>
-      <select class="form-control" name="idSubMuscleGroup" id="submusclegroup" disabled onchange="loadTableData();">
-        <option selected value>Sub muscle group</option>
-      </select>
-      <select class="form-control" name="idLoadType" id="loadtype" onchange="loadTableData();">
-        <option disabled selected value>Load type</option>
-      </select>
-      <label for="unilateral" class="formbuilder-checkbox-group-label">Unilateral</label>
-      <input id="unilateral" value="true" type="checkbox"  onchange="loadTableData();"/>
-      <a href="newExercise"><button type="button">New</button></a>
-      <button>Search</button>
+<div class="wrapper">
+
+    <link rel="import" href="common/sidebar.html"/>
+    <div id="content">
+        <form id="idSearchForm">
+            <div class="rendered-form">
+                <div class="row">
+                    <div class="col-2">
+                        <input type="text" class="form-control" name="exerciseName" id="exerciseName"
+                               placeholder="Exercise name"/>
+                    </div>
+                    <div class="col-2">
+                        <select class="form-control" name="idMuscleGroup" id="musclegroup"
+                                onchange="loadSubMuscleGroups();loadTableData();">
+                            <option disabled selected value>Muscle group</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <select class="form-control" name="idSubMuscleGroup" id="submusclegroup" disabled
+                                onchange="loadTableData();">
+                            <option selected value>Sub muscle group</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <select class="form-control" name="idLoadType" id="loadtype" onchange="loadTableData();">
+                            <option disabled selected value>Load type</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-check">
+                            <input id="unilateral" value="true" type="checkbox" class="form-check-input"
+                                   onchange="loadTableData();"/>
+                            <label for="unilateral" class="form-check-label">Unilateral</label>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <a href="newExercise">
+                            <button type="button" class="btn btn-primary">New</button>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+
+        <br/>
+
+        <table class="table" id="exercisesTable">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Muscle group</th>
+                <th scope="col">Sub muscle group</th>
+                <th scope="col">Load type</th>
+                <th scope="col">Unilateral</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </table>
     </div>
-  </form>
-
-  <br />
-
-  <table border="1" id="exercisesTable">
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Muscle group</th>
-      <th>Sub muscle group</th>
-      <th>Load type</th>
-      <th>Unilateral</th>
-      <th>Actions</th>
-    </tr>
-  </table>
-
-  <script>
+</div>
+<script>
     function loadMuscleGroups() {
-      const select = $("#musclegroup");
-      select.empty();
-      select.append("<option selected value>Muscle group</option>");
+        const select = $("#musclegroup");
+        select.empty();
+        select.append("<option selected value>Muscle group</option>");
 
-      $.ajax({
-        url: 'http://localhost:8080/api/muscleGroups',
-        type: 'get',
-        dataType: 'json',
-        success: function (data) {
-          $.each(data, function (i, item) {
-            select.append('<option value="' + item.id + '">' + item.name + '</option>');
-          });
-        }
-      });
+        $.ajax({
+            url: 'http://localhost:8080/api/muscleGroups',
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function (i, item) {
+                    select.append('<option value="' + item.id + '">' + item.name + '</option>');
+                });
+            }
+        });
     }
+
     function loadLoadTypes() {
-      const select = $("#loadtype");
-      select.empty();
-      select.append("<option selected value>Load types</option>");
+        const select = $("#loadtype");
+        select.empty();
+        select.append("<option selected value>Load types</option>");
 
-      $.ajax({
-        url: 'http://localhost:8080/api/loadTypes',
-        type: 'get',
-        dataType: 'json',
-        success: function (data) {
-          $.each(data, function (i, item) {
-            select.append('<option value="' + item.id + '">' + item.name + '</option>');
-          });
-        }
-      });
+        $.ajax({
+            url: 'http://localhost:8080/api/loadTypes',
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function (i, item) {
+                    select.append('<option value="' + item.id + '">' + item.name + '</option>');
+                });
+            }
+        });
     }
+
     function loadSubMuscleGroups() {
-      const idMuscleGroup = $('#musclegroup option').filter(':selected').val();
-      const select = $("#submusclegroup");
-      select.empty();
-      select.append("<option selected value>Sub muscle group</option>");
-      select.prop("disabled", true);
+        const idMuscleGroup = $('#musclegroup option').filter(':selected').val();
+        const select = $("#submusclegroup");
+        select.empty();
+        select.append("<option selected value>Sub muscle group</option>");
+        select.prop("disabled", true);
 
-      if (!idMuscleGroup) return;
+        if (!idMuscleGroup) return;
 
-      $.ajax({
-        url: 'http://localhost:8080/api/muscleGroups/' + idMuscleGroup + "/muscleSubGroups",
-        type: 'get',
-        dataType: 'json',
-        success: function (data) {
-          $.each(data, function (i, item) {
-            select.append('<option value="' + item.id + '">' + item.name + '</option>');
-          });
+        $.ajax({
+            url: 'http://localhost:8080/api/muscleGroups/' + idMuscleGroup + "/muscleSubGroups",
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function (i, item) {
+                    select.append('<option value="' + item.id + '">' + item.name + '</option>');
+                });
 
-          if (data) {
-            select.prop("disabled", false);
-          }
-        }
-      });
+                if (data) {
+                    select.prop("disabled", false);
+                }
+            }
+        });
     }
-    function loadTableData(){
-      const table = $("#exercisesTable");
-      $('#exercisesTable > tr > td').remove();
 
-      $.ajax({
-        url: 'http://localhost:8080/api/exercise',
-        type: 'get',
-        dataType: 'json',
-        data: $("#idSearchForm").serialize(),
-        success: function (data) {
-          $.each(data, function (i, item) {
-            table.append("<tr>" +
-                    "<td>"+item.name+"</td><td>"+item.description+"</td>" +
-                    "<td>"+item.muscleGroups+"</td><td>"+item.muscleSubGroups+"</td>" +
-                    "<td>"+item.loadTypeDto+"</td><td>"+item.unilateral+"</td>" +
-                    "<td><a href='newExercise'>Edit</a> - <a href='addExercise'>Delete</a></td></tr>");
-          });
-        }
-      });
+    function loadTableData() {
+        const table = $("#exercisesTable");
+        $('#exercisesTable > tr > td').remove();
+
+        $.ajax({
+            url: 'http://localhost:8080/api/exercise',
+            type: 'get',
+            dataType: 'json',
+            data: $("#idSearchForm").serialize(),
+            success: function (data) {
+                $.each(data, function (i, item) {
+                    table.append("<tr>" +
+                        "<td>" + item.name + "</td><td>" + item.description + "</td>" +
+                        "<td>" + item.muscleGroups + "</td><td>" + item.muscleSubGroups + "</td>" +
+                        "<td>" + item.loadTypeDto + "</td><td>" + item.unilateral + "</td>" +
+                        "<td><a href='newExercise'>Edit</a> - <a href='addExercise'>Delete</a></td></tr>");
+                });
+            }
+        });
     }
 
     $(document).ready(function () {
-      loadMuscleGroups();
-      loadLoadTypes();
+        loadMuscleGroups();
+        loadLoadTypes();
     });
-  </script>
+</script>
 </body>
 
 </html>

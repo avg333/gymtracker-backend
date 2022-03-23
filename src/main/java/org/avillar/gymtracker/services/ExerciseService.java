@@ -20,7 +20,7 @@ public interface ExerciseService {
     Exercise getExerciseById(Long id);
 
     //TODO: ACABAR ESTA FUNCION
-    List<Exercise> getExercisesByFilters(String exerciseName,Long idMuscleGroup, Long idSubMuscleGroup, Long idLoadType, Boolean unilateral);
+//    List<Exercise> getExercisesByFilters(String exerciseName,Long idMuscleGroup, Long idSubMuscleGroup, Long idLoadType, Boolean unilateral);
 
     Exercise addExercise(Exercise exercise);
 

@@ -62,8 +62,8 @@ public class ExerciseController {
                                                                        @RequestParam(required = false) Long idSubMuscleGroup,
                                                                        @RequestParam(required = false) Long idLoadType,
                                                                        @RequestParam(required = false) Boolean unilateral) {
-        final List<Exercise> exercises = this.exerciseService.getExercisesByFilters(exerciseName, idMuscleGroup, idSubMuscleGroup, idLoadType, unilateral);
 
+        final List<Exercise> exercises = this.exerciseService.getAllExercises();
         return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseOutDto.class)).toList(), HttpStatus.OK);
     }
 
