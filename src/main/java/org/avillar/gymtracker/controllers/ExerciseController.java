@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 @RestController
@@ -32,13 +34,13 @@ public class ExerciseController {
     @GetMapping("muscleGroups")
     public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups() {
         final List<MuscleGroup> muscleGroups = this.exerciseService.getAllMuscleGroups();
-        return new ResponseEntity<>(muscleGroups.stream().map(muscleGroup -> modelMapper.map(muscleGroup, MuscleGroupDto.class)).toList(), HttpStatus.OK);
+        return ResponseEntity.ok(muscleGroups.stream().map(muscleGroup -> modelMapper.map(muscleGroup, MuscleGroupDto.class)).toList());
     }
 
     @GetMapping("loadTypes")
     public ResponseEntity<List<LoadTypeDto>> getAllLoadTypes() {
         final List<LoadType> loadTypes = this.exerciseService.getAllLoadTypes();
-        return new ResponseEntity<>(loadTypes.stream().map(loadType -> modelMapper.map(loadType, LoadTypeDto.class)).toList(), HttpStatus.OK);
+        return ResponseEntity.ok(loadTypes.stream().map(loadType -> modelMapper.map(loadType, LoadTypeDto.class)).toList());
     }
 
     @GetMapping("muscleGroups/{id}/muscleSubGroups")
@@ -47,30 +49,36 @@ public class ExerciseController {
         muscleGroup.setId(id);
 
         final List<MuscleSubGroup> muscleSubGroups = this.exerciseService.getMuscleSubgroupsByMuscleGroup(muscleGroup);
-        return new ResponseEntity<>(muscleSubGroups.stream().map(muscleSubGroup -> modelMapper.map(muscleSubGroup, MuscleSubGroupDto.class)).toList(), HttpStatus.OK);
+        return ResponseEntity.ok(muscleSubGroups.stream().map(muscleSubGroup -> modelMapper.map(muscleSubGroup, MuscleSubGroupDto.class)).toList());
     }
 
     @GetMapping("exercises")
     public ResponseEntity<List<ExerciseOutDto>> getAllExercises() {
         final List<Exercise> exercises = this.exerciseService.getAllExercises();
-        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseOutDto.class)).toList(), HttpStatus.OK);
+        final List<ExerciseOutDto> exerciseDtos = new ArrayList<>();
+        for(final Exercise exercise: exercises){
+            final ExerciseOutDto exerciseDto = new ExerciseOutDto(exercise.getId(), exercise.getName(), exercise.getDescription(),
+                    exercise.getUnilateral(), exercise.getLoadType().getName(), null, null);
+            exerciseDtos.add(exerciseDto);
+        }
+
+        return ResponseEntity.ok(exerciseDtos);
     }
 
     @GetMapping("exercise")
-    public ResponseEntity<List<ExerciseOutDto>> getExercisesWithFilter(@RequestParam(required = false) String exerciseName,
-                                                                       @RequestParam(required = false) Long idMuscleGroup,
-                                                                       @RequestParam(required = false) Long idSubMuscleGroup,
-                                                                       @RequestParam(required = false) Long idLoadType,
-                                                                       @RequestParam(required = false) Boolean unilateral) {
+    public ResponseEntity<List<ExerciseOutDto>> getExercisesWithFilter(@RequestParam(required = false) Long idMg,
+                                                                    @RequestParam(required = false) Long idLt,
+                                                                    @RequestParam(required = false) Boolean uni) {
+        final LoadType loadType = null;
+        final List<Exercise> exercises = this.exerciseService.getExercisesByFilters();
 
-        final List<Exercise> exercises = this.exerciseService.getAllExercises();
-        return new ResponseEntity<>(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseOutDto.class)).toList(), HttpStatus.OK);
+        return ResponseEntity.ok(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseOutDto.class)).toList());
     }
 
     @GetMapping("exercises/{id}")
     public ResponseEntity<ExerciseOutDto> getExerciseById(@PathVariable Long id) {
         final Exercise exercise = this.exerciseService.getExerciseById(id);
-        return new ResponseEntity<>(modelMapper.map(exercise, ExerciseOutDto.class), HttpStatus.OK);
+        return ResponseEntity.ok(modelMapper.map(exercise, ExerciseOutDto.class));
     }
 
     @PostMapping("exercises")
