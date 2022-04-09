@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 @RestController
@@ -56,7 +55,7 @@ public class ExerciseController {
     public ResponseEntity<List<ExerciseOutDto>> getAllExercises() {
         final List<Exercise> exercises = this.exerciseService.getAllExercises();
         final List<ExerciseOutDto> exerciseDtos = new ArrayList<>();
-        for(final Exercise exercise: exercises){
+        for (final Exercise exercise : exercises) {
             final ExerciseOutDto exerciseDto = new ExerciseOutDto(exercise.getId(), exercise.getName(), exercise.getDescription(),
                     exercise.getUnilateral(), exercise.getLoadType().getName(), null, null);
             exerciseDtos.add(exerciseDto);
@@ -67,8 +66,8 @@ public class ExerciseController {
 
     @GetMapping("exercise")
     public ResponseEntity<List<ExerciseOutDto>> getExercisesWithFilter(@RequestParam(required = false) Long idMg,
-                                                                    @RequestParam(required = false) Long idLt,
-                                                                    @RequestParam(required = false) Boolean uni) {
+                                                                       @RequestParam(required = false) Long idLt,
+                                                                       @RequestParam(required = false) Boolean uni) {
         final LoadType loadType = null;
         final List<Exercise> exercises = this.exerciseService.getExercisesByFilters();
 

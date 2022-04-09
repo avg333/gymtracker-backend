@@ -21,7 +21,7 @@ public class Program {
     private String description;
     private String level;
 
-    @OneToMany(mappedBy = "program", orphanRemoval = true)
+    @OneToMany(mappedBy = "program", cascade = CascadeType.REMOVE)
     private List<Session> sessions = new ArrayList<>();
 
 }

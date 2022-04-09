@@ -1,4 +1,4 @@
-package org.avillar.gymtracker;
+package org.avillar.gymtracker.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

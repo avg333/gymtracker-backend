@@ -15,18 +15,16 @@ import java.util.List;
 public class Session {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String description;
-    @Temporal(TemporalType.TIMESTAMP)
-    private java.util.Date date;
+    private int sessionOrder;
+
     @ManyToOne
     @JoinColumn(name = "program_id")
     private Program program;
-    private Long sessionOrder;
-
-    @OneToMany(mappedBy = "session", orphanRemoval = true)
+    @OneToMany(mappedBy = "session", cascade = CascadeType.REMOVE)
     private List<Set> sets = new ArrayList<>();
 
 

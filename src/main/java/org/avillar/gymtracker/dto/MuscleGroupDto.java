@@ -1,13 +1,10 @@
 package org.avillar.gymtracker.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class MuscleGroupDto{
+
+@Data
+public class MuscleGroupDto {
 
     private Long id;
     private String name;

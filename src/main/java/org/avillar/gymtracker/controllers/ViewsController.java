@@ -7,22 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ViewsController {
 
     @GetMapping("/exercises")
-    public String exercisesPage(){
+    public String exercisesPage() {
         return "exercises";
     }
 
     @GetMapping("/addExercise")
-    public String addExercisePage(){
+    public String addExercisePage() {
         return "newexercise";
     }
 
     @GetMapping("/programs")
-    public String programsPage(){
+    public String programsPage() {
         return null;
     }
 
-    @GetMapping("/statistics")
-    public String statisticsPage(){
-        return null;
-    }
 }

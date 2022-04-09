@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ExerciseService {
     List<MuscleGroup> getAllMuscleGroups();
 
-    List <LoadType> getAllLoadTypes();
+    List<LoadType> getAllLoadTypes();
 
     List<MuscleSubGroup> getMuscleSubgroupsByMuscleGroup(MuscleGroup muscleGroup);
 
