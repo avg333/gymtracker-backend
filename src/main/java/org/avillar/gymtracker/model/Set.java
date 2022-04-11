@@ -15,12 +15,11 @@ public class Set {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
     private String description;
-    private double weight;
     private int reps;
     private double rir;
     private int setOrder;
+    private double weight;
 
     @ManyToOne
     @JoinColumn(name = "exercise_id")
