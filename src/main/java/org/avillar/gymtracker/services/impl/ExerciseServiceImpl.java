@@ -58,10 +58,10 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     //TODO: ACABAR ESTA FUNCION
-    @Override
-    public List<Exercise> getExercisesByFilters() {
-        return this.exerciseRepository.findAll();
-    }
+//    @Override
+//    public List<Exercise> getExercisesByFilters() {
+//        return this.exerciseRepository.findAll();
+//    }
 
     @Override
     public Exercise addExercise(final Exercise exercise) {

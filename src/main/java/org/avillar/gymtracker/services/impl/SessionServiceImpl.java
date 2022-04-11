@@ -21,7 +21,7 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public List<Session> getAllProgramSessions(Long programId) {
-        return this.sessionRepository.findAll();
+        return this.sessionRepository.getAllProgramSessionsOrderByName(programId);
     }
 
     @Override

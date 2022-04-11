@@ -17,8 +17,10 @@ public class Program {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(nullable = false)
     private String name;
     private String description;
+    @Column(nullable = false)
     private String level;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.REMOVE)

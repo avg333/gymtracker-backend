@@ -69,7 +69,7 @@ public class ExerciseController {
                                                                        @RequestParam(required = false) Long idLt,
                                                                        @RequestParam(required = false) Boolean uni) {
         final LoadType loadType = null;
-        final List<Exercise> exercises = this.exerciseService.getExercisesByFilters();
+        final List<Exercise> exercises = new ArrayList<>();//this.exerciseService.getExercisesByFilters();
 
         return ResponseEntity.ok(exercises.stream().map(exercise -> modelMapper.map(exercise, ExerciseOutDto.class)).toList());
     }
