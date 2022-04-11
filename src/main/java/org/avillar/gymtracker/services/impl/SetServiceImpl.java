@@ -30,7 +30,7 @@ public class SetServiceImpl implements SetService {
     }
 
     @Override
-    public Set addSet(Long programId, Long sessionId, Set set) {
+    public Set createSet(Long programId, Long sessionId, Set set) {
         final Session session = new Session();
         session.setId(sessionId);
         set.setSession(session);

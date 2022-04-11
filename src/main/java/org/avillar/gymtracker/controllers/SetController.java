@@ -4,6 +4,7 @@ import org.avillar.gymtracker.dto.SetDto;
 import org.avillar.gymtracker.model.Set;
 import org.avillar.gymtracker.services.SetService;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,9 @@ public class SetController {
     @GetMapping("/{programId}/session/{sessionId}/set")
     public ResponseEntity<List<SetDto>> getAllSessionSets(@PathVariable final Long programId, @PathVariable final Long sessionId) {
         final List<Set> sets = this.setService.getAllSessionSets(programId, sessionId);
-        final List<SetDto> setsDto = sets.stream().map(set -> modelMapper.map(set, SetDto.class)).toList();
+        final TypeToken<List<SetDto>> typeToken = new TypeToken<>() {
+        };
+        final List<SetDto> setsDto = modelMapper.map(sets, typeToken.getType());
         return new ResponseEntity<>(setsDto, HttpStatus.OK);
     }
 
@@ -38,7 +41,7 @@ public class SetController {
     @PostMapping("/{programId}/session/{sessionId}/set")
     public ResponseEntity<SetDto> addSetToSession(@PathVariable final Long programId, @PathVariable final Long sessionId, @RequestBody SetDto setDto) {
         final Set setInput = this.modelMapper.map(setDto, Set.class);
-        final Set set = this.setService.addSet(programId, sessionId, setInput);
+        final Set set = this.setService.createSet(programId, sessionId, setInput);
         return new ResponseEntity<>(modelMapper.map(set, SetDto.class), HttpStatus.CREATED);
     }
 

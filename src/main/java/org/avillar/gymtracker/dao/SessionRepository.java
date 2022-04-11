@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.dao;
 
-import org.avillar.gymtracker.model.Program;
 import org.avillar.gymtracker.model.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

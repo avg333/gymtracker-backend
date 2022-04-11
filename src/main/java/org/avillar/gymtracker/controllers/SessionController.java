@@ -4,6 +4,7 @@ import org.avillar.gymtracker.dto.SessionDto;
 import org.avillar.gymtracker.model.Session;
 import org.avillar.gymtracker.services.SessionService;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,9 @@ public class SessionController {
     @GetMapping("/{programId}/sessions")
     public ResponseEntity<List<SessionDto>> getAllProgramSessions(@PathVariable final Long programId) {
         final List<Session> sessions = this.sessionService.getAllProgramSessions(programId);
-        final List<SessionDto> sessionsDto = sessions.stream().map(session -> modelMapper.map(session, SessionDto.class)).toList();
+        final TypeToken<List<SessionDto>> typeToken = new TypeToken<>() {
+        };
+        final List<SessionDto> sessionsDto = modelMapper.map(sessions, typeToken.getType());
         return new ResponseEntity<>(sessionsDto, HttpStatus.OK);
     }
 

@@ -12,7 +12,7 @@ public interface SetService {
 
     Set getSessionSet(Long programId, Long sessionId, Long setId);
 
-    Set addSet(Long programId, Long sessionId, Set set);
+    Set createSet(Long programId, Long sessionId, Set set);
 
     Set updateSet(Long programId, Long sessionId, Long setId, Set set);
 

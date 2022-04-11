@@ -1,11 +1,10 @@
 package org.avillar.gymtracker;
 
 import org.avillar.gymtracker.dao.ExerciseRepository;
-import org.avillar.gymtracker.dao.LoadTypeRepository;
 import org.avillar.gymtracker.dao.MuscleGroupRepository;
 import org.avillar.gymtracker.dao.MuscleSubGroupRepository;
 import org.avillar.gymtracker.model.Exercise;
-import org.avillar.gymtracker.model.LoadType;
+import org.avillar.gymtracker.model.LoadTypeEnum;
 import org.avillar.gymtracker.model.MuscleGroup;
 import org.avillar.gymtracker.model.MuscleSubGroup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,35 +20,19 @@ import java.util.List;
 @Component
 public class DataLoader implements ApplicationRunner {
 
-    private final LoadTypeRepository loadTypeRepository;
+
     private final MuscleGroupRepository muscleGroupRepository;
     private final MuscleSubGroupRepository muscleSubGroupRepository;
     private final ExerciseRepository exerciseRepository;
 
     @Autowired
-    public DataLoader(LoadTypeRepository loadTypeRepository, MuscleGroupRepository muscleGroupRepository,
-                      MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository) {
-        this.loadTypeRepository = loadTypeRepository;
+    public DataLoader(MuscleGroupRepository muscleGroupRepository, MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository) {
         this.muscleGroupRepository = muscleGroupRepository;
         this.muscleSubGroupRepository = muscleSubGroupRepository;
         this.exerciseRepository = exerciseRepository;
     }
 
     public void run(ApplicationArguments args) {
-        final LoadType bar = new LoadType();
-        final LoadType dumbbell = new LoadType();
-        final LoadType cable = new LoadType();
-        final LoadType bodyweight = new LoadType();
-        final LoadType machine = new LoadType();
-        final LoadType multipower = new LoadType();
-        bar.setName("bar");
-        dumbbell.setName("dumbbell");
-        cable.setName("cable");
-        bodyweight.setName("bodyweight");
-        machine.setName("machine");
-        multipower.setName("multipower");
-        loadTypeRepository.saveAll(Arrays.asList(bar, dumbbell, cable, bodyweight, machine, multipower));
-
         final MuscleGroup chest = new MuscleGroup();
         final MuscleGroup lats = new MuscleGroup();
         final MuscleGroup shoulders = new MuscleGroup();
@@ -106,23 +89,23 @@ public class DataLoader implements ApplicationRunner {
                 tricepsMedial, shoulderAnterior, shoulderLateral, shoulderPosterior));
 
         final List<Exercise> exercises = new ArrayList<>();
-        exercises.add(new Exercise("press con mancuernas", null, false, dumbbell, new HashSet<>(List.of(chest)), null));
-        exercises.add(new Exercise("press con mancuernas inclinado", null, false, dumbbell, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
-        exercises.add(new Exercise("press banca", null, false, bar, new HashSet<>(List.of(chest)), null));
-        exercises.add(new Exercise("press banca inclinado", null, false, bar, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
-        exercises.add(new Exercise("press en multipower", null, false, multipower, new HashSet<>(List.of(chest)), null));
-        exercises.add(new Exercise("press en multipower inclinado", null, false, multipower, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
-        exercises.add(new Exercise("cruces de poleas", null, false, cable, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
-        exercises.add(new Exercise("pec deck", null, false, machine, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
-        exercises.add(new Exercise("flexiones", null, false, bodyweight, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestLower))));
-        exercises.add(new Exercise("fondos", null, false, bodyweight, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestLower))));
+        exercises.add(new Exercise("press con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(chest)), null));
+        exercises.add(new Exercise("press con mancuernas inclinado", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
+        exercises.add(new Exercise("press banca", null, false, LoadTypeEnum.BAR, new HashSet<>(List.of(chest)), null));
+        exercises.add(new Exercise("press banca inclinado", null, false, LoadTypeEnum.BAR, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
+        exercises.add(new Exercise("press en multipower", null, false, LoadTypeEnum.MULTIPOWER, new HashSet<>(List.of(chest)), null));
+        exercises.add(new Exercise("press en multipower inclinado", null, false, LoadTypeEnum.MULTIPOWER, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
+        exercises.add(new Exercise("cruces de poleas", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
+        exercises.add(new Exercise("pec deck", null, false, LoadTypeEnum.MACHINE, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
+        exercises.add(new Exercise("flexiones", null, false, LoadTypeEnum.BODYWEIGHT, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestLower))));
+        exercises.add(new Exercise("fondos", null, false, LoadTypeEnum.BODYWEIGHT, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestLower))));
 
-        exercises.add(new Exercise("press militar", null, false, bar, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderAnterior))));
-        exercises.add(new Exercise("press sentado con mancuernas", null, false, dumbbell, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderAnterior))));
-        exercises.add(new Exercise("elevaciones laterales con mancuernas", null, false, dumbbell, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
-        exercises.add(new Exercise("elevaciones laterales con cable", null, false, cable, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
-        exercises.add(new Exercise("pajaros con mancuernas", null, false, dumbbell, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
-        exercises.add(new Exercise("reverse pec deck", null, false, cable, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
+        exercises.add(new Exercise("press militar", null, false, LoadTypeEnum.BAR, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderAnterior))));
+        exercises.add(new Exercise("press sentado con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderAnterior))));
+        exercises.add(new Exercise("elevaciones laterales con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
+        exercises.add(new Exercise("elevaciones laterales con cable", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
+        exercises.add(new Exercise("pajaros con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
+        exercises.add(new Exercise("reverse pec deck", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
 
 
         exerciseRepository.saveAll(exercises);

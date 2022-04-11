@@ -1,15 +1,14 @@
 package org.avillar.gymtracker.dto;
 
 import lombok.Data;
+import org.avillar.gymtracker.model.LoadTypeEnum;
 
 @Data
-public class ExerciseInDto {
+public class ExerciseDto {
 
     private Long id;
     private String name;
     private String description;
     private Boolean unilateral;
-    private Long loadType;
-    private Long muscleGroups;
-    private Long muscleSubGroups;
+    private LoadTypeEnum loadTypeEnum;
 }
