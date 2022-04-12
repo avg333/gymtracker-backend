@@ -14,8 +14,7 @@
 <form id="idSearchForm">
     <div class="rendered-form">
         <input class="form-control" id="exerciseName" name="exerciseName" placeholder="Exercise name" type="text"/>
-        <select class="form-control" id="musclegroup" name="musclegroup"
-                onchange="loadSubMuscleGroups();loadTableData();">
+        <select class="form-control" id="musclegroups" name="musclegroup" onchange="loadSubMuscleGroups();loadTableData();">
             <option disabled selected value>Muscle group</option>
         </select>
         <select class="form-control" disabled id="submusclegroup" name="submusclegroup" onchange="loadTableData();">
@@ -49,12 +48,12 @@
 
 <script>
     function loadMuscleGroups() {
-        const select = $("#musclegroup");
+        const select = $("#musclegroups");
         select.empty();
         select.append("<option selected value>Muscle group</option>");
 
         $.ajax({
-            url: 'http://localhost:8080/api/muscleGroups',
+            url: './api/muscleGroups',
             type: 'get',
             dataType: 'json',
             success: function (data) {
@@ -71,12 +70,12 @@
         select.append("<option selected value>Load types</option>");
 
         $.ajax({
-            url: 'http://localhost:8080/api/loadTypes',
+            url: './api/loadTypes',
             type: 'get',
             dataType: 'json',
             success: function (data) {
                 $.each(data, function (i, item) {
-                    select.append('<option value="' + item.id + '">' + item.name + '</option>');
+                    select.append('<option value="' + item + '">' + item + '</option>');
                 });
             }
         });
@@ -92,7 +91,7 @@
         if (!idMuscleGroup) return;
 
         $.ajax({
-            url: 'http://localhost:8080/api/muscleGroups/' + idMuscleGroup + "/muscleSubGroups",
+            url: './api/muscleGroups/' + idMuscleGroup + "/muscleSubGroups",
             type: 'get',
             dataType: 'json',
             success: function (data) {
@@ -112,7 +111,7 @@
         $('#exercisesTable > tr > td').remove();
 
         $.ajax({
-            url: 'http://localhost:8080/api/exercises',
+            url: './api/exercises',
             type: 'get',
             dataType: 'json',
             data: $("#idSearchForm").serialize(),
