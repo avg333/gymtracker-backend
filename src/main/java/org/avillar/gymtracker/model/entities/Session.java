@@ -1,0 +1,35 @@
+package org.avillar.gymtracker.model.entities;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Session {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @Column(nullable = false)
+    private String name;
+    private String description;
+    @Column(nullable = false)
+    private int sessionOrder;
+
+    @ManyToOne
+    @JoinColumn(name = "program_id")
+    private Program program;
+    @OneToMany(mappedBy = "session", cascade = CascadeType.REMOVE)
+    private List<Set> sets = new ArrayList<>();
+
+
+}

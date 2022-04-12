@@ -1,9 +1,9 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.dao.MuscleGroupRepository;
-import org.avillar.gymtracker.dao.MuscleSubGroupRepository;
-import org.avillar.gymtracker.model.MuscleGroup;
-import org.avillar.gymtracker.model.MuscleSubGroup;
+import org.avillar.gymtracker.model.dao.MuscleGroupRepository;
+import org.avillar.gymtracker.model.dao.MuscleSubGroupRepository;
+import org.avillar.gymtracker.model.entities.MuscleGroup;
+import org.avillar.gymtracker.model.entities.MuscleSubGroup;
 import org.avillar.gymtracker.services.MuscleGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

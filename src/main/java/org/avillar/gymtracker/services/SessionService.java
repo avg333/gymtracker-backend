@@ -1,11 +1,9 @@
 package org.avillar.gymtracker.services;
 
-import org.avillar.gymtracker.model.Session;
-import org.springframework.stereotype.Service;
+import org.avillar.gymtracker.model.entities.Session;
 
 import java.util.List;
 
-@Service
 public interface SessionService {
 
     List<Session> getAllProgramSessions(Long programId);

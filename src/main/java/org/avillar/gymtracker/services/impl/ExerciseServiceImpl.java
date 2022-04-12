@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.dao.ExerciseRepository;
-import org.avillar.gymtracker.model.Exercise;
+import org.avillar.gymtracker.model.dao.ExerciseRepository;
+import org.avillar.gymtracker.model.entities.Exercise;
 import org.avillar.gymtracker.services.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.services;
 
-import org.avillar.gymtracker.model.Exercise;
+import org.avillar.gymtracker.model.entities.Exercise;
 
 import java.util.List;
 

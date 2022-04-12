@@ -1,8 +1,8 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.dao.SessionRepository;
-import org.avillar.gymtracker.model.Program;
-import org.avillar.gymtracker.model.Session;
+import org.avillar.gymtracker.model.dao.SessionRepository;
+import org.avillar.gymtracker.model.entities.Program;
+import org.avillar.gymtracker.model.entities.Session;
 import org.avillar.gymtracker.services.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
