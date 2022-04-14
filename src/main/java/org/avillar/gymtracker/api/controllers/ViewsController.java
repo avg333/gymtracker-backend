@@ -25,7 +25,7 @@ public class ViewsController {
 
     @GetMapping("/programs")
     public String programsPage() {
-        return null;
+        return "programs";
     }
 
 }

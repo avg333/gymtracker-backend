@@ -8,6 +8,7 @@ import org.avillar.gymtracker.model.enums.ProgramLevelEnum;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,7 @@ public class Program {
     private String url;
     @Column(nullable = false)
     private ProgramLevelEnum level;
+    private final Date createdAt = new Date();
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.REMOVE)
     private List<Session> sessions = new ArrayList<>();
