@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.api.controllers;
+package org.avillar.gymtracker.api.controllers.rest;
 
 import org.avillar.gymtracker.api.dto.ProgramDto;
 import org.avillar.gymtracker.exceptions.ResourceNotExistsException;

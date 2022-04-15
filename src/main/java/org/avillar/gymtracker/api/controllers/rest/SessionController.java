@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.api.controllers;
+package org.avillar.gymtracker.api.controllers.rest;
 
 import org.avillar.gymtracker.api.dto.SessionDto;
 import org.avillar.gymtracker.model.entities.Session;
