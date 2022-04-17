@@ -13,4 +13,9 @@ public class ProgramDto {
     private String url;
     private ProgramLevelEnum level;
     private Date createdAt;
+    private int sessionNumber;
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 }

@@ -5,23 +5,23 @@ import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.services.ProgramService;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/programs")
-public class ProgramController {
+public class ProgramRestController {
 
     private final ProgramService programService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public ProgramController(ProgramService programService, ModelMapper modelMapper) {
+    public ProgramRestController(ProgramService programService, ModelMapper modelMapper) {
         this.programService = programService;
         this.modelMapper = modelMapper;
     }
@@ -29,9 +29,15 @@ public class ProgramController {
     @GetMapping("")
     public ResponseEntity<List<ProgramDto>> getAllPrograms() {
         final List<Program> programs = this.programService.getAllPrograms();
-        final TypeToken<List<ProgramDto>> typeToken = new TypeToken<>() {
-        };
-        return ResponseEntity.ok(this.modelMapper.map(programs, typeToken.getType()));
+        final List<ProgramDto> programDtos = new ArrayList<>();
+
+        for(final Program program: programs){
+            final ProgramDto programDto = this.modelMapper.map(program, ProgramDto.class);
+            programDto.setSessionNumber(program.getSessions().size());
+            programDtos.add(programDto);
+        }
+
+        return ResponseEntity.ok(programDtos);
     }
 
     @GetMapping("/{programId}")

@@ -10,17 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/programs")
-public class SessionController {
+public class SessionRestController {
 
     private final SessionService sessionService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public SessionController(SessionService sessionService, ModelMapper modelMapper) {
+    public SessionRestController(SessionService sessionService, ModelMapper modelMapper) {
         this.sessionService = sessionService;
         this.modelMapper = modelMapper;
     }
@@ -28,9 +29,14 @@ public class SessionController {
     @GetMapping("/{programId}/sessions")
     public ResponseEntity<List<SessionDto>> getAllProgramSessions(@PathVariable final Long programId) {
         final List<Session> sessions = this.sessionService.getAllProgramSessions(programId);
-        final TypeToken<List<SessionDto>> typeToken = new TypeToken<>() {
-        };
-        return ResponseEntity.ok(this.modelMapper.map(sessions, typeToken.getType()));
+        final List<SessionDto> sessionDtos = new ArrayList<>();
+        for(final Session session: sessions) {
+            final SessionDto sessionDto = this.modelMapper.map(session, SessionDto.class);
+            sessionDto.setSetsNumber(session.getSets().size());
+            sessionDto.setExercisesNumber(session.getSets().size());
+            sessionDtos.add(sessionDto);
+        }
+        return ResponseEntity.ok(sessionDtos);
     }
 
     @GetMapping("/{programId}/sessions/{sessionId}")

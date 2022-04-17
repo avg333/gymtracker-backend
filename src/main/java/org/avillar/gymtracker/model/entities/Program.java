@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.model.enums.ProgramLevelEnum;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,7 +32,9 @@ public class Program {
     private ProgramLevelEnum level;
     private final Date createdAt = new Date();
 
-    @OneToMany(mappedBy = "program", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "program", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.JOIN)
+    @BatchSize(size = 20)
     private List<Session> sessions = new ArrayList<>();
 
 }

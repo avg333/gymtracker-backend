@@ -15,20 +15,20 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Programas</h1>
-                    <p class="mb-4">Lista de programas creados</p>
+                    <h1 class="h3 mb-2 text-gray-800">Sesiones</h1>
+                    <p class="mb-4" >Lista de sesiones del programa <spam th:text="${programName}">XXXXX</spam></p>
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <div class="row">
                                 <div class="col">                                    
-                                    <h6 class="m-0 font-weight-bold text-primary">Programas</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Sessiones</h6>
                                 </div>
                                 <div class="col text-right">  
                                     <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#programModal" onclick="setEditModalData();">
                                         <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Nuevo programa
+                                        Nueva sesion
                                     </a>
                                 </div>
                             </div>
@@ -46,17 +46,18 @@
                     function loadTableData() {
                         const table = $("#dataTable").DataTable({
                             "columns": [
+                                {"title": "Orden"},
                                 {"title": "Nombre"},
-                                {"title": "Nivel"},
-                                {"title": "Sesiones"},
                                 {"title": "Fecha de creación"},
+                                {"title": "Ejercicios"},
+                                {"title": "Series"},
                                 {"title": "Detalle", "orderable": false},
                                 {"title": "Editar", "orderable": false},
                                 {"title": "Eliminar", "orderable": false}
                             ],
                             'columnDefs': [
                                 {
-                                    "targets": [4,5,6], // your case first column
+                                    "targets": [0,5,6,7],
                                     "className": "text-center",
                                     "width": "4%"
                                 }
@@ -65,13 +66,16 @@
                                 "sSearch": "Buscar"
                             }
                         });
+                        const queryString = window.location.search;
+                        const urlParams = new URLSearchParams(queryString);
+                        const programId = urlParams.get('programId')
                         $.ajax({
-                            url: './api/programs',
+                            url: './api/programs/' + programId + "/sessions",
                             type: 'get',
                             dataType: 'json',
                             success: function (data) {
                                 $.each(data, function (i, item) {
-                                    table.row.add([item.name, item.level, item.sessionNumber,  new Date(item.createdAt).toLocaleDateString("es-ES"), 
+                                    table.row.add([item.sessionOrder, item.name, new Date(item.createdAt).toLocaleDateString("es-ES"), item.exercisesNumber, item.setsNumber, 
                                     '<a href="./sessions?programId=' + item.id + '" class="btn btn-info btn-icon-split"><span class="icon text-white-50"><i class="fas fa-info-circle"></i></span></a>',                                       
                                     '<a href="#" class="btn btn-warning btn-icon-split" data-toggle="modal" data-target="#programModal" onclick="setEditModalData(' + item.id + ');"><span class="icon text-white-50"><i class="fas fa-edit"></i></span></a>',
                                     '<a href="#" class="btn btn-danger btn-icon-split" data-toggle="modal" data-target="#deleteModal" onclick="setEditModalData(' + item.id + ');" ><span class="icon text-white-50"><i class="fas fa-trash"></i></span></a>'
