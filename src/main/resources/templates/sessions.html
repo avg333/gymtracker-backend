@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <div th:replace="components/head.html :: head"></div>
-    <title >GymTracker - Programas</title>
+    <title >GymTracker - Sesiones</title>
 </head>
 <body id="page-top">
     <div id="wrapper">
@@ -15,7 +15,7 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Sesiones</h1>
+                    <h1 class="h3 mb-2 text-gray-800"><a href="programs">Programas</a> > <spam th:text="${programName}">XXXXX</spam> > Sesiones</h1>
                     <p class="mb-4" >Lista de sesiones del programa <spam th:text="${programName}">XXXXX</spam></p>
 
                     <!-- DataTales Example -->
