@@ -5,4 +5,7 @@ public class Url {
     public static final String LOGOUT = "/logout";
     public static final String PROGRAMS = "/programs";
     public static final String SESSIONS = "/sessions";
+
+    private Url() {
+    }
 }
