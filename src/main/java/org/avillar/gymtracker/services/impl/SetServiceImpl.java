@@ -12,8 +12,9 @@ import java.util.List;
 @Service
 public class SetServiceImpl implements SetService {
 
-    @Autowired
     private final SetRepository setRepository;
+
+    @Autowired
 
     public SetServiceImpl(SetRepository setRepository) {
         this.setRepository = setRepository;

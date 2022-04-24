@@ -1,11 +1,13 @@
 package org.avillar.gymtracker.controllers.views;
 
+import org.avillar.gymtracker.config.Url;
 import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
 import org.avillar.gymtracker.model.dto.SessionDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
 import org.avillar.gymtracker.services.ProgramService;
 import org.avillar.gymtracker.services.SessionService;
+import org.avillar.gymtracker.utils.ControllerHelper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ public class SessionController {
     private final ProgramService programService;
     private final SessionService sessionService;
     private final ModelMapper modelMapper;
+    private static final String REDIRECT_SESSIONS = "redirect:" + Url.SESSIONS;
 
     @Autowired
     public SessionController(ProgramService programService, SessionService sessionService, ModelMapper modelMapper) {
@@ -29,29 +32,29 @@ public class SessionController {
         this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/sessions")
+    @GetMapping(Url.SESSIONS)
     public String sessionPage(final Model model, @RequestParam final Long programId) throws ResourceNotExistsException {
-        final Program program = programService.getProgram(programId);
-        model.addAttribute("userName", "Adrián Villar Gesto");
+        ControllerHelper.addLogedUserToModel(model);
+        final Program program = this.programService.getProgram(programId);
         model.addAttribute("programName", program.getName());
         return "sessions";
     }
 
     @PostMapping("createSession")
-    public String addSession(@ModelAttribute("programDto") SessionDto sessionDto) {
-        sessionService.createSession(sessionDto.getId(), modelMapper.map(sessionDto, Session.class));
-        return "redirect:/sessions";
+    public String addSession(@ModelAttribute final SessionDto sessionDto) {
+        this.sessionService.createSession(sessionDto.getId(), modelMapper.map(sessionDto, Session.class));
+        return REDIRECT_SESSIONS;
     }
 
     @PostMapping("updateSession")
-    public String updateSession(@ModelAttribute("programDto") SessionDto sessionDto) {
-        sessionService.updateSession(sessionDto.getId(), sessionDto.getId(), modelMapper.map(sessionDto, Session.class));
-        return "redirect:/sessions";
+    public String updateSession(@ModelAttribute final SessionDto sessionDto) {
+        this.sessionService.updateSession(sessionDto.getId(), sessionDto.getId(), modelMapper.map(sessionDto, Session.class));
+        return REDIRECT_SESSIONS;
     }
 
     @PostMapping("deleteSession")
-    public String deleteSession(@ModelAttribute("programDto") SessionDto sessionDto) {
-        sessionService.deleteSession(sessionDto.getId(), sessionDto.getId());
-        return "redirect:/sessions";
+    public String deleteSession(@ModelAttribute final SessionDto sessionDto) {
+        this.sessionService.deleteSession(sessionDto.getId(), sessionDto.getId());
+        return REDIRECT_SESSIONS;
     }
 }

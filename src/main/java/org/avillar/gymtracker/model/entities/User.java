@@ -8,7 +8,7 @@ import org.avillar.gymtracker.model.enums.GenderEnum;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -22,6 +22,7 @@ public class User {
     private Long id;
     private String username;
     private String password;
+    private String email;
 
     private String name;
     private String lastNameFirst;
@@ -32,9 +33,9 @@ public class User {
     private ActivityLevelEnum activityLevel;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Measure> measures = new LinkedHashSet<>();
+    private Set<Measure> measures = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Program> programs = new LinkedHashSet<>();
+    private Set<Program> programs = new HashSet<>();
 
 }

@@ -7,6 +7,8 @@ import org.avillar.gymtracker.model.enums.ProgramLevelEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -23,20 +25,30 @@ public class DataLoader implements ApplicationRunner {
     private final ExerciseRepository exerciseRepository;
     private final ProgramRepository programRepository;
     private final SessionRepository sessionRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public DataLoader(MuscleGroupRepository muscleGroupRepository, MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository,
-                      ProgramRepository programRepository, SessionRepository sessionRepository) {
+                      ProgramRepository programRepository, SessionRepository sessionRepository, UserRepository userRepository) {
         this.muscleGroupRepository = muscleGroupRepository;
         this.muscleSubGroupRepository = muscleSubGroupRepository;
         this.exerciseRepository = exerciseRepository;
         this.programRepository = programRepository;
         this.sessionRepository = sessionRepository;
+        this.userRepository = userRepository;
     }
 
     public void run(ApplicationArguments args) {
         this.createExercises();
         this.createPrograms();
+        final User user = new User();
+        final String pass = "chema69";
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setUsername("chema");
+        user.setName("Chema");
+        user.setLastNameFirst("Garcia");
+        user.setPassword(passwordEncoder.encode(pass));
+        userRepository.save(user);
     }
 
     private void createExercises() {
