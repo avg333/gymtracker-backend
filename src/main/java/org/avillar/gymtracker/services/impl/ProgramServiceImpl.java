@@ -1,29 +1,44 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.model.dao.ProgramRepository;
 import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
+import org.avillar.gymtracker.model.dao.ProgramRepository;
+import org.avillar.gymtracker.model.dto.ProgramListDto;
 import org.avillar.gymtracker.model.entities.Program;
+import org.avillar.gymtracker.model.entities.User;
 import org.avillar.gymtracker.services.ProgramService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
 
     private final ProgramRepository programRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public ProgramServiceImpl(ProgramRepository programRepository) {
+    public ProgramServiceImpl(ProgramRepository programRepository, ModelMapper modelMapper) {
         this.programRepository = programRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Program> getAllPrograms() {
-        return this.programRepository.findAllByOrderByNameAsc();
+    public List<ProgramListDto> getUserAllPrograms(final User user) {
+        final List<Program> programs = this.programRepository.findByUserOrderByNameAsc(user);
+        final List<ProgramListDto> programListDtos = new ArrayList<>(programs.size());
+
+        for (final Program program : programs) {
+            final ProgramListDto programListDto = this.modelMapper.map(program, ProgramListDto.class);
+            programListDto.setSessionNumber(program.getSessions().size());
+            programListDtos.add(programListDto);
+        }
+
+        return programListDtos;
     }
 
     @Override

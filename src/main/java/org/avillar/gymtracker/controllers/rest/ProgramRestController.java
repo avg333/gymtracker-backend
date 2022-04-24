@@ -1,7 +1,8 @@
-package org.avillar.gymtracker.api.controllers.rest;
+package org.avillar.gymtracker.controllers.rest;
 
-import org.avillar.gymtracker.api.dto.ProgramDto;
 import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
+import org.avillar.gymtracker.model.dto.ProgramDto;
+import org.avillar.gymtracker.model.dto.ProgramListDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.services.ProgramService;
 import org.modelmapper.ModelMapper;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,17 +27,9 @@ public class ProgramRestController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ProgramDto>> getAllPrograms() {
-        final List<Program> programs = this.programService.getAllPrograms();
-        final List<ProgramDto> programDtos = new ArrayList<>();
-
-        for(final Program program: programs){
-            final ProgramDto programDto = this.modelMapper.map(program, ProgramDto.class);
-            programDto.setSessionNumber(program.getSessions().size());
-            programDtos.add(programDto);
-        }
-
-        return ResponseEntity.ok(programDtos);
+    public ResponseEntity<List<ProgramListDto>> getAllPrograms() {
+        final List<ProgramListDto> programs = this.programService.getUserAllPrograms(null);
+        return ResponseEntity.ok(programs);
     }
 
     @GetMapping("/{programId}")

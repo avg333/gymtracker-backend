@@ -1,7 +1,7 @@
-package org.avillar.gymtracker.api.controllers.rest;
+package org.avillar.gymtracker.controllers.rest;
 
-import org.avillar.gymtracker.api.dto.MuscleGroupDto;
-import org.avillar.gymtracker.api.dto.MuscleSubGroupDto;
+import org.avillar.gymtracker.model.dto.MuscleGroupDto;
+import org.avillar.gymtracker.model.dto.MuscleSubGroupDto;
 import org.avillar.gymtracker.model.entities.MuscleGroup;
 import org.avillar.gymtracker.model.entities.MuscleSubGroup;
 import org.avillar.gymtracker.services.MuscleGroupService;

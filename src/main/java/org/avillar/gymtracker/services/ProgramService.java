@@ -1,13 +1,15 @@
 package org.avillar.gymtracker.services;
 
 import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
+import org.avillar.gymtracker.model.dto.ProgramListDto;
 import org.avillar.gymtracker.model.entities.Program;
+import org.avillar.gymtracker.model.entities.User;
 
 import java.util.List;
 
 public interface ProgramService {
 
-    List<Program> getAllPrograms();
+    List<ProgramListDto> getUserAllPrograms(final User user);
 
     Program getProgram(Long programId) throws ResourceNotExistsException;
 

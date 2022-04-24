@@ -1,7 +1,7 @@
-package org.avillar.gymtracker.api.controllers.views;
+package org.avillar.gymtracker.controllers.views;
 
-import org.avillar.gymtracker.api.dto.SessionDto;
 import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
+import org.avillar.gymtracker.model.dto.SessionDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
 import org.avillar.gymtracker.services.ProgramService;
@@ -38,19 +38,19 @@ public class SessionController {
     }
 
     @PostMapping("createSession")
-    public String addSession(@ModelAttribute("programDto") SessionDto sessionDto ){
+    public String addSession(@ModelAttribute("programDto") SessionDto sessionDto) {
         sessionService.createSession(sessionDto.getId(), modelMapper.map(sessionDto, Session.class));
         return "redirect:/sessions";
     }
 
     @PostMapping("updateSession")
-    public String updateSession(@ModelAttribute("programDto") SessionDto sessionDto ) {
+    public String updateSession(@ModelAttribute("programDto") SessionDto sessionDto) {
         sessionService.updateSession(sessionDto.getId(), sessionDto.getId(), modelMapper.map(sessionDto, Session.class));
         return "redirect:/sessions";
     }
 
     @PostMapping("deleteSession")
-    public String deleteSession(@ModelAttribute("programDto") SessionDto sessionDto ) {
+    public String deleteSession(@ModelAttribute("programDto") SessionDto sessionDto) {
         sessionService.deleteSession(sessionDto.getId(), sessionDto.getId());
         return "redirect:/sessions";
     }

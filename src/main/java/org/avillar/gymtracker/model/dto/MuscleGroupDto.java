@@ -1,10 +1,10 @@
-package org.avillar.gymtracker.api.dto;
+package org.avillar.gymtracker.model.dto;
 
 import lombok.Data;
 
 
 @Data
-public class MuscleSubGroupDto {
+public class MuscleGroupDto {
 
     private Long id;
     private String name;

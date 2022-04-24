@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Session {
 
+    private final Date createdAt = new Date();
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -28,8 +29,6 @@ public class Session {
     private String description;
     @Column(nullable = false)
     private int sessionOrder;
-    private final Date createdAt = new Date();
-
     @ManyToOne
     @JoinColumn(name = "program_id")
     private Program program;

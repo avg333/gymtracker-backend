@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.api.dto;
+package org.avillar.gymtracker.model.dto;
 
 import lombok.Data;
 import org.avillar.gymtracker.model.enums.LoadTypeEnum;

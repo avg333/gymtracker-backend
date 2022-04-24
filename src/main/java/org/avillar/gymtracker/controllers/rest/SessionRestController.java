@@ -1,10 +1,9 @@
-package org.avillar.gymtracker.api.controllers.rest;
+package org.avillar.gymtracker.controllers.rest;
 
-import org.avillar.gymtracker.api.dto.SessionDto;
+import org.avillar.gymtracker.model.dto.SessionDto;
 import org.avillar.gymtracker.model.entities.Session;
 import org.avillar.gymtracker.services.SessionService;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +29,7 @@ public class SessionRestController {
     public ResponseEntity<List<SessionDto>> getAllProgramSessions(@PathVariable final Long programId) {
         final List<Session> sessions = this.sessionService.getAllProgramSessions(programId);
         final List<SessionDto> sessionDtos = new ArrayList<>();
-        for(final Session session: sessions) {
+        for (final Session session : sessions) {
             final SessionDto sessionDto = this.modelMapper.map(session, SessionDto.class);
             sessionDto.setSetsNumber(session.getSets().size());
             sessionDto.setExercisesNumber(session.getSets().size());

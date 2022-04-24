@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.api.controllers.views;
+package org.avillar.gymtracker.controllers.views;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

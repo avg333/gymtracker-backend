@@ -1,6 +1,6 @@
-package org.avillar.gymtracker.api.controllers.rest;
+package org.avillar.gymtracker.controllers.rest;
 
-import org.avillar.gymtracker.api.dto.ExerciseDto;
+import org.avillar.gymtracker.model.dto.ExerciseDto;
 import org.avillar.gymtracker.model.entities.Exercise;
 import org.avillar.gymtracker.services.ExerciseService;
 import org.modelmapper.ModelMapper;

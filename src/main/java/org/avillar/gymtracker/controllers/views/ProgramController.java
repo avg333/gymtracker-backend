@@ -1,7 +1,7 @@
-package org.avillar.gymtracker.api.controllers.views;
+package org.avillar.gymtracker.controllers.views;
 
-import org.avillar.gymtracker.api.dto.ProgramDto;
 import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
+import org.avillar.gymtracker.model.dto.ProgramDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.services.ProgramService;
 import org.modelmapper.ModelMapper;
@@ -31,19 +31,19 @@ public class ProgramController {
     }
 
     @PostMapping("createProgram")
-    public String  addProgram(@ModelAttribute("programDto") ProgramDto programDto ){
+    public String addProgram(@ModelAttribute("programDto") ProgramDto programDto) {
         programService.createProgram(modelMapper.map(programDto, Program.class));
         return "redirect:/programs";
     }
 
     @PostMapping("updateProgram")
-    public String updateProgram(@ModelAttribute("programDto") ProgramDto programDto ) throws ResourceNotExistsException {
+    public String updateProgram(@ModelAttribute("programDto") ProgramDto programDto) throws ResourceNotExistsException {
         programService.updateProgram(programDto.getId(), modelMapper.map(programDto, Program.class));
         return "redirect:/programs";
     }
 
     @PostMapping("deleteProgram")
-    public String deleteProgram(@ModelAttribute("programDto") ProgramDto programDto ) throws ResourceNotExistsException {
+    public String deleteProgram(@ModelAttribute("programDto") ProgramDto programDto) throws ResourceNotExistsException {
         programService.deleteProgram(programDto.getId());
         return "redirect:/programs";
     }

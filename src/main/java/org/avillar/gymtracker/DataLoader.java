@@ -88,9 +88,9 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void createPrograms() {
-        final Program pushPullLegs = new Program(null, "Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, null);
-        final Program fullBody = new Program(null, "Full body", "Full body frec1", null, ProgramLevelEnum.EASY, null);
-        final Program weider = new Program(null, "Weider", "Weider frec1", null, ProgramLevelEnum.HARD, null);
+        final Program pushPullLegs = new Program(null, "Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, null, null);
+        final Program fullBody = new Program(null, "Full body", "Full body frec1", null, ProgramLevelEnum.EASY, null, null);
+        final Program weider = new Program(null, "Weider", "Weider frec1", null, ProgramLevelEnum.HARD, null, null);
         programRepository.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
         final Session push = new Session(null, "Push", null, 1, pushPullLegs, null);
