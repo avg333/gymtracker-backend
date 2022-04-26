@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.model.dao.UserRepository;
-import org.avillar.gymtracker.model.entities.User;
+import org.avillar.gymtracker.model.entities.UserApp;
 import org.avillar.gymtracker.services.UserService;
 import org.springframework.stereotype.Service;
 
@@ -17,28 +17,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<UserApp> getAllUsers() {
         return this.userRepository.findAll();
     }
 
     @Override
-    public User getUser(final Long userId) {
+    public UserApp getUser(final Long userId) {
         return this.userRepository.getById(userId);
     }
 
     @Override
-    public User getUserByUsername(final String username) {
+    public UserApp getUserByUsername(final String username) {
         return this.userRepository.findByUsername(username);
     }
 
     @Override
-    public User createUser(final User user) {
-        return this.userRepository.save(user);
+    public UserApp createUser(final UserApp userApp) {
+        return this.userRepository.save(userApp);
     }
 
     @Override
-    public User updateUser(final User user) {
-        return this.userRepository.save(user);
+    public UserApp updateUser(final UserApp userApp) {
+        return this.userRepository.save(userApp);
     }
 
     @Override

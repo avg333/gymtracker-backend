@@ -1,12 +1,11 @@
 package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.model.dao.ProgramRepository;
-import org.avillar.gymtracker.model.dto.ProgramListDto;
+import org.avillar.gymtracker.model.dto.ProgramDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
-import org.avillar.gymtracker.model.entities.User;
+import org.avillar.gymtracker.model.entities.UserApp;
 import org.avillar.gymtracker.model.enums.ProgramLevelEnum;
-import org.avillar.gymtracker.services.ProgramService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,80 +15,142 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
 class ProgramServiceImplTest {
 
+    private static final long PROGRAM_ID = 0L;
+    private static final long USER_ID = 1L;
+    private static final long NOT_USER_ID = 2L;
+    private static final String NOT_FOUND_ERROR_MSG = "El programa no existe";
+    private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
+
     @Mock
     private ProgramRepository programRepository;
+    @Mock
+    private LoginServiceImpl loginService;
     @InjectMocks
     private ModelMapper modelMapper;
-
+    @InjectMocks
     private ProgramServiceImpl programService;
 
     @BeforeEach
-    void setUp() {
-        programService = new ProgramServiceImpl(programRepository, modelMapper);
+    public void setUp() {
+        final UserApp user = new UserApp();
+        user.setId(USER_ID);
+        when(loginService.getLoggedUser()).thenReturn(user);
+
+        programService = new ProgramServiceImpl(programRepository, modelMapper, loginService);
     }
 
     @Test
-    void getUserAllPrograms() {
-        User user = new User();
-        Program program1 = new Program();
-        program1.setName("NameProgram1");
-        program1.setLevel(ProgramLevelEnum.HARD);
-        Program program2 = new Program();
-        program2.setName("NameProgram2");
-        program2.setLevel(ProgramLevelEnum.MEDIUM);
-        List<Program> programList = new ArrayList<>();
-        programList.add(program1);
-        programList.add(program2);
+    void getUserAllProgramsWithVolume() {
+        final List<Program> programList = Arrays.asList(getProgramWithUserId(PROGRAM_ID, USER_ID, 2),
+                getProgramWithUserId(PROGRAM_ID + 1, USER_ID, 3),
+                getProgramWithUserId(PROGRAM_ID + 2, USER_ID, 0));
 
-        Set<Session> sessionsProgram1 = new HashSet<>();
-        Session session11 = new Session();
-        session11.setId(11L);
-        Session session12 = new Session();
-        session11.setId(12L);
-        sessionsProgram1.add(session11);
-        sessionsProgram1.add(session12);
-        program1.setSessions(sessionsProgram1);
-        Set<Session> sessionsProgram2 = new HashSet<>();
-        Session session21 = new Session();
-        session11.setId(21L);
-        Session session22 = new Session();
-        session11.setId(22L);
-        Session session23 = new Session();
-        session11.setId(23L);
-        sessionsProgram2.add(session21);
-        sessionsProgram2.add(session22);
-        sessionsProgram2.add(session23);
-        program2.setSessions(sessionsProgram2);
+        when(this.programRepository.findByUserAppOrderByNameAsc(Mockito.any(UserApp.class))).thenReturn(programList);
+        final List<ProgramDto> programListDtos = this.programService.getUserAllProgramsWithVolume();
 
-        when(programRepository.findByUserOrderByNameAsc(user)).thenReturn(programList);
-
-        List<ProgramListDto> programListDtos = programService.getUserAllPrograms(user);
-        assertEquals(2, programListDtos.size());
-        assertEquals("NameProgram1", programListDtos.get(0).getName());
-        assertEquals(ProgramLevelEnum.HARD, programListDtos.get(0).getLevel());
-        assertEquals(2, programListDtos.get(0).getSessionNumber());
-        assertEquals("NameProgram2", programListDtos.get(1).getName());
-        assertEquals(ProgramLevelEnum.MEDIUM, programListDtos.get(1).getLevel());
-        assertEquals(3, programListDtos.get(1).getSessionNumber());
-
+        assertEquals(programList.size(), programListDtos.size());
+        for (int i = 0; i < programList.size(); i++) {
+            assertEquals(programList.get(i).getId(), programListDtos.get(i).getId());
+            assertEquals(programList.get(i).getName(), programListDtos.get(i).getName());
+            assertEquals(programList.get(i).getSessions().size(), programListDtos.get(i).getSessionNumber());
+        }
     }
+
+    @Test
+    void getProgram() throws IllegalAccessException {
+        Program program = getProgramWithUserId(PROGRAM_ID, USER_ID, 0);
+
+        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        final ProgramDto programDto = this.programService.getProgram(PROGRAM_ID);
+
+        assertEquals(program.getId(), programDto.getId());
+        assertEquals(program.getName(), programDto.getName());
+
+        program = getProgramWithUserId(null, NOT_USER_ID, 0);
+        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+
+        final Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.getProgram(PROGRAM_ID));
+        assertEquals(NO_PERMISSIONS, exception.getMessage());
+    }
+
+    @Test
+    void createProgram() {
+        final ProgramDto programDtoInput = new ProgramDto();
+        programDtoInput.setId(PROGRAM_ID);
+        programDtoInput.setName(String.valueOf(PROGRAM_ID));
+        programDtoInput.setLevel(ProgramLevelEnum.HARD);
+
+        when(this.programRepository.save(Mockito.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
+        final ProgramDto programDtoOutput = this.programService.createProgram(programDtoInput);
+
+        assertEquals(programDtoInput.getId(), programDtoOutput.getId());
+        assertEquals(programDtoInput.getName(), programDtoOutput.getName());
+        assertEquals(programDtoInput.getLevel(), programDtoOutput.getLevel());
+    }
+
+    @Test
+    void updateProgram() throws IllegalAccessException {
+        final ProgramDto programDtoInput = new ProgramDto();
+        programDtoInput.setId(PROGRAM_ID);
+        programDtoInput.setName(String.valueOf(PROGRAM_ID));
+        programDtoInput.setLevel(ProgramLevelEnum.HARD);
+        when(this.programRepository.save(Mockito.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        Program program = getProgramWithUserId(programDtoInput.getId(), USER_ID, 0);
+        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        final ProgramDto programDtoOutput = this.programService.updateProgram(programDtoInput);
+        assertEquals(programDtoInput.getId(), programDtoOutput.getId());
+        assertEquals(programDtoInput.getName(), programDtoOutput.getName());
+        assertEquals(programDtoInput.getLevel(), programDtoOutput.getLevel());
+
+        programDtoInput.setId(null);
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> this.programService.updateProgram(programDtoInput));
+        assertEquals(NOT_FOUND_ERROR_MSG, exception.getMessage());
+
+        program = getProgramWithUserId(programDtoInput.getId(), NOT_USER_ID, 0);
+        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        exception = assertThrows(IllegalAccessException.class, () -> this.programService.getProgram(PROGRAM_ID));
+        assertEquals(NO_PERMISSIONS, exception.getMessage());
+    }
+
+    @Test
+    void deleteProgram() {
+        final Program program = getProgramWithUserId(PROGRAM_ID, NOT_USER_ID, 0);
+        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.getProgram(PROGRAM_ID));
+        assertEquals(NO_PERMISSIONS, exception.getMessage());
+    }
+
+    private Program getProgramWithUserId(final Long programId, final Long userId, final int numberSessions) {
+        final UserApp userApp = new UserApp();
+        userApp.setId(userId);
+        final Program program = new Program();
+        program.setId(programId);
+        program.setName(String.valueOf(programId));
+        program.setUserApp(userApp);
+
+        final Set<Session> sessionsProgram = new HashSet<>();
+        for (int i = 0; i < numberSessions; i++) {
+            final Session session = new Session();
+            session.setId((long) i);
+            sessionsProgram.add(session);
+        }
+        program.setSessions(sessionsProgram);
+
+        return program;
+    }
+
 }

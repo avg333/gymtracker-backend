@@ -3,7 +3,7 @@ package org.avillar.gymtracker.config.security;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.avillar.gymtracker.model.entities.User;
+import org.avillar.gymtracker.model.entities.UserApp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MyUserDetails implements UserDetails {
 
-    private User user;
+    private UserApp userApp;
     private List<GrantedAuthority> authorities;
 
 
@@ -26,12 +26,12 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return userApp.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return userApp.getUsername();
     }
 
     @Override

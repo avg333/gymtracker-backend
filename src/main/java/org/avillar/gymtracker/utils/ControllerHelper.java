@@ -7,9 +7,9 @@ import org.springframework.ui.Model;
 
 public class ControllerHelper {
 
-    public static void addLogedUserToModel(final Model model){
+    public static void addLogedUserToModel(final Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails) auth.getPrincipal();
-        model.addAttribute("userName", myUserDetails.getUser().getName() + " " + myUserDetails.getUser().getLastNameFirst());
+        model.addAttribute("userName", myUserDetails.getUserApp().getName() + " " + myUserDetails.getUserApp().getLastNameFirst());
     }
 }

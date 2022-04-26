@@ -1,9 +1,9 @@
 package org.avillar.gymtracker.model.dao;
 
-import org.avillar.gymtracker.model.entities.User;
+import org.avillar.gymtracker.model.entities.UserApp;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserApp, Long> {
 
-    User findByUsername(String username);
+    UserApp findByUsername(String username);
 }

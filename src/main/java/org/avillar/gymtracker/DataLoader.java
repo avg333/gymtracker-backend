@@ -40,8 +40,7 @@ public class DataLoader implements ApplicationRunner {
 
     public void run(ApplicationArguments args) {
         this.createExercises();
-        this.createPrograms();
-        final User user = new User();
+        final UserApp user = new UserApp();
         final String pass = "chema69";
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setUsername("chema");
@@ -49,6 +48,7 @@ public class DataLoader implements ApplicationRunner {
         user.setLastNameFirst("Garcia");
         user.setPassword(passwordEncoder.encode(pass));
         userRepository.save(user);
+        this.createPrograms(user);
     }
 
     private void createExercises() {
@@ -99,10 +99,10 @@ public class DataLoader implements ApplicationRunner {
         exerciseRepository.saveAll(exercises);
     }
 
-    public void createPrograms() {
-        final Program pushPullLegs = new Program(null, "Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, null, null);
-        final Program fullBody = new Program(null, "Full body", "Full body frec1", null, ProgramLevelEnum.EASY, null, null);
-        final Program weider = new Program(null, "Weider", "Weider frec1", null, ProgramLevelEnum.HARD, null, null);
+    public void createPrograms(UserApp user) {
+        final Program pushPullLegs = new Program(null, "Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, null, user);
+        final Program fullBody = new Program(null, "Full body", "Full body frec1", null, ProgramLevelEnum.EASY, null, user);
+        final Program weider = new Program(null, "Weider", "Weider frec1", null, ProgramLevelEnum.HARD, null, user);
         programRepository.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
         final Session push = new Session(null, "Push", null, 1, pushPullLegs, null);

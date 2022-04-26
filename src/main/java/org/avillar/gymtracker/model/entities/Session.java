@@ -9,9 +9,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 
 @Entity
 @Getter
@@ -35,7 +34,7 @@ public class Session {
     @OneToMany(mappedBy = "session", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @BatchSize(size = 20)
-    private List<Set> sets = new ArrayList<>();
+    private java.util.Set<Set> sets = new HashSet<>();
 
 
 }

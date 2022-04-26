@@ -2,7 +2,7 @@ package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.config.security.MyUserDetails;
 import org.avillar.gymtracker.model.dao.UserRepository;
-import org.avillar.gymtracker.model.entities.User;
+import org.avillar.gymtracker.model.entities.UserApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,10 +23,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        final User user = userRepository.findByUsername(username);
-        if (user == null) {
+        final UserApp userApp = userRepository.findByUsername(username);
+        if (userApp == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new MyUserDetails(user, Collections.emptyList());
+        return new MyUserDetails(userApp, Collections.emptyList());
     }
 }

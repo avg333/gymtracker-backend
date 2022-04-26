@@ -15,7 +15,4 @@ public class ProgramDto {
     private Date createdAt;
     private int sessionNumber;
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
 }

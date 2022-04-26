@@ -15,8 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "user_app")
-public class User {
+public class UserApp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,10 +32,11 @@ public class User {
 
     private ActivityLevelEnum activityLevel;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Measure> measures = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Program> programs = new HashSet<>();
+
+    @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<Measure> measures = new HashSet<>();
 
 }

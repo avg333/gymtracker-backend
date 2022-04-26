@@ -15,14 +15,20 @@ public class Measure {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
 
     private Date date;
+    @Column(nullable = false)
     private double height;
+    @Column(nullable = false)
     private double weight;
+    @Column(nullable = false)
     private double fatPercent;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_app_id", nullable = false)
+    private UserApp userApp;
+
 }

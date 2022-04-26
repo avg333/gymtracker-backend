@@ -34,7 +34,7 @@ public class Program {
     private Set<Session> sessions = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "user_app_id")
+    private UserApp userApp;
 
 }

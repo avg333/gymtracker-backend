@@ -1,9 +1,8 @@
 package org.avillar.gymtracker.controllers.views;
 
 import org.avillar.gymtracker.config.Url;
-import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
+import org.avillar.gymtracker.model.dto.ProgramDto;
 import org.avillar.gymtracker.model.dto.SessionDto;
-import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
 import org.avillar.gymtracker.services.ProgramService;
 import org.avillar.gymtracker.services.SessionService;
@@ -20,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class SessionController {
 
+    private static final String REDIRECT_SESSIONS = "redirect:" + Url.SESSIONS;
     private final ProgramService programService;
     private final SessionService sessionService;
     private final ModelMapper modelMapper;
-    private static final String REDIRECT_SESSIONS = "redirect:" + Url.SESSIONS;
 
     @Autowired
     public SessionController(ProgramService programService, SessionService sessionService, ModelMapper modelMapper) {
@@ -33,10 +32,10 @@ public class SessionController {
     }
 
     @GetMapping(Url.SESSIONS)
-    public String sessionPage(final Model model, @RequestParam final Long programId) throws ResourceNotExistsException {
+    public String sessionPage(final Model model, @RequestParam final Long programId) throws IllegalAccessException {
         ControllerHelper.addLogedUserToModel(model);
-        final Program program = this.programService.getProgram(programId);
-        model.addAttribute("programName", program.getName());
+        final ProgramDto programDto = this.programService.getProgram(programId);
+        model.addAttribute("programName", programDto.getName());
         return "sessions";
     }
 

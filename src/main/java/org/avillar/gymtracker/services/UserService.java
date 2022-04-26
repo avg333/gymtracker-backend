@@ -1,19 +1,19 @@
 package org.avillar.gymtracker.services;
 
-import org.avillar.gymtracker.model.entities.User;
+import org.avillar.gymtracker.model.entities.UserApp;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> getAllUsers();
+    List<UserApp> getAllUsers();
 
-    User getUser(Long userId);
+    UserApp getUser(Long userId);
 
-    User getUserByUsername(String username);
+    UserApp getUserByUsername(String username);
 
-    User createUser(User user);
+    UserApp createUser(UserApp userApp);
 
-    User updateUser(User user);
+    UserApp updateUser(UserApp userApp);
 
     void deleteUser(Long userId);
 }

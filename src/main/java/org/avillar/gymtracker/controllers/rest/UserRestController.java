@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.controllers.rest;
 
 import org.avillar.gymtracker.model.dao.UserRepository;
-import org.avillar.gymtracker.model.entities.User;
+import org.avillar.gymtracker.model.entities.UserApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -22,18 +22,18 @@ public class UserRestController {
     }
 
     @GetMapping("/users/")
-    public List<User> getAllUsers() {
+    public List<UserApp> getAllUsers() {
         return userRepository.findAll();
     }
 
     @GetMapping("/users/{userId}")
-    public User getUsuario(@PathVariable final Long userId) {
+    public UserApp getUsuario(@PathVariable final Long userId) {
         return userRepository.getById(userId);
     }
 
     @PostMapping("/users/")
-    public User addUser(@RequestBody final User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public UserApp addUser(@RequestBody final UserApp userApp) {
+        userApp.setPassword(bCryptPasswordEncoder.encode(userApp.getPassword()));
+        return userRepository.save(userApp);
     }
 }

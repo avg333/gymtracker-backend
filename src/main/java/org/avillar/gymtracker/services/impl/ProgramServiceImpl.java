@@ -1,76 +1,123 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.exceptions.ResourceNotExistsException;
 import org.avillar.gymtracker.model.dao.ProgramRepository;
-import org.avillar.gymtracker.model.dto.ProgramListDto;
+import org.avillar.gymtracker.model.dto.ProgramDto;
 import org.avillar.gymtracker.model.entities.Program;
-import org.avillar.gymtracker.model.entities.User;
+import org.avillar.gymtracker.model.entities.UserApp;
+import org.avillar.gymtracker.services.LoginService;
 import org.avillar.gymtracker.services.ProgramService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
 
+    private static final String NOT_FOUND_ERROR_MSG = "El programa no existe";
+    private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
     private final ProgramRepository programRepository;
     private final ModelMapper modelMapper;
+    private final LoginService loginService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Autowired
-    public ProgramServiceImpl(ProgramRepository programRepository, ModelMapper modelMapper) {
+    public ProgramServiceImpl(ProgramRepository programRepository, ModelMapper modelMapper, LoginService loginService) {
         this.programRepository = programRepository;
         this.modelMapper = modelMapper;
+        this.loginService = loginService;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<ProgramListDto> getUserAllPrograms(final User user) {
-        final List<Program> programs = this.programRepository.findByUserOrderByNameAsc(user);
-        final List<ProgramListDto> programListDtos = new ArrayList<>(programs.size());
+    public List<ProgramDto> getUserAllProgramsWithVolume() {
+        final UserApp userApp = this.loginService.getLoggedUser();
+        final List<Program> programs = this.programRepository.findByUserAppOrderByNameAsc(userApp);
+        final List<ProgramDto> programDtos = new ArrayList<>(programs.size());
 
         for (final Program program : programs) {
-            final ProgramListDto programListDto = this.modelMapper.map(program, ProgramListDto.class);
-            programListDto.setSessionNumber(program.getSessions().size());
-            programListDtos.add(programListDto);
+            final ProgramDto programDto = this.modelMapper.map(program, ProgramDto.class);
+            programDto.setSessionNumber(program.getSessions().size());
+            programDtos.add(programDto);
         }
 
-        return programListDtos;
+        return programDtos;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public Program getProgram(final Long programId) throws ResourceNotExistsException {
-        return this.programRepository.findById(programId).orElseThrow(() -> new ResourceNotExistsException("No existe el programa"));
+    public ProgramDto getProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
+        final Program program = this.programRepository.findById(programId).orElseThrow(() ->
+                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.perteneceAlUsuarioLogeado(program);
+        return this.modelMapper.map(program, ProgramDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public Program createProgram(final Program program) {
-        program.setId(null);
-        return this.programRepository.save(program);
-    }
-
-    @Override
-    @Transactional
-    public Program updateProgram(Long programId, Program program) throws ResourceNotExistsException {
-        if (!this.programRepository.existsById(programId)) {
-            throw new ResourceNotExistsException("El programa no existe");
+    public ProgramDto createProgram(final ProgramDto programDto) {
+        if (programDto.getId() != null && this.programRepository.existsById(programDto.getId())) {
+            programDto.setId(null);
         }
-
-        program.setId(programId);
-        return this.programRepository.save(program);
+        final Program program = this.modelMapper.map(programDto, Program.class);
+        program.setUserApp(this.loginService.getLoggedUser());
+        return this.modelMapper.map(this.programRepository.save(program), ProgramDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
-    public void deleteProgram(Long programId) throws ResourceNotExistsException {
-        if (!this.programRepository.existsById(programId)) {
-            throw new ResourceNotExistsException("El programa no existe");
+    public ProgramDto updateProgram(ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException {
+        final Program programDb;
+
+        if (programDto.getId() == null) {
+            throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
+        } else {
+            programDb = this.programRepository.findById(programDto.getId()).orElse(null);
+            if (programDb == null) {
+                throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
+            }
         }
+        this.perteneceAlUsuarioLogeado(programDb);
+        final Program program = this.modelMapper.map(programDto, Program.class);
+        program.setUserApp(programDb.getUserApp());
+        program.setSessions(programDb.getSessions());
+        //TODO Deberia actualizarse sin pisar los valores viejos de usuario y sesiones
+        return this.modelMapper.map(this.programRepository.save(program), ProgramDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void deleteProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
+        final Program program = this.programRepository.findById(programId).orElseThrow(() ->
+                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.perteneceAlUsuarioLogeado(program);
         this.programRepository.deleteById(programId);
+    }
+
+    private void perteneceAlUsuarioLogeado(final Program program) throws IllegalAccessException {
+        if (program.getUserApp() != null && !program.getUserApp().getId().equals(this.loginService.getLoggedUser().getId())) {
+            throw new IllegalAccessException(NO_PERMISSIONS);
+        }
     }
 }
