@@ -17,7 +17,6 @@ import java.util.List;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
-
     private static final String NOT_FOUND_ERROR_MSG = "El programa no existe";
     private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
     private final ProgramRepository programRepository;
@@ -59,8 +58,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional(readOnly = true)
     public ProgramDto getProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
-        final Program program = this.programRepository.findById(programId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Program program = this.programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.perteneceAlUsuarioLogeado(program);
         return this.modelMapper.map(program, ProgramDto.class);
     }
@@ -90,16 +88,13 @@ public class ProgramServiceImpl implements ProgramService {
         if (programDto.getId() == null) {
             throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
         } else {
-            programDb = this.programRepository.findById(programDto.getId()).orElse(null);
-            if (programDb == null) {
-                throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
-            }
+            programDb = this.programRepository.findById(programDto.getId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         }
         this.perteneceAlUsuarioLogeado(programDb);
         final Program program = this.modelMapper.map(programDto, Program.class);
         program.setUserApp(programDb.getUserApp());
         program.setSessions(programDb.getSessions());
-        //TODO Deberia actualizarse sin pisar los valores viejos de usuario y sesiones
+
         return this.modelMapper.map(this.programRepository.save(program), ProgramDto.class);
     }
 
@@ -109,10 +104,19 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional
     public void deleteProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
-        final Program program = this.programRepository.findById(programId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Program program = this.programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.perteneceAlUsuarioLogeado(program);
         this.programRepository.deleteById(programId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public void programExistsAndIsFromLoggedUser(final Long programId) throws EntityNotFoundException, IllegalAccessException {
+        final Program program = this.programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.perteneceAlUsuarioLogeado(program);
     }
 
     private void perteneceAlUsuarioLogeado(final Program program) throws IllegalAccessException {

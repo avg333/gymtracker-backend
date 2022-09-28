@@ -4,37 +4,43 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.Date;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.Set;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Session {
+@Entity
+public class Session extends BaseEntity {
 
-    private final Date createdAt = new Date();
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @NotBlank
     @Column(nullable = false)
     private String name;
     private String description;
+    @NotNull
     @Column(nullable = false)
-    private int sessionOrder;
+    private Integer sessionOrder;
+
     @ManyToOne
     @JoinColumn(name = "program_id")
     private Program program;
-    @OneToMany(mappedBy = "session", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
-    @BatchSize(size = 20)
-    private java.util.Set<Set> sets = new HashSet<>();
 
+    @OneToMany(mappedBy = "session", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<SetGroup> setGroups = new HashSet<>();
 
+    @Override
+    public String toString() {
+        return "Session{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", sessionOrder=" + sessionOrder +
+                ", program=" + program +
+                ", setGroups=" + setGroups +
+                "} " + super.toString();
+    }
 }

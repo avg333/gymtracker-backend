@@ -7,19 +7,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MuscleSubGroup {
+@Entity
+public class MuscleSubGroup extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     private String name;
     private String description;
 
@@ -30,6 +27,6 @@ public class MuscleSubGroup {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "muscleSubGroups")
-    private Set<Exercise> exercises = new LinkedHashSet<>();
+    private Set<Exercise> exercises = new HashSet<>();
 
 }

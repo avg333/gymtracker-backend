@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.model.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,15 +12,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserApp {
+@AllArgsConstructor
+@Entity
+public class UserApp extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     private String username;
     private String password;
     private String email;

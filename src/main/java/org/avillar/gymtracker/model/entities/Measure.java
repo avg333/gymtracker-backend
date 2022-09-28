@@ -1,30 +1,27 @@
 package org.avillar.gymtracker.model.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Measure {
+@AllArgsConstructor
+@Entity
+public class Measure extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
-    private Long id;
-
-
-    private Date date;
-    @Column(nullable = false)
+    private final Date date = new Date();
     private double height;
-    @Column(nullable = false)
     private double weight;
-    @Column(nullable = false)
     private double fatPercent;
 
     @ManyToOne(optional = false)

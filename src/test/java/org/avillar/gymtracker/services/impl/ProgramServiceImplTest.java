@@ -29,8 +29,9 @@ import static org.mockito.Mockito.when;
 class ProgramServiceImplTest {
 
     private static final long PROGRAM_ID = 0L;
-    private static final long USER_ID = 1L;
-    private static final long NOT_USER_ID = 2L;
+    private static final long NOT_PROGRAM_ID = 1L;
+    private static final long USER_ID = 2L;
+    private static final long NOT_USER_ID = 3L;
     private static final String NOT_FOUND_ERROR_MSG = "El programa no existe";
     private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
 
@@ -130,8 +131,20 @@ class ProgramServiceImplTest {
     void deleteProgram() {
         final Program program = getProgramWithUserId(PROGRAM_ID, NOT_USER_ID, 0);
         when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
-        Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.getProgram(PROGRAM_ID));
+        Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.deleteProgram(PROGRAM_ID));
         assertEquals(NO_PERMISSIONS, exception.getMessage());
+    }
+
+    @Test
+    void programExistsAndIsFromLoggedUser() {
+        final Program program = getProgramWithUserId(PROGRAM_ID, NOT_USER_ID, 0);
+        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.programExistsAndIsFromLoggedUser(PROGRAM_ID));
+        assertEquals(NO_PERMISSIONS, exception.getMessage());
+
+        when(programRepository.findById(NOT_PROGRAM_ID)).thenThrow(new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        exception = assertThrows(EntityNotFoundException.class, () -> this.programService.programExistsAndIsFromLoggedUser(NOT_PROGRAM_ID));
+        assertEquals(NOT_FOUND_ERROR_MSG, exception.getMessage());
     }
 
     private Program getProgramWithUserId(final Long programId, final Long userId, final int numberSessions) {

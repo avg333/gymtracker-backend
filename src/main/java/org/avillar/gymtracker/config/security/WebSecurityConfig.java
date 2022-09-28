@@ -4,6 +4,7 @@ import org.avillar.gymtracker.config.Url;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -41,25 +42,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(Url.LOGIN).permitAll()
-                .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/img/**", "/icon/**").permitAll()
-                .anyRequest().authenticated().and()
-
-                .formLogin()
-                .loginPage(Url.LOGIN)
-                .defaultSuccessUrl(Url.PROGRAMS, true)
-                .failureUrl(Url.LOGIN + "?error=true")
-                .permitAll()
-
-                .and()
-                .logout()
-                .logoutUrl(Url.LOGOUT)
-                .logoutSuccessUrl(Url.LOGIN + "?logout=true")
-                .invalidateHttpSession(true)
-                .permitAll();
+                .antMatchers("/api/auth/**","/resources/**", "/static/**", "/css/**", "/img/**", "/js/**", "/scss/**", "/vendor/**").permitAll()
+                .anyRequest().authenticated();
     }
 
     @Override
     public void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }

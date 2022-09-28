@@ -34,7 +34,6 @@ public class SetServiceImpl implements SetService {
     public Set createSet(Long programId, Long sessionId, Set set) {
         final Session session = new Session();
         session.setId(sessionId);
-        set.setSession(session);
         return this.setRepository.save(set);
     }
 
@@ -42,7 +41,6 @@ public class SetServiceImpl implements SetService {
     public Set updateSet(Long programId, Long sessionId, Long setId, Set set) {
         final Session session = new Session();
         session.setId(sessionId);
-        set.setSession(session);
         set.setId(setId);
         return this.setRepository.save(set);
     }

@@ -2,13 +2,14 @@ package org.avillar.gymtracker;
 
 import org.avillar.gymtracker.model.dao.*;
 import org.avillar.gymtracker.model.entities.*;
+import org.avillar.gymtracker.model.enums.ActivityLevelEnum;
+import org.avillar.gymtracker.model.enums.GenderEnum;
 import org.avillar.gymtracker.model.enums.LoadTypeEnum;
 import org.avillar.gymtracker.model.enums.ProgramLevelEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import java.util.List;
 
 @Component
 public class DataLoader implements ApplicationRunner {
-
 
     private final MuscleGroupRepository muscleGroupRepository;
     private final MuscleSubGroupRepository muscleSubGroupRepository;
@@ -40,41 +40,37 @@ public class DataLoader implements ApplicationRunner {
 
     public void run(ApplicationArguments args) {
         this.createExercises();
-        final UserApp user = new UserApp();
-        final String pass = "chema69";
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        user.setUsername("chema");
-        user.setName("Chema");
-        user.setLastNameFirst("Garcia");
-        user.setPassword(passwordEncoder.encode(pass));
+        final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
+                null, "Chema", "Garcia", "Romero", null,
+                GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null);
         userRepository.save(user);
         this.createPrograms(user);
     }
 
     private void createExercises() {
-        final MuscleGroup chest = new MuscleGroup(null, "chest", null, null, null);
-        final MuscleGroup lats = new MuscleGroup(null, "lats", null, null, null);
-        final MuscleGroup shoulders = new MuscleGroup(null, "shoulders", null, null, null);
-        final MuscleGroup lowerBack = new MuscleGroup(null, "lower back", null, null, null);
-        final MuscleGroup biceps = new MuscleGroup(null, "biceps", null, null, null);
-        final MuscleGroup triceps = new MuscleGroup(null, "triceps", null, null, null);
-        final MuscleGroup abs = new MuscleGroup(null, "abs", null, null, null);
-        final MuscleGroup glute = new MuscleGroup(null, "glute", null, null, null);
-        final MuscleGroup quadriceps = new MuscleGroup(null, "quadriceps", null, null, null);
-        final MuscleGroup hamstrings = new MuscleGroup(null, "hamstrings", null, null, null);
-        final MuscleGroup calves = new MuscleGroup(null, "calves", null, null, null);
+        final MuscleGroup chest = new MuscleGroup("chest", null, null, null);
+        final MuscleGroup lats = new MuscleGroup("lats", null, null, null);
+        final MuscleGroup shoulders = new MuscleGroup("shoulders", null, null, null);
+        final MuscleGroup lowerBack = new MuscleGroup("lower back", null, null, null);
+        final MuscleGroup biceps = new MuscleGroup("biceps", null, null, null);
+        final MuscleGroup triceps = new MuscleGroup("triceps", null, null, null);
+        final MuscleGroup abs = new MuscleGroup("abs", null, null, null);
+        final MuscleGroup glute = new MuscleGroup("glute", null, null, null);
+        final MuscleGroup quadriceps = new MuscleGroup("quadriceps", null, null, null);
+        final MuscleGroup hamstrings = new MuscleGroup("hamstrings", null, null, null);
+        final MuscleGroup calves = new MuscleGroup("calves", null, null, null);
         muscleGroupRepository.saveAll(Arrays.asList(chest, lats, shoulders, lowerBack, biceps, triceps, abs, glute,
                 quadriceps, hamstrings, calves));
 
-        final MuscleSubGroup chestUpper = new MuscleSubGroup(null, "upper", null, chest, null);
-        final MuscleSubGroup chestMiddle = new MuscleSubGroup(null, "middle", null, chest, null);
-        final MuscleSubGroup chestLower = new MuscleSubGroup(null, "lower", null, chest, null);
-        final MuscleSubGroup tricepsLateral = new MuscleSubGroup(null, "lateral", null, triceps, null);
-        final MuscleSubGroup tricepsLong = new MuscleSubGroup(null, "long", null, triceps, null);
-        final MuscleSubGroup tricepsMedial = new MuscleSubGroup(null, "medial", null, triceps, null);
-        final MuscleSubGroup shoulderAnterior = new MuscleSubGroup(null, "anterior", null, shoulders, null);
-        final MuscleSubGroup shoulderLateral = new MuscleSubGroup(null, "lateral", null, shoulders, null);
-        final MuscleSubGroup shoulderPosterior = new MuscleSubGroup(null, "posterior", null, shoulders, null);
+        final MuscleSubGroup chestUpper = new MuscleSubGroup("upper", null, chest, null);
+        final MuscleSubGroup chestMiddle = new MuscleSubGroup("middle", null, chest, null);
+        final MuscleSubGroup chestLower = new MuscleSubGroup("lower", null, chest, null);
+        final MuscleSubGroup tricepsLateral = new MuscleSubGroup("lateral", null, triceps, null);
+        final MuscleSubGroup tricepsLong = new MuscleSubGroup("long", null, triceps, null);
+        final MuscleSubGroup tricepsMedial = new MuscleSubGroup("medial", null, triceps, null);
+        final MuscleSubGroup shoulderAnterior = new MuscleSubGroup("anterior", null, shoulders, null);
+        final MuscleSubGroup shoulderLateral = new MuscleSubGroup("lateral", null, shoulders, null);
+        final MuscleSubGroup shoulderPosterior = new MuscleSubGroup("posterior", null, shoulders, null);
         muscleSubGroupRepository.saveAll(Arrays.asList(chestUpper, chestLower, chestMiddle, tricepsLateral, tricepsLong,
                 tricepsMedial, shoulderAnterior, shoulderLateral, shoulderPosterior));
 
@@ -95,34 +91,33 @@ public class DataLoader implements ApplicationRunner {
         exercises.add(new Exercise("elevaciones laterales con cable", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
         exercises.add(new Exercise("pajaros con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
         exercises.add(new Exercise("reverse pec deck", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
-
         exerciseRepository.saveAll(exercises);
     }
 
     public void createPrograms(UserApp user) {
-        final Program pushPullLegs = new Program(null, "Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, null, user);
-        final Program fullBody = new Program(null, "Full body", "Full body frec1", null, ProgramLevelEnum.EASY, null, user);
-        final Program weider = new Program(null, "Weider", "Weider frec1", null, ProgramLevelEnum.HARD, null, user);
+        final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, user, null);
+        final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, user, null);
+        final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, user, null);
         programRepository.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
-        final Session push = new Session(null, "Push", null, 1, pushPullLegs, null);
-        final Session pull = new Session(null, "Pull", null, 2, pushPullLegs, null);
-        final Session legs = new Session(null, "Legs", null, 3, pushPullLegs, null);
-        final Session reversePush = new Session(null, "Reverse push", null, 4, pushPullLegs, null);
-        final Session reversePull = new Session(null, "Reverse pull", null, 5, pushPullLegs, null);
+        final Session push = new Session("Push", null, 1, pushPullLegs, null);
+        final Session pull = new Session("Pull", null, 2, pushPullLegs, null);
+        final Session legs = new Session("Legs", null, 3, pushPullLegs, null);
+        final Session reversePush = new Session("Reverse push", null, 4, pushPullLegs, null);
+        final Session reversePull = new Session("Reverse pull", null, 5, pushPullLegs, null);
         final List<Session> sessions = new ArrayList<>(Arrays.asList(push, pull, legs, reversePush, reversePull));
 
-        final Session upperFirst = new Session(null, "Upper first", null, 1, fullBody, null);
-        final Session lowerFirst = new Session(null, "Lower first", null, 2, fullBody, null);
-        final Session upperSecond = new Session(null, "Upper second", null, 3, fullBody, null);
-        final Session lowerSecond = new Session(null, "Lower second", null, 4, fullBody, null);
+        final Session upperFirst = new Session("Upper first", null, 1, fullBody, null);
+        final Session lowerFirst = new Session("Lower first", null, 2, fullBody, null);
+        final Session upperSecond = new Session("Upper second", null, 3, fullBody, null);
+        final Session lowerSecond = new Session("Lower second", null, 4, fullBody, null);
         sessions.addAll(Arrays.asList(upperFirst, lowerFirst, upperSecond, lowerSecond));
 
-        final Session chest = new Session(null, "Chest", null, 1, weider, null);
-        final Session back = new Session(null, "Back", null, 2, weider, null);
-        final Session shoulder = new Session(null, "Shoulder", null, 3, weider, null);
-        final Session legs2 = new Session(null, "Legs", null, 4, weider, null);
-        final Session arms = new Session(null, "Arms", null, 5, weider, null);
+        final Session chest = new Session("Chest", null, 1, weider, null);
+        final Session back = new Session("Back", null, 2, weider, null);
+        final Session shoulder = new Session("Shoulder", null, 3, weider, null);
+        final Session legs2 = new Session("Legs", null, 4, weider, null);
+        final Session arms = new Session("Arms", null, 5, weider, null);
         sessions.addAll(Arrays.asList(chest, back, shoulder, legs2, arms));
 
         sessionRepository.saveAll(sessions);

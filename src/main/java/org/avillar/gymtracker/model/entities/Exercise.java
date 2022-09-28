@@ -14,11 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Exercise {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class Exercise extends BaseEntity{
     private String name;
     private String description;
     private Boolean unilateral = false;

@@ -1,20 +1,19 @@
 package org.avillar.gymtracker.model.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Set {
+@AllArgsConstructor
+@Entity
+public class Set extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     private String description;
     private int reps;
     private double rir;
@@ -24,8 +23,9 @@ public class Set {
     @ManyToOne
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
-    @ManyToOne
-    @JoinColumn(name = "session_id")
-    private Session session;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "set_group_id", nullable = false)
+    private SetGroup setGroup;
 
 }
