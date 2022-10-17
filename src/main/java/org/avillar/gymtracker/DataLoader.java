@@ -12,10 +12,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class DataLoader implements ApplicationRunner {
@@ -26,16 +23,18 @@ public class DataLoader implements ApplicationRunner {
     private final ProgramRepository programRepository;
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
+    private final SetGroupRepository setGroupRepository;
 
     @Autowired
     public DataLoader(MuscleGroupRepository muscleGroupRepository, MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository,
-                      ProgramRepository programRepository, SessionRepository sessionRepository, UserRepository userRepository) {
+                      ProgramRepository programRepository, SessionRepository sessionRepository, UserRepository userRepository, SetGroupRepository setGroupRepository) {
         this.muscleGroupRepository = muscleGroupRepository;
         this.muscleSubGroupRepository = muscleSubGroupRepository;
         this.exerciseRepository = exerciseRepository;
         this.programRepository = programRepository;
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
+        this.setGroupRepository = setGroupRepository;
     }
 
     public void run(ApplicationArguments args) {
@@ -45,6 +44,7 @@ public class DataLoader implements ApplicationRunner {
                 GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null);
         userRepository.save(user);
         this.createPrograms(user);
+        this.crearSets();
     }
 
     private void createExercises() {
@@ -94,32 +94,47 @@ public class DataLoader implements ApplicationRunner {
         exerciseRepository.saveAll(exercises);
     }
 
-    public void createPrograms(UserApp user) {
+    private void createPrograms(UserApp user) {
         final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, user, null);
         final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, user, null);
         final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, user, null);
         programRepository.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
-        final Session push = new Session("Push", null, 1, pushPullLegs, null);
-        final Session pull = new Session("Pull", null, 2, pushPullLegs, null);
-        final Session legs = new Session("Legs", null, 3, pushPullLegs, null);
-        final Session reversePush = new Session("Reverse push", null, 4, pushPullLegs, null);
-        final Session reversePull = new Session("Reverse pull", null, 5, pushPullLegs, null);
+        final Session push = new Session("Push", null, 0, pushPullLegs, null);
+        final Session pull = new Session("Pull", null, 1, pushPullLegs, null);
+        final Session legs = new Session("Legs", null, 2, pushPullLegs, null);
+        final Session reversePush = new Session("Reverse push", null, 3, pushPullLegs, null);
+        final Session reversePull = new Session("Reverse pull", null, 4, pushPullLegs, null);
         final List<Session> sessions = new ArrayList<>(Arrays.asList(push, pull, legs, reversePush, reversePull));
 
-        final Session upperFirst = new Session("Upper first", null, 1, fullBody, null);
-        final Session lowerFirst = new Session("Lower first", null, 2, fullBody, null);
-        final Session upperSecond = new Session("Upper second", null, 3, fullBody, null);
-        final Session lowerSecond = new Session("Lower second", null, 4, fullBody, null);
+        final Session upperFirst = new Session("Upper first", null, 0, fullBody, null);
+        final Session lowerFirst = new Session("Lower first", null, 1, fullBody, null);
+        final Session upperSecond = new Session("Upper second", null, 2, fullBody, null);
+        final Session lowerSecond = new Session("Lower second", null, 3, fullBody, null);
         sessions.addAll(Arrays.asList(upperFirst, lowerFirst, upperSecond, lowerSecond));
 
-        final Session chest = new Session("Chest", null, 1, weider, null);
-        final Session back = new Session("Back", null, 2, weider, null);
-        final Session shoulder = new Session("Shoulder", null, 3, weider, null);
-        final Session legs2 = new Session("Legs", null, 4, weider, null);
-        final Session arms = new Session("Arms", null, 5, weider, null);
+        final Session chest = new Session("Chest", null, 0, weider, null);
+        final Session back = new Session("Back", null, 1, weider, null);
+        final Session shoulder = new Session("Shoulder", null, 2, weider, null);
+        final Session legs2 = new Session("Legs", null, 3, weider, null);
+        final Session arms = new Session("Arms", null, 4, weider, null);
         sessions.addAll(Arrays.asList(chest, back, shoulder, legs2, arms));
 
         sessionRepository.saveAll(sessions);
+    }
+
+    private void crearSets(){
+        final List<Exercise> exercises = this.exerciseRepository.findAll();
+        final List<Session> sessions = this.sessionRepository.findAll();
+        final List<SetGroup> setGroups = new ArrayList<>();
+
+        for(final Session session: sessions){
+            for (int i = 0; i < 5; i++) {
+                int rnd = new Random().nextInt(exercises.size() - 1);
+                final SetGroup setGroup = new SetGroup("Descripcion" + rnd, i, exercises.get(rnd), session, null);
+                setGroups.add(setGroup);
+            }
+        }
+        this.setGroupRepository.saveAll(setGroups);
     }
 }

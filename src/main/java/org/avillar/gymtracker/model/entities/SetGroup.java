@@ -15,11 +15,17 @@ import java.util.HashSet;
 @Entity
 public class SetGroup extends BaseEntity {
 
+    @Column()
+    private String description;
+
     @Column(nullable = false)
-    private int setGroupOrder;
+    private Integer setGroupOrder;
 
     @ManyToOne
-    @JoinColumn(name = "session_id", unique = true)
+    @JoinColumn(name = "exercise_id")
+    private Exercise exercise;
+    @ManyToOne
+    @JoinColumn(name = "session_id")
     private Session session;
 
     @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true)

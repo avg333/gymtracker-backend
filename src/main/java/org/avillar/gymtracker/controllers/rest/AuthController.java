@@ -1,5 +1,7 @@
 package org.avillar.gymtracker.controllers.rest;
 
+import org.avillar.gymtracker.config.security.MyUserDetails;
+import org.avillar.gymtracker.config.security.jwt.JwtUtils;
 import org.avillar.gymtracker.model.dto.UserAppDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<Void> login(@RequestBody final UserAppDto userAppDto) {
+    public ResponseEntity<UserAppDto> login(@RequestBody final UserAppDto userAppDto) {
         final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userAppDto.getUsername(), userAppDto.getPassword());
         final Authentication authentication = this.authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return ResponseEntity.ok().build();
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(new UserAppDto(this.jwtUtils.generateJwtToken(authentication), userDetails.getUsername(), null, null));
     }
 
     @PostMapping("/signout")

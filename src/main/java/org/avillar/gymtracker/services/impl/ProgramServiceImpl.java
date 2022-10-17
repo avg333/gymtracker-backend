@@ -69,6 +69,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional
     public ProgramDto createProgram(final ProgramDto programDto) {
+        //TODO Generar excepcion si ya tiene un ID
         if (programDto.getId() != null && this.programRepository.existsById(programDto.getId())) {
             programDto.setId(null);
         }
@@ -93,7 +94,6 @@ public class ProgramServiceImpl implements ProgramService {
         this.perteneceAlUsuarioLogeado(programDb);
         final Program program = this.modelMapper.map(programDto, Program.class);
         program.setUserApp(programDb.getUserApp());
-        program.setSessions(programDb.getSessions());
 
         return this.modelMapper.map(this.programRepository.save(program), ProgramDto.class);
     }
