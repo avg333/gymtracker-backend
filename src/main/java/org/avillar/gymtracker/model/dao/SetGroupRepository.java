@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface SetGroupRepository  extends JpaRepository<SetGroup, Long> {
 
-    List<SetGroup> findBySessionOrderBySetGroupOrder(Session session);
+    List<SetGroup> findBySessionOrderBySetGroupOrderAsc(Session session);
 }

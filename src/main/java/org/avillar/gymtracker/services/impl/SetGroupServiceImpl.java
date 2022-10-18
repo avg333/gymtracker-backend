@@ -38,7 +38,7 @@ public class SetGroupServiceImpl implements SetGroupService {
     public List<SetGroupDto> getAllSessionSetGroups(Long sessionId) throws IllegalAccessException {
         final SessionDto sessionDto = this.sessionService.getSession(sessionId);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrder(session);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
         final List<SetGroupDto> setGroupDtos = new ArrayList<>(setGroups.size());
 
         for (final SetGroup setGroup : setGroups) {
@@ -62,8 +62,8 @@ public class SetGroupServiceImpl implements SetGroupService {
         final Session session = this.modelMapper.map(sessionDto, Session.class);
 
         final SetGroup setGroup =  this.modelMapper.map(setGroupDto, SetGroup.class);
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrder(session);
-        if (setGroup.getSetGroupOrder() == null || setGroup.getSetGroupOrder() > setGroups.size()) {
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
+        if (setGroup.getSetGroupOrder() == null || setGroup.getSetGroupOrder() > setGroups.size() || setGroup.getSetGroupOrder() < 0) {
             setGroup.setSetGroupOrder(setGroups.size());
             this.setGroupRepository.save(setGroup);
         } else {
@@ -105,7 +105,7 @@ public class SetGroupServiceImpl implements SetGroupService {
 
 
     private void reorderAllSessionSetGroupsAfterDelete(final Session session, final int sessionPosition) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrder(session);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }
@@ -121,7 +121,7 @@ public class SetGroupServiceImpl implements SetGroupService {
 
     
     private void reorderAllSessionSetGroupsAfterUpdate(final Session session, final SetGroup newSetGroup, int oldPosition) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrder(session);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }
@@ -148,7 +148,7 @@ public class SetGroupServiceImpl implements SetGroupService {
     
 
     private void reorderAllSessionSetGroupsAfterPost(final Session session, final SetGroup newSetGroup) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrder(session);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }

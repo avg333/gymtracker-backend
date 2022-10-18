@@ -20,10 +20,6 @@ public class Set extends BaseEntity{
     private int setOrder;
     private double weight;
 
-    @ManyToOne
-    @JoinColumn(name = "exercise_id")
-    private Exercise exercise;
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "set_group_id", nullable = false)
     private SetGroup setGroup;

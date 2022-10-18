@@ -48,8 +48,8 @@ public class SessionServiceImpl implements SessionService {
             int sets = 0;
 
             for (final SetGroup setGroup : session.getSetGroups()) {
+                exerciseIds.add(setGroup.getExercise().getId());
                 for (final org.avillar.gymtracker.model.entities.Set set : setGroup.getSets()) {
-                    exerciseIds.add(set.getExercise().getId());
                     if (set.getRir() <= 3) {
                         sets++;
                     }
@@ -89,7 +89,7 @@ public class SessionServiceImpl implements SessionService {
         session.setProgram(program);
 
         final List<Session> sessions = this.sessionRepository.findByProgramOrderBySessionOrder(program);
-        if (session.getSessionOrder() == null || session.getSessionOrder() > sessions.size()) {
+        if (session.getSessionOrder() == null || session.getSessionOrder() > sessions.size() || session.getSessionOrder() < 0) {
             session.setSessionOrder(sessions.size());
             this.sessionRepository.save(session);
         } else {
