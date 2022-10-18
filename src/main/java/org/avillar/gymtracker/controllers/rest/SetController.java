@@ -1,59 +1,50 @@
 package org.avillar.gymtracker.controllers.rest;
 
 import org.avillar.gymtracker.model.dto.SetDto;
-import org.avillar.gymtracker.model.entities.Set;
 import org.avillar.gymtracker.services.SetService;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/programs")
+@RequestMapping("/api/")
 public class SetController {
 
     private final SetService setService;
-    private final ModelMapper modelMapper;
 
-    public SetController(SetService setService, ModelMapper modelMapper) {
+    @Autowired
+    public SetController(SetService setService) {
         this.setService = setService;
-        this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/{programId}/session/{sessionId}/set")
-    public ResponseEntity<List<SetDto>> getAllSessionSets(@PathVariable final Long programId, @PathVariable final Long sessionId) {
-        final List<Set> sets = this.setService.getAllSessionSets(programId, sessionId);
-        final TypeToken<List<SetDto>> typeToken = new TypeToken<>() {
-        };
-        return ResponseEntity.ok(this.modelMapper.map(sets, typeToken.getType()));
+    @GetMapping("setGroups/{setGroupId}/sets")
+    public ResponseEntity<List<SetDto>> getAllSetGroupSets(@PathVariable final Long setGroupId) throws IllegalAccessException {
+        return ResponseEntity.ok(this.setService.getAllSetGroupSets(setGroupId));
     }
 
-    @GetMapping("/{programId}/session/{sessionId}/set/{setId}")
-    public ResponseEntity<SetDto> getSessionSet(@PathVariable final Long programId, @PathVariable final Long sessionId, @PathVariable final Long setId) {
-        final Set set = this.setService.getSessionSet(programId, sessionId, setId);
-        return new ResponseEntity<>(modelMapper.map(set, SetDto.class), HttpStatus.OK);
+    @GetMapping("sets/{setId}")
+    public ResponseEntity<SetDto> getSet(@PathVariable final Long setId) throws IllegalAccessException {
+        return ResponseEntity.ok(this.setService.getSet(setId));
     }
 
-    @PostMapping("/{programId}/session/{sessionId}/set")
-    public ResponseEntity<SetDto> addSetToSession(@PathVariable final Long programId, @PathVariable final Long sessionId, @RequestBody final SetDto setDto) {
-        final Set setInput = this.modelMapper.map(setDto, Set.class);
-        final Set set = this.setService.createSet(programId, sessionId, setInput);
-        return ResponseEntity.ok(this.modelMapper.map(set, SetDto.class));
+    @PostMapping("sets")
+    public ResponseEntity<SetDto> postSet(@RequestBody final SetDto setDto) throws IllegalAccessException {
+        return ResponseEntity.ok(this.setService.createSet(setDto));
     }
 
-    @PutMapping("/{programId}/session/{sessionId}/set/{setId}")
-    public ResponseEntity<SetDto> updateSet(@PathVariable final Long programId, @PathVariable final Long sessionId, @PathVariable final Long setId, @RequestBody final SetDto setDto) {
-        final Set setInput = this.modelMapper.map(setDto, Set.class);
-        final Set set = this.setService.updateSet(programId, sessionId, setId, setInput);
-        return ResponseEntity.ok(this.modelMapper.map(set, SetDto.class));
+    @PutMapping("sets/{setId}")
+    public ResponseEntity<SetDto> updateSet(@PathVariable final Long setId, @RequestBody final SetDto setDto) throws IllegalAccessException {
+        if (!setId.equals(setDto.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(this.setService.updateSet(setDto));
     }
 
-    @DeleteMapping("/{programId}/session/{sessionId}/set/{setId}")
-    public ResponseEntity<Void> deleteSet(@PathVariable final Long programId, @PathVariable final Long sessionId, @PathVariable final Long setId) {
-        this.setService.deleteSet(programId, sessionId, setId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @DeleteMapping("sets/{setId}")
+    public ResponseEntity<Void> deleteSet(@PathVariable final Long setId) throws IllegalAccessException {
+        this.setService.deleteSet(setId);
+        return ResponseEntity.ok().build();
     }
 }

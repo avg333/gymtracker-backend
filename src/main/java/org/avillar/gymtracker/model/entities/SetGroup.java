@@ -19,7 +19,7 @@ public class SetGroup extends BaseEntity {
     private String description;
 
     @Column(nullable = false)
-    private Integer setGroupOrder;
+    private Integer listOrder;
 
     @ManyToOne
     @JoinColumn(name = "exercise_id")

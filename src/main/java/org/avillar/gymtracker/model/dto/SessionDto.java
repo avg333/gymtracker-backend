@@ -18,7 +18,7 @@ public class SessionDto {
     private String description;
     @Positive
     private Long idProgram;
-    private int sessionOrder;
+    private int listOrder;
 
     private int exercisesNumber;
     private int setsNumber;

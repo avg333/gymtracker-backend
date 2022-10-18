@@ -39,7 +39,7 @@ public class SessionServiceImpl implements SessionService {
         this.programService.programExistsAndIsFromLoggedUser(programId);
         final Program program = new Program();
         program.setId(programId);
-        final List<Session> sessions = this.sessionRepository.findByProgramOrderBySessionOrder(program);
+        final List<Session> sessions = this.sessionRepository.findByProgramOrderByListOrder(program);
         final List<SessionDto> sessionDtos = new ArrayList<>(sessions.size());
 
         for (final Session session : sessions) {
@@ -88,9 +88,9 @@ public class SessionServiceImpl implements SessionService {
         program.setId(sessionDto.getIdProgram());
         session.setProgram(program);
 
-        final List<Session> sessions = this.sessionRepository.findByProgramOrderBySessionOrder(program);
-        if (session.getSessionOrder() == null || session.getSessionOrder() > sessions.size() || session.getSessionOrder() < 0) {
-            session.setSessionOrder(sessions.size());
+        final List<Session> sessions = this.sessionRepository.findByProgramOrderByListOrder(program);
+        if (session.getListOrder() == null || session.getListOrder() > sessions.size() || session.getListOrder() < 0) {
+            session.setListOrder(sessions.size());
             this.sessionRepository.save(session);
         } else {
             this.sessionRepository.save(session);
@@ -114,7 +114,7 @@ public class SessionServiceImpl implements SessionService {
         this.programService.programExistsAndIsFromLoggedUser(sessionDb.getProgram().getId());
         final Session session = this.modelMapper.map(sessionDto, Session.class);
 
-        final int oldPosition = sessionDb.getSessionOrder();
+        final int oldPosition = sessionDb.getListOrder();
         this.sessionRepository.save(session);
         this.reorderAllProgramSessionsAfterUpdate(sessionDb.getProgram(), session, oldPosition);
 
@@ -131,21 +131,21 @@ public class SessionServiceImpl implements SessionService {
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.programService.programExistsAndIsFromLoggedUser(session.getProgram().getId());
 
-        final Integer sessionPosition = session.getSessionOrder();
+        final Integer sessionPosition = session.getListOrder();
         this.sessionRepository.deleteById(sessionId);
 
         this.reorderAllProgramSessionsAfterDelete(session.getProgram(), sessionPosition);
     }
 
     private void reorderAllProgramSessionsAfterDelete(final Program program, final int sessionPosition) {
-        final List<Session> sessions = this.sessionRepository.findByProgramOrderBySessionOrder(program);
+        final List<Session> sessions = this.sessionRepository.findByProgramOrderByListOrder(program);
         if (sessions.isEmpty()) {
             return;
         }
 
         for (final Session sessionExistent : sessions) {
-            if (sessionExistent.getSessionOrder() > sessionPosition) {
-                sessionExistent.setSessionOrder(sessionExistent.getSessionOrder() - 1);
+            if (sessionExistent.getListOrder() > sessionPosition) {
+                sessionExistent.setListOrder(sessionExistent.getListOrder() - 1);
             }
         }
 
@@ -153,24 +153,24 @@ public class SessionServiceImpl implements SessionService {
     }
 
     private void reorderAllProgramSessionsAfterUpdate(final Program program, final Session newSession, int oldPosition) {
-        final List<Session> sessions = this.sessionRepository.findByProgramOrderBySessionOrder(program);
+        final List<Session> sessions = this.sessionRepository.findByProgramOrderByListOrder(program);
         if (sessions.isEmpty()) {
             return;
         }
 
-        final int newPosition = newSession.getSessionOrder();
-        if(newPosition == oldPosition){
+        final int newPosition = newSession.getListOrder();
+        if (newPosition == oldPosition) {
             return;
         }
 
         final int diferencia = oldPosition > newPosition ? 1 : -1;
         for (final Session sessionExistent : sessions) {
             if (!newSession.getId().equals(sessionExistent.getId())) {
-                final boolean esMismaPosicion = Objects.equals(newSession.getSessionOrder(), sessionExistent.getSessionOrder());
-                final boolean menorQueMaximo = sessionExistent.getSessionOrder() < Math.max(oldPosition, newPosition);
-                final boolean mayorQueMinimo = sessionExistent.getSessionOrder() > Math.min(oldPosition, newPosition);
+                final boolean esMismaPosicion = Objects.equals(newSession.getListOrder(), sessionExistent.getListOrder());
+                final boolean menorQueMaximo = sessionExistent.getListOrder() < Math.max(oldPosition, newPosition);
+                final boolean mayorQueMinimo = sessionExistent.getListOrder() > Math.min(oldPosition, newPosition);
                 if (esMismaPosicion || (menorQueMaximo && mayorQueMinimo)) {
-                    sessionExistent.setSessionOrder(sessionExistent.getSessionOrder() + diferencia);
+                    sessionExistent.setListOrder(sessionExistent.getListOrder() + diferencia);
                 }
             }
         }
@@ -179,15 +179,15 @@ public class SessionServiceImpl implements SessionService {
     }
 
     private void reorderAllProgramSessionsAfterPost(final Program program, final Session newSession) {
-        final List<Session> sessions = this.sessionRepository.findByProgramOrderBySessionOrder(program);
+        final List<Session> sessions = this.sessionRepository.findByProgramOrderByListOrder(program);
         if (sessions.isEmpty()) {
             return;
         }
 
         for (final Session sessionExistent : sessions) {
             if (!newSession.getId().equals(sessionExistent.getId()) &&
-                    newSession.getSessionOrder() <= sessionExistent.getSessionOrder()) {
-                sessionExistent.setSessionOrder(sessionExistent.getSessionOrder() + 1);
+                    newSession.getListOrder() <= sessionExistent.getListOrder()) {
+                sessionExistent.setListOrder(sessionExistent.getListOrder() + 1);
             }
         }
 

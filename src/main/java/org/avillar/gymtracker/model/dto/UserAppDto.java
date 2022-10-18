@@ -8,7 +8,7 @@ import lombok.Data;
 
 public class UserAppDto {
 
-    private final String type = "Bearer";
+    private static final String type = "Bearer";
     private String token;
     private String username;
     private String password;

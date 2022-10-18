@@ -5,16 +5,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.model.enums.LoadTypeEnum;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Exercise extends BaseEntity{
+public class Exercise extends BaseEntity {
     private String name;
     private String description;
     private Boolean unilateral = false;

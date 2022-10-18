@@ -38,7 +38,7 @@ public class SetGroupServiceImpl implements SetGroupService {
     public List<SetGroupDto> getAllSessionSetGroups(Long sessionId) throws IllegalAccessException {
         final SessionDto sessionDto = this.sessionService.getSession(sessionId);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
         final List<SetGroupDto> setGroupDtos = new ArrayList<>(setGroups.size());
 
         for (final SetGroup setGroup : setGroups) {
@@ -61,10 +61,10 @@ public class SetGroupServiceImpl implements SetGroupService {
         final SessionDto sessionDto = this.sessionService.getSession(setGroupDto.getIdSession());
         final Session session = this.modelMapper.map(sessionDto, Session.class);
 
-        final SetGroup setGroup =  this.modelMapper.map(setGroupDto, SetGroup.class);
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
-        if (setGroup.getSetGroupOrder() == null || setGroup.getSetGroupOrder() > setGroups.size() || setGroup.getSetGroupOrder() < 0) {
-            setGroup.setSetGroupOrder(setGroups.size());
+        final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
+        if (setGroup.getListOrder() == null || setGroup.getListOrder() > setGroups.size() || setGroup.getListOrder() < 0) {
+            setGroup.setListOrder(setGroups.size());
             this.setGroupRepository.save(setGroup);
         } else {
             this.setGroupRepository.save(setGroup);
@@ -84,7 +84,7 @@ public class SetGroupServiceImpl implements SetGroupService {
         this.programService.programExistsAndIsFromLoggedUser(setGroupDb.getSession().getProgram().getId());
         final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
 
-        final int oldPosition = setGroupDb.getSetGroupOrder();
+        final int oldPosition = setGroupDb.getListOrder();
         this.setGroupRepository.save(setGroup);
         this.reorderAllSessionSetGroupsAfterUpdate(setGroup.getSession(), setGroup, oldPosition);
 
@@ -97,7 +97,7 @@ public class SetGroupServiceImpl implements SetGroupService {
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.programService.programExistsAndIsFromLoggedUser(setGroup.getSession().getProgram().getId());
 
-        final int setGroupPosition = setGroup.getSetGroupOrder();
+        final int setGroupPosition = setGroup.getListOrder();
         this.setGroupRepository.deleteById(setGroupId);
 
         this.reorderAllSessionSetGroupsAfterDelete(setGroup.getSession(), setGroupPosition);
@@ -105,28 +105,28 @@ public class SetGroupServiceImpl implements SetGroupService {
 
 
     private void reorderAllSessionSetGroupsAfterDelete(final Session session, final int sessionPosition) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }
 
         for (final SetGroup setGroup : setGroups) {
-            if (setGroup.getSetGroupOrder() > sessionPosition) {
-                setGroup.setSetGroupOrder(setGroup.getSetGroupOrder() - 1);
+            if (setGroup.getListOrder() > sessionPosition) {
+                setGroup.setListOrder(setGroup.getListOrder() - 1);
             }
         }
 
         this.setGroupRepository.saveAll(setGroups);
     }
 
-    
+
     private void reorderAllSessionSetGroupsAfterUpdate(final Session session, final SetGroup newSetGroup, int oldPosition) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }
 
-        final int newPosition = newSetGroup.getSetGroupOrder();
+        final int newPosition = newSetGroup.getListOrder();
         if (newPosition == oldPosition) {
             return;
         }
@@ -134,29 +134,29 @@ public class SetGroupServiceImpl implements SetGroupService {
         final int diferencia = oldPosition > newPosition ? 1 : -1;
         for (final SetGroup setGroup : setGroups) {
             if (!newSetGroup.getId().equals(setGroup.getId())) {
-                final boolean esMismaPosicion = Objects.equals(newSetGroup.getSetGroupOrder(), setGroup.getSetGroupOrder());
-                final boolean menorQueMaximo = setGroup.getSetGroupOrder() < Math.max(oldPosition, newPosition);
-                final boolean mayorQueMinimo = setGroup.getSetGroupOrder() > Math.min(oldPosition, newPosition);
+                final boolean esMismaPosicion = Objects.equals(newSetGroup.getListOrder(), setGroup.getListOrder());
+                final boolean menorQueMaximo = setGroup.getListOrder() < Math.max(oldPosition, newPosition);
+                final boolean mayorQueMinimo = setGroup.getListOrder() > Math.min(oldPosition, newPosition);
                 if (esMismaPosicion || (menorQueMaximo && mayorQueMinimo)) {
-                    setGroup.setSetGroupOrder(setGroup.getSetGroupOrder() + diferencia);
+                    setGroup.setListOrder(setGroup.getListOrder() + diferencia);
                 }
             }
         }
 
         this.setGroupRepository.saveAll(setGroups);
     }
-    
+
 
     private void reorderAllSessionSetGroupsAfterPost(final Session session, final SetGroup newSetGroup) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderBySetGroupOrderAsc(session);
+        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }
 
         for (final SetGroup setGroup : setGroups) {
             if (!newSetGroup.getId().equals(setGroup.getId()) &&
-                    newSetGroup.getSetGroupOrder() <= setGroup.getSetGroupOrder()) {
-                setGroup.setSetGroupOrder(setGroup.getSetGroupOrder() + 1);
+                    newSetGroup.getListOrder() <= setGroup.getListOrder()) {
+                setGroup.setListOrder(setGroup.getListOrder() + 1);
             }
         }
 

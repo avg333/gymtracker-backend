@@ -7,7 +7,9 @@ import lombok.Setter;
 import org.avillar.gymtracker.model.enums.ActivityLevelEnum;
 import org.avillar.gymtracker.model.enums.GenderEnum;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class UserApp extends BaseEntity{
+public class UserApp extends BaseEntity {
 
     private String username;
     private String password;

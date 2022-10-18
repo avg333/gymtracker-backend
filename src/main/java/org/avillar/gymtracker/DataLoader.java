@@ -1,6 +1,7 @@
 package org.avillar.gymtracker;
 
 import org.avillar.gymtracker.model.dao.*;
+import org.avillar.gymtracker.model.entities.Set;
 import org.avillar.gymtracker.model.entities.*;
 import org.avillar.gymtracker.model.enums.ActivityLevelEnum;
 import org.avillar.gymtracker.model.enums.GenderEnum;
@@ -24,9 +25,10 @@ public class DataLoader implements ApplicationRunner {
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final SetGroupRepository setGroupRepository;
+    private final SetRepository setRepository;
 
     @Autowired
-    public DataLoader(MuscleGroupRepository muscleGroupRepository, MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository,
+    public DataLoader(SetRepository setRepository, MuscleGroupRepository muscleGroupRepository, MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository,
                       ProgramRepository programRepository, SessionRepository sessionRepository, UserRepository userRepository, SetGroupRepository setGroupRepository) {
         this.muscleGroupRepository = muscleGroupRepository;
         this.muscleSubGroupRepository = muscleSubGroupRepository;
@@ -35,6 +37,7 @@ public class DataLoader implements ApplicationRunner {
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
         this.setGroupRepository = setGroupRepository;
+        this.setRepository = setRepository;
     }
 
     public void run(ApplicationArguments args) {
@@ -123,18 +126,30 @@ public class DataLoader implements ApplicationRunner {
         sessionRepository.saveAll(sessions);
     }
 
-    private void crearSets(){
+    private void crearSets() {
         final List<Exercise> exercises = this.exerciseRepository.findAll();
         final List<Session> sessions = this.sessionRepository.findAll();
         final List<SetGroup> setGroups = new ArrayList<>();
 
-        for(final Session session: sessions){
+        for (final Session session : sessions) {
             for (int i = 0; i < 5; i++) {
                 int rnd = new Random().nextInt(exercises.size() - 1);
-                final SetGroup setGroup = new SetGroup("Descripcion" + rnd, i, exercises.get(rnd), session, null);
-                setGroups.add(setGroup);
+                setGroups.add(new SetGroup("Descripcion" + rnd, i, exercises.get(rnd), session, null));
             }
         }
         this.setGroupRepository.saveAll(setGroups);
+
+        final List<Set> sets = new ArrayList<>();
+        for (final SetGroup setGroup : setGroups) {
+            final int totalSeries = new Random().nextInt(1, 5);
+            for (int i = 0; i < totalSeries; i++) {
+                final int reps = new Random().nextInt(3, 15);
+                final int rir = new Random().nextInt(5, 10);
+                final double weight = Math.round((new Random().nextDouble(5, 100)) * 100.0) / 100.0;
+                sets.add(new Set("Descripcion", reps, rir, i, weight, setGroup));
+            }
+        }
+
+        setRepository.saveAll(sets);
     }
 }

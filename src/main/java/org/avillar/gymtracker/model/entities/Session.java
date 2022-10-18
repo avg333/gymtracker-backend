@@ -24,7 +24,7 @@ public class Session extends BaseEntity {
     private String description;
     @NotNull
     @Column(nullable = false)
-    private Integer sessionOrder;
+    private Integer listOrder;
 
     @ManyToOne
     @JoinColumn(name = "program_id")
@@ -38,7 +38,7 @@ public class Session extends BaseEntity {
         return "Session{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", sessionOrder=" + sessionOrder +
+                ", sessionOrder=" + listOrder +
                 ", program=" + program +
                 ", setGroups=" + setGroups +
                 "} " + super.toString();

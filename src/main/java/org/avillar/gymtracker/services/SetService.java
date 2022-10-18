@@ -1,18 +1,18 @@
 package org.avillar.gymtracker.services;
 
-import org.avillar.gymtracker.model.entities.Set;
+import org.avillar.gymtracker.model.dto.SetDto;
 
 import java.util.List;
 
 public interface SetService {
 
-    List<Set> getAllSessionSets(Long programId, Long sessionId);
+    List<SetDto> getAllSetGroupSets(Long setGroupId) throws IllegalAccessException;
 
-    Set getSessionSet(Long programId, Long sessionId, Long setId);
+    SetDto getSet(Long setId) throws IllegalAccessException;
 
-    Set createSet(Long programId, Long sessionId, Set set);
+    SetDto createSet(SetDto setDto) throws IllegalAccessException;
 
-    Set updateSet(Long programId, Long sessionId, Long setId, Set set);
+    SetDto updateSet(SetDto setDto) throws IllegalAccessException;
 
-    void deleteSet(Long programId, Long sessionId, Long setId);
+    void deleteSet(Long setGroupId) throws IllegalAccessException;
 }

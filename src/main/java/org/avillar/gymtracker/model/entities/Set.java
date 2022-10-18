@@ -5,19 +5,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Set extends BaseEntity{
+public class Set extends BaseEntity {
 
     private String description;
     private int reps;
     private double rir;
-    private int setOrder;
+    private Integer listOrder;
     private double weight;
 
     @ManyToOne(optional = false)

@@ -10,6 +10,7 @@ public class SetDto {
     private String description;
     private int reps;
     private double rir;
-    private int setOrder;
+    private int listOrder;
     private double weight;
+    private Long setGroupId;
 }

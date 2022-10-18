@@ -6,7 +6,7 @@ import lombok.Data;
 public class SetGroupDto {
     private Long id;
     private String description;
-    private int setGroupOrder;
+    private int listOrder;
     private Long idExercise;
     private Long idSession;
 }

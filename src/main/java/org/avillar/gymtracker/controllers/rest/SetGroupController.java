@@ -15,7 +15,7 @@ public class SetGroupController {
     private final SetGroupService setGroupService;
 
     @Autowired
-    public SetGroupController(SetGroupService setGroupService){
+    public SetGroupController(SetGroupService setGroupService) {
         this.setGroupService = setGroupService;
     }
 
