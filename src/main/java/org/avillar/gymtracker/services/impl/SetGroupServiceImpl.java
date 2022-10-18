@@ -1,10 +1,16 @@
 package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.model.dao.SetGroupRepository;
+import org.avillar.gymtracker.model.dao.SetRepository;
+import org.avillar.gymtracker.model.dto.ExerciseDto;
 import org.avillar.gymtracker.model.dto.SessionDto;
+import org.avillar.gymtracker.model.dto.SetDto;
 import org.avillar.gymtracker.model.dto.SetGroupDto;
+import org.avillar.gymtracker.model.entities.Exercise;
 import org.avillar.gymtracker.model.entities.Session;
+import org.avillar.gymtracker.model.entities.Set;
 import org.avillar.gymtracker.model.entities.SetGroup;
+import org.avillar.gymtracker.services.ExerciseService;
 import org.avillar.gymtracker.services.ProgramService;
 import org.avillar.gymtracker.services.SessionService;
 import org.avillar.gymtracker.services.SetGroupService;
@@ -24,14 +30,18 @@ public class SetGroupServiceImpl implements SetGroupService {
     private final SetGroupRepository setGroupRepository;
     private final ProgramService programService;
     private final SessionService sessionService;
+    private final ExerciseService exerciseService;
+    private final SetRepository setRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public SetGroupServiceImpl(SetGroupRepository setGroupRepository, ProgramService programService, SessionService sessionService, ModelMapper modelMapper) {
+    public SetGroupServiceImpl(SetGroupRepository setGroupRepository, SetRepository setRepository, ExerciseService exerciseService, ProgramService programService, SessionService sessionService, ModelMapper modelMapper) {
         this.programService = programService;
         this.setGroupRepository = setGroupRepository;
         this.sessionService = sessionService;
         this.modelMapper = modelMapper;
+        this.exerciseService = exerciseService;
+        this.setRepository = setRepository;
     }
 
     @Override
@@ -42,7 +52,17 @@ public class SetGroupServiceImpl implements SetGroupService {
         final List<SetGroupDto> setGroupDtos = new ArrayList<>(setGroups.size());
 
         for (final SetGroup setGroup : setGroups) {
-            setGroupDtos.add(this.modelMapper.map(setGroup, SetGroupDto.class));
+            final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
+            final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getIdExercise());
+            final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
+            setGroupDto.setExerciseDto(exerciseDto);
+            final List<Set> sets = this.setRepository.findBySetGroupOrderByListOrderAsc(setGroup);
+            final List<SetDto> setDtos = new ArrayList<>(sets.size());
+            for (final Set set : sets) {
+                setDtos.add(this.modelMapper.map(set, SetDto.class));
+            }
+            setGroupDto.setSetDtoList(setDtos);
+            setGroupDtos.add(setGroupDto);
         }
 
         return setGroupDtos;
@@ -53,7 +73,17 @@ public class SetGroupServiceImpl implements SetGroupService {
         final SetGroup setGroup = this.setGroupRepository.findById(setGroupId).orElseThrow(() ->
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.programService.programExistsAndIsFromLoggedUser(setGroup.getSession().getProgram().getId());
-        return this.modelMapper.map(setGroup, SetGroupDto.class);
+        final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
+        final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getIdExercise());
+        final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
+        setGroupDto.setExerciseDto(exerciseDto);
+        final List<Set> sets = this.setRepository.findBySetGroupOrderByListOrderAsc(setGroup);
+        final List<SetDto> setDtos = new ArrayList<>(sets.size());
+        for (final Set set : sets) {
+            setDtos.add(this.modelMapper.map(set, SetDto.class));
+        }
+        setGroupDto.setSetDtoList(setDtos);
+        return setGroupDto;
     }
 
     @Override
