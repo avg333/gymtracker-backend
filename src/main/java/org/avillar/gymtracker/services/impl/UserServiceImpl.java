@@ -1,8 +1,12 @@
 package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.model.dao.UserRepository;
+import org.avillar.gymtracker.model.dto.UserAppDto;
 import org.avillar.gymtracker.model.entities.UserApp;
 import org.avillar.gymtracker.services.UserService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,34 +15,40 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
-    public List<UserApp> getAllUsers() {
-        return this.userRepository.findAll();
+    public List<UserAppDto> getAllUsers() {
+        return this.userRepository.findAll().stream().map(userApp -> this.modelMapper.map(userApp, UserAppDto.class)).toList();
     }
 
     @Override
-    public UserApp getUser(final Long userId) {
-        return this.userRepository.getById(userId);
+    public UserAppDto getUser(final Long userId) {
+        return this.modelMapper.map(this.userRepository.getById(userId), UserAppDto.class);
     }
 
     @Override
-    public UserApp getUserByUsername(final String username) {
-        return this.userRepository.findByUsername(username);
+    public UserAppDto createUser(final UserAppDto userAppDto) {
+        userAppDto.setId(null);
+        userAppDto.setPassword(bCryptPasswordEncoder.encode(userAppDto.getPassword()));
+        final UserApp userApp = this.modelMapper.map(userAppDto, UserApp.class);
+        return this.modelMapper.map(this.userRepository.save(userApp), UserAppDto.class);
     }
 
     @Override
-    public UserApp createUser(final UserApp userApp) {
-        return this.userRepository.save(userApp);
-    }
-
-    @Override
-    public UserApp updateUser(final UserApp userApp) {
-        return this.userRepository.save(userApp);
+    public UserAppDto updateUser(final UserAppDto userAppDto) {
+        userAppDto.setPassword(bCryptPasswordEncoder.encode(userAppDto.getPassword()));
+        final UserApp userApp = this.modelMapper.map(userAppDto, UserApp.class);
+        return this.modelMapper.map(this.userRepository.save(userApp), UserAppDto.class);
     }
 
     @Override

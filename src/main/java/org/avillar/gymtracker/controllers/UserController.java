@@ -1,10 +1,9 @@
 package org.avillar.gymtracker.controllers;
 
-import org.avillar.gymtracker.model.dao.UserRepository;
-import org.avillar.gymtracker.model.entities.UserApp;
+import org.avillar.gymtracker.model.dto.UserAppDto;
+import org.avillar.gymtracker.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,29 +12,39 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository userRepository;
-
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("")
-    public List<UserApp> getAllUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<List<UserAppDto>> getAllUsers() {
+        return ResponseEntity.ok(this.userService.getAllUsers());
     }
 
     @GetMapping("/{userId}")
-    public UserApp getUsuario(@PathVariable final Long userId) {
-        return userRepository.getById(userId);
+    public ResponseEntity<UserAppDto> getUser(@PathVariable final Long userId) {
+        return ResponseEntity.ok(this.userService.getUser(userId));
     }
 
     @PostMapping("")
-    public ResponseEntity<UserApp> addUser(@RequestBody final UserApp userApp) {
-        userApp.setPassword(bCryptPasswordEncoder.encode(userApp.getPassword()));
-        return ResponseEntity.ok(userRepository.save(userApp));
+    public ResponseEntity<UserAppDto> addUser(@RequestBody final UserAppDto userAppDto) {
+        return ResponseEntity.ok(this.userService.createUser(userAppDto));
+    }
+
+    @PostMapping("/{userId}")
+    public ResponseEntity<UserAppDto> updateUser(@PathVariable final Long userId, @RequestBody final UserAppDto userAppDto) {
+        if (!userId.equals(userAppDto.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(this.userService.updateUser(userAppDto));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable final Long userId) {
+        this.userService.deleteUser(userId);
+        return ResponseEntity.ok().build();
     }
 }

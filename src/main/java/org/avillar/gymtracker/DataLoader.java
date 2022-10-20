@@ -45,14 +45,15 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
+        final Random random = new Random();
         this.createExercises();
         final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
                 null, "Chema", "Garcia", "Romero", null,
                 GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null, null);
         userRepository.save(user);
         this.createPrograms(user);
-        this.crearSets();
-        this.createMeasures(user);
+        this.crearSets(random);
+        this.createMeasures(user, random);
 
     }
 
@@ -133,12 +134,10 @@ public class DataLoader implements ApplicationRunner {
         sessionRepository.saveAll(sessions);
     }
 
-    private void crearSets() {
+    private void crearSets(final Random random) {
         final List<Exercise> exercises = this.exerciseRepository.findAll();
         final List<Session> sessions = this.sessionRepository.findAll();
         final List<SetGroup> setGroups = new ArrayList<>();
-
-        final Random random = new Random();
 
         for (final Session session : sessions) {
             for (int i = 0; i < 5; i++) {
@@ -162,8 +161,7 @@ public class DataLoader implements ApplicationRunner {
         setRepository.saveAll(sets);
     }
 
-    private void createMeasures(UserApp userApp) {
-        final Random random = new Random();
+    private void createMeasures(UserApp userApp, final Random random) {
         final List<Measure> measures = new ArrayList<>();
         String dt = "2022-10-10";  // Start date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -171,7 +169,7 @@ public class DataLoader implements ApplicationRunner {
         try {
             c.setTime(sdf.parse(dt));
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error al parsear");
         }// number of days to add
         for (int i = 0; i < 100; i++) {
             c.add(Calendar.DATE, 1);
