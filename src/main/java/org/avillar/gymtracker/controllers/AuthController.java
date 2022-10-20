@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.controllers.rest;
+package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.config.security.MyUserDetails;
 import org.avillar.gymtracker.config.security.jwt.JwtUtils;

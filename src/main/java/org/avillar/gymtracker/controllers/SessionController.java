@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.controllers.rest;
+package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.SessionDto;
 import org.avillar.gymtracker.services.SessionService;
@@ -10,12 +10,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class SessionRestController {
+public class SessionController {
 
     private final SessionService sessionService;
 
     @Autowired
-    public SessionRestController(SessionService sessionService) {
+    public SessionController(SessionService sessionService) {
         this.sessionService = sessionService;
     }
 

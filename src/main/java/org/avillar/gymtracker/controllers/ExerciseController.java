@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.controllers.rest;
+package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.ExerciseDto;
 import org.avillar.gymtracker.model.entities.Exercise;

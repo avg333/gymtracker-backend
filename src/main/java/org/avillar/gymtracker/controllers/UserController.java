@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.controllers.rest;
+package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dao.UserRepository;
 import org.avillar.gymtracker.model.entities.UserApp;
@@ -11,14 +11,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserRestController {
+public class UserController {
 
     private final UserRepository userRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserRestController(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserController(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }

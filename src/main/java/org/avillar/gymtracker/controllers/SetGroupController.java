@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.controllers.rest;
+package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.SetGroupDto;
 import org.avillar.gymtracker.services.SetGroupService;

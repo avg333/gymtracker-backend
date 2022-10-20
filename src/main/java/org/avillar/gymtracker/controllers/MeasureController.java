@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.controllers.rest;
+package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.MeasureDto;
 import org.avillar.gymtracker.services.MeasureService;

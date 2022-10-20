@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.controllers.rest;
+package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.enums.ActivityLevelEnum;
 import org.avillar.gymtracker.model.enums.LoadTypeEnum;

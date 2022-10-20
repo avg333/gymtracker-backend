@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.controllers.rest;
+package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.ProgramDto;
 import org.avillar.gymtracker.services.ProgramService;
@@ -11,12 +11,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/programs")
-public class ProgramRestController {
+public class ProgramController {
 
     private final ProgramService programService;
 
     @Autowired
-    public ProgramRestController(ProgramService programService) {
+    public ProgramController(ProgramService programService) {
         this.programService = programService;
     }
 
