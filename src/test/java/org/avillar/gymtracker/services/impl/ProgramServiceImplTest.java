@@ -60,7 +60,7 @@ class ProgramServiceImplTest {
                 getProgramWithUserId(PROGRAM_ID + 2, USER_ID, 0));
 
         when(this.programRepository.findByUserAppOrderByNameAsc(Mockito.any(UserApp.class))).thenReturn(programList);
-        final List<ProgramDto> programListDtos = this.programService.getUserAllProgramsWithVolume();
+        final List<ProgramDto> programListDtos = this.programService.getUserAllLoggedUserProgramsWithVolume();
 
         assertEquals(programList.size(), programListDtos.size());
         for (int i = 0; i < programList.size(); i++) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProgramService {
 
-    List<ProgramDto> getUserAllProgramsWithVolume();
+    List<ProgramDto> getUserAllLoggedUserProgramsWithVolume();
 
     /**
      * Devuelve el DTO de la entidad con el ID especificado

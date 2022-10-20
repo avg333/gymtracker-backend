@@ -64,7 +64,7 @@ public class SetServiceImpl implements SetService {
         final Set set = this.modelMapper.map(setDto, Set.class);
         final List<Set> sets = this.setRepository.findBySetGroupOrderByListOrderAsc(setGroup);
         if (set.getListOrder() == null || set.getListOrder() > sets.size() || set.getListOrder() < 0) {
-            setGroup.setListOrder(sets.size());
+            set.setListOrder(sets.size());
             this.setRepository.save(set);
         } else {
             this.setRepository.save(set);

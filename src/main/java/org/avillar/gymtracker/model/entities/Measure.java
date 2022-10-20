@@ -19,7 +19,7 @@ import java.util.Date;
 public class Measure extends BaseEntity {
 
     @Column(nullable = false)
-    private final Date date = new Date();
+    private Date date;
     private double height;
     private double weight;
     private double fatPercent;

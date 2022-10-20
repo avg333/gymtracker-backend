@@ -34,6 +34,10 @@ public class Program extends BaseEntity {
     @OneToMany(mappedBy = "program", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private Set<Session> sessions = new HashSet<>();
 
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
     @Override
     public String toString() {
         return "Program{" +

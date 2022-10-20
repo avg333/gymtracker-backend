@@ -2,6 +2,7 @@ package org.avillar.gymtracker.model.dto;
 
 import lombok.Data;
 import org.avillar.gymtracker.model.enums.ProgramLevelEnum;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -22,6 +23,8 @@ public class ProgramDto {
     private String url;
     @NotNull
     private ProgramLevelEnum level;
+
+    private MultipartFile image;
 
     private int sessionNumber;
     private Date createdAt;

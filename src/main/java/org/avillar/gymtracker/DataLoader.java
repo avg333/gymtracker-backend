@@ -13,6 +13,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
@@ -26,9 +28,10 @@ public class DataLoader implements ApplicationRunner {
     private final UserRepository userRepository;
     private final SetGroupRepository setGroupRepository;
     private final SetRepository setRepository;
+    private final MeasureRepository measureRepository;
 
     @Autowired
-    public DataLoader(SetRepository setRepository, MuscleGroupRepository muscleGroupRepository, MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository,
+    public DataLoader(MeasureRepository measureRepository, SetRepository setRepository, MuscleGroupRepository muscleGroupRepository, MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository,
                       ProgramRepository programRepository, SessionRepository sessionRepository, UserRepository userRepository, SetGroupRepository setGroupRepository) {
         this.muscleGroupRepository = muscleGroupRepository;
         this.muscleSubGroupRepository = muscleSubGroupRepository;
@@ -38,16 +41,19 @@ public class DataLoader implements ApplicationRunner {
         this.userRepository = userRepository;
         this.setGroupRepository = setGroupRepository;
         this.setRepository = setRepository;
+        this.measureRepository = measureRepository;
     }
 
     public void run(ApplicationArguments args) {
         this.createExercises();
         final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
                 null, "Chema", "Garcia", "Romero", null,
-                GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null);
+                GenderEnum.MALE, ActivityLevelEnum.EXTREME, null,null, null);
         userRepository.save(user);
         this.createPrograms(user);
         this.crearSets();
+        this.createMeasures(user);
+
     }
 
     private void createExercises() {
@@ -95,12 +101,13 @@ public class DataLoader implements ApplicationRunner {
         exercises.add(new Exercise("pajaros con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
         exercises.add(new Exercise("reverse pec deck", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
         exerciseRepository.saveAll(exercises);
+
     }
 
     private void createPrograms(UserApp user) {
-        final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, user, null);
-        final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, user, null);
-        final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, user, null);
+        final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, user, null, null);
+        final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, user, null, null);
+        final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, user, null, null);
         programRepository.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
         final Session push = new Session("Push", null, 0, pushPullLegs, null);
@@ -131,9 +138,11 @@ public class DataLoader implements ApplicationRunner {
         final List<Session> sessions = this.sessionRepository.findAll();
         final List<SetGroup> setGroups = new ArrayList<>();
 
+        final Random random = new Random();
+
         for (final Session session : sessions) {
             for (int i = 0; i < 5; i++) {
-                int rnd = new Random().nextInt(exercises.size() - 1);
+                int rnd = random.nextInt(exercises.size() - 1);
                 setGroups.add(new SetGroup("Descripcion" + rnd, i, exercises.get(rnd), session, null));
             }
         }
@@ -141,15 +150,35 @@ public class DataLoader implements ApplicationRunner {
 
         final List<Set> sets = new ArrayList<>();
         for (final SetGroup setGroup : setGroups) {
-            final int totalSeries = new Random().nextInt(1, 5);
+            final int totalSeries = random.nextInt(1, 5);
             for (int i = 0; i < totalSeries; i++) {
-                final int reps = new Random().nextInt(3, 15);
-                final int rir = new Random().nextInt(5, 10);
-                final double weight = Math.round((new Random().nextDouble(5, 100)) * 100.0) / 100.0;
+                final int reps = random.nextInt(3, 15);
+                final int rir = random.nextInt(5, 10);
+                final double weight = Math.round((random.nextDouble(5, 100)) * 100.0) / 100.0;
                 sets.add(new Set("Descripcion", reps, rir, i, weight, setGroup));
             }
         }
 
         setRepository.saveAll(sets);
+    }
+
+    private void createMeasures(UserApp userApp){
+        final Random random = new Random();
+        final List<Measure> measures = new ArrayList<>();
+        String dt = "2022-10-10";  // Start date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(sdf.parse(dt));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }// number of days to add
+        for (int i = 0; i < 100; i++) {
+            c.add(Calendar.DATE, 1);
+            final Measure measure = new Measure(c.getTime(), 185.0, random.nextDouble(80, 90), random.nextDouble(10, 15), userApp);
+            measures.add(measure);
+        }
+        this.measureRepository.saveAll(measures);
+
     }
 }

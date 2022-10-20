@@ -7,9 +7,7 @@ import lombok.Setter;
 import org.avillar.gymtracker.model.enums.ActivityLevelEnum;
 import org.avillar.gymtracker.model.enums.GenderEnum;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,6 +30,10 @@ public class UserApp extends BaseEntity {
     private GenderEnum gender;
 
     private ActivityLevelEnum activityLevel;
+
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
 
     @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)

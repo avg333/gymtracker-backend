@@ -22,7 +22,7 @@ public class ProgramRestController {
 
     @GetMapping("")
     public ResponseEntity<List<ProgramDto>> getAllPrograms() {
-        return ResponseEntity.ok(this.programService.getUserAllProgramsWithVolume());
+        return ResponseEntity.ok(this.programService.getUserAllLoggedUserProgramsWithVolume());
     }
 
     @GetMapping("/{programId}")
