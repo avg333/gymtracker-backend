@@ -7,6 +7,7 @@ import org.avillar.gymtracker.services.LoginService;
 import org.avillar.gymtracker.services.MeasureService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -26,12 +27,14 @@ public class MeasureServiceImpl implements MeasureService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MeasureDto> getAllLoggedUserMeasures() throws IllegalAccessException {
         final List<Measure> measures = this.measureRepository.findByUserAppOrderByDateDesc(this.loginService.getLoggedUser());
         return measures.stream().map(measure -> modelMapper.map(measure, MeasureDto.class)).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MeasureDto getMeasure(final Long measureId) throws IllegalAccessException {
         final Measure measure = this.measureRepository.getById(measureId);
         this.loginService.checkAccess(measure);
@@ -39,6 +42,7 @@ public class MeasureServiceImpl implements MeasureService {
     }
 
     @Override
+    @Transactional
     public MeasureDto createMeasure(final MeasureDto measureDto) {
         final Measure measure = this.modelMapper.map(measureDto, Measure.class);
         measure.setId(null);
@@ -47,6 +51,7 @@ public class MeasureServiceImpl implements MeasureService {
     }
 
     @Override
+    @Transactional
     public MeasureDto updateMeasure(final MeasureDto measureDto) throws IllegalAccessException {
         final Measure measureDb = this.measureRepository.findById(measureDto.getId()).orElseThrow(() ->
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
@@ -57,6 +62,7 @@ public class MeasureServiceImpl implements MeasureService {
     }
 
     @Override
+    @Transactional
     public void deleteMeasure(final Long measureId) throws IllegalAccessException {
         final Measure measure = this.measureRepository.findById(measureId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(measure);
