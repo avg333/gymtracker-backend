@@ -48,7 +48,7 @@ public class DataLoader implements ApplicationRunner {
         this.createExercises();
         final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
                 null, "Chema", "Garcia", "Romero", null,
-                GenderEnum.MALE, ActivityLevelEnum.EXTREME, null,null, null);
+                GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null, null);
         userRepository.save(user);
         this.createPrograms(user);
         this.crearSets();
@@ -162,7 +162,7 @@ public class DataLoader implements ApplicationRunner {
         setRepository.saveAll(sets);
     }
 
-    private void createMeasures(UserApp userApp){
+    private void createMeasures(UserApp userApp) {
         final Random random = new Random();
         final List<Measure> measures = new ArrayList<>();
         String dt = "2022-10-10";  // Start date

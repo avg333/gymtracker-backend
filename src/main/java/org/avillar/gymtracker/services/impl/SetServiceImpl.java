@@ -6,8 +6,6 @@ import org.avillar.gymtracker.model.dto.SetDto;
 import org.avillar.gymtracker.model.entities.Set;
 import org.avillar.gymtracker.model.entities.SetGroup;
 import org.avillar.gymtracker.services.LoginService;
-import org.avillar.gymtracker.services.ProgramService;
-import org.avillar.gymtracker.services.SetGroupService;
 import org.avillar.gymtracker.services.SetService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

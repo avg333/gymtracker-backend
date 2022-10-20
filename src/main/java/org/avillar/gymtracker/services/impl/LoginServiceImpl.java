@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginServiceImpl implements LoginService {
     private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
+
     @Override
     public UserApp getLoggedUser() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();

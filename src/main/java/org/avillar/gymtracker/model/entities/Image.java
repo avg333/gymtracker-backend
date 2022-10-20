@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Image  extends BaseEntity{
+public class Image extends BaseEntity {
 
     @Column
     private Byte[] image;
