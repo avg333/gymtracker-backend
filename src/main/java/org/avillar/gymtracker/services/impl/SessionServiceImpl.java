@@ -46,7 +46,7 @@ public class SessionServiceImpl implements SessionService {
         final List<Session> sessions = this.sessionRepository.findByProgramOrderByListOrder(program);
         final List<SessionDto> sessionDtos = new ArrayList<>(sessions.size());
         for (final Session session : sessions) {
-            SessionDto sessionDto = this.modelMapper.map(session, SessionDto.class);
+            final SessionDto sessionDto = this.modelMapper.map(session, SessionDto.class);
             final Set<Long> exerciseIds = new HashSet<>();
             int sets = 0;
             for (final SetGroup setGroup : session.getSetGroups()) {
@@ -71,8 +71,7 @@ public class SessionServiceImpl implements SessionService {
     @Override
     @Transactional(readOnly = true)
     public SessionDto getSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
-        final Session session = this.sessionRepository.findById(sessionId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Session session = this.sessionRepository.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(session.getProgram());
         return this.modelMapper.map(session, SessionDto.class);
     }
@@ -83,11 +82,10 @@ public class SessionServiceImpl implements SessionService {
     @Override
     @Transactional
     public SessionDto createSessionInProgram(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
-        final Program program = this.programRepository.findById(sessionDto.getIdProgram()).orElseThrow(()
+        final Program program = this.programRepository.findById(sessionDto.getProgramId()).orElseThrow(()
                 -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
-        session.setProgram(program);
 
         final int sessionsSize = this.sessionRepository.findByProgramOrderByListOrder(program).size();
         if (session.getListOrder() == null || session.getListOrder() > sessionsSize || session.getListOrder() < 0) {
@@ -107,8 +105,12 @@ public class SessionServiceImpl implements SessionService {
     @Override
     @Transactional
     public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
-        final Session sessionDb = this.sessionRepository.findById(sessionDto.getId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Session sessionDb = this.sessionRepository.findById(sessionDto.getId()).orElseThrow(()
+                -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(sessionDb.getProgram());
+        final Program program = this.programRepository.findById(sessionDto.getProgramId()).orElseThrow(()
+                -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
+        this.loginService.checkAccess(program);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
 
         final int oldPosition = sessionDb.getListOrder();

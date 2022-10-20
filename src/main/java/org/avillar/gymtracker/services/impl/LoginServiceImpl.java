@@ -38,7 +38,7 @@ public class LoginServiceImpl implements LoginService {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
 
-        if (program != null && userApp.equals(program.getUserApp())) {
+        if (program != null && !userApp.equals(program.getUserApp())) {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
     }

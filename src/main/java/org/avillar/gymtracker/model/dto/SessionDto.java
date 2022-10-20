@@ -17,7 +17,7 @@ public class SessionDto {
     @Size(max = 255)
     private String description;
     @Positive
-    private Long idProgram;
+    private Long programId;
     private int listOrder;
 
     private int exercisesNumber;

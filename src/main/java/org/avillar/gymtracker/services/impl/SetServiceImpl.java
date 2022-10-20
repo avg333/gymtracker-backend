@@ -1,65 +1,66 @@
 package org.avillar.gymtracker.services.impl;
 
+import org.avillar.gymtracker.model.dao.SetGroupRepository;
 import org.avillar.gymtracker.model.dao.SetRepository;
 import org.avillar.gymtracker.model.dto.SetDto;
-import org.avillar.gymtracker.model.dto.SetGroupDto;
 import org.avillar.gymtracker.model.entities.Set;
 import org.avillar.gymtracker.model.entities.SetGroup;
+import org.avillar.gymtracker.services.LoginService;
 import org.avillar.gymtracker.services.ProgramService;
 import org.avillar.gymtracker.services.SetGroupService;
 import org.avillar.gymtracker.services.SetService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class SetServiceImpl implements SetService {
+    private static final String NOT_FOUND_PARENT_ERROR_MSG = "El grupo de series no existe";
     private static final String NOT_FOUND_ERROR_MSG = "La serie no existe";
-    private final ProgramService programService;
     private final SetRepository setRepository;
-    private final SetGroupService setGroupService;
+    private final SetGroupRepository setGroupRepository;
     private final ModelMapper modelMapper;
+    private final LoginService loginService;
 
     @Autowired
-    public SetServiceImpl(SetRepository setRepository, ProgramService programService, SetGroupService setGroupService, ModelMapper modelMapper) {
-        this.programService = programService;
+    public SetServiceImpl(SetRepository setRepository, SetGroupRepository setGroupRepository,
+                          LoginService loginService, ModelMapper modelMapper) {
         this.setRepository = setRepository;
+        this.setGroupRepository = setGroupRepository;
         this.modelMapper = modelMapper;
-        this.setGroupService = setGroupService;
+        this.loginService = loginService;
     }
 
-
     @Override
+    @Transactional(readOnly = true)
     public List<SetDto> getAllSetGroupSets(final Long setGroupId) throws IllegalAccessException {
-        final SetGroupDto setGroupDto = this.setGroupService.getSetGroup(setGroupId);
-        final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
+        final SetGroup setGroup = this.setGroupRepository.findById(setGroupId).orElseThrow(() ->
+                new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
+        this.loginService.checkAccess(setGroup.getSession().getProgram());
         final List<Set> sets = this.setRepository.findBySetGroupOrderByListOrderAsc(setGroup);
-        final List<SetDto> setDtos = new ArrayList<>(sets.size());
-
-        for (final Set set : sets) {
-            setDtos.add(this.modelMapper.map(set, SetDto.class));
-        }
-
-        return setDtos;
+        return sets.stream().map(set -> this.modelMapper.map(set, SetDto.class)).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SetDto getSet(final Long setId) throws IllegalAccessException {
-        final Set set = this.setRepository.findById(setId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.programService.programExistsAndIsFromLoggedUser(set.getSetGroup().getSession().getProgram().getId());
+        final Set set = this.setRepository.findById(setId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(set.getSetGroup().getSession().getProgram());
         return this.modelMapper.map(set, SetDto.class);
     }
 
     @Override
-    public SetDto createSet(SetDto setDto) throws IllegalAccessException {
-        final SetGroupDto setGroupDto = this.setGroupService.getSetGroup(setDto.getSetGroupId());
-        final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
+    @Transactional
+    public SetDto createSet(final SetDto setDto) throws IllegalAccessException {
+        setDto.setId(null);
+        final SetGroup setGroup = this.setGroupRepository.findById(setDto.getSetGroupId()).orElseThrow(() ->
+                new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
+        this.loginService.checkAccess(setGroup.getSession().getProgram());
 
         final Set set = this.modelMapper.map(setDto, Set.class);
         final List<Set> sets = this.setRepository.findBySetGroupOrderByListOrderAsc(setGroup);
@@ -75,13 +76,15 @@ public class SetServiceImpl implements SetService {
     }
 
     @Override
-    public SetDto updateSet(SetDto setDto) throws IllegalAccessException {
-        if (setDto.getId() == null) {
-            throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
-        }
-        final Set setDb = this.setRepository.findById(setDto.getId()).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.programService.programExistsAndIsFromLoggedUser(setDb.getSetGroup().getSession().getProgram().getId());
+    @Transactional
+    public SetDto updateSet(final SetDto setDto) throws IllegalAccessException {
+        final Set setDb = this.setRepository.findById(setDto.getId()).orElseThrow(()
+                -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(setDb.getSetGroup().getSession().getProgram());
+        final SetGroup setGroup = this.setGroupRepository.findById(setDto.getSetGroupId()).orElseThrow(()
+                -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
+        this.loginService.checkAccess(setGroup.getSession().getProgram());
+
         final Set set = this.modelMapper.map(setDto, Set.class);
 
         final int oldPosition = set.getListOrder();
@@ -92,10 +95,10 @@ public class SetServiceImpl implements SetService {
     }
 
     @Override
-    public void deleteSet(Long setGroupId) throws IllegalAccessException {
-        final Set set = this.setRepository.findById(setGroupId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.programService.programExistsAndIsFromLoggedUser(set.getSetGroup().getSession().getProgram().getId());
+    @Transactional
+    public void deleteSet(final Long setGroupId) throws IllegalAccessException {
+        final Set set = this.setRepository.findById(setGroupId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(set.getSetGroup().getSession().getProgram());
 
         final int setGroupPosition = set.getListOrder();
         this.setRepository.deleteById(setGroupId);
@@ -144,7 +147,6 @@ public class SetServiceImpl implements SetService {
 
         this.setRepository.saveAll(sets);
     }
-
 
     private void reorderAllSetGroupsSetsAfterPost(final SetGroup setGroup, final Set newSet) {
         final List<Set> sets = this.setRepository.findBySetGroupOrderByListOrderAsc(setGroup);

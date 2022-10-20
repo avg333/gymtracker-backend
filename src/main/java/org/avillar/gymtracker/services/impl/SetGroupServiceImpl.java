@@ -92,9 +92,9 @@ public class SetGroupServiceImpl implements SetGroupService {
         final Session session = this.modelMapper.map(sessionDto, Session.class);
 
         final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
-        if (setGroup.getListOrder() == null || setGroup.getListOrder() > setGroups.size() || setGroup.getListOrder() < 0) {
-            setGroup.setListOrder(setGroups.size());
+        final int setGroupsSize = this.setGroupRepository.findBySessionOrderByListOrderAsc(session).size();
+        if (setGroup.getListOrder() == null || setGroup.getListOrder() > setGroupsSize || setGroup.getListOrder() < 0) {
+            setGroup.setListOrder(setGroupsSize);
             this.setGroupRepository.save(setGroup);
         } else {
             this.setGroupRepository.save(setGroup);
