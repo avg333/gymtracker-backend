@@ -49,11 +49,12 @@ public class DataLoader implements ApplicationRunner {
         this.createExercises();
         final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
                 null, "Chema", "Garcia", "Romero", null,
-                GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null, null);
+                GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null, null, null);
         userRepository.save(user);
         this.createPrograms(user);
         this.crearSets(random);
         this.createMeasures(user, random);
+        this.createSessions(user);
 
     }
 
@@ -111,24 +112,24 @@ public class DataLoader implements ApplicationRunner {
         final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, user, null, null);
         programRepository.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
-        final Session push = new Session("Push", null, 0, pushPullLegs, null);
-        final Session pull = new Session("Pull", null, 1, pushPullLegs, null);
-        final Session legs = new Session("Legs", null, 2, pushPullLegs, null);
-        final Session reversePush = new Session("Reverse push", null, 3, pushPullLegs, null);
-        final Session reversePull = new Session("Reverse pull", null, 4, pushPullLegs, null);
+        final Session push = new Session("Push", null, 0, new Date(), user, pushPullLegs, null);
+        final Session pull = new Session("Pull", null, 1, new Date(), user, pushPullLegs, null);
+        final Session legs = new Session("Legs", null, 2, new Date(), user, pushPullLegs, null);
+        final Session reversePush = new Session("Reverse push", null, 3, new Date(), user, pushPullLegs, null);
+        final Session reversePull = new Session("Reverse pull", null, 4, new Date(), user, pushPullLegs, null);
         final List<Session> sessions = new ArrayList<>(Arrays.asList(push, pull, legs, reversePush, reversePull));
 
-        final Session upperFirst = new Session("Upper first", null, 0, fullBody, null);
-        final Session lowerFirst = new Session("Lower first", null, 1, fullBody, null);
-        final Session upperSecond = new Session("Upper second", null, 2, fullBody, null);
-        final Session lowerSecond = new Session("Lower second", null, 3, fullBody, null);
+        final Session upperFirst = new Session("Upper first", null, 0, new Date(), user, fullBody, null);
+        final Session lowerFirst = new Session("Lower first", null, 1, new Date(), user, fullBody, null);
+        final Session upperSecond = new Session("Upper second", null, 2, new Date(), user, fullBody, null);
+        final Session lowerSecond = new Session("Lower second", null, 3, new Date(), user, fullBody, null);
         sessions.addAll(Arrays.asList(upperFirst, lowerFirst, upperSecond, lowerSecond));
 
-        final Session chest = new Session("Chest", null, 0, weider, null);
-        final Session back = new Session("Back", null, 1, weider, null);
-        final Session shoulder = new Session("Shoulder", null, 2, weider, null);
-        final Session legs2 = new Session("Legs", null, 3, weider, null);
-        final Session arms = new Session("Arms", null, 4, weider, null);
+        final Session chest = new Session("Chest", null, 0, new Date(), user, weider, null);
+        final Session back = new Session("Back", null, 1, new Date(), user, weider, null);
+        final Session shoulder = new Session("Shoulder", null, 2, new Date(), user, weider, null);
+        final Session legs2 = new Session("Legs", null, 3, new Date(), user, weider, null);
+        final Session arms = new Session("Arms", null, 4, new Date(), user, weider, null);
         sessions.addAll(Arrays.asList(chest, back, shoulder, legs2, arms));
 
         sessionRepository.saveAll(sessions);
@@ -178,5 +179,25 @@ public class DataLoader implements ApplicationRunner {
         }
         this.measureRepository.saveAll(measures);
 
+    }
+
+    private void createSessions(UserApp userApp){
+        final List<Session> sessions = new ArrayList<>();
+        String dt = "2022-10-20";  // Start date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(sdf.parse(dt));
+        } catch (ParseException e) {
+            throw new RuntimeException("Error al parsear");
+        }// number of days to add
+        for (int i = 0; i < 5; i++) {
+            c.add(Calendar.DATE, 1);
+            final Session session = new Session("Upper first", null, 0, c.getTime(), userApp, null, null);
+
+            sessions.add(session);
+        }
+
+        this.sessionRepository.saveAll(sessions);
     }
 }

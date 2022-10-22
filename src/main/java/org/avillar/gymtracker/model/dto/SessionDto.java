@@ -16,6 +16,8 @@ public class SessionDto {
     private String name;
     @Size(max = 255)
     private String description;
+    private Date date;
+    private Long userAppId;
     @Positive
     private Long programId;
     private int listOrder;

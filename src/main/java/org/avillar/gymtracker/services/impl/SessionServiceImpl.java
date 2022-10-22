@@ -44,6 +44,17 @@ public class SessionServiceImpl implements SessionService {
         final Program program = this.programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
         final List<Session> sessions = this.sessionRepository.findByProgramOrderByListOrder(program);
+        return this.getSessionsDtosWithVolume(sessions);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SessionDto> getAllNotProgramsLoggedUserSessionsWithData() {
+        final List<Session> sessions = this.sessionRepository.findByUserAppAndProgramIsNullOrderByDateDesc(this.loginService.getLoggedUser());
+        return this.getSessionsDtosWithVolume(sessions);
+    }
+
+    private List<SessionDto> getSessionsDtosWithVolume(List<Session> sessions) {
         final List<SessionDto> sessionDtos = new ArrayList<>(sessions.size());
         for (final Session session : sessions) {
             final SessionDto sessionDto = this.modelMapper.map(session, SessionDto.class);
@@ -72,8 +83,14 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     public SessionDto getSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionRepository.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.loginService.checkAccess(session.getProgram());
+        this.loginService.checkAccess(session);
         return this.modelMapper.map(session, SessionDto.class);
+    }
+
+    @Override
+    public List<SessionDto> getSessionByDate(Date date) throws EntityNotFoundException {
+        final List<Session> sessions = this.sessionRepository.findByDateAndUserAppAndProgramIsNullOrderByDateDesc(date,this.loginService.getLoggedUser());
+        return this.getSessionsDtosWithVolume(sessions);
     }
 
     /**
@@ -86,6 +103,8 @@ public class SessionServiceImpl implements SessionService {
                 -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
+        session.setDate(null);
+        session.setUserApp(this.loginService.getLoggedUser());
 
         final int sessionsSize = this.sessionRepository.findByProgramOrderByListOrder(program).size();
         if (session.getListOrder() == null || session.getListOrder() > sessionsSize || session.getListOrder() < 0) {
@@ -99,12 +118,22 @@ public class SessionServiceImpl implements SessionService {
         return this.modelMapper.map(session, SessionDto.class);
     }
 
+    @Override
+    @Transactional
+    public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException {
+        final Session session = this.modelMapper.map(sessionDto, Session.class);
+        session.setUserApp(this.loginService.getLoggedUser());
+        session.setListOrder(null);
+        return this.modelMapper.map(this.sessionRepository.save(session), SessionDto.class);
+    }
+
+
     /**
      * {@inheritDoc}
      */
     @Override
     @Transactional
-    public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
+    public SessionDto updateProgramSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
         final Session sessionDb = this.sessionRepository.findById(sessionDto.getId()).orElseThrow(()
                 -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(sessionDb.getProgram());
@@ -112,6 +141,9 @@ public class SessionServiceImpl implements SessionService {
                 -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
+        this.loginService.checkAccess(sessionDb);
+        session.setDate(null);
+        session.setUserApp(this.loginService.getLoggedUser());
 
         final int oldPosition = sessionDb.getListOrder();
         this.sessionRepository.save(session);
@@ -120,19 +152,45 @@ public class SessionServiceImpl implements SessionService {
         return this.modelMapper.map(session, SessionDto.class);
     }
 
+    @Override
+    @Transactional
+    public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
+        final Session sessionDb = this.sessionRepository.findById(sessionDto.getId()).orElseThrow(()
+                -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(sessionDb);
+        final Session session = this.modelMapper.map(sessionDto, Session.class);
+        session.setProgram(null);
+        session.setListOrder(null);
+        session.setUserApp(this.loginService.getLoggedUser());
+
+        return this.modelMapper.map(this.sessionRepository.save(session), SessionDto.class);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     @Transactional
-    public void deleteSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
+    public void deleteProgramSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionRepository.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.loginService.checkAccess(session.getProgram());
+        this.loginService.checkAccess(session);
 
         final Integer sessionPosition = session.getListOrder();
         this.sessionRepository.deleteById(sessionId);
 
         this.reorderAllProgramSessionsAfterDelete(session.getProgram(), sessionPosition);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
+        final Session session = this.sessionRepository.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        if(session.getProgram() != null){
+            this.deleteProgramSession(sessionId);
+        } else {
+            this.loginService.checkAccess(session);
+            this.sessionRepository.deleteById(sessionId);
+        }
     }
 
     private void reorderAllProgramSessionsAfterDelete(final Program program, final int sessionPosition) {

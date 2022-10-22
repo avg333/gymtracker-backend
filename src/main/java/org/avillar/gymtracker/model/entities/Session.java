@@ -7,7 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,9 +22,14 @@ public class Session extends BaseEntity {
     @Column(nullable = false)
     private String name;
     private String description;
-    @NotNull
-    @Column(nullable = false)
+
     private Integer listOrder;
+
+    private Date date;
+
+    @ManyToOne()
+    @JoinColumn(name = "user_app_id")
+    private UserApp userApp;
 
     @ManyToOne
     @JoinColumn(name = "program_id")

@@ -3,6 +3,7 @@ package org.avillar.gymtracker.services.impl;
 import org.avillar.gymtracker.config.security.MyUserDetails;
 import org.avillar.gymtracker.model.entities.Measure;
 import org.avillar.gymtracker.model.entities.Program;
+import org.avillar.gymtracker.model.entities.Session;
 import org.avillar.gymtracker.model.entities.UserApp;
 import org.avillar.gymtracker.services.LoginService;
 import org.springframework.security.core.Authentication;
@@ -40,6 +41,25 @@ public class LoginServiceImpl implements LoginService {
         }
 
         if (program != null && !userApp.equals(program.getUserApp())) {
+            throw new IllegalAccessException(NO_PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void checkAccess(Session session) throws IllegalAccessException {
+        if (session == null)
+            return;
+
+        final UserApp userApp = this.getLoggedUser();
+        if (userApp == null) {
+            throw new IllegalAccessException(NO_PERMISSIONS);
+        }
+
+        if (session.getUserApp() != null && !userApp.equals(session.getUserApp())) {
+            throw new IllegalAccessException(NO_PERMISSIONS);
+        }
+
+        if (session.getProgram() != null && !userApp.equals(session.getProgram().getUserApp())) {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
     }
