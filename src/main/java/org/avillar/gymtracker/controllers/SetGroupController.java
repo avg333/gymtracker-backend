@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class SetGroupController {
+    private static final String NOT_FOUND_ERROR_MSG = "El SetGroup no existe";
 
     private final SetGroupService setGroupService;
 

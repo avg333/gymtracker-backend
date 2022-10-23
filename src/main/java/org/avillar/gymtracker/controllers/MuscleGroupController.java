@@ -21,27 +21,19 @@ import java.util.List;
 public class MuscleGroupController {
 
     private final MuscleGroupService muscleGroupService;
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public MuscleGroupController(MuscleGroupService muscleGroupService, ModelMapper modelMapper) {
+    public MuscleGroupController(MuscleGroupService muscleGroupService) {
         this.muscleGroupService = muscleGroupService;
-        this.modelMapper = modelMapper;
     }
 
     @GetMapping("")
     public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups() {
-        final List<MuscleGroup> muscleGroups = this.muscleGroupService.getAllMuscleGroups();
-        final TypeToken<List<MuscleGroupDto>> typeToken = new TypeToken<>() {
-        };
-        return ResponseEntity.ok(modelMapper.map(muscleGroups, typeToken.getType()));
+        return ResponseEntity.ok(this.muscleGroupService.getAllMuscleGroups());
     }
 
     @GetMapping("/{muscleGroupId}/muscleSubGroups")
     public ResponseEntity<List<MuscleSubGroupDto>> getMuscleSubgroups(@PathVariable final Long muscleGroupId) {
-        final List<MuscleSubGroup> muscleSubGroups = this.muscleGroupService.getMuscleSubGroups(muscleGroupId);
-        final TypeToken<List<MuscleSubGroupDto>> typeToken = new TypeToken<>() {
-        };
-        return ResponseEntity.ok(modelMapper.map(muscleSubGroups, typeToken.getType()));
+        return ResponseEntity.ok(this.muscleGroupService.getAllMuscleGroupMuscleSubGroups(muscleGroupId));
     }
 }
