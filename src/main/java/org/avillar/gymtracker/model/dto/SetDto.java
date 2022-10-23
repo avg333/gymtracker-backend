@@ -5,12 +5,11 @@ import lombok.Data;
 
 @Data
 public class SetDto {
-
     private Long id;
     private String description;
+    private int listOrder;
     private int reps;
     private double rir;
-    private int listOrder;
     private double weight;
     private Long setGroupId;
 }

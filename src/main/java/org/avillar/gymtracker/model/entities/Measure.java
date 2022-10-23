@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 @Getter
@@ -17,9 +14,9 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 public class Measure extends BaseEntity {
-
     @Column(nullable = false)
     private Date date;
+    private String comment;
     private double height;
     private double weight;
     private double fatPercent;
@@ -28,4 +25,7 @@ public class Measure extends BaseEntity {
     @JoinColumn(name = "user_app_id", nullable = false)
     private UserApp userApp;
 
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "image_id")
+    private Image image;
 }

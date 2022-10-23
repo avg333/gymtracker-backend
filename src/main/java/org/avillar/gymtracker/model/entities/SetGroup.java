@@ -30,5 +30,4 @@ public class SetGroup extends BaseEntity {
 
     @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private java.util.Set<Set> sets = new HashSet<>();
-
 }

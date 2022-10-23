@@ -18,7 +18,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 public class MuscleGroup extends BaseEntity {
-
     private String name;
     private String description;
 
@@ -29,5 +28,4 @@ public class MuscleGroup extends BaseEntity {
     @JsonIgnore
     @ManyToMany(mappedBy = "muscleGroups")
     private Set<Exercise> exercises = new HashSet<>();
-
 }

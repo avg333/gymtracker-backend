@@ -153,9 +153,9 @@ public class DataLoader implements ApplicationRunner {
             final int totalSeries = random.nextInt(1, 5);
             for (int i = 0; i < totalSeries; i++) {
                 final int reps = random.nextInt(3, 15);
-                final int rir = random.nextInt(5, 10);
+                final double rir = random.nextDouble(5, 10);
                 final double weight = Math.round((random.nextDouble(5, 100)) * 100.0) / 100.0;
-                sets.add(new Set("Descripcion", reps, rir, i, weight, setGroup));
+                sets.add(new Set("Descripcion", i, reps, rir, weight, setGroup));
             }
         }
 
@@ -174,7 +174,7 @@ public class DataLoader implements ApplicationRunner {
         }// number of days to add
         for (int i = 0; i < 100; i++) {
             c.add(Calendar.DATE, 1);
-            final Measure measure = new Measure(c.getTime(), 185.0, random.nextDouble(80, 90), random.nextDouble(10, 15), userApp);
+            final Measure measure = new Measure(c.getTime(), null, 185.0, random.nextDouble(80, 90), random.nextDouble(10, 15), userApp, null);
             measures.add(measure);
         }
         this.measureDao.saveAll(measures);

@@ -33,7 +33,9 @@ public class AuthController {
         final Authentication authentication = this.authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-        return ResponseEntity.ok(new UserAppDto(userDetails.getUserApp().getId(), this.jwtUtils.generateJwtToken(authentication), userDetails.getUsername(), null, null));
+        return ResponseEntity.ok(new UserAppDto(this.jwtUtils.generateJwtToken(authentication),
+                userDetails.getUserApp().getId(), userDetails.getUsername(), null, null, null,
+                null, null, null, null, null));
     }
 
     @PostMapping("/signout")

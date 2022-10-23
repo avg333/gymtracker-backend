@@ -19,23 +19,19 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 public class UserApp extends BaseEntity {
-
     private String username;
     private String password;
     private String email;
-
     private String name;
     private String lastNameFirst;
     private String lastNameSecond;
     private Date birth;
     private GenderEnum gender;
-
     private ActivityLevelEnum activityLevel;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "image_id")
     private Image image;
-
 
     @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Program> programs = new HashSet<>();
@@ -45,5 +41,4 @@ public class UserApp extends BaseEntity {
 
     @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Measure> measures = new HashSet<>();
-
 }
