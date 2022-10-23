@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface SetGroupRepository extends JpaRepository<SetGroup, Long> {
+public interface SetGroupDao extends JpaRepository<SetGroup, Long> {
 
     List<SetGroup> findBySessionOrderByListOrderAsc(Session session);
 }

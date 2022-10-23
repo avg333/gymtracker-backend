@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.model.dao.SetGroupRepository;
-import org.avillar.gymtracker.model.dao.SetRepository;
+import org.avillar.gymtracker.model.dao.SetDao;
+import org.avillar.gymtracker.model.dao.SetGroupDao;
 import org.avillar.gymtracker.model.dto.ExerciseDto;
 import org.avillar.gymtracker.model.dto.SessionDto;
 import org.avillar.gymtracker.model.dto.SetDto;
@@ -27,28 +27,28 @@ import java.util.Objects;
 public class SetGroupServiceImpl implements SetGroupService {
     private static final String NOT_FOUND_ERROR_MSG = "El SetGroup no existe";
 
-    private final SetGroupRepository setGroupRepository;
+    private final SetGroupDao setGroupDao;
     private final ProgramService programService;
     private final SessionService sessionService;
     private final ExerciseService exerciseService;
-    private final SetRepository setRepository;
+    private final SetDao setDao;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public SetGroupServiceImpl(SetGroupRepository setGroupRepository, SetRepository setRepository, ExerciseService exerciseService, ProgramService programService, SessionService sessionService, ModelMapper modelMapper) {
+    public SetGroupServiceImpl(SetGroupDao setGroupDao, SetDao setDao, ExerciseService exerciseService, ProgramService programService, SessionService sessionService, ModelMapper modelMapper) {
         this.programService = programService;
-        this.setGroupRepository = setGroupRepository;
+        this.setGroupDao = setGroupDao;
         this.sessionService = sessionService;
         this.modelMapper = modelMapper;
         this.exerciseService = exerciseService;
-        this.setRepository = setRepository;
+        this.setDao = setDao;
     }
 
     @Override
     public List<SetGroupDto> getAllSessionSetGroups(Long sessionId) throws IllegalAccessException {
         final SessionDto sessionDto = this.sessionService.getSession(sessionId);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
+        final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(session);
         final List<SetGroupDto> setGroupDtos = new ArrayList<>(setGroups.size());
 
         for (final SetGroup setGroup : setGroups) {
@@ -56,7 +56,7 @@ public class SetGroupServiceImpl implements SetGroupService {
             final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getIdExercise());
             final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
             setGroupDto.setExerciseDto(exerciseDto);
-            final List<Set> sets = this.setRepository.findBySetGroupOrderByListOrderAsc(setGroup);
+            final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
             final List<SetDto> setDtos = new ArrayList<>(sets.size());
             for (final Set set : sets) {
                 setDtos.add(this.modelMapper.map(set, SetDto.class));
@@ -70,14 +70,14 @@ public class SetGroupServiceImpl implements SetGroupService {
 
     @Override
     public SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
-        final SetGroup setGroup = this.setGroupRepository.findById(setGroupId).orElseThrow(() ->
+        final SetGroup setGroup = this.setGroupDao.findById(setGroupId).orElseThrow(() ->
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.programService.programExistsAndIsFromLoggedUser(setGroup.getSession().getProgram().getId());
         final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
         final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getIdExercise());
         final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
         setGroupDto.setExerciseDto(exerciseDto);
-        final List<Set> sets = this.setRepository.findBySetGroupOrderByListOrderAsc(setGroup);
+        final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
         final List<SetDto> setDtos = new ArrayList<>(sets.size());
         for (final Set set : sets) {
             setDtos.add(this.modelMapper.map(set, SetDto.class));
@@ -92,12 +92,12 @@ public class SetGroupServiceImpl implements SetGroupService {
         final Session session = this.modelMapper.map(sessionDto, Session.class);
 
         final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
-        final int setGroupsSize = this.setGroupRepository.findBySessionOrderByListOrderAsc(session).size();
+        final int setGroupsSize = this.setGroupDao.findBySessionOrderByListOrderAsc(session).size();
         if (setGroup.getListOrder() == null || setGroup.getListOrder() > setGroupsSize || setGroup.getListOrder() < 0) {
             setGroup.setListOrder(setGroupsSize);
-            this.setGroupRepository.save(setGroup);
+            this.setGroupDao.save(setGroup);
         } else {
-            this.setGroupRepository.save(setGroup);
+            this.setGroupDao.save(setGroup);
             this.reorderAllSessionSetGroupsAfterPost(session, setGroup);
         }
 
@@ -109,13 +109,13 @@ public class SetGroupServiceImpl implements SetGroupService {
         if (setGroupDto.getId() == null) {
             throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
         }
-        final SetGroup setGroupDb = this.setGroupRepository.findById(setGroupDto.getId()).orElseThrow(() ->
+        final SetGroup setGroupDb = this.setGroupDao.findById(setGroupDto.getId()).orElseThrow(() ->
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.programService.programExistsAndIsFromLoggedUser(setGroupDb.getSession().getProgram().getId());
         final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
 
         final int oldPosition = setGroupDb.getListOrder();
-        this.setGroupRepository.save(setGroup);
+        this.setGroupDao.save(setGroup);
         this.reorderAllSessionSetGroupsAfterUpdate(setGroup.getSession(), setGroup, oldPosition);
 
         return this.modelMapper.map(setGroup, SetGroupDto.class);
@@ -123,19 +123,19 @@ public class SetGroupServiceImpl implements SetGroupService {
 
     @Override
     public void deleteSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
-        final SetGroup setGroup = this.setGroupRepository.findById(setGroupId).orElseThrow(() ->
+        final SetGroup setGroup = this.setGroupDao.findById(setGroupId).orElseThrow(() ->
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.programService.programExistsAndIsFromLoggedUser(setGroup.getSession().getProgram().getId());
 
         final int setGroupPosition = setGroup.getListOrder();
-        this.setGroupRepository.deleteById(setGroupId);
+        this.setGroupDao.deleteById(setGroupId);
 
         this.reorderAllSessionSetGroupsAfterDelete(setGroup.getSession(), setGroupPosition);
     }
 
 
     private void reorderAllSessionSetGroupsAfterDelete(final Session session, final int sessionPosition) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
+        final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }
@@ -146,12 +146,12 @@ public class SetGroupServiceImpl implements SetGroupService {
             }
         }
 
-        this.setGroupRepository.saveAll(setGroups);
+        this.setGroupDao.saveAll(setGroups);
     }
 
 
     private void reorderAllSessionSetGroupsAfterUpdate(final Session session, final SetGroup newSetGroup, int oldPosition) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
+        final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }
@@ -173,12 +173,12 @@ public class SetGroupServiceImpl implements SetGroupService {
             }
         }
 
-        this.setGroupRepository.saveAll(setGroups);
+        this.setGroupDao.saveAll(setGroups);
     }
 
 
     private void reorderAllSessionSetGroupsAfterPost(final Session session, final SetGroup newSetGroup) {
-        final List<SetGroup> setGroups = this.setGroupRepository.findBySessionOrderByListOrderAsc(session);
+        final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(session);
         if (setGroups.isEmpty()) {
             return;
         }
@@ -190,7 +190,7 @@ public class SetGroupServiceImpl implements SetGroupService {
             }
         }
 
-        this.setGroupRepository.saveAll(setGroups);
+        this.setGroupDao.saveAll(setGroups);
     }
 
 }

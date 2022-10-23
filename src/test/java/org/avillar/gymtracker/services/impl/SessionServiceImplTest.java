@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.model.dao.SessionRepository;
+import org.avillar.gymtracker.model.dao.SessionDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ class SessionServiceImplTest {
     private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
 
     @Mock
-    private SessionRepository sessionRepository;
+    private SessionDao sessionDao;
     @Mock
     private LoginServiceImpl loginService;
     @Mock

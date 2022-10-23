@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.services;
 
 import org.avillar.gymtracker.model.dto.SessionDto;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;

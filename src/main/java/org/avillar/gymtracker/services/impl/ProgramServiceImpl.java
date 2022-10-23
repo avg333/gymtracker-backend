@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.model.dao.ProgramRepository;
+import org.avillar.gymtracker.model.dao.ProgramDao;
 import org.avillar.gymtracker.model.dto.ProgramDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.services.LoginService;
@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class ProgramServiceImpl implements ProgramService {
     private static final String NOT_FOUND_ERROR_MSG = "El programa no existe";
-    private final ProgramRepository programRepository;
+    private final ProgramDao programDao;
     private final ModelMapper modelMapper;
     private final LoginService loginService;
 
@@ -25,8 +25,8 @@ public class ProgramServiceImpl implements ProgramService {
      * {@inheritDoc}
      */
     @Autowired
-    public ProgramServiceImpl(ProgramRepository programRepository, ModelMapper modelMapper, LoginService loginService) {
-        this.programRepository = programRepository;
+    public ProgramServiceImpl(ProgramDao programDao, ModelMapper modelMapper, LoginService loginService) {
+        this.programDao = programDao;
         this.modelMapper = modelMapper;
         this.loginService = loginService;
     }
@@ -37,7 +37,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional(readOnly = true)
     public List<ProgramDto> getUserAllLoggedUserProgramsWithVolume() {
-        final List<Program> programs = this.programRepository.findByUserAppOrderByNameAsc(this.loginService.getLoggedUser());
+        final List<Program> programs = this.programDao.findByUserAppOrderByNameAsc(this.loginService.getLoggedUser());
         final List<ProgramDto> programDtos = new ArrayList<>(programs.size());
 
         for (final Program program : programs) {
@@ -55,7 +55,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional(readOnly = true)
     public ProgramDto getProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
-        final Program program = this.programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Program program = this.programDao.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(program);
         return this.modelMapper.map(program, ProgramDto.class);
     }
@@ -69,7 +69,7 @@ public class ProgramServiceImpl implements ProgramService {
         programDto.setId(null);
         final Program program = this.modelMapper.map(programDto, Program.class);
         program.setUserApp(this.loginService.getLoggedUser());
-        return this.modelMapper.map(this.programRepository.save(program), ProgramDto.class);
+        return this.modelMapper.map(this.programDao.save(program), ProgramDto.class);
     }
 
     /**
@@ -78,11 +78,11 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional
     public ProgramDto updateProgram(ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException {
-        final Program programDb = this.programRepository.findById(programDto.getId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Program programDb = this.programDao.findById(programDto.getId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(programDb);
         final Program program = this.modelMapper.map(programDto, Program.class);
         program.setUserApp(programDb.getUserApp());
-        return this.modelMapper.map(this.programRepository.save(program), ProgramDto.class);
+        return this.modelMapper.map(this.programDao.save(program), ProgramDto.class);
     }
 
     /**
@@ -91,9 +91,9 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional
     public void deleteProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
-        final Program program = this.programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Program program = this.programDao.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(program);
-        this.programRepository.deleteById(programId);
+        this.programDao.deleteById(programId);
     }
 
     /**
@@ -102,7 +102,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional(readOnly = true)
     public void programExistsAndIsFromLoggedUser(final Long programId) throws EntityNotFoundException, IllegalAccessException {
-        final Program program = this.programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Program program = this.programDao.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(program);
     }
 

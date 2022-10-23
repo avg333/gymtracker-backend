@@ -1,4 +1,4 @@
-package org.avillar.gymtracker;
+package org.avillar.gymtracker.utils;
 
 import org.avillar.gymtracker.model.dao.*;
 import org.avillar.gymtracker.model.entities.Set;
@@ -20,28 +20,28 @@ import java.util.*;
 @Component
 public class DataLoader implements ApplicationRunner {
 
-    private final MuscleGroupRepository muscleGroupRepository;
-    private final MuscleSubGroupRepository muscleSubGroupRepository;
-    private final ExerciseRepository exerciseRepository;
-    private final ProgramRepository programRepository;
-    private final SessionRepository sessionRepository;
-    private final UserRepository userRepository;
-    private final SetGroupRepository setGroupRepository;
-    private final SetRepository setRepository;
-    private final MeasureRepository measureRepository;
+    private final MuscleGroupDao muscleGroupDao;
+    private final MuscleSubGroupDao muscleSubGroupDao;
+    private final ExerciseDao exerciseDao;
+    private final ProgramDao programDao;
+    private final SessionDao sessionDao;
+    private final UserDao userDao;
+    private final SetGroupDao setGroupDao;
+    private final SetDao setDao;
+    private final MeasureDao measureDao;
 
     @Autowired
-    public DataLoader(MeasureRepository measureRepository, SetRepository setRepository, MuscleGroupRepository muscleGroupRepository, MuscleSubGroupRepository muscleSubGroupRepository, ExerciseRepository exerciseRepository,
-                      ProgramRepository programRepository, SessionRepository sessionRepository, UserRepository userRepository, SetGroupRepository setGroupRepository) {
-        this.muscleGroupRepository = muscleGroupRepository;
-        this.muscleSubGroupRepository = muscleSubGroupRepository;
-        this.exerciseRepository = exerciseRepository;
-        this.programRepository = programRepository;
-        this.sessionRepository = sessionRepository;
-        this.userRepository = userRepository;
-        this.setGroupRepository = setGroupRepository;
-        this.setRepository = setRepository;
-        this.measureRepository = measureRepository;
+    public DataLoader(MeasureDao measureDao, SetDao setDao, MuscleGroupDao muscleGroupDao, MuscleSubGroupDao muscleSubGroupDao, ExerciseDao exerciseDao,
+                      ProgramDao programDao, SessionDao sessionDao, UserDao userDao, SetGroupDao setGroupDao) {
+        this.muscleGroupDao = muscleGroupDao;
+        this.muscleSubGroupDao = muscleSubGroupDao;
+        this.exerciseDao = exerciseDao;
+        this.programDao = programDao;
+        this.sessionDao = sessionDao;
+        this.userDao = userDao;
+        this.setGroupDao = setGroupDao;
+        this.setDao = setDao;
+        this.measureDao = measureDao;
     }
 
     public void run(ApplicationArguments args) {
@@ -50,7 +50,7 @@ public class DataLoader implements ApplicationRunner {
         final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
                 null, "Chema", "Garcia", "Romero", null,
                 GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null, null, null);
-        userRepository.save(user);
+        userDao.save(user);
         this.createPrograms(user);
         this.crearSets(random);
         this.createMeasures(user, random);
@@ -70,7 +70,7 @@ public class DataLoader implements ApplicationRunner {
         final MuscleGroup quadriceps = new MuscleGroup("quadriceps", null, null, null);
         final MuscleGroup hamstrings = new MuscleGroup("hamstrings", null, null, null);
         final MuscleGroup calves = new MuscleGroup("calves", null, null, null);
-        muscleGroupRepository.saveAll(Arrays.asList(chest, lats, shoulders, lowerBack, biceps, triceps, abs, glute,
+        muscleGroupDao.saveAll(Arrays.asList(chest, lats, shoulders, lowerBack, biceps, triceps, abs, glute,
                 quadriceps, hamstrings, calves));
 
         final MuscleSubGroup chestUpper = new MuscleSubGroup("upper", null, chest, null);
@@ -82,7 +82,7 @@ public class DataLoader implements ApplicationRunner {
         final MuscleSubGroup shoulderAnterior = new MuscleSubGroup("anterior", null, shoulders, null);
         final MuscleSubGroup shoulderLateral = new MuscleSubGroup("lateral", null, shoulders, null);
         final MuscleSubGroup shoulderPosterior = new MuscleSubGroup("posterior", null, shoulders, null);
-        muscleSubGroupRepository.saveAll(Arrays.asList(chestUpper, chestLower, chestMiddle, tricepsLateral, tricepsLong,
+        muscleSubGroupDao.saveAll(Arrays.asList(chestUpper, chestLower, chestMiddle, tricepsLateral, tricepsLong,
                 tricepsMedial, shoulderAnterior, shoulderLateral, shoulderPosterior));
 
         final List<Exercise> exercises = new ArrayList<>();
@@ -102,7 +102,7 @@ public class DataLoader implements ApplicationRunner {
         exercises.add(new Exercise("elevaciones laterales con cable", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
         exercises.add(new Exercise("pajaros con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
         exercises.add(new Exercise("reverse pec deck", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
-        exerciseRepository.saveAll(exercises);
+        exerciseDao.saveAll(exercises);
 
     }
 
@@ -110,7 +110,7 @@ public class DataLoader implements ApplicationRunner {
         final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, user, null, null);
         final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, user, null, null);
         final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, user, null, null);
-        programRepository.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
+        programDao.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
         final Session push = new Session("Push", null, 0, new Date(), user, pushPullLegs, null);
         final Session pull = new Session("Pull", null, 1, new Date(), user, pushPullLegs, null);
@@ -132,12 +132,12 @@ public class DataLoader implements ApplicationRunner {
         final Session arms = new Session("Arms", null, 4, new Date(), user, weider, null);
         sessions.addAll(Arrays.asList(chest, back, shoulder, legs2, arms));
 
-        sessionRepository.saveAll(sessions);
+        sessionDao.saveAll(sessions);
     }
 
     private void crearSets(final Random random) {
-        final List<Exercise> exercises = this.exerciseRepository.findAll();
-        final List<Session> sessions = this.sessionRepository.findAll();
+        final List<Exercise> exercises = this.exerciseDao.findAll();
+        final List<Session> sessions = this.sessionDao.findAll();
         final List<SetGroup> setGroups = new ArrayList<>();
 
         for (final Session session : sessions) {
@@ -146,7 +146,7 @@ public class DataLoader implements ApplicationRunner {
                 setGroups.add(new SetGroup("Descripcion" + rnd, i, exercises.get(rnd), session, null));
             }
         }
-        this.setGroupRepository.saveAll(setGroups);
+        this.setGroupDao.saveAll(setGroups);
 
         final List<Set> sets = new ArrayList<>();
         for (final SetGroup setGroup : setGroups) {
@@ -159,7 +159,7 @@ public class DataLoader implements ApplicationRunner {
             }
         }
 
-        setRepository.saveAll(sets);
+        setDao.saveAll(sets);
     }
 
     private void createMeasures(UserApp userApp, final Random random) {
@@ -177,11 +177,11 @@ public class DataLoader implements ApplicationRunner {
             final Measure measure = new Measure(c.getTime(), 185.0, random.nextDouble(80, 90), random.nextDouble(10, 15), userApp);
             measures.add(measure);
         }
-        this.measureRepository.saveAll(measures);
+        this.measureDao.saveAll(measures);
 
     }
 
-    private void createSessions(UserApp userApp){
+    private void createSessions(UserApp userApp) {
         final List<Session> sessions = new ArrayList<>();
         String dt = "2022-10-20";  // Start date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -198,6 +198,6 @@ public class DataLoader implements ApplicationRunner {
             sessions.add(session);
         }
 
-        this.sessionRepository.saveAll(sessions);
+        this.sessionDao.saveAll(sessions);
     }
 }

@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.model.dao.ProgramRepository;
+import org.avillar.gymtracker.model.dao.ProgramDao;
 import org.avillar.gymtracker.model.dto.ProgramDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
@@ -36,7 +36,7 @@ class ProgramServiceImplTest {
     private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
 
     @Mock
-    private ProgramRepository programRepository;
+    private ProgramDao programDao;
     @Mock
     private LoginServiceImpl loginService;
     @InjectMocks
@@ -50,7 +50,7 @@ class ProgramServiceImplTest {
         user.setId(USER_ID);
         when(loginService.getLoggedUser()).thenReturn(user);
 
-        programService = new ProgramServiceImpl(programRepository, modelMapper, loginService);
+        programService = new ProgramServiceImpl(programDao, modelMapper, loginService);
     }
 
     @Test
@@ -59,7 +59,7 @@ class ProgramServiceImplTest {
                 getProgramWithUserId(PROGRAM_ID + 1, USER_ID, 3),
                 getProgramWithUserId(PROGRAM_ID + 2, USER_ID, 0));
 
-        when(this.programRepository.findByUserAppOrderByNameAsc(Mockito.any(UserApp.class))).thenReturn(programList);
+        when(this.programDao.findByUserAppOrderByNameAsc(Mockito.any(UserApp.class))).thenReturn(programList);
         final List<ProgramDto> programListDtos = this.programService.getUserAllLoggedUserProgramsWithVolume();
 
         assertEquals(programList.size(), programListDtos.size());
@@ -74,14 +74,14 @@ class ProgramServiceImplTest {
     void getProgram() throws IllegalAccessException {
         Program program = getProgramWithUserId(PROGRAM_ID, USER_ID, 0);
 
-        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
         final ProgramDto programDto = this.programService.getProgram(PROGRAM_ID);
 
         assertEquals(program.getId(), programDto.getId());
         assertEquals(program.getName(), programDto.getName());
 
         program = getProgramWithUserId(null, NOT_USER_ID, 0);
-        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
 
         final Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.getProgram(PROGRAM_ID));
         assertEquals(NO_PERMISSIONS, exception.getMessage());
@@ -94,7 +94,7 @@ class ProgramServiceImplTest {
         programDtoInput.setName(String.valueOf(PROGRAM_ID));
         programDtoInput.setLevel(ProgramLevelEnum.HARD);
 
-        when(this.programRepository.save(Mockito.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(this.programDao.save(Mockito.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
         final ProgramDto programDtoOutput = this.programService.createProgram(programDtoInput);
 
         assertEquals(programDtoInput.getId(), programDtoOutput.getId());
@@ -108,10 +108,10 @@ class ProgramServiceImplTest {
         programDtoInput.setId(PROGRAM_ID);
         programDtoInput.setName(String.valueOf(PROGRAM_ID));
         programDtoInput.setLevel(ProgramLevelEnum.HARD);
-        when(this.programRepository.save(Mockito.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(this.programDao.save(Mockito.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
 
         Program program = getProgramWithUserId(programDtoInput.getId(), USER_ID, 0);
-        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
         final ProgramDto programDtoOutput = this.programService.updateProgram(programDtoInput);
         assertEquals(programDtoInput.getId(), programDtoOutput.getId());
         assertEquals(programDtoInput.getName(), programDtoOutput.getName());
@@ -122,7 +122,7 @@ class ProgramServiceImplTest {
         assertEquals(NOT_FOUND_ERROR_MSG, exception.getMessage());
 
         program = getProgramWithUserId(programDtoInput.getId(), NOT_USER_ID, 0);
-        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
         exception = assertThrows(IllegalAccessException.class, () -> this.programService.getProgram(PROGRAM_ID));
         assertEquals(NO_PERMISSIONS, exception.getMessage());
     }
@@ -130,7 +130,7 @@ class ProgramServiceImplTest {
     @Test
     void deleteProgram() {
         final Program program = getProgramWithUserId(PROGRAM_ID, NOT_USER_ID, 0);
-        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
         Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.deleteProgram(PROGRAM_ID));
         assertEquals(NO_PERMISSIONS, exception.getMessage());
     }
@@ -138,11 +138,11 @@ class ProgramServiceImplTest {
     @Test
     void programExistsAndIsFromLoggedUser() {
         final Program program = getProgramWithUserId(PROGRAM_ID, NOT_USER_ID, 0);
-        when(programRepository.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
         Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.programExistsAndIsFromLoggedUser(PROGRAM_ID));
         assertEquals(NO_PERMISSIONS, exception.getMessage());
 
-        when(programRepository.findById(NOT_PROGRAM_ID)).thenThrow(new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        when(programDao.findById(NOT_PROGRAM_ID)).thenThrow(new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         exception = assertThrows(EntityNotFoundException.class, () -> this.programService.programExistsAndIsFromLoggedUser(NOT_PROGRAM_ID));
         assertEquals(NOT_FOUND_ERROR_MSG, exception.getMessage());
     }

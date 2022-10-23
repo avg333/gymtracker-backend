@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface MeasureRepository extends JpaRepository<Measure, Long> {
+public interface MeasureDao extends JpaRepository<Measure, Long> {
 
     List<Measure> findByUserAppOrderByDateDesc(UserApp userApp);
 }

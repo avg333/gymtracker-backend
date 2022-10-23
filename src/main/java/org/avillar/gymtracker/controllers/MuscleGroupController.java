@@ -2,11 +2,7 @@ package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.MuscleGroupDto;
 import org.avillar.gymtracker.model.dto.MuscleSubGroupDto;
-import org.avillar.gymtracker.model.entities.MuscleGroup;
-import org.avillar.gymtracker.model.entities.MuscleSubGroup;
 import org.avillar.gymtracker.services.MuscleGroupService;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

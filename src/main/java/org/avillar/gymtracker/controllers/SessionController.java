@@ -37,7 +37,7 @@ public class SessionController {
     }
 
     @GetMapping("/sessions/bydate")
-    public ResponseEntity<List<SessionDto>> getSessionsByDate(@RequestParam  @DateTimeFormat(pattern="yyyy-MM-dd") final Date date) {
+    public ResponseEntity<List<SessionDto>> getSessionsByDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final Date date) {
 
         return ResponseEntity.ok(this.sessionService.getSessionByDate(date));
     }
