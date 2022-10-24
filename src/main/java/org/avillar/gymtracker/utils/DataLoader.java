@@ -20,6 +20,8 @@ import java.util.*;
 @Component
 public class DataLoader implements ApplicationRunner {
 
+    private final Random random = new Random();
+
     private final MuscleGroupDao muscleGroupDao;
     private final MuscleSubGroupDao muscleSubGroupDao;
     private final ExerciseDao exerciseDao;
@@ -31,8 +33,9 @@ public class DataLoader implements ApplicationRunner {
     private final MeasureDao measureDao;
 
     @Autowired
-    public DataLoader(MeasureDao measureDao, SetDao setDao, MuscleGroupDao muscleGroupDao, MuscleSubGroupDao muscleSubGroupDao, ExerciseDao exerciseDao,
-                      ProgramDao programDao, SessionDao sessionDao, UserDao userDao, SetGroupDao setGroupDao) {
+    public DataLoader(MeasureDao measureDao, SetDao setDao, MuscleGroupDao muscleGroupDao, SetGroupDao setGroupDao,
+                      ExerciseDao exerciseDao, UserDao userDao, ProgramDao programDao, SessionDao sessionDao,
+                      MuscleSubGroupDao muscleSubGroupDao) {
         this.muscleGroupDao = muscleGroupDao;
         this.muscleSubGroupDao = muscleSubGroupDao;
         this.exerciseDao = exerciseDao;
@@ -45,16 +48,15 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        final Random random = new Random();
         final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
                 null, "Chema", "Garcia", "Romero", null,
                 GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null, null, null);
-        //userDao.save(user);
-        //this.createExercises();
-        //this.createPrograms(user);
-        //this.crearSets(random);
-        //this.createMeasures(user, random);
-        //this.createSessions(user);
+        userDao.save(user);
+        this.createExercises();
+        this.createPrograms(user);
+        this.crearSets(random);
+        this.createMeasures(user, random);
+        this.createSessions(user);
 
     }
 

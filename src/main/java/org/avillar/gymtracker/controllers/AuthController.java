@@ -32,7 +32,7 @@ public class AuthController {
         final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userAppDto.getUsername(), userAppDto.getPassword());
         final Authentication authentication = this.authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        final MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         return ResponseEntity.ok(new UserAppDto(this.jwtUtils.generateJwtToken(authentication),
                 userDetails.getUserApp().getId(), userDetails.getUsername(), null, null, null,
                 null, null, null, null, null));
