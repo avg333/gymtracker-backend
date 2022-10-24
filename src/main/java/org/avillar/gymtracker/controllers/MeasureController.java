@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api/measures/")
+@RequestMapping("/api/measures")
 public class MeasureController {
 
     private final MeasureService measureService;
@@ -25,7 +25,7 @@ public class MeasureController {
         return ResponseEntity.ok(this.measureService.getAllLoggedUserMeasures());
     }
 
-    @GetMapping("{measureId}")
+    @GetMapping("/{measureId}")
     public ResponseEntity<MeasureDto> getMeasureById(@PathVariable final Long measureId) throws IllegalAccessException {
         return ResponseEntity.ok(this.measureService.getMeasure(measureId));
     }
@@ -38,7 +38,7 @@ public class MeasureController {
         return ResponseEntity.ok(this.measureService.createMeasure(measureDto));
     }
 
-    @PutMapping("{measureId}")
+    @PutMapping("/{measureId}")
     public ResponseEntity<MeasureDto> updateMeasure(@PathVariable final Long measureId, @RequestBody final MeasureDto measureDto) throws IllegalAccessException {
         if (!measureId.equals(measureDto.getId())) {
             return ResponseEntity.badRequest().build();
@@ -46,7 +46,7 @@ public class MeasureController {
         return ResponseEntity.ok(this.measureService.updateMeasure(measureDto));
     }
 
-    @DeleteMapping("{measureId}")
+    @DeleteMapping("/{measureId}")
     public ResponseEntity<Void> deleteMeasure(@PathVariable final Long measureId) throws IllegalAccessException {
         this.measureService.deleteMeasure(measureId);
         return ResponseEntity.ok().build();
