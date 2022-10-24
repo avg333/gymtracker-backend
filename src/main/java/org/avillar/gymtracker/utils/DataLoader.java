@@ -49,12 +49,12 @@ public class DataLoader implements ApplicationRunner {
         final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
                 null, "Chema", "Garcia", "Romero", null,
                 GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null, null, null);
-        userDao.save(user);
-        this.createExercises();
-        this.createPrograms(user);
-        this.crearSets(random);
-        this.createMeasures(user, random);
-        this.createSessions(user);
+        //userDao.save(user);
+        //this.createExercises();
+        //this.createPrograms(user);
+        //this.crearSets(random);
+        //this.createMeasures(user, random);
+        //this.createSessions(user);
 
     }
 
