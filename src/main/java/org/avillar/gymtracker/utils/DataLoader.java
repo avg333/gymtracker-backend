@@ -109,9 +109,9 @@ public class DataLoader implements ApplicationRunner {
     }
 
     private void createPrograms(UserApp user) {
-        final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, user, null, null);
-        final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, user, null, null);
-        final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, user, null, null);
+        final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, false, user, null, null);
+        final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, false, user, null, null);
+        final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, false, user, null, null);
         programDao.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
         final Session push = new Session("Push", null, 0, new Date(), user, pushPullLegs, null);

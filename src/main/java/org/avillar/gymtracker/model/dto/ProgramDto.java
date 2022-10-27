@@ -10,7 +10,8 @@ public class ProgramDto {
     private String name;
     private String description;
     private String url;
-    private ProgramLevelEnum level;
+    private ProgramLevelEnum level = ProgramLevelEnum.ANY;
+    private Boolean favourite = false;
     //userAppId
     //sessions
     private MultipartFile image;

@@ -53,7 +53,7 @@ public class SetGroupServiceImpl implements SetGroupService {
 
         for (final SetGroup setGroup : setGroups) {
             final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
-            final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getIdExercise());
+            final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getExerciseId());
             final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
             setGroupDto.setExerciseDto(exerciseDto);
             final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
@@ -74,7 +74,7 @@ public class SetGroupServiceImpl implements SetGroupService {
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.programService.programExistsAndIsFromLoggedUser(setGroup.getSession().getProgram().getId());
         final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
-        final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getIdExercise());
+        final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getExerciseId());
         final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
         setGroupDto.setExerciseDto(exerciseDto);
         final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
@@ -88,7 +88,7 @@ public class SetGroupServiceImpl implements SetGroupService {
 
     @Override
     public SetGroupDto createSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
-        final SessionDto sessionDto = this.sessionService.getSession(setGroupDto.getIdSession());
+        final SessionDto sessionDto = this.sessionService.getSession(setGroupDto.getSessionId());
         final Session session = this.modelMapper.map(sessionDto, Session.class);
 
         final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);

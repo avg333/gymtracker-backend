@@ -21,7 +21,8 @@ public class Program extends BaseEntity {
     private String description;
     private String url;
     @Column(nullable = false)
-    private ProgramLevelEnum level;
+    private ProgramLevelEnum level = ProgramLevelEnum.ANY;
+    private Boolean favourite = false;
 
     @ManyToOne
     @JoinColumn(name = "user_app_id")
