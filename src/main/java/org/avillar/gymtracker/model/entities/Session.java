@@ -19,15 +19,11 @@ public class Session extends BaseEntity {
     @Column(nullable = false)
     private String name;
     private String description;
+    @Column(nullable = false)
     private Integer listOrder;
-    private Date date;
-
-    @ManyToOne()
-    @JoinColumn(name = "user_app_id")
-    private UserApp userApp;
 
     @ManyToOne
-    @JoinColumn(name = "program_id")
+    @JoinColumn(name = "program_id", nullable = false)
     private Program program;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.REMOVE, orphanRemoval = true)

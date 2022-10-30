@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -25,6 +26,5 @@ public class Workout extends BaseEntity{
     private UserApp userApp;
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<SetGroup> setGroups = new LinkedHashSet<>();
-
+    private Set<SetGroup> setGroups = new HashSet<>();
 }

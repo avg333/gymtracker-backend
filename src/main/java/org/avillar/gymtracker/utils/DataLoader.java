@@ -129,33 +129,32 @@ public class DataLoader implements ApplicationRunner {
         exercises.add(new Exercise("pajaros con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
         exercises.add(new Exercise("reverse pec deck", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
         exerciseDao.saveAll(exercises);
-
     }
 
-    private void createPrograms(final UserApp user) {
-        final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, false, user, null, null);
-        final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, false, user, null, null);
-        final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, false, user, null, null);
+    private void createPrograms(final UserApp userApp) {
+        final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, userApp, null, null);
+        final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, userApp, null, null);
+        final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, userApp, null, null);
         programDao.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
 
-        final Session push = new Session("Push", null, 0, new Date(), user, pushPullLegs, null);
-        final Session pull = new Session("Pull", null, 1, new Date(), user, pushPullLegs, null);
-        final Session legs = new Session("Legs", null, 2, new Date(), user, pushPullLegs, null);
-        final Session reversePush = new Session("Reverse push", null, 3, new Date(), user, pushPullLegs, null);
-        final Session reversePull = new Session("Reverse pull", null, 4, new Date(), user, pushPullLegs, null);
+        final Session push = new Session("Push", null, 0, pushPullLegs, null);
+        final Session pull = new Session("Pull", null, 1, pushPullLegs, null);
+        final Session legs = new Session("Legs", null, 2, pushPullLegs, null);
+        final Session reversePush = new Session("Reverse push", null, 3, pushPullLegs, null);
+        final Session reversePull = new Session("Reverse pull", null, 4, pushPullLegs, null);
         final List<Session> sessions = new ArrayList<>(Arrays.asList(push, pull, legs, reversePush, reversePull));
 
-        final Session upperFirst = new Session("Upper first", null, 0, new Date(), user, fullBody, null);
-        final Session lowerFirst = new Session("Lower first", null, 1, new Date(), user, fullBody, null);
-        final Session upperSecond = new Session("Upper second", null, 2, new Date(), user, fullBody, null);
-        final Session lowerSecond = new Session("Lower second", null, 3, new Date(), user, fullBody, null);
+        final Session upperFirst = new Session("Upper first", null, 0, fullBody, null);
+        final Session lowerFirst = new Session("Lower first", null, 1, fullBody, null);
+        final Session upperSecond = new Session("Upper second", null, 2, fullBody, null);
+        final Session lowerSecond = new Session("Lower second", null, 3, fullBody, null);
         sessions.addAll(Arrays.asList(upperFirst, lowerFirst, upperSecond, lowerSecond));
 
-        final Session chest = new Session("Chest", null, 0, new Date(), user, weider, null);
-        final Session back = new Session("Back", null, 1, new Date(), user, weider, null);
-        final Session shoulder = new Session("Shoulder", null, 2, new Date(), user, weider, null);
-        final Session legs2 = new Session("Legs", null, 3, new Date(), user, weider, null);
-        final Session arms = new Session("Arms", null, 4, new Date(), user, weider, null);
+        final Session chest = new Session("Chest", null, 0, weider, null);
+        final Session back = new Session("Back", null, 1, weider, null);
+        final Session shoulder = new Session("Shoulder", null, 2, weider, null);
+        final Session legs2 = new Session("Legs", null, 3, weider, null);
+        final Session arms = new Session("Arms", null, 4, weider, null);
         sessions.addAll(Arrays.asList(chest, back, shoulder, legs2, arms));
 
         sessionDao.saveAll(sessions);

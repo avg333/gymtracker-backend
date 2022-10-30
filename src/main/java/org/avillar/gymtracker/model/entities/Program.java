@@ -22,10 +22,9 @@ public class Program extends BaseEntity {
     private String url;
     @Column(nullable = false)
     private ProgramLevelEnum level = ProgramLevelEnum.ANY;
-    private Boolean favourite = false;
 
     @ManyToOne
-    @JoinColumn(name = "user_app_id")
+    @JoinColumn(name = "user_app_id", nullable = false)
     private UserApp userApp;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.REMOVE, orphanRemoval = true)
