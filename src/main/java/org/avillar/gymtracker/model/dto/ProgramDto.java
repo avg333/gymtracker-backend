@@ -17,4 +17,9 @@ public class ProgramDto {
     private MultipartFile image;
 
     private int sessionNumber;
+    private int averageVolumePerMuscleGroup;
+    private int averageVolumePerSession;
+    private int averageExercisesNumberPerSession;
+    private String ownerName;
+
 }

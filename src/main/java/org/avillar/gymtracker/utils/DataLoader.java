@@ -31,11 +31,12 @@ public class DataLoader implements ApplicationRunner {
     private final SetGroupDao setGroupDao;
     private final SetDao setDao;
     private final MeasureDao measureDao;
+    private final WorkoutDao workoutDao;
 
     @Autowired
     public DataLoader(MeasureDao measureDao, SetDao setDao, MuscleGroupDao muscleGroupDao, SetGroupDao setGroupDao,
                       ExerciseDao exerciseDao, UserDao userDao, ProgramDao programDao, SessionDao sessionDao,
-                      MuscleSubGroupDao muscleSubGroupDao) {
+                      MuscleSubGroupDao muscleSubGroupDao, WorkoutDao workoutDao) {
         this.muscleGroupDao = muscleGroupDao;
         this.muscleSubGroupDao = muscleSubGroupDao;
         this.exerciseDao = exerciseDao;
@@ -45,22 +46,45 @@ public class DataLoader implements ApplicationRunner {
         this.setGroupDao = setGroupDao;
         this.setDao = setDao;
         this.measureDao = measureDao;
+        this.workoutDao = workoutDao;
     }
 
     public void run(ApplicationArguments args) {
-        final UserApp user = new UserApp("chema", new BCryptPasswordEncoder().encode("chema69"),
-                null, "Chema", "Garcia", "Romero", null,
-                GenderEnum.MALE, ActivityLevelEnum.EXTREME, null, null, null, null);
-        userDao.save(user);
-        this.createExercises();
+        final UserApp user = this.userDao.save(new UserApp(
+                "chema", new BCryptPasswordEncoder().encode("chema69"), null, "Chema",
+                "Garcia", "Romero", null, GenderEnum.MALE, ActivityLevelEnum.EXTREME,
+                null, null, null, null, null));
+        this.createMeasures(user);
+        this.createExercisesWithMuscleGroups();
+
         this.createPrograms(user);
-        this.crearSets(random);
-        this.createMeasures(user, random);
-        this.createSessions(user);
+        this.createWorkouts(user);
+        this.createSets();
+    }
+
+    private void createMeasures(final UserApp userApp) {
+        final List<Measure> measures = new ArrayList<>();
+        String dt = "2022-10-10";  // Start date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(sdf.parse(dt));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return;
+        }
+        for (int i = 0; i < 100; i++) {
+            c.add(Calendar.DATE, 1);
+            final Measure measure = new Measure(
+                    c.getTime(), null, 185.0, random.nextDouble(80, 90),
+                    random.nextDouble(10, 15), userApp, null);
+            measures.add(measure);
+        }
+        this.measureDao.saveAll(measures);
 
     }
 
-    private void createExercises() {
+    private void createExercisesWithMuscleGroups() {
         final MuscleGroup chest = new MuscleGroup("chest", null, null, null);
         final MuscleGroup lats = new MuscleGroup("lats", null, null, null);
         final MuscleGroup shoulders = new MuscleGroup("shoulders", null, null, null);
@@ -108,7 +132,7 @@ public class DataLoader implements ApplicationRunner {
 
     }
 
-    private void createPrograms(UserApp user) {
+    private void createPrograms(final UserApp user) {
         final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, false, user, null, null);
         final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, false, user, null, null);
         final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, false, user, null, null);
@@ -137,69 +161,54 @@ public class DataLoader implements ApplicationRunner {
         sessionDao.saveAll(sessions);
     }
 
-    private void crearSets(final Random random) {
-        final List<Exercise> exercises = this.exerciseDao.findAll();
-        final List<Session> sessions = this.sessionDao.findAll();
-        final List<SetGroup> setGroups = new ArrayList<>();
-
-        for (final Session session : sessions) {
-            for (int i = 0; i < 5; i++) {
-                int rnd = random.nextInt(exercises.size() - 1);
-                setGroups.add(new SetGroup("Descripcion" + rnd, i, exercises.get(rnd), session, null));
-            }
-        }
-        this.setGroupDao.saveAll(setGroups);
-
-        final List<Set> sets = new ArrayList<>();
-        for (final SetGroup setGroup : setGroups) {
-            final int totalSeries = random.nextInt(1, 5);
-            for (int i = 0; i < totalSeries; i++) {
-                final int reps = random.nextInt(3, 15);
-                final double rir = random.nextDouble(5, 10);
-                final double weight = Math.round((random.nextDouble(5, 100)) * 100.0) / 100.0;
-                sets.add(new Set("Descripcion", i, reps, rir, weight, setGroup));
-            }
-        }
-
-        setDao.saveAll(sets);
-    }
-
-    private void createMeasures(UserApp userApp, final Random random) {
-        final List<Measure> measures = new ArrayList<>();
-        String dt = "2022-10-10";  // Start date
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(sdf.parse(dt));
-        } catch (ParseException e) {
-            throw new RuntimeException("Error al parsear");
-        }// number of days to add
-        for (int i = 0; i < 100; i++) {
-            c.add(Calendar.DATE, 1);
-            final Measure measure = new Measure(c.getTime(), null, 185.0, random.nextDouble(80, 90), random.nextDouble(10, 15), userApp, null);
-            measures.add(measure);
-        }
-        this.measureDao.saveAll(measures);
-
-    }
-
-    private void createSessions(UserApp userApp) {
-        final List<Session> sessions = new ArrayList<>();
+    private void createWorkouts(final UserApp userApp) {
+        final List<Workout> workouts = new ArrayList<>();
         String dt = "2022-10-20";  // Start date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c = Calendar.getInstance();
         try {
             c.setTime(sdf.parse(dt));
         } catch (ParseException e) {
-            throw new RuntimeException("Error al parsear");
+            e.printStackTrace();
+            return;
         }// number of days to add
         for (int i = 0; i < 5; i++) {
             c.add(Calendar.DATE, 1);
-            final Session session = new Session("Upper first", null, 0, c.getTime(), userApp, null, null);
+            workouts.add(new Workout(c.getTime(), null, userApp, null));
+        }
+        this.workoutDao.saveAll(workouts);
+    }
 
-            sessions.add(session);
+    private void createSets() {
+        final List<Exercise> exercises = this.exerciseDao.findAll();
+        final List<Session> sessions = this.sessionDao.findAll();
+        final List<Workout> workouts = this.workoutDao.findAll();
+        final List<SetGroup> setGroups = new ArrayList<>();
+        for (final Session session : sessions) {
+            for (int i = 0; i < 5; i++) {
+                int rnd = random.nextInt(exercises.size() - 1);
+                setGroups.add(new SetGroup("SessionSetGroup" + rnd, i, exercises.get(rnd), session, null, null));
+            }
+        }
+        for (final Workout workout : workouts) {
+            for (int i = 0; i < 5; i++) {
+                int rnd = random.nextInt(exercises.size() - 1);
+                setGroups.add(new SetGroup("WorkoutSetGroup" + rnd, i, exercises.get(rnd), null, workout, null));
+            }
+        }
+        this.setGroupDao.saveAll(setGroups);
+
+        final List<Set> sets = new ArrayList<>();
+        for (final SetGroup setGroup : setGroups) {
+            final int totalSeries = random.nextInt(2, 6);
+            for (int i = 0; i < totalSeries; i++) {
+                final int reps = random.nextInt(3, 15);
+                final double rir = random.nextDouble(0, 4);
+                final double weight = Math.round((random.nextDouble(5, 100)) * 100.0) / 100.0;
+                sets.add(new Set("SetDescription", i, reps, rir, weight, setGroup));
+            }
         }
 
-        this.sessionDao.saveAll(sessions);
+        setDao.saveAll(sets);
     }
 }

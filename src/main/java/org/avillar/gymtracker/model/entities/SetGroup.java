@@ -28,6 +28,10 @@ public class SetGroup extends BaseEntity {
     @JoinColumn(name = "session_id")
     private Session session;
 
+    @ManyToOne
+    @JoinColumn(name = "workout_id")
+    private Workout workout;
+
     @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private java.util.Set<Set> sets = new HashSet<>();
 }

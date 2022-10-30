@@ -40,5 +40,9 @@ public class UserApp extends BaseEntity {
     private Set<Session> sessions = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<Workout> workouts = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Measure> measures = new HashSet<>();
+
 }

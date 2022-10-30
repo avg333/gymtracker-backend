@@ -2,17 +2,20 @@ package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.model.dao.ProgramDao;
 import org.avillar.gymtracker.model.dto.ProgramDto;
+import org.avillar.gymtracker.model.entities.MuscleGroup;
 import org.avillar.gymtracker.model.entities.Program;
+import org.avillar.gymtracker.model.entities.Session;
+import org.avillar.gymtracker.model.entities.SetGroup;
 import org.avillar.gymtracker.services.LoginService;
 import org.avillar.gymtracker.services.ProgramService;
+import org.avillar.gymtracker.utils.VolumeCalculatorUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
@@ -20,15 +23,17 @@ public class ProgramServiceImpl implements ProgramService {
     private final ProgramDao programDao;
     private final ModelMapper modelMapper;
     private final LoginService loginService;
+    private final VolumeCalculatorUtils volumeCalculatorUtils;
 
     /**
      * {@inheritDoc}
      */
     @Autowired
-    public ProgramServiceImpl(ProgramDao programDao, ModelMapper modelMapper, LoginService loginService) {
+    public ProgramServiceImpl(ProgramDao programDao, ModelMapper modelMapper, LoginService loginService, VolumeCalculatorUtils volumeCalculatorUtils) {
         this.programDao = programDao;
         this.modelMapper = modelMapper;
         this.loginService = loginService;
+        this.volumeCalculatorUtils = volumeCalculatorUtils;
     }
 
     /**
@@ -41,9 +46,7 @@ public class ProgramServiceImpl implements ProgramService {
         final List<ProgramDto> programDtos = new ArrayList<>(programs.size());
 
         for (final Program program : programs) {
-            final ProgramDto programDto = this.modelMapper.map(program, ProgramDto.class);
-            programDto.setSessionNumber(program.getSessions().size());
-            programDtos.add(programDto);
+            programDtos.add(this.volumeCalculatorUtils.calculateProgramVolume(program));
         }
 
         return programDtos;
