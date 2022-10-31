@@ -2,10 +2,7 @@ package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.model.dao.ProgramDao;
 import org.avillar.gymtracker.model.dto.ProgramDto;
-import org.avillar.gymtracker.model.entities.MuscleGroup;
 import org.avillar.gymtracker.model.entities.Program;
-import org.avillar.gymtracker.model.entities.Session;
-import org.avillar.gymtracker.model.entities.SetGroup;
 import org.avillar.gymtracker.services.LoginService;
 import org.avillar.gymtracker.services.ProgramService;
 import org.avillar.gymtracker.utils.VolumeCalculatorUtils;
@@ -15,7 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {

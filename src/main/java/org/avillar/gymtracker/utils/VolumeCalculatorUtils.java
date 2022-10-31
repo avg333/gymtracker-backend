@@ -17,7 +17,7 @@ import java.util.Set;
 public class VolumeCalculatorUtils {
     private final ModelMapper modelMapper;
 
-    VolumeCalculatorUtils(ModelMapper modelMapper){
+    VolumeCalculatorUtils(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
@@ -50,8 +50,8 @@ public class VolumeCalculatorUtils {
             volTotal += sessionsVolume.get(i);
             exerTotal += exercisesPerSessions.get(i);
         }
-        programDto.setAverageVolumePerSession(volTotal/sessions.size());
-        programDto.setAverageExercisesNumberPerSession(exerTotal/sessions.size());
+        programDto.setAverageVolumePerSession(volTotal / sessions.size());
+        programDto.setAverageExercisesNumberPerSession(exerTotal / sessions.size());
 
         return programDto;
     }

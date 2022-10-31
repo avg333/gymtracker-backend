@@ -10,7 +10,6 @@ import org.avillar.gymtracker.model.enums.GenderEnum;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
@@ -37,10 +36,7 @@ public class UserApp extends BaseEntity {
     private Set<Program> programs = new HashSet<>();
 
     @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Session> sessions = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Workout> workouts = new LinkedHashSet<>();
+    private Set<Workout> workouts = new HashSet<>();
 
     @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Measure> measures = new HashSet<>();

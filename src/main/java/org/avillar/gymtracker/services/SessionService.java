@@ -3,14 +3,11 @@ package org.avillar.gymtracker.services;
 import org.avillar.gymtracker.model.dto.SessionDto;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Date;
 import java.util.List;
 
 public interface SessionService {
 
-    List<SessionDto> getAllProgramSessionsWithData(Long programId) throws IllegalAccessException;
-
-    List<SessionDto> getAllNotProgramsLoggedUserSessionsWithData();
+    List<SessionDto> getAllProgramSessions(Long programId) throws IllegalAccessException;
 
     /**
      * Devuelve el DTO de la entidad con el ID especificado
@@ -22,8 +19,6 @@ public interface SessionService {
      */
     SessionDto getSession(Long sessionId) throws EntityNotFoundException, IllegalAccessException;
 
-    List<SessionDto> getSessionByDate(Date date) throws EntityNotFoundException;
-
 
     /**
      * Crea una nueva entidad a partir del DTO. Si se especifica un ID y este ya existe, se le asigna otro.
@@ -33,9 +28,7 @@ public interface SessionService {
      * @throws EntityNotFoundException Se genera si no existe una entidad padre con ese ID
      * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    SessionDto createSessionInProgram(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException;
-
-    SessionDto createSession(SessionDto sessionDto) throws EntityNotFoundException;
+    SessionDto createSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException;
 
     /**
      * Actualiza la entidad con el ID del DTO a los campos del DTO si lo solicita su usuario propietario o un admin
@@ -45,8 +38,6 @@ public interface SessionService {
      * @throws EntityNotFoundException Se genera si no existe una entidad con ese ID
      * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    SessionDto updateProgramSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException;
-
     SessionDto updateSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException;
 
     /**
@@ -56,7 +47,5 @@ public interface SessionService {
      * @throws EntityNotFoundException Se genera si no existe una entidad con ese ID
      * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    void deleteProgramSession(Long sessionId) throws EntityNotFoundException, IllegalAccessException;
-
-    void deleteSession(Long sessionId) throws EntityNotFoundException, IllegalAccessException;
+    void deleteProgram(Long sessionId) throws EntityNotFoundException, IllegalAccessException;
 }

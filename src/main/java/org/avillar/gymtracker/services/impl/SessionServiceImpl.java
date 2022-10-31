@@ -27,8 +27,7 @@ public class SessionServiceImpl implements SessionService {
     private final LoginService loginService;
 
     @Autowired
-    public SessionServiceImpl(ProgramDao programDao, SessionDao sessionDao,
-                              LoginService loginService, ModelMapper modelMapper) {
+    public SessionServiceImpl(ProgramDao programDao, SessionDao sessionDao, LoginService loginService, ModelMapper modelMapper) {
         this.sessionDao = sessionDao;
         this.modelMapper = modelMapper;
         this.programDao = programDao;
@@ -40,19 +39,13 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<SessionDto> getAllProgramSessionsWithData(final Long programId) throws IllegalAccessException {
+    public List<SessionDto> getAllProgramSessions(final Long programId) throws IllegalAccessException {
         final Program program = this.programDao.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
         final List<Session> sessions = this.sessionDao.findByProgramOrderByListOrder(program);
         return this.getSessionsDtosWithVolume(sessions);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<SessionDto> getAllNotProgramsLoggedUserSessionsWithData() {
-        final List<Session> sessions = this.sessionDao.findByUserAppAndProgramIsNullOrderByDateDesc(this.loginService.getLoggedUser());
-        return this.getSessionsDtosWithVolume(sessions);
-    }
 
     private List<SessionDto> getSessionsDtosWithVolume(List<Session> sessions) {
         final List<SessionDto> sessionDtos = new ArrayList<>(sessions.size());
@@ -83,14 +76,8 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     public SessionDto getSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionDao.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.loginService.checkAccess(session);
+        this.loginService.checkAccess(session.getProgram());
         return this.modelMapper.map(session, SessionDto.class);
-    }
-
-    @Override
-    public List<SessionDto> getSessionByDate(Date date) throws EntityNotFoundException {
-        final List<Session> sessions = this.sessionDao.findByDateAndUserAppAndProgramIsNullOrderByDateDesc(date, this.loginService.getLoggedUser());
-        return this.getSessionsDtosWithVolume(sessions);
     }
 
     /**
@@ -98,13 +85,11 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     @Transactional
-    public SessionDto createSessionInProgram(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
+    public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
         final Program program = this.programDao.findById(sessionDto.getProgramId()).orElseThrow(()
                 -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
-        session.setDate(null);
-        session.setUserApp(this.loginService.getLoggedUser());
 
         final int sessionsSize = this.sessionDao.findByProgramOrderByListOrder(program).size();
         if (session.getListOrder() == null || session.getListOrder() > sessionsSize || session.getListOrder() < 0) {
@@ -118,22 +103,13 @@ public class SessionServiceImpl implements SessionService {
         return this.modelMapper.map(session, SessionDto.class);
     }
 
-    @Override
-    @Transactional
-    public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException {
-        final Session session = this.modelMapper.map(sessionDto, Session.class);
-        session.setUserApp(this.loginService.getLoggedUser());
-        session.setListOrder(null);
-        return this.modelMapper.map(this.sessionDao.save(session), SessionDto.class);
-    }
-
 
     /**
      * {@inheritDoc}
      */
     @Override
     @Transactional
-    public SessionDto updateProgramSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
+    public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
         final Session sessionDb = this.sessionDao.findById(sessionDto.getId()).orElseThrow(()
                 -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(sessionDb.getProgram());
@@ -141,9 +117,7 @@ public class SessionServiceImpl implements SessionService {
                 -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
-        this.loginService.checkAccess(sessionDb);
-        session.setDate(null);
-        session.setUserApp(this.loginService.getLoggedUser());
+        this.loginService.checkAccess(sessionDb.getProgram());
 
         final int oldPosition = sessionDb.getListOrder();
         this.sessionDao.save(session);
@@ -152,28 +126,15 @@ public class SessionServiceImpl implements SessionService {
         return this.modelMapper.map(session, SessionDto.class);
     }
 
-    @Override
-    @Transactional
-    public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
-        final Session sessionDb = this.sessionDao.findById(sessionDto.getId()).orElseThrow(()
-                -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.loginService.checkAccess(sessionDb);
-        final Session session = this.modelMapper.map(sessionDto, Session.class);
-        session.setProgram(null);
-        session.setListOrder(null);
-        session.setUserApp(this.loginService.getLoggedUser());
-
-        return this.modelMapper.map(this.sessionDao.save(session), SessionDto.class);
-    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     @Transactional
-    public void deleteProgramSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
+    public void deleteProgram(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionDao.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.loginService.checkAccess(session);
+        this.loginService.checkAccess(session.getProgram());
 
         final Integer sessionPosition = session.getListOrder();
         this.sessionDao.deleteById(sessionId);
@@ -181,17 +142,6 @@ public class SessionServiceImpl implements SessionService {
         this.reorderAllProgramSessionsAfterDelete(session.getProgram(), sessionPosition);
     }
 
-    @Override
-    @Transactional
-    public void deleteSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
-        final Session session = this.sessionDao.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        if (session.getProgram() != null) {
-            this.deleteProgramSession(sessionId);
-        } else {
-            this.loginService.checkAccess(session);
-            this.sessionDao.deleteById(sessionId);
-        }
-    }
 
     private void reorderAllProgramSessionsAfterDelete(final Program program, final int sessionPosition) {
         final List<Session> sessions = this.sessionDao.findByProgramOrderByListOrder(program);

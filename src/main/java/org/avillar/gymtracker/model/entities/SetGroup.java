@@ -15,14 +15,12 @@ import java.util.HashSet;
 @Entity
 public class SetGroup extends BaseEntity {
 
-    @Column()
     private String description;
-
     @Column(nullable = false)
     private Integer listOrder;
 
     @ManyToOne
-    @JoinColumn(name = "exercise_id")
+    @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
     @ManyToOne
     @JoinColumn(name = "session_id")

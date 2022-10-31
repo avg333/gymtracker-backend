@@ -53,7 +53,7 @@ public class DataLoader implements ApplicationRunner {
         final UserApp user = this.userDao.save(new UserApp(
                 "chema", new BCryptPasswordEncoder().encode("chema69"), null, "Chema",
                 "Garcia", "Romero", null, GenderEnum.MALE, ActivityLevelEnum.EXTREME,
-                null, null, null, null, null));
+                null, null, null, null));
         this.createMeasures(user);
         this.createExercisesWithMuscleGroups();
 
