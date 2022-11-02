@@ -63,7 +63,7 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://gymtracker-frontend.herokuapp.com", "https://gymtracker-frontend.herokuapp.com", "http://localhost:8080"));
+        configuration.setAllowedOrigins(Arrays.asList("http://gymtracker-frontend.herokuapp.com", "http://gymtracker-frontend.herokuapp.com/","https://gymtracker-frontend.herokuapp.com", "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
