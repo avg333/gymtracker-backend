@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.model.dao.ProgramDao;
+import org.avillar.gymtracker.model.dao.UserDao;
 import org.avillar.gymtracker.model.dto.ProgramDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -43,24 +45,26 @@ class ProgramServiceImplTest {
     private ModelMapper modelMapper;
     @InjectMocks
     private ProgramServiceImpl programService;
+    @InjectMocks
+    private UserDao userDao;
 
     @BeforeEach
     public void setUp() {
-        final UserApp user = new UserApp();
-        user.setId(USER_ID);
-        when(loginService.getLoggedUser()).thenReturn(user);
+        UserApp user = new UserApp();
+        user.setId(ProgramServiceImplTest.USER_ID);
+        when(this.loginService.getLoggedUser()).thenReturn(user);
 
-        programService = new ProgramServiceImpl(programDao, modelMapper, loginService);
+        this.programService = new ProgramServiceImpl(this.programDao, this.modelMapper, this.loginService, this.userDao);
     }
 
     @Test
     void getUserAllProgramsWithVolume() {
-        final List<Program> programList = Arrays.asList(getProgramWithUserId(PROGRAM_ID, USER_ID, 2),
-                getProgramWithUserId(PROGRAM_ID + 1, USER_ID, 3),
-                getProgramWithUserId(PROGRAM_ID + 2, USER_ID, 0));
+        List<Program> programList = Arrays.asList(this.getProgramWithUserId(ProgramServiceImplTest.PROGRAM_ID, ProgramServiceImplTest.USER_ID, 2),
+                this.getProgramWithUserId(ProgramServiceImplTest.PROGRAM_ID + 1, ProgramServiceImplTest.USER_ID, 3),
+                this.getProgramWithUserId(ProgramServiceImplTest.PROGRAM_ID + 2, ProgramServiceImplTest.USER_ID, 0));
 
-        when(this.programDao.findByUserAppOrderByNameAsc(Mockito.any(UserApp.class))).thenReturn(programList);
-        final List<ProgramDto> programListDtos = this.programService.getUserAllLoggedUserProgramsWithVolume();
+        when(programDao.findByUserAppOrderByNameAsc(ArgumentMatchers.any(UserApp.class))).thenReturn(programList);
+        List<ProgramDto> programListDtos = programService.getAllUserPrograms(ProgramServiceImplTest.USER_ID);
 
         assertEquals(programList.size(), programListDtos.size());
         for (int i = 0; i < programList.size(); i++) {
@@ -72,30 +76,30 @@ class ProgramServiceImplTest {
 
     @Test
     void getProgram() throws IllegalAccessException {
-        Program program = getProgramWithUserId(PROGRAM_ID, USER_ID, 0);
+        Program program = this.getProgramWithUserId(ProgramServiceImplTest.PROGRAM_ID, ProgramServiceImplTest.USER_ID, 0);
 
-        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
-        final ProgramDto programDto = this.programService.getProgram(PROGRAM_ID);
+        when(this.programDao.findById(ProgramServiceImplTest.PROGRAM_ID)).thenReturn(Optional.of(program));
+        ProgramDto programDto = programService.getProgram(ProgramServiceImplTest.PROGRAM_ID);
 
         assertEquals(program.getId(), programDto.getId());
         assertEquals(program.getName(), programDto.getName());
 
-        program = getProgramWithUserId(null, NOT_USER_ID, 0);
-        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
+        program = this.getProgramWithUserId(null, ProgramServiceImplTest.NOT_USER_ID, 0);
+        when(this.programDao.findById(ProgramServiceImplTest.PROGRAM_ID)).thenReturn(Optional.of(program));
 
-        final Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.getProgram(PROGRAM_ID));
-        assertEquals(NO_PERMISSIONS, exception.getMessage());
+        Exception exception = assertThrows(IllegalAccessException.class, () -> programService.getProgram(ProgramServiceImplTest.PROGRAM_ID));
+        assertEquals(ProgramServiceImplTest.NO_PERMISSIONS, exception.getMessage());
     }
 
     @Test
     void createProgram() {
-        final ProgramDto programDtoInput = new ProgramDto();
-        programDtoInput.setId(PROGRAM_ID);
-        programDtoInput.setName(String.valueOf(PROGRAM_ID));
+        ProgramDto programDtoInput = new ProgramDto();
+        programDtoInput.setId(ProgramServiceImplTest.PROGRAM_ID);
+        programDtoInput.setName(String.valueOf(ProgramServiceImplTest.PROGRAM_ID));
         programDtoInput.setLevel(ProgramLevelEnum.HARD);
 
-        when(this.programDao.save(Mockito.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
-        final ProgramDto programDtoOutput = this.programService.createProgram(programDtoInput);
+        when(programDao.save(ArgumentMatchers.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
+        ProgramDto programDtoOutput = programService.createProgram(programDtoInput);
 
         assertEquals(programDtoInput.getId(), programDtoOutput.getId());
         assertEquals(programDtoInput.getName(), programDtoOutput.getName());
@@ -104,60 +108,60 @@ class ProgramServiceImplTest {
 
     @Test
     void updateProgram() throws IllegalAccessException {
-        final ProgramDto programDtoInput = new ProgramDto();
-        programDtoInput.setId(PROGRAM_ID);
-        programDtoInput.setName(String.valueOf(PROGRAM_ID));
+        ProgramDto programDtoInput = new ProgramDto();
+        programDtoInput.setId(ProgramServiceImplTest.PROGRAM_ID);
+        programDtoInput.setName(String.valueOf(ProgramServiceImplTest.PROGRAM_ID));
         programDtoInput.setLevel(ProgramLevelEnum.HARD);
-        when(this.programDao.save(Mockito.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(programDao.save(ArgumentMatchers.any(Program.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Program program = getProgramWithUserId(programDtoInput.getId(), USER_ID, 0);
-        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
-        final ProgramDto programDtoOutput = this.programService.updateProgram(programDtoInput);
+        Program program = this.getProgramWithUserId(programDtoInput.getId(), ProgramServiceImplTest.USER_ID, 0);
+        when(this.programDao.findById(ProgramServiceImplTest.PROGRAM_ID)).thenReturn(Optional.of(program));
+        ProgramDto programDtoOutput = programService.updateProgram(programDtoInput);
         assertEquals(programDtoInput.getId(), programDtoOutput.getId());
         assertEquals(programDtoInput.getName(), programDtoOutput.getName());
         assertEquals(programDtoInput.getLevel(), programDtoOutput.getLevel());
 
         programDtoInput.setId(null);
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> this.programService.updateProgram(programDtoInput));
-        assertEquals(NOT_FOUND_ERROR_MSG, exception.getMessage());
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> programService.updateProgram(programDtoInput));
+        assertEquals(ProgramServiceImplTest.NOT_FOUND_ERROR_MSG, exception.getMessage());
 
-        program = getProgramWithUserId(programDtoInput.getId(), NOT_USER_ID, 0);
-        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
-        exception = assertThrows(IllegalAccessException.class, () -> this.programService.getProgram(PROGRAM_ID));
-        assertEquals(NO_PERMISSIONS, exception.getMessage());
+        program = this.getProgramWithUserId(programDtoInput.getId(), ProgramServiceImplTest.NOT_USER_ID, 0);
+        when(this.programDao.findById(ProgramServiceImplTest.PROGRAM_ID)).thenReturn(Optional.of(program));
+        exception = assertThrows(IllegalAccessException.class, () -> programService.getProgram(ProgramServiceImplTest.PROGRAM_ID));
+        assertEquals(ProgramServiceImplTest.NO_PERMISSIONS, exception.getMessage());
     }
 
     @Test
     void deleteProgram() {
-        final Program program = getProgramWithUserId(PROGRAM_ID, NOT_USER_ID, 0);
-        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
-        Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.deleteProgram(PROGRAM_ID));
-        assertEquals(NO_PERMISSIONS, exception.getMessage());
+        Program program = this.getProgramWithUserId(ProgramServiceImplTest.PROGRAM_ID, ProgramServiceImplTest.NOT_USER_ID, 0);
+        when(this.programDao.findById(ProgramServiceImplTest.PROGRAM_ID)).thenReturn(Optional.of(program));
+        final Exception exception = assertThrows(IllegalAccessException.class, () -> programService.deleteProgram(ProgramServiceImplTest.PROGRAM_ID));
+        assertEquals(ProgramServiceImplTest.NO_PERMISSIONS, exception.getMessage());
     }
 
     @Test
     void programExistsAndIsFromLoggedUser() {
-        final Program program = getProgramWithUserId(PROGRAM_ID, NOT_USER_ID, 0);
-        when(programDao.findById(PROGRAM_ID)).thenReturn(Optional.of(program));
-        Exception exception = assertThrows(IllegalAccessException.class, () -> this.programService.programExistsAndIsFromLoggedUser(PROGRAM_ID));
-        assertEquals(NO_PERMISSIONS, exception.getMessage());
+        Program program = this.getProgramWithUserId(ProgramServiceImplTest.PROGRAM_ID, ProgramServiceImplTest.NOT_USER_ID, 0);
+        when(this.programDao.findById(ProgramServiceImplTest.PROGRAM_ID)).thenReturn(Optional.of(program));
+        Exception exception = assertThrows(IllegalAccessException.class, () -> programService.programExistsAndIsFromLoggedUser(ProgramServiceImplTest.PROGRAM_ID));
+        assertEquals(ProgramServiceImplTest.NO_PERMISSIONS, exception.getMessage());
 
-        when(programDao.findById(NOT_PROGRAM_ID)).thenThrow(new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        exception = assertThrows(EntityNotFoundException.class, () -> this.programService.programExistsAndIsFromLoggedUser(NOT_PROGRAM_ID));
-        assertEquals(NOT_FOUND_ERROR_MSG, exception.getMessage());
+        when(this.programDao.findById(ProgramServiceImplTest.NOT_PROGRAM_ID)).thenThrow(new EntityNotFoundException(ProgramServiceImplTest.NOT_FOUND_ERROR_MSG));
+        exception = assertThrows(EntityNotFoundException.class, () -> programService.programExistsAndIsFromLoggedUser(ProgramServiceImplTest.NOT_PROGRAM_ID));
+        assertEquals(ProgramServiceImplTest.NOT_FOUND_ERROR_MSG, exception.getMessage());
     }
 
-    private Program getProgramWithUserId(final Long programId, final Long userId, final int numberSessions) {
-        final UserApp userApp = new UserApp();
+    private Program getProgramWithUserId(Long programId, Long userId, int numberSessions) {
+        UserApp userApp = new UserApp();
         userApp.setId(userId);
-        final Program program = new Program();
+        Program program = new Program();
         program.setId(programId);
         program.setName(String.valueOf(programId));
         program.setUserApp(userApp);
 
-        final Set<Session> sessionsProgram = new HashSet<>();
+        Set<Session> sessionsProgram = new HashSet<>();
         for (int i = 0; i < numberSessions; i++) {
-            final Session session = new Session();
+            Session session = new Session();
             session.setId((long) i);
             sessionsProgram.add(session);
         }

@@ -31,14 +31,15 @@ public class SessionController {
 
     @PostMapping("/sessions")
     public ResponseEntity<SessionDto> postSession(@RequestBody final SessionDto sessionDto) throws IllegalAccessException {
+        if (null != sessionDto.getId())
+            return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(this.sessionService.createSession(sessionDto));
     }
 
     @PutMapping("/sessions/{sessionId}")
     public ResponseEntity<SessionDto> putSession(@PathVariable final Long sessionId, @RequestBody final SessionDto sessionDto) throws IllegalAccessException {
-        if (!sessionId.equals(sessionDto.getId())) {
+        if (!sessionId.equals(sessionDto.getId()))
             return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(this.sessionService.updateSession(sessionDto));
     }
 

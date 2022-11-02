@@ -1,36 +1,47 @@
 package org.avillar.gymtracker.services.impl;
 
 import org.avillar.gymtracker.model.dao.MeasureDao;
+import org.avillar.gymtracker.model.dao.UserDao;
 import org.avillar.gymtracker.model.dto.MeasureDto;
 import org.avillar.gymtracker.model.entities.Measure;
+import org.avillar.gymtracker.model.entities.UserApp;
 import org.avillar.gymtracker.services.LoginService;
 import org.avillar.gymtracker.services.MeasureService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class MeasureServiceImpl implements MeasureService {
+public class MeasureServiceImpl extends BaseService implements MeasureService {
     private static final String NOT_FOUND_ERROR_MSG = "La medición no existe";
 
     private final MeasureDao measureDao;
-    private final ModelMapper modelMapper;
-    private final LoginService loginService;
+    private final UserDao userDao;
 
-    public MeasureServiceImpl(MeasureDao measureDao, ModelMapper modelMapper, LoginService loginService) {
+    @Autowired
+    public MeasureServiceImpl(MeasureDao measureDao, UserDao userDao) {
         this.measureDao = measureDao;
-        this.modelMapper = modelMapper;
-        this.loginService = loginService;
+        this.userDao = userDao;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MeasureDto> getAllLoggedUserMeasures() throws IllegalAccessException {
-        final List<Measure> measures = this.measureDao.findByUserAppOrderByDateDesc(this.loginService.getLoggedUser());
-        return measures.stream().map(measure -> modelMapper.map(measure, MeasureDto.class)).toList();
+    public List<MeasureDto> getAllUserMeasures(final Long userId) throws IllegalAccessException {
+        final UserApp userApp = this.userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final List<Measure> measures = this.measureDao.findByUserAppOrderByDateDesc(userApp);
+        final List<MeasureDto> measureDtos = new ArrayList<>(measures.size());
+
+        for(final Measure measure: measures){
+            this.loginService.checkAccess(measure);
+            measureDtos.add(this.modelMapper.map(measure, MeasureDto.class));
+        }
+
+        return measureDtos;
     }
 
     @Override

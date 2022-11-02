@@ -12,7 +12,7 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     @Override
     public Optional<String> getCurrentAuditor() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null) {
+        if (null == auth) {
             return Optional.empty();
         }
         final MyUserDetails myUserDetails = (MyUserDetails) auth.getPrincipal();

@@ -1,99 +1,85 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.model.dao.SetDao;
+import org.avillar.gymtracker.model.dao.ExerciseDao;
+import org.avillar.gymtracker.model.dao.SessionDao;
 import org.avillar.gymtracker.model.dao.SetGroupDao;
+import org.avillar.gymtracker.model.dao.WorkoutDao;
 import org.avillar.gymtracker.model.dto.ExerciseDto;
-import org.avillar.gymtracker.model.dto.SessionDto;
 import org.avillar.gymtracker.model.dto.SetDto;
 import org.avillar.gymtracker.model.dto.SetGroupDto;
 import org.avillar.gymtracker.model.entities.Exercise;
 import org.avillar.gymtracker.model.entities.Session;
-import org.avillar.gymtracker.model.entities.Set;
 import org.avillar.gymtracker.model.entities.SetGroup;
-import org.avillar.gymtracker.services.ExerciseService;
-import org.avillar.gymtracker.services.ProgramService;
-import org.avillar.gymtracker.services.SessionService;
+import org.avillar.gymtracker.model.entities.Workout;
 import org.avillar.gymtracker.services.SetGroupService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Service
-public class SetGroupServiceImpl implements SetGroupService {
+public class SetGroupServiceImpl extends BaseService implements SetGroupService {
     private static final String NOT_FOUND_ERROR_MSG = "El SetGroup no existe";
 
     private final SetGroupDao setGroupDao;
-    private final ProgramService programService;
-    private final SessionService sessionService;
-    private final ExerciseService exerciseService;
-    private final SetDao setDao;
-    private final ModelMapper modelMapper;
+    private final SessionDao sessionDao;
+    private final WorkoutDao workoutDao;
+    private final ExerciseDao exerciseDao;
 
     @Autowired
-    public SetGroupServiceImpl(SetGroupDao setGroupDao, SetDao setDao, ExerciseService exerciseService, ProgramService programService, SessionService sessionService, ModelMapper modelMapper) {
-        this.programService = programService;
+    public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao, ExerciseDao exerciseDao) {
         this.setGroupDao = setGroupDao;
-        this.sessionService = sessionService;
-        this.modelMapper = modelMapper;
-        this.exerciseService = exerciseService;
-        this.setDao = setDao;
+        this.sessionDao = sessionDao;
+        this.workoutDao = workoutDao;
+        this.exerciseDao = exerciseDao;
     }
 
     @Override
-    public List<SetGroupDto> getAllSessionSetGroups(Long sessionId) throws IllegalAccessException {
-        final SessionDto sessionDto = this.sessionService.getSession(sessionId);
-        final Session session = this.modelMapper.map(sessionDto, Session.class);
+    @Transactional(readOnly = true)
+    public List<SetGroupDto> getAllSessionSetGroups(final Long sessionId) throws IllegalAccessException {
+        final Session session = this.sessionDao.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(session.getProgram());
         final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(session);
-        final List<SetGroupDto> setGroupDtos = new ArrayList<>(setGroups.size());
-
-        for (final SetGroup setGroup : setGroups) {
-            final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
-            final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getExerciseId());
-            final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
-            setGroupDto.setExerciseDto(exerciseDto);
-            final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
-            final List<SetDto> setDtos = new ArrayList<>(sets.size());
-            for (final Set set : sets) {
-                setDtos.add(this.modelMapper.map(set, SetDto.class));
-            }
-            setGroupDto.setSetDtoList(setDtos);
-            setGroupDtos.add(setGroupDto);
-        }
-
-        return setGroupDtos;
+        return setGroups.stream().map(this::makeSetGroupDto).toList();
     }
 
     @Override
-    public SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
-        final SetGroup setGroup = this.setGroupDao.findById(setGroupId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.programService.programExistsAndIsFromLoggedUser(setGroup.getSession().getProgram().getId());
+    @Transactional(readOnly = true)
+    public List<SetGroupDto> getAllWorkoutSetGroups(final Long workoutId) throws IllegalAccessException {
+        final Workout workout = this.workoutDao.findById(workoutId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(workout);
+        final List<SetGroup> setGroups = this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout);
+        return setGroups.stream().map(this::makeSetGroupDto).toList();
+    }
+
+    private SetGroupDto makeSetGroupDto(final SetGroup setGroup) {
         final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
-        final Exercise exercise = this.exerciseService.getExercise(setGroupDto.getExerciseId());
-        final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
-        setGroupDto.setExerciseDto(exerciseDto);
-        final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
-        final List<SetDto> setDtos = new ArrayList<>(sets.size());
-        for (final Set set : sets) {
-            setDtos.add(this.modelMapper.map(set, SetDto.class));
-        }
-        setGroupDto.setSetDtoList(setDtos);
+        final Exercise exercise = this.exerciseDao.findById(setGroupDto.getExerciseId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        setGroupDto.setExerciseDto(this.modelMapper.map(exercise, ExerciseDto.class));
+        setGroupDto.setSetDtoList(setGroup.getSets().stream().map(set -> this.modelMapper.map(set, SetDto.class)).toList());
         return setGroupDto;
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
+        final SetGroup setGroup = this.setGroupDao.findById(setGroupId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(setGroup);
+        return this.makeSetGroupDto(setGroup);
+    }
+
+    @Override
+    @Transactional
     public SetGroupDto createSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
-        final SessionDto sessionDto = this.sessionService.getSession(setGroupDto.getSessionId());
-        final Session session = this.modelMapper.map(sessionDto, Session.class);
+        final Session session = this.sessionDao.findById(setGroupDto.getSessionId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(session.getProgram());
 
         final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
         final int setGroupsSize = this.setGroupDao.findBySessionOrderByListOrderAsc(session).size();
-        if (setGroup.getListOrder() == null || setGroup.getListOrder() > setGroupsSize || setGroup.getListOrder() < 0) {
+        if (null == setGroup.getListOrder() || setGroup.getListOrder() > setGroupsSize || 0 > setGroup.getListOrder()) {
             setGroup.setListOrder(setGroupsSize);
             this.setGroupDao.save(setGroup);
         } else {
@@ -105,13 +91,14 @@ public class SetGroupServiceImpl implements SetGroupService {
     }
 
     @Override
+    @Transactional
     public SetGroupDto updateSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
-        if (setGroupDto.getId() == null) {
+        if (null == setGroupDto.getId()) {
             throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
         }
         final SetGroup setGroupDb = this.setGroupDao.findById(setGroupDto.getId()).orElseThrow(() ->
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.programService.programExistsAndIsFromLoggedUser(setGroupDb.getSession().getProgram().getId());
+        this.loginService.checkAccess(setGroupDb);
         final SetGroup setGroup = this.modelMapper.map(setGroupDto, SetGroup.class);
 
         final int oldPosition = setGroupDb.getListOrder();
@@ -122,17 +109,16 @@ public class SetGroupServiceImpl implements SetGroupService {
     }
 
     @Override
+    @Transactional
     public void deleteSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
-        final SetGroup setGroup = this.setGroupDao.findById(setGroupId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.programService.programExistsAndIsFromLoggedUser(setGroup.getSession().getProgram().getId());
+        final SetGroup setGroup = this.setGroupDao.findById(setGroupId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(setGroup);
 
         final int setGroupPosition = setGroup.getListOrder();
         this.setGroupDao.deleteById(setGroupId);
 
         this.reorderAllSessionSetGroupsAfterDelete(setGroup.getSession(), setGroupPosition);
     }
-
 
     private void reorderAllSessionSetGroupsAfterDelete(final Session session, final int sessionPosition) {
         final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(session);
@@ -148,7 +134,6 @@ public class SetGroupServiceImpl implements SetGroupService {
 
         this.setGroupDao.saveAll(setGroups);
     }
-
 
     private void reorderAllSessionSetGroupsAfterUpdate(final Session session, final SetGroup newSetGroup, int oldPosition) {
         final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(session);
@@ -175,7 +160,6 @@ public class SetGroupServiceImpl implements SetGroupService {
 
         this.setGroupDao.saveAll(setGroups);
     }
-
 
     private void reorderAllSessionSetGroupsAfterPost(final Session session, final SetGroup newSetGroup) {
         final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(session);

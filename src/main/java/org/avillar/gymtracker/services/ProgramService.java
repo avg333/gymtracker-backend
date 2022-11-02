@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProgramService {
 
-    List<ProgramDto> getUserAllLoggedUserProgramsWithVolume();
+    List<ProgramDto> getAllUserPrograms(Long userId) throws IllegalAccessException;
 
     /**
      * Devuelve el DTO de la entidad con el ID especificado
@@ -45,13 +45,4 @@ public interface ProgramService {
      * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
     void deleteProgram(Long programId) throws EntityNotFoundException, IllegalAccessException;
-
-    /**
-     * Verifica que la entidad con el ID especificado exista y pertenezca al usuario logeado
-     *
-     * @param programId ID de la entidad a verificar
-     * @throws EntityNotFoundException Se genera si no existe una entidad con ese ID
-     * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
-     */
-    void programExistsAndIsFromLoggedUser(Long programId) throws EntityNotFoundException, IllegalAccessException;
 }

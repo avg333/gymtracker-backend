@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api/measures")
+@RequestMapping("/api")
 public class MeasureController {
 
     private final MeasureService measureService;
@@ -20,33 +20,31 @@ public class MeasureController {
         this.measureService = measureService;
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<MeasureDto>> getAllMeasures() throws IllegalAccessException {
-        return ResponseEntity.ok(this.measureService.getAllLoggedUserMeasures());
+    @GetMapping("/users/{userId}/measures")
+    public ResponseEntity<List<MeasureDto>> getAllMeasures(@PathVariable final Long userId) throws IllegalAccessException {
+        return ResponseEntity.ok(this.measureService.getAllUserMeasures(userId));
     }
 
-    @GetMapping("/{measureId}")
+    @GetMapping("/measures/{measureId}")
     public ResponseEntity<MeasureDto> getMeasureById(@PathVariable final Long measureId) throws IllegalAccessException {
         return ResponseEntity.ok(this.measureService.getMeasure(measureId));
     }
 
-    @PostMapping("")
+    @PostMapping("/measures")
     public ResponseEntity<MeasureDto> addMeasure(@RequestBody final MeasureDto measureDto) {
-        if (measureDto.getId() != null) {
+        if (null != measureDto.getId())
             return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(this.measureService.createMeasure(measureDto));
     }
 
-    @PutMapping("/{measureId}")
+    @PutMapping("/measures/{measureId}")
     public ResponseEntity<MeasureDto> updateMeasure(@PathVariable final Long measureId, @RequestBody final MeasureDto measureDto) throws IllegalAccessException {
-        if (!measureId.equals(measureDto.getId())) {
+        if (!measureId.equals(measureDto.getId()))
             return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(this.measureService.updateMeasure(measureDto));
     }
 
-    @DeleteMapping("/{measureId}")
+    @DeleteMapping("/measures/{measureId}")
     public ResponseEntity<Void> deleteMeasure(@PathVariable final Long measureId) throws IllegalAccessException {
         this.measureService.deleteMeasure(measureId);
         return ResponseEntity.ok().build();

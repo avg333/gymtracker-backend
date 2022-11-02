@@ -31,14 +31,15 @@ public class SetController {
 
     @PostMapping("sets")
     public ResponseEntity<SetDto> postSet(@RequestBody final SetDto setDto) throws IllegalAccessException {
+        if (null != setDto.getId())
+            return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(this.setService.createSet(setDto));
     }
 
     @PutMapping("sets/{setId}")
     public ResponseEntity<SetDto> updateSet(@PathVariable final Long setId, @RequestBody final SetDto setDto) throws IllegalAccessException {
-        if (!setId.equals(setDto.getId())) {
+        if (!setId.equals(setDto.getId()))
             return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(this.setService.updateSet(setDto));
     }
 

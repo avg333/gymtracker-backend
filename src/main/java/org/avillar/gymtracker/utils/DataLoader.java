@@ -64,7 +64,7 @@ public class DataLoader implements ApplicationRunner {
 
     private void createMeasures(final UserApp userApp) {
         final List<Measure> measures = new ArrayList<>();
-        String dt = "2022-10-10";  // Start date
+        final String dt = "2022-10-10";  // Start date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c = Calendar.getInstance();
         try {
@@ -73,7 +73,7 @@ public class DataLoader implements ApplicationRunner {
             e.printStackTrace();
             return;
         }
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; 100 > i; i++) {
             c.add(Calendar.DATE, 1);
             final Measure measure = new Measure(
                     c.getTime(), null, 185.0, random.nextDouble(80, 90),
@@ -162,7 +162,7 @@ public class DataLoader implements ApplicationRunner {
 
     private void createWorkouts(final UserApp userApp) {
         final List<Workout> workouts = new ArrayList<>();
-        String dt = "2022-10-20";  // Start date
+        final String dt = "2022-10-20";  // Start date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c = Calendar.getInstance();
         try {
@@ -171,7 +171,7 @@ public class DataLoader implements ApplicationRunner {
             e.printStackTrace();
             return;
         }// number of days to add
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; 5 > i; i++) {
             c.add(Calendar.DATE, 1);
             workouts.add(new Workout(c.getTime(), null, userApp, null));
         }
@@ -184,13 +184,13 @@ public class DataLoader implements ApplicationRunner {
         final List<Workout> workouts = this.workoutDao.findAll();
         final List<SetGroup> setGroups = new ArrayList<>();
         for (final Session session : sessions) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; 5 > i; i++) {
                 int rnd = random.nextInt(exercises.size() - 1);
                 setGroups.add(new SetGroup("SessionSetGroup" + rnd, i, exercises.get(rnd), session, null, null));
             }
         }
         for (final Workout workout : workouts) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; 5 > i; i++) {
                 int rnd = random.nextInt(exercises.size() - 1);
                 setGroups.add(new SetGroup("WorkoutSetGroup" + rnd, i, exercises.get(rnd), null, workout, null));
             }

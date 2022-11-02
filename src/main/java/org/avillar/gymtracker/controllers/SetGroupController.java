@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class SetGroupController {
-    private static final String NOT_FOUND_ERROR_MSG = "El SetGroup no existe";
 
     private final SetGroupService setGroupService;
 
@@ -20,9 +19,14 @@ public class SetGroupController {
         this.setGroupService = setGroupService;
     }
 
-    @GetMapping("/session/{sessionId}/setGroups")
+    @GetMapping("/sessions/{sessionId}/setGroups")
     public ResponseEntity<List<SetGroupDto>> getAllSessionSetGroups(@PathVariable final Long sessionId) throws IllegalAccessException {
         return ResponseEntity.ok(this.setGroupService.getAllSessionSetGroups(sessionId));
+    }
+
+    @GetMapping("/workouts/{workoutId}/setGroups")
+    public ResponseEntity<List<SetGroupDto>> getAllWorkoutSetGroups(@PathVariable final Long workoutId) throws IllegalAccessException {
+        return ResponseEntity.ok(this.setGroupService.getAllWorkoutSetGroups(workoutId));
     }
 
     @GetMapping("/setGroups/{setGroupId}")
@@ -32,14 +36,15 @@ public class SetGroupController {
 
     @PostMapping("/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroup(@RequestBody final SetGroupDto setGroupDto) throws IllegalAccessException {
+        if (null != setGroupDto.getId())
+            return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(this.setGroupService.createSetGroup(setGroupDto));
     }
 
     @PutMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> putSetGroup(@PathVariable final Long setGroupId, @RequestBody final SetGroupDto setGroupDto) throws IllegalAccessException {
-        if (!setGroupId.equals(setGroupDto.getId())) {
+        if (!setGroupId.equals(setGroupDto.getId()))
             return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(this.setGroupService.updateSetGroup(setGroupDto));
     }
 
@@ -48,5 +53,4 @@ public class SetGroupController {
         this.setGroupService.deleteSetGroup(setGroupId);
         return ResponseEntity.ok().build();
     }
-
 }

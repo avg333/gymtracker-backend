@@ -5,73 +5,42 @@ import org.avillar.gymtracker.model.dao.SessionDao;
 import org.avillar.gymtracker.model.dto.SessionDto;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
-import org.avillar.gymtracker.model.entities.SetGroup;
-import org.avillar.gymtracker.services.LoginService;
 import org.avillar.gymtracker.services.SessionService;
-import org.modelmapper.ModelMapper;
+import org.avillar.gymtracker.utils.VolumeCalculatorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 @Service
-public class SessionServiceImpl implements SessionService {
+public class SessionServiceImpl extends BaseService implements SessionService {
     private static final String NOT_FOUND_PARENT_ERROR_MSG = "El programa no existe";
     private static final String NOT_FOUND_ERROR_MSG = "La sesión no existe";
 
     private final SessionDao sessionDao;
     private final ProgramDao programDao;
-    private final ModelMapper modelMapper;
-    private final LoginService loginService;
+    private final VolumeCalculatorUtils volumeCalculatorUtils;
+
 
     @Autowired
-    public SessionServiceImpl(ProgramDao programDao, SessionDao sessionDao, LoginService loginService, ModelMapper modelMapper) {
+    public SessionServiceImpl(ProgramDao programDao, SessionDao sessionDao, VolumeCalculatorUtils volumeCalculatorUtils) {
         this.sessionDao = sessionDao;
-        this.modelMapper = modelMapper;
         this.programDao = programDao;
-        this.loginService = loginService;
+        this.volumeCalculatorUtils = volumeCalculatorUtils;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Transactional(readOnly = true)
     public List<SessionDto> getAllProgramSessions(final Long programId) throws IllegalAccessException {
         final Program program = this.programDao.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
         final List<Session> sessions = this.sessionDao.findByProgramOrderByListOrder(program);
-        return this.getSessionsDtosWithVolume(sessions);
+        return sessions.stream().map(this.volumeCalculatorUtils::calculateSessionVolume).toList();
     }
 
-
-    private List<SessionDto> getSessionsDtosWithVolume(List<Session> sessions) {
-        final List<SessionDto> sessionDtos = new ArrayList<>(sessions.size());
-        for (final Session session : sessions) {
-            final SessionDto sessionDto = this.modelMapper.map(session, SessionDto.class);
-            final Set<Long> exerciseIds = new HashSet<>();
-            int sets = 0;
-            for (final SetGroup setGroup : session.getSetGroups()) {
-                exerciseIds.add(setGroup.getExercise().getId());
-                for (final org.avillar.gymtracker.model.entities.Set set : setGroup.getSets()) {
-                    if (set.getRir() <= 3) {
-                        sets++;
-                    }
-                }
-            }
-            sessionDto.setExercisesNumber(exerciseIds.size());
-            sessionDto.setSetsNumber(sets);
-            sessionDtos.add(sessionDto);
-        }
-
-        return sessionDtos;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Transactional(readOnly = true)
     public SessionDto getSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
@@ -80,9 +49,6 @@ public class SessionServiceImpl implements SessionService {
         return this.modelMapper.map(session, SessionDto.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Transactional
     public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
@@ -92,7 +58,7 @@ public class SessionServiceImpl implements SessionService {
         final Session session = this.modelMapper.map(sessionDto, Session.class);
 
         final int sessionsSize = this.sessionDao.findByProgramOrderByListOrder(program).size();
-        if (session.getListOrder() == null || session.getListOrder() > sessionsSize || session.getListOrder() < 0) {
+        if (null == session.getListOrder() || session.getListOrder() > sessionsSize || 0 > session.getListOrder()) {
             session.setListOrder(sessionsSize);
             this.sessionDao.save(session);
         } else {
@@ -104,9 +70,6 @@ public class SessionServiceImpl implements SessionService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Transactional
     public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
@@ -118,6 +81,7 @@ public class SessionServiceImpl implements SessionService {
         this.loginService.checkAccess(program);
         final Session session = this.modelMapper.map(sessionDto, Session.class);
         this.loginService.checkAccess(sessionDb.getProgram());
+        // TODO Repasar logica si se puede cambiar de programa
 
         final int oldPosition = sessionDb.getListOrder();
         this.sessionDao.save(session);
@@ -127,9 +91,6 @@ public class SessionServiceImpl implements SessionService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Transactional
     public void deleteProgram(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {

@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.utils;
 
 import org.avillar.gymtracker.model.dto.ProgramDto;
+import org.avillar.gymtracker.model.dto.SessionDto;
 import org.avillar.gymtracker.model.entities.Exercise;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
@@ -34,7 +35,7 @@ public class VolumeCalculatorUtils {
             final Set<Exercise> exercisesInSession = new HashSet<>();
             for (final SetGroup setGroup : session.getSetGroups()) {
                 for (final org.avillar.gymtracker.model.entities.Set set : setGroup.getSets()) {
-                    if (set.getRir() < 3) {
+                    if (3 > set.getRir()) {
                         sessionVolume++;
                         exercisesInSession.add(setGroup.getExercise());
                     }
@@ -54,5 +55,22 @@ public class VolumeCalculatorUtils {
         programDto.setAverageExercisesNumberPerSession(exerTotal / sessions.size());
 
         return programDto;
+    }
+
+    public SessionDto calculateSessionVolume(final Session session) {
+        final SessionDto sessionDto = this.modelMapper.map(session, SessionDto.class);
+        final Set<Long> exerciseIds = new HashSet<>();
+        int sets = 0;
+        for (final SetGroup setGroup : session.getSetGroups()) {
+            exerciseIds.add(setGroup.getExercise().getId());
+            for (final org.avillar.gymtracker.model.entities.Set set : setGroup.getSets()) {
+                if (3 >= set.getRir()) {
+                    sets++;
+                }
+            }
+        }
+        sessionDto.setExercisesNumber(exerciseIds.size());
+        sessionDto.setSetsNumber(sets);
+        return sessionDto;
     }
 }

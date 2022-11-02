@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface WorkoutService {
-    List<WorkoutDto> getAllWorkouts();
+    List<WorkoutDto> getAllUserWorkouts(Long userId) throws IllegalAccessException;
 
     WorkoutDto getWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 

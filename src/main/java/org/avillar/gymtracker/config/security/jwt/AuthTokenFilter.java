@@ -29,7 +29,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     final FilterChain filterChain) throws ServletException, IOException {
         try {
             final String jwt = parseJwt(request);
-            if (jwt != null && this.jwtUtils.validateJwtToken(jwt)) {
+            if (null != jwt && this.jwtUtils.validateJwtToken(jwt)) {
                 final String username = this.jwtUtils.getUserNameFromJwtToken(jwt);
 
                 final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);

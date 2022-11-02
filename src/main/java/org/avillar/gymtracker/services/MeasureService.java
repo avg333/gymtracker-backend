@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface MeasureService {
 
-    List<MeasureDto> getAllLoggedUserMeasures() throws IllegalAccessException;
+    List<MeasureDto> getAllUserMeasures(Long userId) throws IllegalAccessException;
 
     MeasureDto getMeasure(Long measureId) throws IllegalAccessException;
 
