@@ -1,10 +1,7 @@
 package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.ExerciseDto;
-import org.avillar.gymtracker.model.entities.Exercise;
 import org.avillar.gymtracker.services.ExerciseService;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,40 +14,34 @@ import java.util.List;
 public class ExerciseController {
 
     private final ExerciseService exerciseService;
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public ExerciseController(ExerciseService exerciseService, ModelMapper modelMapper) {
+    public ExerciseController(ExerciseService exerciseService) {
         this.exerciseService = exerciseService;
-        this.modelMapper = modelMapper;
     }
 
     @GetMapping("")
     public ResponseEntity<List<ExerciseDto>> getAllExercises() {
-        final List<Exercise> exercises = this.exerciseService.getAllExercises();
-        final TypeToken<List<ExerciseDto>> typeToken = new TypeToken<>() {
-        };
-        return ResponseEntity.ok(modelMapper.map(exercises, typeToken.getType()));
+        return ResponseEntity.ok(this.exerciseService.getAllExercises());
     }
 
     @GetMapping("/{exerciseId}")
     public ResponseEntity<ExerciseDto> getExerciseById(@PathVariable final Long exerciseId) {
-        final Exercise exercise = this.exerciseService.getExercise(exerciseId);
-        return ResponseEntity.ok(modelMapper.map(exercise, ExerciseDto.class));
+        return ResponseEntity.ok(this.exerciseService.getExercise(exerciseId));
     }
 
     @PostMapping("")
-    public ResponseEntity<ExerciseDto> addExercise(@RequestBody final ExerciseDto exerciseDto) {
-        final Exercise exerciseInput = modelMapper.map(exerciseDto, Exercise.class);
-        final Exercise exercise = this.exerciseService.createExercise(exerciseInput);
-        return ResponseEntity.ok(modelMapper.map(exercise, ExerciseDto.class));
+    public ResponseEntity<ExerciseDto> postExercise(@RequestBody final ExerciseDto exerciseDto) {
+        exerciseDto.setId(null);
+
+        return ResponseEntity.ok(this.exerciseService.createExercise(exerciseDto));
     }
 
     @PutMapping("/{exerciseId}")
-    public ResponseEntity<ExerciseDto> updateExercise(@PathVariable final Long exerciseId, @RequestBody final ExerciseDto exerciseDto) {
-        final Exercise exerciseInput = modelMapper.map(exerciseDto, Exercise.class);
-        final Exercise exercise = this.exerciseService.updateExercise(exerciseId, exerciseInput);
-        return ResponseEntity.ok(modelMapper.map(exercise, ExerciseDto.class));
+    public ResponseEntity<ExerciseDto> putExercise(@PathVariable final Long exerciseId, @RequestBody final ExerciseDto exerciseDto) {
+        exerciseDto.setId(exerciseId);
+
+        return ResponseEntity.ok(this.exerciseService.updateExercise(exerciseDto));
     }
 
     @DeleteMapping("/{exerciseId}")
@@ -58,5 +49,4 @@ public class ExerciseController {
         this.exerciseService.deleteExercise(exerciseId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

@@ -1,18 +1,18 @@
 package org.avillar.gymtracker.services;
 
-import org.avillar.gymtracker.model.entities.Exercise;
+import org.avillar.gymtracker.model.dto.ExerciseDto;
 
 import java.util.List;
 
 public interface ExerciseService {
 
-    List<Exercise> getAllExercises();
+    List<ExerciseDto> getAllExercises();
 
-    Exercise getExercise(Long exerciseId);
+    ExerciseDto getExercise(Long exerciseId);
 
-    Exercise createExercise(Exercise exercise);
+    ExerciseDto createExercise(ExerciseDto exerciseDto);
 
-    Exercise updateExercise(Long exerciseId, Exercise exercise);
+    ExerciseDto updateExercise(ExerciseDto exerciseDto);
 
     void deleteExercise(Long exerciseId);
 }

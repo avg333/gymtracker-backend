@@ -30,15 +30,16 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<UserAppDto> addUser(@RequestBody final UserAppDto userAppDto) {
+    public ResponseEntity<UserAppDto> postUser(@RequestBody final UserAppDto userAppDto) {
+        userAppDto.setId(null);
+
         return ResponseEntity.ok(this.userService.createUser(userAppDto));
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<UserAppDto> updateUser(@PathVariable final Long userId, @RequestBody final UserAppDto userAppDto) {
-        if (!userId.equals(userAppDto.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<UserAppDto> putUser(@PathVariable final Long userId, @RequestBody final UserAppDto userAppDto) {
+        userAppDto.setId(userId);
+
         return ResponseEntity.ok(this.userService.updateUser(userAppDto));
     }
 
