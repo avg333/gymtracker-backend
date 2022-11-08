@@ -2,9 +2,11 @@ package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.WorkoutDto;
 import org.avillar.gymtracker.services.WorkoutService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -17,33 +19,57 @@ public class WorkoutController {
         this.workoutService = workoutService;
     }
 
-
     @GetMapping("/users/{userId}/workouts")
-    public ResponseEntity<List<WorkoutDto>> getAllUserWorkouts(@PathVariable final Long userId) throws IllegalAccessException {
-        return ResponseEntity.ok(this.workoutService.getAllUserWorkouts(userId));
+    public ResponseEntity<List<WorkoutDto>> getAllUserWorkouts(@PathVariable final Long userId) {
+        try {
+            return ResponseEntity.ok(this.workoutService.getAllUserWorkouts(userId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/workouts/{workoutId}")
-    public ResponseEntity<WorkoutDto> getWorkout(@PathVariable final Long workoutId) throws IllegalAccessException {
-        return ResponseEntity.ok(this.workoutService.getWorkout(workoutId));
+    public ResponseEntity<WorkoutDto> getWorkout(@PathVariable final Long workoutId) {
+        try {
+            return ResponseEntity.ok(this.workoutService.getWorkout(workoutId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @PostMapping("/workouts")
     public ResponseEntity<WorkoutDto> postSession(@RequestBody final WorkoutDto workoutDto) {
+        workoutDto.setId(null);
+
         return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto));
     }
 
     @PutMapping("/workouts/{workoutId}")
-    public ResponseEntity<WorkoutDto> putWorkout(@PathVariable final Long workoutId, final WorkoutDto workoutDto) throws IllegalAccessException {
-        if (!workoutId.equals(workoutDto.getId())) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<WorkoutDto> putWorkout(@PathVariable final Long workoutId, final WorkoutDto workoutDto) {
+        workoutDto.setId(workoutId);
+
+        try {
+            return ResponseEntity.ok(this.workoutService.updateWorkout(workoutDto));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        return ResponseEntity.ok(this.workoutService.updateWorkout(workoutDto));
     }
 
     @DeleteMapping("/workouts/{workoutId}")
-    public ResponseEntity<Void> deleteWorkout(@PathVariable final Long workoutId) throws IllegalAccessException {
-        this.workoutService.deleteWorkout(workoutId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> deleteWorkout(@PathVariable final Long workoutId) {
+        try {
+            this.workoutService.deleteWorkout(workoutId);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 }

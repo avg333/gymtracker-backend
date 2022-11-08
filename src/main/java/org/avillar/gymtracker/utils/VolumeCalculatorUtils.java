@@ -51,8 +51,8 @@ public class VolumeCalculatorUtils {
             volTotal += sessionsVolume.get(i);
             exerTotal += exercisesPerSessions.get(i);
         }
-        programDto.setAverageVolumePerSession(volTotal / sessions.size());
-        programDto.setAverageExercisesNumberPerSession(exerTotal / sessions.size());
+        programDto.setAverageVolumePerSession(sessions.size() != 0 ? volTotal / sessions.size() : 0);
+        programDto.setAverageExercisesNumberPerSession(sessions.size() != 0 ? exerTotal / sessions.size() : 0);
 
         return programDto;
     }

@@ -5,9 +5,7 @@ import org.avillar.gymtracker.model.dao.UserDao;
 import org.avillar.gymtracker.model.dto.MeasureDto;
 import org.avillar.gymtracker.model.entities.Measure;
 import org.avillar.gymtracker.model.entities.UserApp;
-import org.avillar.gymtracker.services.LoginService;
 import org.avillar.gymtracker.services.MeasureService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +34,7 @@ public class MeasureServiceImpl extends BaseService implements MeasureService {
         final List<Measure> measures = this.measureDao.findByUserAppOrderByDateDesc(userApp);
         final List<MeasureDto> measureDtos = new ArrayList<>(measures.size());
 
-        for(final Measure measure: measures){
+        for (final Measure measure : measures) {
             this.loginService.checkAccess(measure);
             measureDtos.add(this.modelMapper.map(measure, MeasureDto.class));
         }

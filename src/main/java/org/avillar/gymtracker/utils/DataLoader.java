@@ -135,7 +135,18 @@ public class DataLoader implements ApplicationRunner {
         final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, userApp, null, null);
         final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, userApp, null, null);
         final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, userApp, null, null);
-        programDao.saveAll(Arrays.asList(pushPullLegs, fullBody, weider));
+        final Program relleno1 = new Program("Relleno1", "Desc1", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno2 = new Program("Relleno2", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno3 = new Program("Relleno2", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno4 = new Program("relleno4", "Desc1", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno5 = new Program("relleno5", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno6 = new Program("relleno6", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno7 = new Program("relleno7", "Desc1", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno8 = new Program("relleno8", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno9 = new Program("Relleno9", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
+
+
+        programDao.saveAll(Arrays.asList(pushPullLegs, fullBody, weider, relleno1, relleno2, relleno3, relleno4, relleno5, relleno6, relleno7, relleno8, relleno9));
 
         final Session push = new Session("Push", null, 0, pushPullLegs, null);
         final Session pull = new Session("Pull", null, 1, pushPullLegs, null);

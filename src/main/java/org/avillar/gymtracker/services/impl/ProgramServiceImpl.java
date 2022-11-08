@@ -8,6 +8,7 @@ import org.avillar.gymtracker.model.entities.UserApp;
 import org.avillar.gymtracker.services.ProgramService;
 import org.avillar.gymtracker.utils.VolumeCalculatorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +32,16 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProgramDto> getAllUserPrograms(final Long userId) throws IllegalAccessException {
+    public long getAllUserProgramsSize(final Long userId) {
         final UserApp userApp = this.userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        final List<Program> programs = this.programDao.findByUserAppOrderByNameAsc(userApp);
+        return this.programDao.countByUserApp(userApp);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProgramDto> getAllUserPrograms(final Long userId, final Pageable pageable) throws IllegalAccessException {
+        final UserApp userApp = this.userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final List<Program> programs = this.programDao.findByUserApp(userApp, pageable);
         final List<ProgramDto> programDtos = new ArrayList<>(programs.size());
 
         for (final Program program : programs) {
