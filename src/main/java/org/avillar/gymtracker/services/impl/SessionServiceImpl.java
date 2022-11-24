@@ -24,7 +24,6 @@ public class SessionServiceImpl extends BaseService implements SessionService {
     private final ProgramDao programDao;
     private final VolumeCalculatorUtils volumeCalculatorUtils;
 
-
     @Autowired
     public SessionServiceImpl(ProgramDao programDao, SessionDao sessionDao, VolumeCalculatorUtils volumeCalculatorUtils) {
         this.sessionDao = sessionDao;
@@ -52,6 +51,7 @@ public class SessionServiceImpl extends BaseService implements SessionService {
     @Override
     @Transactional
     public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
+        //TODO Validar sessionDto
         final Program program = this.programDao.findById(sessionDto.getProgramId()).orElseThrow(()
                 -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
         this.loginService.checkAccess(program);
@@ -73,6 +73,7 @@ public class SessionServiceImpl extends BaseService implements SessionService {
     @Override
     @Transactional
     public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
+        //TODO Validar sessionDto
         final Session sessionDb = this.sessionDao.findById(sessionDto.getId()).orElseThrow(()
                 -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(sessionDb.getProgram());
@@ -90,23 +91,23 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         return this.modelMapper.map(session, SessionDto.class);
     }
 
-
     @Override
     @Transactional
     public void deleteProgram(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionDao.findById(sessionId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(session.getProgram());
 
-        final Integer sessionPosition = session.getListOrder();
+        final int sessionPosition = session.getListOrder();
         this.sessionDao.deleteById(sessionId);
 
         this.reorderAllProgramSessionsAfterDelete(session.getProgram(), sessionPosition);
     }
 
+    // ----- Funciones de ordenación -----
 
     private void reorderAllProgramSessionsAfterDelete(final Program program, final int sessionPosition) {
         final List<Session> sessions = this.sessionDao.findByProgramOrderByListOrder(program);
-        if (sessions.isEmpty()) {
+        if (sessions.isEmpty() || sessions.size() == sessionPosition) {
             return;
         }
 

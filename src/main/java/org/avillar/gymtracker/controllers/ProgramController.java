@@ -24,19 +24,25 @@ public class ProgramController {
     }
 
     @GetMapping("/users/{userId}/programs/count")
-    public long countUserPrograms(@PathVariable final Long userId) {
-        return this.programService.getAllUserProgramsSize(userId);
+    public ResponseEntity<Long> getNumberOfProgramsFromUser(@PathVariable final Long userId) {
+        try {
+            return ResponseEntity.ok(this.programService.getAllUserProgramsSize(userId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/users/{userId}/programs")
-    public ResponseEntity<List<ProgramDto>> getAllProgramsFromUser(
+    public ResponseEntity<List<ProgramDto>> getAllUserPrograms(
             @PathVariable final Long userId,
             @RequestParam(required = false, defaultValue = "0") final Integer page,
             @RequestParam(required = false, defaultValue = "1") final Integer size,
             @RequestParam(required = false) final String sortParam,
             @RequestParam(required = false, defaultValue = "False") final Boolean descSort) {
+        final Pageable pageable = PaginatorUtils.getPageable(page, size, sortParam, descSort);
         try {
-            final Pageable pageable = PaginatorUtils.getPageable(page, size, sortParam, descSort);
             return ResponseEntity.ok(this.programService.getAllUserPrograms(userId, pageable));
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -56,11 +62,18 @@ public class ProgramController {
         }
     }
 
-    @PostMapping("/programs")
-    public ResponseEntity<ProgramDto> postProgram(@RequestBody final ProgramDto programDto) {
+    @PostMapping("/users/{userId}/programs")
+    public ResponseEntity<ProgramDto> postProgram(@PathVariable final Long userId, @RequestBody final ProgramDto programDto) {
         programDto.setId(null);
+        programDto.setUserAppId(userId);
 
-        return ResponseEntity.ok(this.programService.createProgram(programDto));
+        try {
+            return ResponseEntity.ok(this.programService.createProgram(programDto));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @PutMapping("/programs/{programId}")

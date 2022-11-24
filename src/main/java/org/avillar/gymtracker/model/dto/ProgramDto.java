@@ -12,9 +12,9 @@ public class ProgramDto {
     private String url;
     private ProgramLevelEnum level = ProgramLevelEnum.ANY;
     private Boolean favourite = false;
-    //userAppId
-    //sessions
+    private Long userAppId;
     private MultipartFile image;
+    //sessions
 
     private int sessionNumber;
     private int averageVolumePerMuscleGroup;

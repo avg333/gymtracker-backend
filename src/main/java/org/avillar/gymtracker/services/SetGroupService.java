@@ -15,7 +15,10 @@ public interface SetGroupService {
 
     SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 
-    SetGroupDto createSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
+    SetGroupDto createSetGroupInSession(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
+
+    @Transactional
+    SetGroupDto createSetGroupInWorkout(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
 
     SetGroupDto updateSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
 

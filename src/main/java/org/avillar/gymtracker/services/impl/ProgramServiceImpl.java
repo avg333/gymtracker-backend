@@ -32,8 +32,11 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
 
     @Override
     @Transactional(readOnly = true)
-    public long getAllUserProgramsSize(final Long userId) {
+    public long getAllUserProgramsSize(final Long userId) throws EntityNotFoundException, IllegalAccessException {
         final UserApp userApp = this.userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Program program = new Program();
+        program.setUserApp(userApp);
+        this.loginService.checkAccess(program);
         return this.programDao.countByUserApp(userApp);
     }
 
@@ -57,20 +60,26 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
     public ProgramDto getProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
         final Program program = this.programDao.findById(programId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(program);
-        return this.modelMapper.map(program, ProgramDto.class);
+        return this.volumeCalculatorUtils.calculateProgramVolume(program);
     }
 
     @Override
     @Transactional
-    public ProgramDto createProgram(final ProgramDto programDto) {
+    public ProgramDto createProgram(final ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException {
+        final UserApp userApp = this.userDao.findById(programDto.getUserAppId()).orElseThrow(() ->
+                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+
+        //TODO Validar programDto
         final Program program = this.modelMapper.map(programDto, Program.class);
-        program.setUserApp(this.loginService.getLoggedUser());
+        program.setUserApp(userApp);
+        this.loginService.checkAccess(program);
         return this.modelMapper.map(this.programDao.save(program), ProgramDto.class);
     }
 
     @Override
     @Transactional
     public ProgramDto updateProgram(final ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException {
+        //TODO Validar programDto
         final Program programDb = this.programDao.findById(programDto.getId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(programDb);
         final Program program = this.modelMapper.map(programDto, Program.class);

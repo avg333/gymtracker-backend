@@ -11,6 +11,7 @@ public class SetGroupDto {
     private int listOrder;
     private Long exerciseId; //TODO Susituir esto por exerciseDto
     private Long sessionId;
+    private Long workoutId;
 
     private ExerciseDto exerciseDto;
     private List<SetDto> setDtoList;

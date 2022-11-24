@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -17,6 +18,17 @@ public class WorkoutController {
 
     public WorkoutController(WorkoutService workoutService) {
         this.workoutService = workoutService;
+    }
+
+    @GetMapping("/users/{userId}/workouts/dates")
+    public ResponseEntity<List<Date>> getAllUserWorkoutsDates(@PathVariable final Long userId) {
+        try {
+            return ResponseEntity.ok(this.workoutService.getAllUserWorkoutsDates(userId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/users/{userId}/workouts")
@@ -41,9 +53,10 @@ public class WorkoutController {
         }
     }
 
-    @PostMapping("/workouts")
-    public ResponseEntity<WorkoutDto> postSession(@RequestBody final WorkoutDto workoutDto) {
+    @PostMapping("/users/{userId}/workouts")
+    public ResponseEntity<WorkoutDto> postWorkout(@PathVariable final Long userId, @RequestBody final WorkoutDto workoutDto) {
         workoutDto.setId(null);
+        workoutDto.setUserId(userId);
 
         return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto));
     }

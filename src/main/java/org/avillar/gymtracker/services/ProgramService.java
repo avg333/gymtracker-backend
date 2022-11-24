@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ProgramService {
 
-    long getAllUserProgramsSize(Long userId);
+    long getAllUserProgramsSize(Long userId) throws IllegalAccessException;
 
     List<ProgramDto> getAllUserPrograms(Long userId, Pageable pageable) throws IllegalAccessException;
 
@@ -28,7 +28,7 @@ public interface ProgramService {
      * @param programDto DTO de la entidad a crear
      * @return DTO de la entidad creada
      */
-    ProgramDto createProgram(ProgramDto programDto);
+    ProgramDto createProgram(ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException;
 
     /**
      * Actualiza la entidad con el ID del DTO a los campos del DTO si lo solicita su usuario propietario o un admin

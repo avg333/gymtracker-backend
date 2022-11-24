@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.utils;
 
-import org.avillar.gymtracker.model.dto.ProgramDto;
-import org.avillar.gymtracker.model.dto.SessionDto;
+import org.avillar.gymtracker.model.dto.*;
 import org.avillar.gymtracker.model.entities.Exercise;
 import org.avillar.gymtracker.model.entities.Program;
 import org.avillar.gymtracker.model.entities.Session;
@@ -9,6 +8,7 @@ import org.avillar.gymtracker.model.entities.SetGroup;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -61,7 +61,11 @@ public class VolumeCalculatorUtils {
         final SessionDto sessionDto = this.modelMapper.map(session, SessionDto.class);
         final Set<Long> exerciseIds = new HashSet<>();
         int sets = 0;
+
+        final List<SetGroupDto> setGroupDtoList = new ArrayList<>();
         for (final SetGroup setGroup : session.getSetGroups()) {
+            setGroupDtoList.add(this.makeSetGroupDto(setGroup));
+
             exerciseIds.add(setGroup.getExercise().getId());
             for (final org.avillar.gymtracker.model.entities.Set set : setGroup.getSets()) {
                 if (3 >= set.getRir()) {
@@ -72,5 +76,12 @@ public class VolumeCalculatorUtils {
         sessionDto.setExercisesNumber(exerciseIds.size());
         sessionDto.setSetsNumber(sets);
         return sessionDto;
+    }
+
+    private SetGroupDto makeSetGroupDto(final SetGroup setGroup) {
+        final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
+        setGroupDto.setExerciseDto(this.modelMapper.map(setGroup.getExercise(), ExerciseDto.class));
+        setGroupDto.setSetDtoList(setGroup.getSets().stream().map(set -> this.modelMapper.map(set, SetDto.class)).toList());
+        return setGroupDto;
     }
 }

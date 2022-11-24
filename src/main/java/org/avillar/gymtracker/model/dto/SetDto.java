@@ -2,6 +2,8 @@ package org.avillar.gymtracker.model.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 
 @Data
 public class SetDto {
@@ -12,4 +14,6 @@ public class SetDto {
     private double rir;
     private double weight;
     private Long setGroupId;
+
+    private Date lastModifiedAt;
 }

@@ -43,9 +43,10 @@ public class SessionController {
         }
     }
 
-    @PostMapping("/sessions")
-    public ResponseEntity<SessionDto> postSession(@RequestBody final SessionDto sessionDto) {
+    @PostMapping("/programs/{programId}/sessions")
+    public ResponseEntity<SessionDto> postSession(@PathVariable final Long programId, @RequestBody final SessionDto sessionDto) {
         sessionDto.setId(null);
+        sessionDto.setProgramId(programId);
 
         try {
             return ResponseEntity.ok(this.sessionService.createSession(sessionDto));

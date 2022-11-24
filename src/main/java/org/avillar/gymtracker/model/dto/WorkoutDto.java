@@ -9,4 +9,5 @@ public class WorkoutDto {
     private Long id;
     private Date date;
     private String description;
+    private Long userId;
 }

@@ -3,6 +3,7 @@ package org.avillar.gymtracker.model.dto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class SessionDto {
@@ -13,7 +14,8 @@ public class SessionDto {
     private Date date;
     private Long userAppId;
     private Long programId;
-    //setGroups
+
+    private List<SetGroupDto> setGroupDtoList;
 
     private int exercisesNumber;
     private int setsNumber;

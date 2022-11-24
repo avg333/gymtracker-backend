@@ -31,6 +31,17 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Date> getAllUserWorkoutsDates(final Long userId) throws IllegalAccessException {
+        final UserApp userApp = this.userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Workout workout = new Workout();
+        workout.setUserApp(userApp);
+        this.loginService.checkAccess(workout);
+
+        return this.workoutDao.findByUserAppOrderByDateDesc(userApp).stream().map(Workout::getDate).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<WorkoutDto> getAllUserWorkouts(final Long userId) throws IllegalAccessException {
         final UserApp userApp = this.userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         final List<Workout> workouts = this.workoutDao.findByUserAppOrderByDateDesc(userApp);

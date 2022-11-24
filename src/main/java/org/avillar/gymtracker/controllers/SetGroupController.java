@@ -54,12 +54,27 @@ public class SetGroupController {
         }
     }
 
-    @PostMapping("/setGroups")
-    public ResponseEntity<SetGroupDto> postSetGroup(@RequestBody final SetGroupDto setGroupDto) {
+    @PostMapping("/sessions/{sessionId}/setGroups")
+    public ResponseEntity<SetGroupDto> postSetGroupInSession(@PathVariable final Long sessionId, @RequestBody final SetGroupDto setGroupDto) {
         setGroupDto.setId(null);
+        setGroupDto.setSessionId(sessionId);
 
         try {
-            return ResponseEntity.ok(this.setGroupService.createSetGroup(setGroupDto));
+            return ResponseEntity.ok(this.setGroupService.createSetGroupInSession(setGroupDto));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @PostMapping("/workouts/{workoutId}/setGroups")
+    public ResponseEntity<SetGroupDto> postSetGroupInWorkout(@PathVariable final Long workoutId, @RequestBody final SetGroupDto setGroupDto) {
+        setGroupDto.setId(null);
+        setGroupDto.setWorkoutId(workoutId);
+
+        try {
+            return ResponseEntity.ok(this.setGroupService.createSetGroupInWorkout(setGroupDto));
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
