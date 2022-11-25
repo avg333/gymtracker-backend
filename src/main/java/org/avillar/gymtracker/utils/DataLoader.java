@@ -23,6 +23,7 @@ public class DataLoader implements ApplicationRunner {
     private final Random random = new Random();
 
     private final MuscleGroupDao muscleGroupDao;
+    private final MuscleSupGroupDao muscleSupGroupDao;
     private final MuscleSubGroupDao muscleSubGroupDao;
     private final ExerciseDao exerciseDao;
     private final ProgramDao programDao;
@@ -34,10 +35,12 @@ public class DataLoader implements ApplicationRunner {
     private final WorkoutDao workoutDao;
 
     @Autowired
-    public DataLoader(MeasureDao measureDao, SetDao setDao, MuscleGroupDao muscleGroupDao, SetGroupDao setGroupDao,
+    public DataLoader(MeasureDao measureDao, SetDao setDao, MuscleGroupDao muscleGroupDao, MuscleSupGroupDao muscleSupGroupDao,
+                      SetGroupDao setGroupDao,
                       ExerciseDao exerciseDao, UserDao userDao, ProgramDao programDao, SessionDao sessionDao,
                       MuscleSubGroupDao muscleSubGroupDao, WorkoutDao workoutDao) {
         this.muscleGroupDao = muscleGroupDao;
+        this.muscleSupGroupDao = muscleSupGroupDao;
         this.muscleSubGroupDao = muscleSubGroupDao;
         this.exerciseDao = exerciseDao;
         this.programDao = programDao;
@@ -85,49 +88,122 @@ public class DataLoader implements ApplicationRunner {
     }
 
     private void createExercisesWithMuscleGroups() {
-        final MuscleGroup chest = new MuscleGroup("chest", null, null, null);
-        final MuscleGroup lats = new MuscleGroup("lats", null, null, null);
-        final MuscleGroup shoulders = new MuscleGroup("shoulders", null, null, null);
-        final MuscleGroup lowerBack = new MuscleGroup("lower back", null, null, null);
-        final MuscleGroup biceps = new MuscleGroup("biceps", null, null, null);
-        final MuscleGroup triceps = new MuscleGroup("triceps", null, null, null);
-        final MuscleGroup abs = new MuscleGroup("abs", null, null, null);
-        final MuscleGroup glute = new MuscleGroup("glute", null, null, null);
-        final MuscleGroup quadriceps = new MuscleGroup("quadriceps", null, null, null);
-        final MuscleGroup hamstrings = new MuscleGroup("hamstrings", null, null, null);
-        final MuscleGroup calves = new MuscleGroup("calves", null, null, null);
-        muscleGroupDao.saveAll(Arrays.asList(chest, lats, shoulders, lowerBack, biceps, triceps, abs, glute,
-                quadriceps, hamstrings, calves));
+        final MuscleSupGroup chestSupGroup = new MuscleSupGroup("chest", null, null);
+        final MuscleSupGroup backSupGroup = new MuscleSupGroup("back", null, null);
+        final MuscleSupGroup shouldersSupGroup = new MuscleSupGroup("shoulders", null, null);
+        final MuscleSupGroup armsSupGroup = new MuscleSupGroup("arms", null, null);
+        final MuscleSupGroup coreSupGroup = new MuscleSupGroup("core", null, null);
+        final MuscleSupGroup legsSupGroup = new MuscleSupGroup("legs", null, null);
+        this.muscleSupGroupDao.saveAll(Arrays.asList(chestSupGroup, backSupGroup, shouldersSupGroup, armsSupGroup,
+                coreSupGroup, legsSupGroup));
 
+        // Chest
+        final MuscleGroup chest = new MuscleGroup("chest", null, chestSupGroup, null, null);
+        // Back
+        final MuscleGroup lats = new MuscleGroup("lats", null, backSupGroup, null, null);
+        final MuscleGroup trapezius = new MuscleGroup("trapezius", null, backSupGroup, null, null);
+        // Shoulder
+        final MuscleGroup shoulderAnterior = new MuscleGroup("shoulder anterior", null, shouldersSupGroup, null, null);
+        final MuscleGroup shoulderLateral = new MuscleGroup("shoulders lateral", null, shouldersSupGroup, null, null);
+        final MuscleGroup shoulderPosterior = new MuscleGroup("shoulders posterior", null, shouldersSupGroup, null, null);
+        // Arms
+        final MuscleGroup forearms = new MuscleGroup("forearms", null, armsSupGroup, null, null);
+        final MuscleGroup biceps = new MuscleGroup("biceps", null, armsSupGroup, null, null);
+        final MuscleGroup triceps = new MuscleGroup("triceps", null, armsSupGroup, null, null);
+        // Core
+        final MuscleGroup abs = new MuscleGroup("abs", null, coreSupGroup, null, null);
+        final MuscleGroup lowerBack = new MuscleGroup("lower back", null, coreSupGroup, null, null);
+        // Legs
+        final MuscleGroup quadriceps = new MuscleGroup("quadriceps", null, legsSupGroup, null, null);
+        final MuscleGroup hamstrings = new MuscleGroup("hamstrings", null, legsSupGroup, null, null);
+        final MuscleGroup glute = new MuscleGroup("glute", null, legsSupGroup, null, null);
+        final MuscleGroup calves = new MuscleGroup("calves", null, legsSupGroup, null, null);
+        muscleGroupDao.saveAll(Arrays.asList(chest, lats, trapezius,
+                shoulderAnterior, shoulderLateral, shoulderPosterior,
+                forearms, biceps, triceps,
+                abs, lowerBack,
+                quadriceps, hamstrings, glute, calves));
+
+        // Chest
         final MuscleSubGroup chestUpper = new MuscleSubGroup("upper", null, chest, null);
         final MuscleSubGroup chestMiddle = new MuscleSubGroup("middle", null, chest, null);
         final MuscleSubGroup chestLower = new MuscleSubGroup("lower", null, chest, null);
+        // Back
+        // Traps
+        final MuscleSubGroup trapsUpper = new MuscleSubGroup("upper", null, trapezius, null);
+        final MuscleSubGroup trapsMiddle = new MuscleSubGroup("middle", null, trapezius, null);
+        final MuscleSubGroup trapsLower = new MuscleSubGroup("lower", null, trapezius, null);
+
+        // Forearms
+        // Biceps
+        // Triceps
         final MuscleSubGroup tricepsLateral = new MuscleSubGroup("lateral", null, triceps, null);
         final MuscleSubGroup tricepsLong = new MuscleSubGroup("long", null, triceps, null);
         final MuscleSubGroup tricepsMedial = new MuscleSubGroup("medial", null, triceps, null);
-        final MuscleSubGroup shoulderAnterior = new MuscleSubGroup("anterior", null, shoulders, null);
-        final MuscleSubGroup shoulderLateral = new MuscleSubGroup("lateral", null, shoulders, null);
-        final MuscleSubGroup shoulderPosterior = new MuscleSubGroup("posterior", null, shoulders, null);
-        muscleSubGroupDao.saveAll(Arrays.asList(chestUpper, chestLower, chestMiddle, tricepsLateral, tricepsLong,
-                tricepsMedial, shoulderAnterior, shoulderLateral, shoulderPosterior));
+
+        // Abs
+        // Lowerback
+
+        // Cuads
+        // Hams
+        // Glutes
+        final MuscleSubGroup gluteMaximus = new MuscleSubGroup("maximus", null, glute, null);
+        final MuscleSubGroup gluteMedius = new MuscleSubGroup("medius", null, glute, null);
+        final MuscleSubGroup gluteMinimus = new MuscleSubGroup("minimus", null, glute, null);
+        // Calves
+        final MuscleSubGroup calvesSoleus = new MuscleSubGroup("soleus", null, calves, null);
+        final MuscleSubGroup calvesGastrocnemius = new MuscleSubGroup("gastrocnemius", null, calves, null);
+
+
+        muscleSubGroupDao.saveAll(Arrays.asList(
+                chestUpper, chestLower, chestMiddle,
+                trapsUpper, trapsMiddle, trapsLower,
+                tricepsLateral, tricepsLong, tricepsMedial,
+                gluteMaximus, gluteMedius, gluteMinimus,
+                calvesSoleus, calvesGastrocnemius));
 
         final List<Exercise> exercises = new ArrayList<>();
-        exercises.add(new Exercise("press con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(chest)), null));
-        exercises.add(new Exercise("press con mancuernas inclinado", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
-        exercises.add(new Exercise("press banca", null, false, LoadTypeEnum.BAR, new HashSet<>(List.of(chest)), null));
-        exercises.add(new Exercise("press banca inclinado", null, false, LoadTypeEnum.BAR, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
-        exercises.add(new Exercise("press en multipower", null, false, LoadTypeEnum.MULTIPOWER, new HashSet<>(List.of(chest)), null));
-        exercises.add(new Exercise("press en multipower inclinado", null, false, LoadTypeEnum.MULTIPOWER, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestUpper))));
-        exercises.add(new Exercise("cruces de poleas", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
+        // Chest
+        exercises.add(new Exercise("hammer strength press", null, false, LoadTypeEnum.MACHINE, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestUpper))));
+        exercises.add(new Exercise("cable crossover", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
+        exercises.add(new Exercise("incline smith machine press", null, false, LoadTypeEnum.MULTIPOWER, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestUpper))));
+        exercises.add(new Exercise("incline dumbbell press", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestUpper))));
         exercises.add(new Exercise("pec deck", null, false, LoadTypeEnum.MACHINE, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestMiddle))));
-        exercises.add(new Exercise("flexiones", null, false, LoadTypeEnum.BODYWEIGHT, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestLower))));
-        exercises.add(new Exercise("fondos", null, false, LoadTypeEnum.BODYWEIGHT, new HashSet<>(Arrays.asList(chest, shoulders)), new HashSet<>(List.of(chestLower))));
-        exercises.add(new Exercise("press militar", null, false, LoadTypeEnum.BAR, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderAnterior))));
-        exercises.add(new Exercise("press sentado con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderAnterior))));
-        exercises.add(new Exercise("elevaciones laterales con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
-        exercises.add(new Exercise("elevaciones laterales con cable", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderLateral))));
-        exercises.add(new Exercise("pajaros con mancuernas", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
-        exercises.add(new Exercise("reverse pec deck", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulders)), new HashSet<>(List.of(shoulderPosterior))));
+        exercises.add(new Exercise("bench press", null, false, LoadTypeEnum.BAR, new HashSet<>(List.of(chest)), null));
+        exercises.add(new Exercise("push up", null, false, LoadTypeEnum.BODYWEIGHT, new HashSet<>(List.of(chest)), new HashSet<>(List.of(chestLower))));
+        // Back
+        exercises.add(new Exercise("pulldown machine", null, false, LoadTypeEnum.MACHINE, new HashSet<>(List.of(lats)), null));
+        exercises.add(new Exercise("cable seated row", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(lats)), null));
+        exercises.add(new Exercise("incline dumbbell row", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(lats)), null));
+        exercises.add(new Exercise("machine row", null, false, LoadTypeEnum.MACHINE, new HashSet<>(List.of(lats)), null));
+        exercises.add(new Exercise("dumbbell single arm bent over row", null, true, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(lats)), null));
+        exercises.add(new Exercise("neutral grip lat pulldown", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(lats)), null));
+        exercises.add(new Exercise("unilateral cable row", null, true, LoadTypeEnum.CABLE, new HashSet<>(List.of(lats)), null));
+        // Shoulders
+        exercises.add(new Exercise("dumbbell seated press", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulderAnterior)), null));
+        exercises.add(new Exercise("dumbbell smith machine seated press", null, false, LoadTypeEnum.MULTIPOWER, new HashSet<>(List.of(shoulderAnterior)), null));
+        exercises.add(new Exercise("machine lateral raise", null, false, LoadTypeEnum.MACHINE, new HashSet<>(List.of(shoulderLateral)), null));
+        exercises.add(new Exercise("dumbbell lateral raise", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulderLateral)), null));
+        exercises.add(new Exercise("cable lateral raise", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulderLateral)), null));
+        exercises.add(new Exercise("incline lateral raise", null, true, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulderLateral)), null));
+        exercises.add(new Exercise("shoulder reverse fly", null, false, LoadTypeEnum.MACHINE, new HashSet<>(List.of(shoulderPosterior)), null));
+        exercises.add(new Exercise("dumbbell bent over shoulder reverse fly", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(shoulderPosterior)), null));
+        exercises.add(new Exercise("cable reverse fly", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(shoulderPosterior)), null));
+
+        // Triceps
+        exercises.add(new Exercise("cable overhead tricep extension", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(triceps)), new HashSet<>(List.of(tricepsLong))));
+        exercises.add(new Exercise("jm press in multipower", null, false, LoadTypeEnum.MULTIPOWER, new HashSet<>(List.of(triceps)), new HashSet<>(List.of(tricepsMedial))));
+        exercises.add(new Exercise("cable tricep kickback", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(triceps)), new HashSet<>(List.of(tricepsLateral))));
+        exercises.add(new Exercise("cable tricep extension", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(triceps)), new HashSet<>(List.of(tricepsMedial))));
+        exercises.add(new Exercise("dumbbell single arm tricep extension", null, true, LoadTypeEnum.CABLE, new HashSet<>(List.of(triceps)), new HashSet<>(List.of(tricepsLong))));
+        // Biceps
+        exercises.add(new Exercise("machine preacher curl", null, false, LoadTypeEnum.MACHINE, new HashSet<>(List.of(biceps)), null));
+        exercises.add(new Exercise("dumbbell curl", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(biceps)), null));
+        exercises.add(new Exercise("dumbbell hammer curl", null, false, LoadTypeEnum.DUMBBELL, new HashSet<>(List.of(biceps)), null));
+        exercises.add(new Exercise("cable curl", null, false, LoadTypeEnum.CABLE, new HashSet<>(List.of(biceps)), null));
+        exercises.add(new Exercise("barbell curl", null, false, LoadTypeEnum.BAR, new HashSet<>(List.of(biceps)), null));
+        exercises.add(new Exercise("barbell preacher curl", null, false, LoadTypeEnum.BAR, new HashSet<>(List.of(biceps)), null));
+
         exerciseDao.saveAll(exercises);
     }
 

@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +19,10 @@ public class MuscleGroup extends BaseEntity {
     private String name;
     private String description;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "muscle_sup_group_id", nullable = false)
+    private MuscleSupGroup muscleSupGroup;
+
     @JsonIgnore
     @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true)
     private Set<MuscleSubGroup> muscleSubGroups = new HashSet<>();
@@ -28,4 +30,5 @@ public class MuscleGroup extends BaseEntity {
     @JsonIgnore
     @ManyToMany(mappedBy = "muscleGroups")
     private Set<Exercise> exercises = new HashSet<>();
+
 }
