@@ -3,18 +3,17 @@ package org.avillar.gymtracker.services.impl;
 import org.avillar.gymtracker.model.dao.UserDao;
 import org.avillar.gymtracker.model.dao.WorkoutDao;
 import org.avillar.gymtracker.model.dto.WorkoutDto;
-import org.avillar.gymtracker.model.entities.UserApp;
-import org.avillar.gymtracker.model.entities.Workout;
+import org.avillar.gymtracker.model.dto.WorkoutSummaryDto;
+import org.avillar.gymtracker.model.entities.*;
+import org.avillar.gymtracker.model.entities.Set;
 import org.avillar.gymtracker.services.WorkoutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class WorkoutServiceImpl extends BaseService implements WorkoutService {
@@ -67,6 +66,52 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         final Workout workout = this.workoutDao.findById(workoutId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(workout);
         return this.modelMapper.map(workout, WorkoutDto.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public WorkoutSummaryDto getWorkoutSummary(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
+        final Workout workout = this.workoutDao.findById(workoutId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        this.loginService.checkAccess(workout);
+        final WorkoutSummaryDto workoutSummaryDto = new WorkoutSummaryDto();
+
+        final java.util.Set<Long> exercisesId = new HashSet<>();
+        final java.util.Set<String> muscles = new HashSet<>();
+        int sets = 0;
+        double weight = 0;
+
+        Date startWo = null;
+        Date endWo = null;
+        for(final SetGroup setGroup: workout.getSetGroups()){
+            for(final Set set: setGroup.getSets()){
+                if(startWo == null || set.getLastModifiedAt().getTime() < startWo.getTime()){
+                    startWo = set.getLastModifiedAt();
+                }
+                if(endWo == null || set.getLastModifiedAt().getTime() > endWo.getTime()){
+                    endWo = set.getLastModifiedAt();
+                }
+                if(set.getRir() < 3){
+                    exercisesId.add(setGroup.getExercise().getId());
+                    final List<MuscleGroup> muscleGroups = new ArrayList<>(setGroup.getExercise().getMuscleGroups());
+                    if(!muscleGroups.isEmpty()){
+                        muscles.add(muscleGroups.get(0).getName());
+                    }
+                    sets++;
+                    weight+= set.getWeight();
+                }
+            }
+        }
+
+        if(startWo != null && endWo != null){
+            final long duration = endWo.getTime() - startWo.getTime();
+            workoutSummaryDto.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(duration));
+        }
+        workoutSummaryDto.setExerciseNumber(exercisesId.size());
+        workoutSummaryDto.setMuscles(new ArrayList<>(muscles));
+        workoutSummaryDto.setSetsNumber(sets);
+        workoutSummaryDto.setWeightVolume((int) weight);
+
+        return workoutSummaryDto;
     }
 
     @Override

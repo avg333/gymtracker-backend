@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.WorkoutDto;
+import org.avillar.gymtracker.model.dto.WorkoutSummaryDto;
 import org.avillar.gymtracker.services.WorkoutService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,17 @@ public class WorkoutController {
     public ResponseEntity<List<WorkoutDto>> getAllUserWorkouts(@PathVariable final Long userId) {
         try {
             return ResponseEntity.ok(this.workoutService.getAllUserWorkouts(userId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @GetMapping("/workouts/{workoutId}/summary")
+    public ResponseEntity<WorkoutSummaryDto> getWorkoutSummary(@PathVariable final Long workoutId) {
+        try {
+            return ResponseEntity.ok(this.workoutService.getWorkoutSummary(workoutId));
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {

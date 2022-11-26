@@ -289,7 +289,7 @@ public class DataLoader implements ApplicationRunner {
             final int totalSeries = random.nextInt(2, 6);
             for (int i = 0; i < totalSeries; i++) {
                 final int reps = random.nextInt(3, 15);
-                final double rir = random.nextDouble(0, 4);
+                final double rir = random.nextInt(0, 4);
                 final double weight = Math.round((random.nextDouble(5, 100)) * 100.0) / 100.0;
                 sets.add(new Set("SetDescription", i, reps, rir, weight, setGroup));
             }

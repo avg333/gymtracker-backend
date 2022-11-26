@@ -18,6 +18,7 @@ public class Session extends BaseEntity {
     @Column(nullable = false)
     private String name;
     private String description;
+    @OrderBy
     @Column(nullable = false)
     private Integer listOrder;
 

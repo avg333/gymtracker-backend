@@ -2,6 +2,7 @@ package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.MuscleGroupDto;
 import org.avillar.gymtracker.model.dto.MuscleSubGroupDto;
+import org.avillar.gymtracker.model.dto.MuscleSupGroupDto;
 import org.avillar.gymtracker.services.MuscleGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/muscleGroups")
+@RequestMapping("/api/")
 public class MuscleGroupController {
 
     private final MuscleGroupService muscleGroupService;
@@ -23,12 +24,27 @@ public class MuscleGroupController {
         this.muscleGroupService = muscleGroupService;
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups() {
-        return ResponseEntity.ok(this.muscleGroupService.getAllMuscleGroups());
+    @GetMapping("muscleSupGroups")
+    public ResponseEntity<List<MuscleSupGroupDto>> getAllMuscleSupGroups() {
+        return ResponseEntity.ok(this.muscleGroupService.getAllMuscleSupGroups());
     }
 
-    @GetMapping("/{muscleGroupId}/muscleSubGroups")
+    @GetMapping("muscleSupGroups/{muscleSupGroupId}")
+    public ResponseEntity<MuscleSupGroupDto> getMuscleSupGroup(@PathVariable final Long muscleSupGroupId) {
+        return ResponseEntity.ok(this.muscleGroupService.getMuscleSupGroup(muscleSupGroupId));
+    }
+
+    @GetMapping("muscleSupGroups/{muscleSupGroupId}/muscleGroups")
+    public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups(@PathVariable final Long muscleSupGroupId) {
+        return ResponseEntity.ok(this.muscleGroupService.getAllMuscleGroups(muscleSupGroupId));
+    }
+
+    @GetMapping("muscleGroups/{muscleGroupId}")
+    public ResponseEntity<MuscleGroupDto> getMuscleGroup(@PathVariable final Long muscleGroupId) {
+        return ResponseEntity.ok(this.muscleGroupService.getMuscleGroup(muscleGroupId));
+    }
+
+    @GetMapping("muscleGroups/{muscleGroupId}/muscleSubGroups")
     public ResponseEntity<List<MuscleSubGroupDto>> getMuscleSubgroups(@PathVariable final Long muscleGroupId) {
         return ResponseEntity.ok(this.muscleGroupService.getAllMuscleGroupMuscleSubGroups(muscleGroupId));
     }

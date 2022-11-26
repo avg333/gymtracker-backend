@@ -16,6 +16,7 @@ import java.util.HashSet;
 public class SetGroup extends BaseEntity {
 
     private String description;
+    @OrderBy
     @Column(nullable = false)
     private Integer listOrder;
 

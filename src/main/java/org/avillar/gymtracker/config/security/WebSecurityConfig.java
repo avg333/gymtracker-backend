@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -62,25 +63,19 @@ public class WebSecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
+        /*
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://gymtracker-frontend.herokuapp.com",
-                "http://gymtracker-frontend.herokuapp.com/",
-                "https://gymtracker-frontend.herokuapp.com",
-                "https://gymtracker-frontend.herokuapp.com/",
-                "http://gymtracker-frontend-mobile.herokuapp.com",
-                "http://gymtracker-frontend-mobile.herokuapp.com/",
-                "https://gymtracker-frontend-mobile.herokuapp.com",
-                "https://gymtracker-frontend-mobile.herokuapp.com/",
-                "http://localhost:8080",
-                "http://localhost:8081"));
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(Long.MAX_VALUE);
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        return source;
+        return source;*/
     }
 
     @Bean

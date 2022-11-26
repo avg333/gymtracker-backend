@@ -73,7 +73,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
 
     @Override
     @Transactional
-    public SetGroupDto createSetGroupInSession(final SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
+    public SetGroupDto createSetGroupInWorkout(final SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
         final Workout workout = this.workoutDao.findById(setGroupDto.getWorkoutId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(workout);
 
@@ -93,7 +93,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
 
     @Override
     @Transactional
-    public SetGroupDto createSetGroupInWorkout(final SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
+    public SetGroupDto createSetGroupInSession(final SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionDao.findById(setGroupDto.getSessionId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.loginService.checkAccess(session.getProgram());
 

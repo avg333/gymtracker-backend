@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.services;
 
 import org.avillar.gymtracker.model.dto.WorkoutDto;
+import org.avillar.gymtracker.model.dto.WorkoutSummaryDto;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
@@ -16,6 +17,9 @@ public interface WorkoutService {
     WorkoutDto getWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 
     List<WorkoutDto> getWorkoutByDate(Date date) throws EntityNotFoundException;
+
+    @Transactional(readOnly = true)
+    WorkoutSummaryDto getWorkoutSummary(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 
     WorkoutDto createWorkout(WorkoutDto workoutDto) throws EntityNotFoundException;
 
