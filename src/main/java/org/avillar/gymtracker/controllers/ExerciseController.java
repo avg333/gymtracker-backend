@@ -1,6 +1,8 @@
 package org.avillar.gymtracker.controllers;
 
 import org.avillar.gymtracker.model.dto.ExerciseDto;
+import org.avillar.gymtracker.model.dto.ExerciseFilterDto;
+import org.avillar.gymtracker.model.enums.LoadTypeEnum;
 import org.avillar.gymtracker.services.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,8 +23,26 @@ public class ExerciseController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ExerciseDto>> getAllExercises() {
-        return ResponseEntity.ok(this.exerciseService.getAllExercises());
+    public ResponseEntity<List<ExerciseDto>> getAllExercises(
+            @RequestParam(required = false) final String name,
+            @RequestParam(required = false) final String description,
+            @RequestParam(required = false) final Boolean unilateral,
+            @RequestParam(required = false) final LoadTypeEnum loadType,
+            @RequestParam(required = false) final List<Long> muscleSupGroupIds,
+            @RequestParam(required = false) final Long muscleGroupIds,
+            @RequestParam(required = false) final List<Long> muscleSubGroupIds
+            ) {
+
+        final ExerciseFilterDto exerciseFilterDto = new ExerciseFilterDto();
+        exerciseFilterDto.setName(name);
+        exerciseFilterDto.setDescription(description);
+        exerciseFilterDto.setUnilateral(unilateral);
+        exerciseFilterDto.setLoadType(loadType);
+        exerciseFilterDto.setMuscleSupGroupIds(muscleSupGroupIds);
+        exerciseFilterDto.setMuscleGroupIds(muscleGroupIds != null ? List.of(muscleGroupIds) : null);
+        exerciseFilterDto.setMuscleSubGroupIds(muscleSubGroupIds);
+
+        return ResponseEntity.ok(this.exerciseService.getAllExercises(exerciseFilterDto));
     }
 
     @GetMapping("/{exerciseId}")

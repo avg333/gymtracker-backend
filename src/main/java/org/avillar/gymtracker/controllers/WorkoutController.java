@@ -74,7 +74,7 @@ public class WorkoutController {
     }
 
     @PutMapping("/workouts/{workoutId}")
-    public ResponseEntity<WorkoutDto> putWorkout(@PathVariable final Long workoutId, final WorkoutDto workoutDto) {
+    public ResponseEntity<WorkoutDto> putWorkout(@PathVariable final Long workoutId, @RequestBody final WorkoutDto workoutDto) {
         workoutDto.setId(workoutId);
 
         try {

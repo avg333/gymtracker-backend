@@ -6,15 +6,13 @@ import org.avillar.gymtracker.model.enums.LoadTypeEnum;
 import java.util.List;
 
 @Data
-public class ExerciseDto {
+public class ExerciseFilterDto {
 
-    private Long id;
     private String name;
     private String description;
     private Boolean unilateral;
     private LoadTypeEnum loadType;
-
-    private List<String> muscleSupGroups;
-    private List<String> muscleGroups;
-    private List<String> muscleSubGroups;
+    private List<Long> muscleSupGroupIds;
+    private List<Long> muscleGroupIds;
+    private List<Long> muscleSubGroupIds;
 }
