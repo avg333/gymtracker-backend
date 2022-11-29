@@ -2,6 +2,9 @@ package org.avillar.gymtracker.exercise.application;
 
 import lombok.Data;
 import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
+import org.avillar.gymtracker.musclegroup.application.MuscleGroupDto;
+import org.avillar.gymtracker.musclegroup.application.MuscleSubGroupDto;
+import org.avillar.gymtracker.musclegroup.application.MuscleSupGroupDto;
 
 import java.util.List;
 
@@ -14,7 +17,7 @@ public class ExerciseDto {
     private Boolean unilateral;
     private LoadTypeEnum loadType;
 
-    private List<String> muscleSupGroups;
-    private List<String> muscleGroups;
-    private List<String> muscleSubGroups;
+    private List<MuscleSupGroupDto> muscleSupGroups;
+    private List<MuscleGroupDto> muscleGroups;
+    private List<MuscleSubGroupDto> muscleSubGroups;
 }

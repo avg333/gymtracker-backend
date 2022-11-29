@@ -1,8 +1,10 @@
 package org.avillar.gymtracker.workout.infrastructure;
 
+import org.avillar.gymtracker.base.infrastructure.BaseController;
 import org.avillar.gymtracker.workout.application.WorkoutDto;
 import org.avillar.gymtracker.workout.application.WorkoutService;
-import org.avillar.gymtracker.workout.application.WorkoutSummaryDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +15,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class WorkoutController {
+public class WorkoutController extends BaseController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorkoutController.class);
 
     private final WorkoutService workoutService;
 
@@ -28,7 +32,13 @@ public class WorkoutController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access user={} workouts dates by user={}",
+                    this.authService.getLoggedUser().getId(), userId);
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error accessing user={} workouts dates by user={}",
+                    userId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -39,18 +49,13 @@ public class WorkoutController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access user={} workouts by user={}",
+                    userId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    @GetMapping("/workouts/{workoutId}/summary")
-    public ResponseEntity<WorkoutSummaryDto> getWorkoutSummary(@PathVariable final Long workoutId) {
-        try {
-            return ResponseEntity.ok(this.workoutService.getWorkoutSummary(workoutId));
-        } catch (EntityNotFoundException exception) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (IllegalAccessException exception) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error accessing user={} workouts by user={}",
+                    userId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -61,7 +66,13 @@ public class WorkoutController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access workout={} by user={}",
+                    workoutId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error accessing workout={} by user={}",
+                    workoutId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -70,7 +81,17 @@ public class WorkoutController {
         workoutDto.setId(null);
         workoutDto.setUserId(userId);
 
-        return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto));
+        try {
+            return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto, userId));
+        } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access creating workout for user={} by user={}",
+                    userId, this.authService.getLoggedUser().getId());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error creating workout for user={} by user={}",
+                    userId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/workouts/{workoutId}")
@@ -82,7 +103,13 @@ public class WorkoutController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to update workout={} by user={}",
+                    workoutId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error updating workout={} by user={}",
+                    workoutId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -94,7 +121,13 @@ public class WorkoutController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to remove workout={} by user={}",
+                    workoutId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error removing workout={} by user={}",
+                    workoutId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

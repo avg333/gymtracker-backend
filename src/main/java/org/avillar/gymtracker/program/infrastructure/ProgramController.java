@@ -1,8 +1,11 @@
 package org.avillar.gymtracker.program.infrastructure;
 
+import org.avillar.gymtracker.base.infrastructure.BaseController;
 import org.avillar.gymtracker.program.application.ProgramDto;
 import org.avillar.gymtracker.program.application.ProgramService;
 import org.avillar.gymtracker.utils.infraestructure.PaginatorUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -14,7 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class ProgramController {
+public class ProgramController extends BaseController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProgramController.class);
 
     private final ProgramService programService;
 
@@ -47,7 +52,12 @@ public class ProgramController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("El usuario con ID={} ha intentado acceder a los programas del usuario con ID={}",
+                    this.authService.getLoggedUser().getId(), userId);
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception){
+            LOGGER.error("Error al intentar obtener los programas del usuario con ID={}", userId, exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -58,6 +68,8 @@ public class ProgramController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("El usuario con ID={} ha intentado acceder al programa con ID={} sin autorizacion",
+                    this.authService.getLoggedUser().getId(), programId);
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }

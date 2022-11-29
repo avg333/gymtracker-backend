@@ -1,9 +1,11 @@
 package org.avillar.gymtracker.workout.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.exercise.application.ExerciseDto;
+import org.avillar.gymtracker.exercise.domain.Exercise;
+import org.avillar.gymtracker.musclegroup.application.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
 import org.avillar.gymtracker.set.domain.Set;
-import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.domain.Workout;
@@ -15,10 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkoutServiceImpl extends BaseService implements WorkoutService {
-    private static final String NOT_FOUND_ERROR_MSG = "El programa no existe";
+    private static final String WORKOUT_NOT_FOUND = "The workout does not exist";
+    private static final String USER_NOT_FOUND = "The user does not exist";
 
     private final WorkoutDao workoutDao;
     private final UserDao userDao;
@@ -29,10 +33,15 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         this.userDao = userDao;
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
     public List<Date> getAllUserWorkoutsDates(final Long userId) throws IllegalAccessException {
-        final UserApp userApp = this.userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final UserApp userApp = this.userDao.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
+
         final Workout workout = new Workout();
         workout.setUserApp(userApp);
         this.authService.checkAccess(workout);
@@ -40,103 +49,122 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         return this.workoutDao.findByUserAppOrderByDateDesc(userApp).stream().map(Workout::getDate).toList();
     }
 
+
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
     public List<WorkoutDto> getAllUserWorkouts(final Long userId) throws IllegalAccessException {
-        final UserApp userApp = this.userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final UserApp userApp = this.userDao.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
         final List<Workout> workouts = this.workoutDao.findByUserAppOrderByDateDesc(userApp);
-        final List<WorkoutDto> workoutDtos = new ArrayList<>(workouts.size());
 
-        for (final Workout workout : workouts) {
-            this.authService.checkAccess(workout);
-            workoutDtos.add(this.modelMapper.map(workout, WorkoutDto.class));
+        if (workouts.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        return workoutDtos;
+        this.authService.checkAccess(workouts.get(0));
+        return workouts.stream().map(this::getWorkoutMetadata).toList();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<WorkoutDto> getWorkoutByDate(final Date date) throws EntityNotFoundException {
-        return Collections.emptyList(); //TODO Por realizar
-    }
-
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
     public WorkoutDto getWorkout(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
-        final Workout workout = this.workoutDao.findById(workoutId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Workout workout = this.workoutDao.findById(workoutId)
+                .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND));
         this.authService.checkAccess(workout);
-        return this.modelMapper.map(workout, WorkoutDto.class);
+        return this.getWorkoutMetadata(workout);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public WorkoutSummaryDto getWorkoutSummary(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
-        final Workout workout = this.workoutDao.findById(workoutId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.authService.checkAccess(workout);
-        final WorkoutSummaryDto workoutSummaryDto = new WorkoutSummaryDto();
+    private WorkoutDto getWorkoutMetadata(final Workout workout) {
+        final WorkoutDto workoutDto = this.modelMapper.map(workout, WorkoutDto.class);
 
-        final java.util.Set<Long> exercisesId = new HashSet<>();
-        final java.util.Set<String> muscles = new HashSet<>();
-        int sets = 0;
+        final Map<Long, ExerciseDto> exercises = new HashMap<>();
+        final Map<Long, MuscleGroupDto> muscleGroups = new HashMap<>();
+        final Map<Long, Set> efectiveSets = workout.getSetGroups().stream()
+                .flatMap(setGroup -> setGroup.getSets().stream())
+                .filter(set -> set.getRir() < 4)
+                .collect(Collectors.toMap(Set::getId, set -> set));
+
         double weight = 0;
-
         Date startWo = null;
         Date endWo = null;
-        for (final SetGroup setGroup : workout.getSetGroups()) {
-            for (final Set set : setGroup.getSets()) {
-                if (startWo == null || set.getLastModifiedAt().getTime() < startWo.getTime()) {
-                    startWo = set.getLastModifiedAt();
-                }
-                if (endWo == null || set.getLastModifiedAt().getTime() > endWo.getTime()) {
-                    endWo = set.getLastModifiedAt();
-                }
-                if (set.getRir() < 3) {
-                    exercisesId.add(setGroup.getExercise().getId());
-                    final List<MuscleGroup> muscleGroups = new ArrayList<>(setGroup.getExercise().getMuscleGroups());
-                    if (!muscleGroups.isEmpty()) {
-                        muscles.add(muscleGroups.get(0).getName());
-                    }
-                    sets++;
-                    weight += set.getWeight();
-                }
+        for (final Set set : efectiveSets.values()) {
+            if (startWo == null || set.getLastModifiedAt().getTime() < startWo.getTime()) {
+                startWo = set.getLastModifiedAt();
             }
+            if (endWo == null || set.getLastModifiedAt().getTime() > endWo.getTime()) {
+                endWo = set.getLastModifiedAt();
+            }
+
+            final Exercise exercise = set.getSetGroup().getExercise();
+            exercises.putIfAbsent(exercise.getId(), this.modelMapper.map(exercise, ExerciseDto.class));
+
+            for (final MuscleGroup muscleGroupSet : exercise.getMuscleGroups()) {
+                muscleGroups.putIfAbsent(muscleGroupSet.getId(), this.modelMapper.map(muscleGroupSet, MuscleGroupDto.class));
+                muscleGroups.get(muscleGroupSet.getId()).setVolume(muscleGroups.get(muscleGroupSet.getId()).getVolume() + 1);
+            }
+
+            weight += set.getWeight();
         }
 
         if (startWo != null && endWo != null) {
             final long duration = endWo.getTime() - startWo.getTime();
-            workoutSummaryDto.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(duration));
+            workoutDto.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(duration));
         }
-        workoutSummaryDto.setExerciseNumber(exercisesId.size());
-        workoutSummaryDto.setMuscles(new ArrayList<>(muscles));
-        workoutSummaryDto.setSetsNumber(sets);
-        workoutSummaryDto.setWeightVolume((int) weight);
+        final List<MuscleGroupDto> muscleGroupDtos = new ArrayList<>(muscleGroups.values());
+        muscleGroupDtos.sort(Comparator.comparing(MuscleGroupDto::getVolume).reversed());
 
-        return workoutSummaryDto;
+        workoutDto.setExerciseNumber(exercises.size());
+        workoutDto.setMuscleGroupDtos(muscleGroupDtos);
+        workoutDto.setSetsNumber(efectiveSets.size());
+        workoutDto.setWeightVolume((int) weight);
+
+        return workoutDto;
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
-    public WorkoutDto createWorkout(final WorkoutDto workoutDto) throws EntityNotFoundException {
+    public WorkoutDto createWorkout(final WorkoutDto workoutDto, final Long userId) throws IllegalAccessException {
+        final UserApp userApp = this.userDao.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
         final Workout workout = this.modelMapper.map(workoutDto, Workout.class);
-        workout.setUserApp(this.authService.getLoggedUser());
+        workout.setUserApp(userApp);
+        this.authService.checkAccess(workout);
         return this.modelMapper.map(this.workoutDao.save(workout), WorkoutDto.class);
     }
 
+
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public WorkoutDto updateWorkout(final WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException {
-        final Workout workoutDb = this.workoutDao.findById(workoutDto.getId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final Workout workoutDb = this.workoutDao.findById(workoutDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND));
         this.authService.checkAccess(workoutDb);
         final Workout workout = this.modelMapper.map(workoutDto, Workout.class);
         workout.setUserApp(workoutDb.getUserApp());
         return this.modelMapper.map(this.workoutDao.save(workout), WorkoutDto.class);
     }
 
+
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
-    public void deleteWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException {
-        final Workout workout = this.workoutDao.findById(workoutId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+    public void deleteWorkout(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
+        final Workout workout = this.workoutDao.findById(workoutId)
+                .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND));
         this.authService.checkAccess(workout);
         this.workoutDao.deleteById(workoutId);
     }

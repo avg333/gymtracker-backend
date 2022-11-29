@@ -4,9 +4,15 @@ import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.exercise.application.ExerciseDto;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
+import org.avillar.gymtracker.musclegroup.application.MuscleGroupDto;
+import org.avillar.gymtracker.musclegroup.application.MuscleSubGroupDto;
+import org.avillar.gymtracker.musclegroup.application.MuscleSupGroupDto;
+import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
+import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.session.domain.SessionDao;
 import org.avillar.gymtracker.set.application.SetDto;
+import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.workout.domain.Workout;
@@ -16,8 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class SetGroupServiceImpl extends BaseService implements SetGroupService {
@@ -57,9 +62,27 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     private SetGroupDto makeSetGroupDto(final SetGroup setGroup) {
         final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
         final Exercise exercise = this.exerciseDao.findById(setGroupDto.getExerciseId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        setGroupDto.setExerciseDto(this.modelMapper.map(exercise, ExerciseDto.class));
-        setGroupDto.setSetDtoList(setGroup.getSets().stream().map(set -> this.modelMapper.map(set, SetDto.class)).toList());
+        setGroupDto.setExerciseDto(this.getExerciseMetadata(exercise));
+        setGroupDto.setSetDtoList(setGroup.getSets().stream().sorted(Comparator.comparing(Set::getListOrder)).map(set -> this.modelMapper.map(set, SetDto.class)).toList());
         return setGroupDto;
+    }
+
+    private ExerciseDto getExerciseMetadata(final Exercise exercise) {
+        final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
+        final Map<Long, MuscleSupGroupDto> muscleSupGroups = new HashMap<>();
+        final Map<Long, MuscleGroupDto> muscleGroups = new HashMap<>();
+        final Map<Long, MuscleSubGroupDto> muscleSubGroups = new HashMap<>();
+        for (final MuscleGroup muscleGroup : exercise.getMuscleGroups()) {
+            muscleSupGroups.putIfAbsent(muscleGroup.getMuscleSupGroup().getId(), this.modelMapper.map(muscleGroup.getMuscleSupGroup(), MuscleSupGroupDto.class));
+            muscleGroups.putIfAbsent(muscleGroup.getId(), this.modelMapper.map(muscleGroup, MuscleGroupDto.class));
+        }
+        for (final MuscleSubGroup musclesubGroup : exercise.getMuscleSubGroups()) {
+            muscleSubGroups.putIfAbsent(musclesubGroup.getId(), this.modelMapper.map(musclesubGroup, MuscleSubGroupDto.class));
+        }
+        exerciseDto.setMuscleSupGroups(new ArrayList<>(muscleSupGroups.values()));
+        exerciseDto.setMuscleGroups(new ArrayList<>(muscleGroups.values()));
+        exerciseDto.setMuscleSubGroups(new ArrayList<>(muscleSubGroups.values()));
+        return exerciseDto;
     }
 
     @Override

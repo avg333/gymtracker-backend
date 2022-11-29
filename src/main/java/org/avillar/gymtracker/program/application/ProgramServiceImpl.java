@@ -29,6 +29,9 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
         this.userDao = userDao;
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
     public long getAllUserProgramsSize(final Long userId) throws EntityNotFoundException, IllegalAccessException {
@@ -39,6 +42,9 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
         return this.programDao.countByUserApp(userApp);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
     public List<ProgramDto> getAllUserPrograms(final Long userId, final Pageable pageable) throws IllegalAccessException {
@@ -54,6 +60,9 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
         return programDtos;
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
     public ProgramDto getProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
@@ -62,6 +71,9 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
         return this.volumeCalculatorUtils.calculateProgramVolume(program);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public ProgramDto createProgram(final ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException {
@@ -75,6 +87,9 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
         return this.modelMapper.map(this.programDao.save(program), ProgramDto.class);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public ProgramDto updateProgram(final ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException {
@@ -86,6 +101,9 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
         return this.modelMapper.map(this.programDao.save(program), ProgramDto.class);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public void deleteProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {

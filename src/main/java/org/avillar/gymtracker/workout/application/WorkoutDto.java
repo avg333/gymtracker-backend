@@ -1,8 +1,10 @@
 package org.avillar.gymtracker.workout.application;
 
 import lombok.Data;
+import org.avillar.gymtracker.musclegroup.application.MuscleGroupDto;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class WorkoutDto {
@@ -10,4 +12,13 @@ public class WorkoutDto {
     private Date date;
     private String description;
     private Long userId;
+
+    // Para el calendario
+    private List<MuscleGroupDto> muscleGroupDtos;
+
+    // Para el summary
+    private Integer exerciseNumber;
+    private Integer setsNumber;
+    private Integer weightVolume;
+    private Integer duration;
 }
