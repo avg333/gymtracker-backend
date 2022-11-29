@@ -1,6 +1,9 @@
 package org.avillar.gymtracker.services.impl;
 
-import org.avillar.gymtracker.model.dao.SessionDao;
+import org.avillar.gymtracker.auth.application.AuthServiceImpl;
+import org.avillar.gymtracker.program.application.ProgramServiceImpl;
+import org.avillar.gymtracker.session.application.SessionServiceImpl;
+import org.avillar.gymtracker.session.domain.SessionDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +28,7 @@ class SessionServiceImplTest {
     @Mock
     private SessionDao sessionDao;
     @Mock
-    private LoginServiceImpl loginService;
+    private AuthServiceImpl loginService;
     @Mock
     private ProgramServiceImpl programService;
     @InjectMocks
