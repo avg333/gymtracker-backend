@@ -30,7 +30,7 @@ public class WebSecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService,  JwtRequestFilter jwtRequestFilter) {
+    public WebSecurityConfig(UserDetailsService userDetailsService, JwtRequestFilter jwtRequestFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
     }
@@ -50,32 +50,6 @@ public class WebSecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
-    /*
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://gymtracker-frontend.herokuapp.com",
-                "http://gymtracker-frontend.herokuapp.com/",
-                "https://gymtracker-frontend.herokuapp.com",
-                "https://gymtracker-frontend.herokuapp.com/",
-                "http://gymtracker-frontend-mobile.herokuapp.com",
-                "http://gymtracker-frontend-mobile.herokuapp.com/",
-                "https://gymtracker-frontend-mobile.herokuapp.com",
-                "https://gymtracker-frontend-mobile.herokuapp.com/",
-                "http://192.168.1.90:8080",
-                "http://localhost:8080",
-                "http://localhost:8081"));
-        configuration.setAllowedMethods(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(Long.MAX_VALUE);
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-    */
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -98,13 +72,13 @@ public class WebSecurityConfig {
                 .and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()) ;
+                        .anyRequest().authenticated());
 
 
         return http.build();
     }
 
-    private CorsConfiguration corsConfiguration(HttpServletRequest request){
+    private CorsConfiguration corsConfiguration(HttpServletRequest request) {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(List.of("*"));

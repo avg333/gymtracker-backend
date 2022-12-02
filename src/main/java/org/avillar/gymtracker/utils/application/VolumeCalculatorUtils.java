@@ -1,13 +1,10 @@
 package org.avillar.gymtracker.utils.application;
 
-import org.avillar.gymtracker.exercise.application.ExerciseDto;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.program.application.ProgramDto;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.session.application.SessionDto;
 import org.avillar.gymtracker.session.domain.Session;
-import org.avillar.gymtracker.set.application.SetDto;
-import org.avillar.gymtracker.setgroup.application.SetGroupDto;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -65,9 +62,7 @@ public class VolumeCalculatorUtils {
         final Set<Long> exerciseIds = new HashSet<>();
         int sets = 0;
 
-        final List<SetGroupDto> setGroupDtoList = new ArrayList<>();
         for (final SetGroup setGroup : session.getSetGroups()) {
-            setGroupDtoList.add(this.makeSetGroupDto(setGroup));
 
             exerciseIds.add(setGroup.getExercise().getId());
             for (final org.avillar.gymtracker.set.domain.Set set : setGroup.getSets()) {
@@ -81,10 +76,4 @@ public class VolumeCalculatorUtils {
         return sessionDto;
     }
 
-    private SetGroupDto makeSetGroupDto(final SetGroup setGroup) {
-        final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
-        setGroupDto.setExerciseDto(this.modelMapper.map(setGroup.getExercise(), ExerciseDto.class));
-        setGroupDto.setSetDtoList(setGroup.getSets().stream().map(set -> this.modelMapper.map(set, SetDto.class)).toList());
-        return setGroupDto;
-    }
 }

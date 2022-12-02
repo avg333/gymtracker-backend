@@ -105,7 +105,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
             final Exercise exercise = set.getSetGroup().getExercise();
             exercises.putIfAbsent(exercise.getId(), this.modelMapper.map(exercise, ExerciseDto.class));
 
-            for (final MuscleGroup muscleGroupSet : exercise.getMuscleGroupExercises() .stream()
+            for (final MuscleGroup muscleGroupSet : exercise.getMuscleGroupExercises().stream()
                     .map(MuscleGroupExercise::getMuscleGroup)
                     .toList()) {
                 muscleGroups.putIfAbsent(muscleGroupSet.getId(), this.modelMapper.map(muscleGroupSet, MuscleGroupDto.class));

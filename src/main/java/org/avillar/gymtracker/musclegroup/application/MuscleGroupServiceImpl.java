@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.musclegroup.application;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSupGroupDto;
@@ -8,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service

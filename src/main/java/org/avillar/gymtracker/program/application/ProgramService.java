@@ -1,8 +1,8 @@
 package org.avillar.gymtracker.program.application;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Pageable;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 public interface ProgramService {

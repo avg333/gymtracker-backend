@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.setgroup.infrastructure;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.setgroup.application.SetGroupDto;
 import org.avillar.gymtracker.setgroup.application.SetGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController

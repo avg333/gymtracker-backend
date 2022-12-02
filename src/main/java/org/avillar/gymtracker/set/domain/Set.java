@@ -1,13 +1,12 @@
 package org.avillar.gymtracker.set.domain;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
-
-import jakarta.persistence.*;
 
 @Getter
 @Setter

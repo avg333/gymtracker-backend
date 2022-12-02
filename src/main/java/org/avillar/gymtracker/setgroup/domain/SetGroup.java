@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.setgroup.domain;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,6 @@ import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.workout.domain.Workout;
 
-import jakarta.persistence.*;
 import java.util.HashSet;
 
 @Getter

@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.setgroup.application;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.exercise.application.ExerciseDto;
 import org.avillar.gymtracker.exercise.domain.Exercise;
@@ -22,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.*;
 
 @Service

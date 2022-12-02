@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,7 +107,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         final Set<MuscleGroup> muscleGroups = new HashSet<>();
         final Set<MuscleSupGroup> muscleSupGroups = new HashSet<>();
         for (final MuscleGroupExercise muscleGroupExercise : exercise.getMuscleGroupExercises()) {
-            if(muscleGroupExercise.getWeight() > VolumeConstants.MIN_VOL_FOR_EX){
+            if (muscleGroupExercise.getWeight() > VolumeConstants.MIN_VOL_FOR_EX) {
                 muscleGroups.add(muscleGroupExercise.getMuscleGroup());
                 muscleSupGroups.addAll(muscleGroupExercise.getMuscleGroup().getMuscleSupGroups());
             }

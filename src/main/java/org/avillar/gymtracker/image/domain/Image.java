@@ -1,12 +1,11 @@
 package org.avillar.gymtracker.image.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
-
-
-import jakarta.persistence.*;
 
 @Entity
 @Getter

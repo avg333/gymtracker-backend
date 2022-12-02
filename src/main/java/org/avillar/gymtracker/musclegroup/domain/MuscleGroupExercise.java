@@ -1,13 +1,14 @@
 package org.avillar.gymtracker.musclegroup.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.exercise.domain.Exercise;
-
-import jakarta.persistence.*;
 
 @Getter
 @Setter

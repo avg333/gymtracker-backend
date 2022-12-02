@@ -1,8 +1,9 @@
 package org.avillar.gymtracker.musclegroup.infrastructure;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.infrastructure.BaseController;
-import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.application.MuscleGroupService;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSupGroupDto;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController

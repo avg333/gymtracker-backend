@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workout.infrastructure;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.infrastructure.BaseController;
 import org.avillar.gymtracker.workout.application.WorkoutDto;
 import org.avillar.gymtracker.workout.application.WorkoutService;
@@ -9,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
 

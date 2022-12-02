@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.program.domain;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,6 @@ import org.avillar.gymtracker.image.domain.Image;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.user.domain.UserApp;
 
-import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.measure.domain;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,6 @@ import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.image.domain.Image;
 import org.avillar.gymtracker.user.domain.UserApp;
 
-import jakarta.persistence.*;
 import java.util.Date;
 
 @Getter

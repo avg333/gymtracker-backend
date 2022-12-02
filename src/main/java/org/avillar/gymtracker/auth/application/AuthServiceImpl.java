@@ -6,7 +6,6 @@ import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.user.application.UserAppDto;
 import org.avillar.gymtracker.user.application.UserDetailsImpl;
-import org.avillar.gymtracker.user.application.UserDetailsServiceImpl;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,16 +17,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-    private final AuthenticationManager authenticationManager;
-    final UserDetailsServiceImpl userDetailsService;
-    final JwtTokenUtil jwtTokenUtil;
     private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
+    final JwtTokenUtil jwtTokenUtil;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthServiceImpl(AuthenticationManager authenticationManager,
-                           UserDetailsServiceImpl userDetailsService,
-                           JwtTokenUtil jwtTokenUtil) {
+    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 

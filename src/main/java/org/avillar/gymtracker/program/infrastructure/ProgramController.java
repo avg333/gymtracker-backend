@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.program.infrastructure;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.infrastructure.BaseController;
 import org.avillar.gymtracker.program.application.ProgramDto;
 import org.avillar.gymtracker.program.application.ProgramService;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -55,7 +55,7 @@ public class ProgramController extends BaseController {
             LOGGER.info("El usuario con ID={} ha intentado acceder a los programas del usuario con ID={}",
                     this.authService.getLoggedUser().getId(), userId);
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        } catch (Exception exception){
+        } catch (Exception exception) {
             LOGGER.error("Error al intentar obtener los programas del usuario con ID={}", userId, exception);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

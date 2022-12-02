@@ -75,7 +75,7 @@ public class DataLoader implements ApplicationRunner {
                 null, null, null, null));
         this.userDao.save(new UserApp(
                 "alex", new BCryptPasswordEncoder().encode("alex69"), null, "Alex",
-                "Garcia", "Fernandez", null, GenderEnum.MALE, ActivityLevelEnum.MODERATE,
+                "Garcia", "Fernandez", null, GenderEnum.FEMALE, ActivityLevelEnum.MODERATE,
                 null, null, null, null));
         this.createMeasures(user);
         this.createExercisesWithMuscleGroups();
@@ -233,25 +233,25 @@ public class DataLoader implements ApplicationRunner {
 
         final List<MuscleGroupExercise> muscleGroupExercises = new ArrayList<>();
 
-        for(final Exercise exercise: Arrays.asList(exCh1, exCh2, exCh3, exCh4, exCh5, exCh6, exCh7)){
+        for (final Exercise exercise : Arrays.asList(exCh1, exCh2, exCh3, exCh4, exCh5, exCh6, exCh7)) {
             muscleGroupExercises.add(new MuscleGroupExercise(chest, exercise, 1.0));
         }
-        for(final Exercise exercise: Arrays.asList(exBa1, exBa2, exBa3, exBa4, exBa5, exBa6, exBa7)){
+        for (final Exercise exercise : Arrays.asList(exBa1, exBa2, exBa3, exBa4, exBa5, exBa6, exBa7)) {
             muscleGroupExercises.add(new MuscleGroupExercise(lats, exercise, 1.0));
         }
-        for(final Exercise exercise: Arrays.asList(exSh1, exSh2)){
+        for (final Exercise exercise : Arrays.asList(exSh1, exSh2)) {
             muscleGroupExercises.add(new MuscleGroupExercise(shoulderAnterior, exercise, 1.0));
         }
-        for(final Exercise exercise: Arrays.asList(exSh3, exSh4, exSh5, exSh6)){
+        for (final Exercise exercise : Arrays.asList(exSh3, exSh4, exSh5, exSh6)) {
             muscleGroupExercises.add(new MuscleGroupExercise(shoulderLateral, exercise, 1.0));
         }
-        for(final Exercise exercise: Arrays.asList(exSh3, exSh4, exSh5, exSh6)){
+        for (final Exercise exercise : Arrays.asList(exSh3, exSh4, exSh5, exSh6)) {
             muscleGroupExercises.add(new MuscleGroupExercise(shoulderPosterior, exercise, 1.0));
         }
-        for(final Exercise exercise: Arrays.asList(exTr1, exTr2, exTr3, exTr4, exTr5)){
+        for (final Exercise exercise : Arrays.asList(exTr1, exTr2, exTr3, exTr4, exTr5)) {
             muscleGroupExercises.add(new MuscleGroupExercise(triceps, exercise, 1.0));
         }
-        for(final Exercise exercise: Arrays.asList(exBi1, exBi2, exBi3, exBi4, exBi5, exBi6)){
+        for (final Exercise exercise : Arrays.asList(exBi1, exBi2, exBi3, exBi4, exBi5, exBi6)) {
             muscleGroupExercises.add(new MuscleGroupExercise(biceps, exercise, 1.0));
         }
 
@@ -262,18 +262,21 @@ public class DataLoader implements ApplicationRunner {
     }
 
     private void createPrograms(final UserApp userApp) {
+        final String desc1 = "Desc1";
+        final String desc2 = "Desc2";
+
         final Program pushPullLegs = new Program("Push-Pull-Legs", "Push pull legs frec2", null, ProgramLevelEnum.MEDIUM, userApp, null, null);
         final Program fullBody = new Program("Full body", "Full body frec1", null, ProgramLevelEnum.EASY, userApp, null, null);
         final Program weider = new Program("Weider", "Weider frec1", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno1 = new Program("Relleno1", "Desc1", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno2 = new Program("Relleno2", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno3 = new Program("Relleno2", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno4 = new Program("relleno4", "Desc1", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno5 = new Program("relleno5", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno6 = new Program("relleno6", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno7 = new Program("relleno7", "Desc1", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno8 = new Program("relleno8", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
-        final Program relleno9 = new Program("Relleno9", "Desc2", null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno1 = new Program("Relleno1", desc1, null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno2 = new Program("Relleno2", desc2, null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno3 = new Program("Relleno2", desc2, null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno4 = new Program("relleno4", desc1, null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno5 = new Program("relleno5", desc2, null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno6 = new Program("relleno6", desc2, null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno7 = new Program("relleno7", desc1, null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno8 = new Program("relleno8", desc2, null, ProgramLevelEnum.HARD, userApp, null, null);
+        final Program relleno9 = new Program("Relleno9", desc2, null, ProgramLevelEnum.HARD, userApp, null, null);
 
 
         programDao.saveAll(Arrays.asList(pushPullLegs, fullBody, weider, relleno1, relleno2, relleno3, relleno4, relleno5, relleno6, relleno7, relleno8, relleno9));

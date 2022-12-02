@@ -17,10 +17,9 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil implements Serializable {
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     @Value("${bezkoder.app.jwtExpirationMs}")
     private long jwtExpirationMs;
-
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
