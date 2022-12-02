@@ -1,5 +1,8 @@
 package org.avillar.gymtracker.musclegroup.application;
 
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleSupGroupDto;
 import org.avillar.gymtracker.musclegroup.domain.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +43,10 @@ public class MuscleGroupServiceImpl implements MuscleGroupService {
     }
 
     @Override
-    public List<MuscleGroupDto> getAllMuscleGroups(final Long muscleSupGroupId) {
+    public List<MuscleGroupDto> getAllMuscleSupGroupMuscleGroups(final Long muscleSupGroupId) {
         final MuscleSupGroup muscleSupGroup = this.muscleSupGroupDao.findById(muscleSupGroupId).orElseThrow(() ->
                 new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        final List<MuscleGroup> muscleGroups = this.muscleGroupDao.findByMuscleSupGroupOrderByNameAsc(muscleSupGroup);
+        final List<MuscleGroup> muscleGroups = this.muscleGroupDao.findByMuscleSupGroupsOrderByNameAsc(muscleSupGroup);
         return muscleGroups.stream().map(muscleGroup -> this.modelMapper.map(muscleGroup, MuscleGroupDto.class)).toList();
     }
 

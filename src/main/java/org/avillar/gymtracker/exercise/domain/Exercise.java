@@ -5,14 +5,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
-import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
+import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
 import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import java.util.LinkedHashSet;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -23,23 +21,21 @@ public class Exercise extends BaseEntity {
     private String description;
     private Boolean unilateral = false;
     private LoadTypeEnum loadType;
-    @ManyToMany
-    @JoinTable(name = "exercise_muscle_groups",
-            joinColumns = @JoinColumn(name = "exercise_null"),
-            inverseJoinColumns = @JoinColumn(name = "muscle_groups_id"))
-    private java.util.Set<MuscleGroup> muscleGroups = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "exercise", orphanRemoval = true)
+    private Set<MuscleGroupExercise> muscleGroupExercises = new HashSet<>();
+
     @ManyToMany
     @JoinTable(name = "exercise_muscle_sub_groups",
             joinColumns = @JoinColumn(name = "exercise_null"),
             inverseJoinColumns = @JoinColumn(name = "muscle_sub_groups_id"))
-    private java.util.Set<MuscleSubGroup> muscleSubGroups = new LinkedHashSet<>();
+    private java.util.Set<MuscleSubGroup> muscleSubGroups = new HashSet<>();
 
-    public Exercise(String name, String description, Boolean unilateral, LoadTypeEnum loadType, java.util.Set<MuscleGroup> muscleGroups, java.util.Set<MuscleSubGroup> muscleSubGroups) {
+    public Exercise(String name, String description, Boolean unilateral, LoadTypeEnum loadType, java.util.Set<MuscleSubGroup> muscleSubGroups) {
         this.name = name;
         this.description = description;
         this.unilateral = unilateral;
         this.loadType = loadType;
-        this.muscleGroups = muscleGroups;
         this.muscleSubGroups = muscleSubGroups;
     }
 

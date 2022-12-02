@@ -7,4 +7,5 @@ import java.util.List;
 public interface MuscleSubGroupDao extends JpaRepository<MuscleSubGroup, Long> {
 
     List<MuscleSubGroup> findByMuscleGroupOrderByNameAsc(MuscleGroup muscleGroup);
+
 }

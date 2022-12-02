@@ -4,10 +4,11 @@ import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.exercise.application.ExerciseDto;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
-import org.avillar.gymtracker.musclegroup.application.MuscleGroupDto;
-import org.avillar.gymtracker.musclegroup.application.MuscleSubGroupDto;
-import org.avillar.gymtracker.musclegroup.application.MuscleSupGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleSupGroupDto;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
+import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
 import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.session.domain.SessionDao;
@@ -72,16 +73,19 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final Map<Long, MuscleSupGroupDto> muscleSupGroups = new HashMap<>();
         final Map<Long, MuscleGroupDto> muscleGroups = new HashMap<>();
         final Map<Long, MuscleSubGroupDto> muscleSubGroups = new HashMap<>();
-        for (final MuscleGroup muscleGroup : exercise.getMuscleGroups()) {
-            muscleSupGroups.putIfAbsent(muscleGroup.getMuscleSupGroup().getId(), this.modelMapper.map(muscleGroup.getMuscleSupGroup(), MuscleSupGroupDto.class));
+        for (final MuscleGroup muscleGroup : exercise.getMuscleGroupExercises()
+                .stream()
+                .map(MuscleGroupExercise::getMuscleGroup)
+                .toList()) {
+            muscleSupGroups.putIfAbsent(muscleGroup.getMuscleSupGroups().iterator().next().getId(), this.modelMapper.map(muscleGroup.getMuscleSupGroups().iterator().next(), MuscleSupGroupDto.class));
             muscleGroups.putIfAbsent(muscleGroup.getId(), this.modelMapper.map(muscleGroup, MuscleGroupDto.class));
         }
         for (final MuscleSubGroup musclesubGroup : exercise.getMuscleSubGroups()) {
             muscleSubGroups.putIfAbsent(musclesubGroup.getId(), this.modelMapper.map(musclesubGroup, MuscleSubGroupDto.class));
         }
-        exerciseDto.setMuscleSupGroups(new ArrayList<>(muscleSupGroups.values()));
-        exerciseDto.setMuscleGroups(new ArrayList<>(muscleGroups.values()));
-        exerciseDto.setMuscleSubGroups(new ArrayList<>(muscleSubGroups.values()));
+        exerciseDto.setMuscleSupGroups(new HashSet<>(muscleSupGroups.values()));
+        exerciseDto.setMuscleGroups(new HashSet<>(muscleGroups.values()));
+        exerciseDto.setMuscleSubGroups(new HashSet<>(muscleSubGroups.values()));
         return exerciseDto;
     }
 

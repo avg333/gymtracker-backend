@@ -32,4 +32,5 @@ public class MuscleSubGroup extends BaseEntity {
     @JsonIgnore
     @ManyToMany(mappedBy = "muscleSubGroups")
     private Set<Exercise> exercises = new HashSet<>();
+
 }

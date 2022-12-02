@@ -3,8 +3,9 @@ package org.avillar.gymtracker.workout.application;
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.exercise.application.ExerciseDto;
 import org.avillar.gymtracker.exercise.domain.Exercise;
-import org.avillar.gymtracker.musclegroup.application.MuscleGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
+import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
@@ -104,7 +105,9 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
             final Exercise exercise = set.getSetGroup().getExercise();
             exercises.putIfAbsent(exercise.getId(), this.modelMapper.map(exercise, ExerciseDto.class));
 
-            for (final MuscleGroup muscleGroupSet : exercise.getMuscleGroups()) {
+            for (final MuscleGroup muscleGroupSet : exercise.getMuscleGroupExercises() .stream()
+                    .map(MuscleGroupExercise::getMuscleGroup)
+                    .toList()) {
                 muscleGroups.putIfAbsent(muscleGroupSet.getId(), this.modelMapper.map(muscleGroupSet, MuscleGroupDto.class));
                 muscleGroups.get(muscleGroupSet.getId()).setVolume(muscleGroups.get(muscleGroupSet.getId()).getVolume() + 1);
             }

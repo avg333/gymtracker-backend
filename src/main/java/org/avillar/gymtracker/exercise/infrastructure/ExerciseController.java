@@ -53,14 +53,12 @@ public class ExerciseController {
     @PostMapping("")
     public ResponseEntity<ExerciseDto> postExercise(@RequestBody final ExerciseDto exerciseDto) {
         exerciseDto.setId(null);
-
         return ResponseEntity.ok(this.exerciseService.createExercise(exerciseDto));
     }
 
     @PutMapping("/{exerciseId}")
     public ResponseEntity<ExerciseDto> putExercise(@PathVariable final Long exerciseId, @RequestBody final ExerciseDto exerciseDto) {
         exerciseDto.setId(exerciseId);
-
         return ResponseEntity.ok(this.exerciseService.updateExercise(exerciseDto));
     }
 

@@ -1,5 +1,9 @@
 package org.avillar.gymtracker.musclegroup.application;
 
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleSupGroupDto;
+
 import java.util.List;
 
 public interface MuscleGroupService {
@@ -8,7 +12,7 @@ public interface MuscleGroupService {
 
     MuscleSupGroupDto getMuscleSupGroup(Long muscleSupGroupId);
 
-    List<MuscleGroupDto> getAllMuscleGroups(Long muscleSupGroupId);
+    List<MuscleGroupDto> getAllMuscleSupGroupMuscleGroups(Long muscleSupGroupId);
 
     MuscleGroupDto getMuscleGroup(Long muscleGroupId);
 

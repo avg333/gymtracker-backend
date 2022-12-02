@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.workout.application;
 
 import lombok.Data;
-import org.avillar.gymtracker.musclegroup.application.MuscleGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 
 import java.util.Date;
 import java.util.List;
