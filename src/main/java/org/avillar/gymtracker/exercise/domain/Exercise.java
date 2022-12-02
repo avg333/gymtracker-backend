@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercise.domain;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +9,6 @@ import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
 import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

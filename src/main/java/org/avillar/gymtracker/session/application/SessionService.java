@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.session.application;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 public interface SessionService {

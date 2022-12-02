@@ -2,7 +2,7 @@ package org.avillar.gymtracker.setgroup.application;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 public interface SetGroupService {

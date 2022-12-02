@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.security;
+package org.avillar.gymtracker.user.application;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class MyUserDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private UserApp userApp;
     private List<GrantedAuthority> authorities;

@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
+
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.workout.application;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+
 import java.util.Date;
 import java.util.List;
 

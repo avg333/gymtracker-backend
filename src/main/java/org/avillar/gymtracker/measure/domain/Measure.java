@@ -8,7 +8,7 @@ import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.image.domain.Image;
 import org.avillar.gymtracker.user.domain.UserApp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Getter

@@ -10,7 +10,7 @@ import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.workout.domain.Workout;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.HashSet;
 
 @Getter

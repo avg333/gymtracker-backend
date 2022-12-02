@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.auditing;
 
-import org.avillar.gymtracker.security.MyUserDetails;
+import org.avillar.gymtracker.user.application.UserDetailsImpl;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +15,7 @@ public class AuditorAwareImpl implements AuditorAware<String> {
         if (null == auth) {
             return Optional.empty();
         }
-        final MyUserDetails myUserDetails = (MyUserDetails) auth.getPrincipal();
-        return Optional.ofNullable(myUserDetails.getUserApp().getUsername());
+        final UserDetailsImpl userDetailsImpl = (UserDetailsImpl) auth.getPrincipal();
+        return Optional.ofNullable(userDetailsImpl.getUserApp().getUsername());
     }
 }

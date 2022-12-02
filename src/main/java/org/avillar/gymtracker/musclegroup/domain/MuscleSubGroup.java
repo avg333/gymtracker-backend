@@ -8,10 +8,8 @@ import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

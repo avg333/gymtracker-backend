@@ -10,7 +10,7 @@ import org.avillar.gymtracker.image.domain.Image;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.user.domain.UserApp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

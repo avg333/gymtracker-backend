@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.base.domain;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,12 +11,10 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Getter
 @Setter
@@ -31,12 +30,12 @@ public abstract class BaseEntity implements Serializable {
     @CreatedBy
     private String createdBy;
     @CreatedDate
-    @Temporal(TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @LastModifiedBy
     private String lastModifiedBy;
     @LastModifiedDate
-    @Temporal(TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedAt;
 
     @Override

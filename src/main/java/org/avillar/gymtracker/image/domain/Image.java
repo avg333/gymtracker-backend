@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+
+import jakarta.persistence.*;
 
 @Entity
 @Getter

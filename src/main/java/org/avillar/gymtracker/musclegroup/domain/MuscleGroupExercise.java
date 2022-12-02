@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter
