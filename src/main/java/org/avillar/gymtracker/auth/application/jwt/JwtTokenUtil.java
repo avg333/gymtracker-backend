@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 @Component
@@ -21,21 +20,22 @@ public class JwtTokenUtil implements Serializable {
     @Value("${bezkoder.app.jwtExpirationMs}")
     private long jwtExpirationMs;
 
-    public String getUsernameFromToken(String token) {
+
+
+    public String getUsernameFromToken(final String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    public <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
+    public String generateToken(final UserDetails userDetails) {
         return Jwts
                 .builder()
-                .setClaims(claims)
+                .setClaims(new HashMap<>())
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs * 1000))
@@ -43,21 +43,19 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(final String token, final UserDetails userDetails) {
+        return this.getUsernameFromToken(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
-    private Claims getAllClaimsFromToken(String token) {
+    private Claims getAllClaimsFromToken(final String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+    private Boolean isTokenExpired(final String token) {
+        return this.getExpirationDateFromToken(token).before(new Date());
     }
 
-    private Date getExpirationDateFromToken(String token) {
+    private Date getExpirationDateFromToken(final String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 

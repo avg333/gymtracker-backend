@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.auth.application;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.auth.application.jwt.JwtTokenUtil;
 import org.avillar.gymtracker.measure.domain.Measure;
 import org.avillar.gymtracker.program.domain.Program;
@@ -7,9 +8,11 @@ import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.user.application.UserAppDto;
 import org.avillar.gymtracker.user.application.UserDetailsImpl;
 import org.avillar.gymtracker.user.domain.UserApp;
+import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.domain.Workout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,11 +20,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-    private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
-    final JwtTokenUtil jwtTokenUtil;
-    private final AuthenticationManager authenticationManager;
 
-    public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
+
+    private static final String USER_NOT_FOUND = "The user does not exist";
+
+    private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
+
+    private final UserDao userDao;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+
+    public AuthServiceImpl(UserDao userDao, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
+        this.userDao = userDao;
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
     }
@@ -29,20 +40,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserAppDto login(final UserAppDto userAppDto) {
-        final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                userAppDto.getUsername(), userAppDto.getPassword());
-
-        final Authentication auth = this.authenticationManager.authenticate(token);
-
-        if (!auth.isAuthenticated()) {
-            throw new BadCredentialsException("");
+        if (this.userDao.findByUsername(userAppDto.getUsername()) == null) {
+            throw new EntityNotFoundException(USER_NOT_FOUND);
         }
 
-        final UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-        return new UserAppDto(this.jwtTokenUtil.generateToken(userDetails),
-                userDetails.getUserApp().getId(), userDetails.getUsername(), null, null, null,
-                null, null, null, null, null);
+        final UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(userAppDto.getUsername(), userAppDto.getPassword());
 
+        final Authentication auth = this.authenticationManager.authenticate(token);
+        final UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+
+        return new UserAppDto(this.jwtTokenUtil.generateToken(userDetails),
+                userDetails.getUserApp().getId(), userDetails.getUserApp().getUsername(),
+                null, null, null, null, null, null, null, null);
     }
 
     @Override
@@ -52,9 +62,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserApp getLoggedUser() {
-        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final UserDetailsImpl userDetailsImpl = (UserDetailsImpl) auth.getPrincipal();
-        return userDetailsImpl.getUserApp();
+        try {
+            final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            final UserDetailsImpl userDetailsImpl = (UserDetailsImpl) auth.getPrincipal();
+            return userDetailsImpl.getUserApp();
+        } catch (Exception e) {
+            LOGGER.error("Error al obtener el usuario logueado", e);
+            return null;
+        }
     }
 
     @Override

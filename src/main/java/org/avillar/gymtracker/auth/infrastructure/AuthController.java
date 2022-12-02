@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.auth.infrastructure;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.auth.application.AuthService;
 import org.avillar.gymtracker.user.application.UserAppDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class AuthController {
     public ResponseEntity<UserAppDto> login(@RequestBody final UserAppDto userAppDto) {
         try {
             return ResponseEntity.ok(this.authService.login(userAppDto));
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
