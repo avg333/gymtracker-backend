@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.setgroup.application;
 
 import lombok.Data;
-import org.avillar.gymtracker.exercise.application.ExerciseDto;
+import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.set.application.SetDto;
 
 import java.util.List;

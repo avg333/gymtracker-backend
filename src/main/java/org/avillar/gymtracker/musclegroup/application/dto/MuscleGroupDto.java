@@ -2,18 +2,19 @@ package org.avillar.gymtracker.musclegroup.application.dto;
 
 import lombok.Data;
 
-import java.util.Set;
+import java.io.Serializable;
+import java.util.List;
 
 
 @Data
-public class MuscleGroupDto {
+public class MuscleGroupDto implements Serializable {
 
     private Long id;
     private String name;
     private String description;
 
-    // private Set<MuscleSupGroupDto> muscleSupGroups; FIXME Dependencia circular
-    private Set<MuscleSubGroupDto> muscleSubGroups;
+    private List<MuscleSupGroupDto> muscleSupGroups;
+    private List<MuscleSubGroupDto> muscleSubGroups;
 
     private Double volume = 0.0;
 

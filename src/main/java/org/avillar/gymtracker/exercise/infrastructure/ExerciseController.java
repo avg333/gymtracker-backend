@@ -1,9 +1,9 @@
 package org.avillar.gymtracker.exercise.infrastructure;
 
 import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
-import org.avillar.gymtracker.exercise.application.ExerciseDto;
-import org.avillar.gymtracker.exercise.application.ExerciseFilterDto;
 import org.avillar.gymtracker.exercise.application.ExerciseService;
+import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
+import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,6 @@ public class ExerciseController {
             @RequestParam(required = false) final Long muscleGroupIds,
             @RequestParam(required = false) final List<Long> muscleSubGroupIds
     ) {
-
         final ExerciseFilterDto exerciseFilterDto = new ExerciseFilterDto();
         exerciseFilterDto.setName(name);
         exerciseFilterDto.setDescription(description);

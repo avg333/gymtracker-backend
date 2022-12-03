@@ -2,6 +2,8 @@ package org.avillar.gymtracker.exercise.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
+import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;

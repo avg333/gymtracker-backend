@@ -2,67 +2,88 @@ package org.avillar.gymtracker.musclegroup.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
+import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupMapper;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSupGroupDto;
 import org.avillar.gymtracker.musclegroup.domain.*;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class MuscleGroupServiceImpl implements MuscleGroupService {
-    private static final String NOT_FOUND_ERROR_MSG = "El SetGroup no existe";
+    private static final String MSUPG_NOT_FOUND_ERROR_MSG = "The MuscleSupGroup does not exist";
+    private static final String MG_NOT_FOUND_ERROR_MSG = "The MuscleGroup does not exist";
 
     private final MuscleGroupDao muscleGroupDao;
     private final MuscleSupGroupDao muscleSupGroupDao;
     private final MuscleSubGroupDao muscleSubGroupDao;
-    private final ModelMapper modelMapper;
+    private final MuscleGroupMapper muscleGroupMapper;
 
     @Autowired
-    public MuscleGroupServiceImpl(MuscleGroupDao muscleGroupDao, MuscleSupGroupDao muscleSupGroupDao, MuscleSubGroupDao muscleSubGroupDao, ModelMapper modelMapper) {
+    public MuscleGroupServiceImpl(MuscleGroupDao muscleGroupDao, MuscleSupGroupDao muscleSupGroupDao,
+                                  MuscleSubGroupDao muscleSubGroupDao, MuscleGroupMapper muscleGroupMapper) {
         this.muscleGroupDao = muscleGroupDao;
         this.muscleSupGroupDao = muscleSupGroupDao;
         this.muscleSubGroupDao = muscleSubGroupDao;
-        this.modelMapper = modelMapper;
+        this.muscleGroupMapper = muscleGroupMapper;
     }
 
-
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
+    @Transactional(readOnly = true)
     public List<MuscleSupGroupDto> getAllMuscleSupGroups() {
-        final List<MuscleSupGroup> muscleSupGroups = this.muscleSupGroupDao.findAll();
-        return muscleSupGroups.stream().map(muscleGroup -> this.modelMapper.map(muscleGroup, MuscleSupGroupDto.class)).toList();
+        return this.muscleGroupMapper.toDtos(this.muscleSupGroupDao.findAll(), true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
-    public MuscleSupGroupDto getMuscleSupGroup(final Long muscleSupGroupId) {
-        final MuscleSupGroup muscleSupGroup = this.muscleSupGroupDao.findById(muscleSupGroupId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        return this.modelMapper.map(muscleSupGroup, MuscleSupGroupDto.class);
+    @Transactional(readOnly = true)
+    public MuscleSupGroupDto getMuscleSupGroup(final Long muscleSupGroupId) throws EntityNotFoundException {
+        final MuscleSupGroup muscleSupGroup = this.muscleSupGroupDao.findById(muscleSupGroupId)
+                .orElseThrow(() -> new EntityNotFoundException(MSUPG_NOT_FOUND_ERROR_MSG));
+        return this.muscleGroupMapper.toDto(muscleSupGroup, true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
-    public List<MuscleGroupDto> getAllMuscleSupGroupMuscleGroups(final Long muscleSupGroupId) {
-        final MuscleSupGroup muscleSupGroup = this.muscleSupGroupDao.findById(muscleSupGroupId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        final List<MuscleGroup> muscleGroups = this.muscleGroupDao.findByMuscleSupGroupsOrderByNameAsc(muscleSupGroup);
-        return muscleGroups.stream().map(muscleGroup -> this.modelMapper.map(muscleGroup, MuscleGroupDto.class)).toList();
+    @Transactional(readOnly = true)
+    public List<MuscleGroupDto> getAllMuscleSupGroupMuscleGroups(final Long muscleSupGroupId) throws EntityNotFoundException {
+        final MuscleSupGroup muscleSupGroup = this.muscleSupGroupDao.findById(muscleSupGroupId)
+                .orElseThrow(() -> new EntityNotFoundException(MSUPG_NOT_FOUND_ERROR_MSG));
+        return this.muscleGroupMapper.toDtos(
+                this.muscleGroupDao.findByMuscleSupGroupsOrderByNameAsc(muscleSupGroup), true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
-    public MuscleGroupDto getMuscleGroup(final Long muscleGroupId) {
-        final MuscleGroup muscleGroup = this.muscleGroupDao.findById(muscleGroupId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        return this.modelMapper.map(muscleGroup, MuscleGroupDto.class);
+    @Transactional(readOnly = true)
+    public MuscleGroupDto getMuscleGroup(final Long muscleGroupId) throws EntityNotFoundException {
+        final MuscleGroup muscleGroup = this.muscleGroupDao.findById(muscleGroupId)
+                .orElseThrow(() -> new EntityNotFoundException(MG_NOT_FOUND_ERROR_MSG));
+        return this.muscleGroupMapper.toDto(muscleGroup, true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
-    public List<MuscleSubGroupDto> getAllMuscleGroupMuscleSubGroups(final Long muscleGroupId) {
-        final MuscleGroup muscleGroup = this.muscleGroupDao.findById(muscleGroupId).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        final List<MuscleSubGroup> muscleSubGroupGroups = this.muscleSubGroupDao.findByMuscleGroupOrderByNameAsc(muscleGroup);
-        return muscleSubGroupGroups.stream().map(muscleSubGroup -> this.modelMapper.map(muscleSubGroup, MuscleSubGroupDto.class)).toList();
+    @Transactional(readOnly = true)
+    public List<MuscleSubGroupDto> getAllMuscleGroupMuscleSubGroups(final Long muscleGroupId) throws EntityNotFoundException {
+        final MuscleGroup muscleGroup = this.muscleGroupDao.findById(muscleGroupId)
+                .orElseThrow(() -> new EntityNotFoundException(MG_NOT_FOUND_ERROR_MSG));
+        return this.muscleGroupMapper.toDtos(
+                this.muscleSubGroupDao.findByMuscleGroupOrderByNameAsc(muscleGroup), true);
     }
 
 }
