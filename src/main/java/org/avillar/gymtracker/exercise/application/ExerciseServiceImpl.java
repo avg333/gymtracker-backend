@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;
+import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
@@ -17,11 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class ExerciseServiceImpl extends BaseService implements ExerciseService {
@@ -29,10 +26,12 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
     private static final String EX_FOUND_ERROR_MSG = "The exercise does not exist";
 
     private final ExerciseDao exerciseDao;
+    private final ExerciseMapper exerciseMapper;
 
     @Autowired
-    public ExerciseServiceImpl(ExerciseDao exerciseDao) {
+    public ExerciseServiceImpl(ExerciseDao exerciseDao, ExerciseMapper exerciseMapper) {
         this.exerciseDao = exerciseDao;
+        this.exerciseMapper = exerciseMapper;
     }
 
     /**
@@ -48,7 +47,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         return this.exerciseDao.findAll()
                 .stream()
                 .filter(exercise -> this.applyFilter(finalExerciseFilterDto, exercise))
-                .map(this::getExerciseMetadata)
+                .map(exercise -> this.exerciseMapper.toDto(exercise, false))
                 .toList();
     }
 
@@ -86,11 +85,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
     }
 
     private boolean estaEnLista(final List<Long> elementosBuscados, final List<Long> elementosDelElemento) {
-        for (final long elementoBuscado : elementosBuscados) {
-            if (elementosDelElemento.contains(elementoBuscado))
-                return true;
-        }
-        return false;
+        return elementosBuscados.stream().anyMatch(elementosDelElemento::contains);
     }
 
     /**
@@ -101,39 +96,11 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
     public ExerciseDto getExercise(final Long exerciseId) {
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
                 .orElseThrow(() -> new EntityNotFoundException(EX_FOUND_ERROR_MSG));
-        return this.getExerciseMetadata(exercise);
+        return this.exerciseMapper.toDto(exercise, true);
     }
 
-    private ExerciseDto getExerciseMetadata(final Exercise exercise) {
-        final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
-        final Set<MuscleGroup> muscleGroups = new HashSet<>();
-        final Set<MuscleSupGroup> muscleSupGroups = new HashSet<>();
-        for (final MuscleGroupExercise muscleGroupExercise : exercise.getMuscleGroupExercises()) {
-            if (muscleGroupExercise.getWeight() > VolumeConstants.MIN_VOL_FOR_EX) {
-                muscleGroups.add(muscleGroupExercise.getMuscleGroup());
-                muscleSupGroups.addAll(muscleGroupExercise.getMuscleGroup().getMuscleSupGroups());
-            }
-        }
-        exerciseDto.setMuscleSupGroups(
-                muscleSupGroups
-                        .stream()
-                        .map(mgs -> this.modelMapper.map(mgs, MuscleSupGroupDto.class))
-                        .collect(Collectors.toSet())
-        );
-        exerciseDto.setMuscleGroups(
-                muscleGroups
-                        .stream()
-                        .map(mg -> this.modelMapper.map(mg, MuscleGroupDto.class))
-                        .collect(Collectors.toSet())
-        );
-        exerciseDto.setMuscleSubGroups(
-                exercise.getMuscleSubGroups()
-                        .stream()
-                        .map(msg -> this.modelMapper.map(msg, MuscleSubGroupDto.class))
-                        .collect(Collectors.toSet())
-        );
-        return exerciseDto;
-    }
+
+    // ------------ TODO por implementar todavia -------------------
 
     /**
      * @ {@inheritDoc}

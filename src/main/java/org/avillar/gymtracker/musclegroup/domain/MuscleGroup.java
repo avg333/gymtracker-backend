@@ -17,7 +17,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 public class MuscleGroup extends BaseEntity {
+    @Column(nullable = false)
     private String name;
+    @Column
     private String description;
 
     @ManyToMany

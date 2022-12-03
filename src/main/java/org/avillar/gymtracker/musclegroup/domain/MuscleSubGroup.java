@@ -1,10 +1,7 @@
 package org.avillar.gymtracker.musclegroup.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +18,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 public class MuscleSubGroup extends BaseEntity {
+    @Column(nullable = false)
     private String name;
+    @Column
     private String description;
 
     @JsonIgnore

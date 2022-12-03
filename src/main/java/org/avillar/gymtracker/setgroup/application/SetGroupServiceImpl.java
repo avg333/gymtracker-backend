@@ -2,15 +2,9 @@ package org.avillar.gymtracker.setgroup.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
-import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
+import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
-import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
-import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
-import org.avillar.gymtracker.musclegroup.application.dto.MuscleSupGroupDto;
-import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
-import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
-import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.session.domain.SessionDao;
 import org.avillar.gymtracker.set.application.SetDto;
@@ -33,13 +27,16 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     private final SessionDao sessionDao;
     private final WorkoutDao workoutDao;
     private final ExerciseDao exerciseDao;
+    private final ExerciseMapper exerciseMapper;
 
     @Autowired
-    public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao, ExerciseDao exerciseDao) {
+    public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao,
+                               ExerciseDao exerciseDao, ExerciseMapper exerciseMapper) {
         this.setGroupDao = setGroupDao;
         this.sessionDao = sessionDao;
         this.workoutDao = workoutDao;
         this.exerciseDao = exerciseDao;
+        this.exerciseMapper = exerciseMapper;
     }
 
     @Override
@@ -63,30 +60,9 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     private SetGroupDto makeSetGroupDto(final SetGroup setGroup) {
         final SetGroupDto setGroupDto = this.modelMapper.map(setGroup, SetGroupDto.class);
         final Exercise exercise = this.exerciseDao.findById(setGroupDto.getExerciseId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        setGroupDto.setExerciseDto(this.getExerciseMetadata(exercise));
+        setGroupDto.setExerciseDto(this.exerciseMapper.toDto(exercise, true));
         setGroupDto.setSetDtoList(setGroup.getSets().stream().sorted(Comparator.comparing(Set::getListOrder)).map(set -> this.modelMapper.map(set, SetDto.class)).toList());
         return setGroupDto;
-    }
-
-    private ExerciseDto getExerciseMetadata(final Exercise exercise) {
-        final ExerciseDto exerciseDto = this.modelMapper.map(exercise, ExerciseDto.class);
-        final Map<Long, MuscleSupGroupDto> muscleSupGroups = new HashMap<>();
-        final Map<Long, MuscleGroupDto> muscleGroups = new HashMap<>();
-        final Map<Long, MuscleSubGroupDto> muscleSubGroups = new HashMap<>();
-        for (final MuscleGroup muscleGroup : exercise.getMuscleGroupExercises()
-                .stream()
-                .map(MuscleGroupExercise::getMuscleGroup)
-                .toList()) {
-            muscleSupGroups.putIfAbsent(muscleGroup.getMuscleSupGroups().iterator().next().getId(), this.modelMapper.map(muscleGroup.getMuscleSupGroups().iterator().next(), MuscleSupGroupDto.class));
-            muscleGroups.putIfAbsent(muscleGroup.getId(), this.modelMapper.map(muscleGroup, MuscleGroupDto.class));
-        }
-        for (final MuscleSubGroup musclesubGroup : exercise.getMuscleSubGroups()) {
-            muscleSubGroups.putIfAbsent(musclesubGroup.getId(), this.modelMapper.map(musclesubGroup, MuscleSubGroupDto.class));
-        }
-        exerciseDto.setMuscleSupGroups(new HashSet<>(muscleSupGroups.values()));
-        exerciseDto.setMuscleGroups(new HashSet<>(muscleGroups.values()));
-        exerciseDto.setMuscleSubGroups(new HashSet<>(muscleSubGroups.values()));
-        return exerciseDto;
     }
 
     @Override
