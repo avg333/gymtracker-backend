@@ -83,7 +83,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         final Exercise exercise = this.exerciseMapper.toEntity(exerciseDto);
         this.muscleSubGroupsExists(exercise.getMuscleSubGroups());
         final Exercise exerciseDb = this.exerciseDao.save(exercise);
-        exerciseDb.setMuscleGroupExercises(this.saveMuscleGroupExercises(exercise.getMuscleGroupExercises(), exercise));
+        exerciseDb.setMuscleGroupExercises(this.saveMuscleGroupExercises(exercise.getMuscleGroupExercises(), exerciseDb));
         return exerciseMapper.toDto(exerciseDb, true);
     }
 
@@ -100,7 +100,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         final Exercise exercise = this.exerciseMapper.toEntity(exerciseDto);
         this.muscleSubGroupsExists(exercise.getMuscleSubGroups());
         exerciseDb = this.exerciseDao.save(exercise);
-        exerciseDb.setMuscleGroupExercises(this.saveMuscleGroupExercises(exercise.getMuscleGroupExercises(), exercise));
+        exerciseDb.setMuscleGroupExercises(this.saveMuscleGroupExercises(exercise.getMuscleGroupExercises(), exerciseDb));
         return exerciseMapper.toDto(exerciseDb, true);
     }
 
