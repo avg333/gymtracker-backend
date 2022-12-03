@@ -22,12 +22,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION_HEADER_START = "Bearer ";
 
-    private final UserDetailsService jwtUserDetailsService;
+    private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public JwtRequestFilter(UserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
-        this.jwtUserDetailsService = jwtUserDetailsService;
+    public JwtRequestFilter(UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
+        this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
@@ -51,21 +51,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try {
             final String username = this.jwtTokenUtil.getUsernameFromToken(jwtToken);
             if (StringUtils.isEmpty(username)) {
-                logger.info("El nombre de usuario del jwt esta vacio");
+                logger.warn("No hay ningún nombre asociado al token JWT");
                 return;
             }
 
-            final UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+            final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (!Boolean.TRUE.equals(this.jwtTokenUtil.validateToken(jwtToken, userDetails))) {
-                logger.info("El jwt no es valido");
+                logger.info("El token JWT no es válido");
                 return;
             }
+
             final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            logger.warn(SecurityContextHolder.getContext().getAuthentication());
         } catch (IllegalArgumentException e) {
             logger.error("Unable to fetch JWT Token");
         } catch (ExpiredJwtException e) {
@@ -74,4 +74,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             logger.error(e.getMessage());
         }
     }
+
 }

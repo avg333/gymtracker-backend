@@ -20,16 +20,22 @@ public class JwtTokenUtil implements Serializable {
     @Value("${bezkoder.app.jwtExpirationMs}")
     private long jwtExpirationMs;
 
-
-
     public String getUsernameFromToken(final String token) {
-        return getClaimFromToken(token, Claims::getSubject);
+        return this.getClaimFromToken(token, Claims::getSubject);
     }
 
+    public Boolean validateToken(final String token, final UserDetails userDetails) {
+        return this.getClaimFromToken(token, Claims::getSubject).equals(userDetails.getUsername())
+                && !this.getClaimFromToken(token, Claims::getExpiration).before(new Date());
+    }
 
-    public <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
+    private <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
+        return claimsResolver.apply(
+                Jwts.parserBuilder()
+                        .setSigningKey(key)
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody());
     }
 
     public String generateToken(final UserDetails userDetails) {
@@ -41,22 +47,6 @@ public class JwtTokenUtil implements Serializable {
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs * 1000))
                 .signWith(key)
                 .compact();
-    }
-
-    public Boolean validateToken(final String token, final UserDetails userDetails) {
-        return this.getUsernameFromToken(token).equals(userDetails.getUsername()) && !isTokenExpired(token);
-    }
-
-    private Claims getAllClaimsFromToken(final String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-    }
-
-    private Boolean isTokenExpired(final String token) {
-        return this.getExpirationDateFromToken(token).before(new Date());
-    }
-
-    private Date getExpirationDateFromToken(final String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
     }
 
 }
