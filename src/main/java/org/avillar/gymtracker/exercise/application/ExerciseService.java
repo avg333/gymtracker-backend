@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercise.application;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;
 
@@ -9,11 +10,11 @@ public interface ExerciseService {
 
     List<ExerciseDto> getAllExercises(ExerciseFilterDto exerciseFilterDto);
 
-    ExerciseDto getExercise(Long exerciseId);
+    ExerciseDto getExercise(Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
 
-    ExerciseDto createExercise(ExerciseDto exerciseDto);
+    ExerciseDto createExercise(ExerciseDto exerciseDto) throws EntityNotFoundException;
 
-    ExerciseDto updateExercise(ExerciseDto exerciseDto);
+    ExerciseDto updateExercise(ExerciseDto exerciseDto) throws EntityNotFoundException, IllegalAccessException;
 
-    void deleteExercise(Long exerciseId);
+    void deleteExercise(Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
 }

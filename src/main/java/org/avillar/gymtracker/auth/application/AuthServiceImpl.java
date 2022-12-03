@@ -2,6 +2,7 @@ package org.avillar.gymtracker.auth.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.auth.application.jwt.JwtTokenUtil;
+import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.measure.domain.Measure;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
@@ -70,6 +71,10 @@ public class AuthServiceImpl implements AuthService {
             LOGGER.error("Error al obtener el usuario logueado", e);
             return null;
         }
+    }
+
+    @Override
+    public void checkAccess(final Exercise exercise) throws IllegalAccessException {
     }
 
     @Override

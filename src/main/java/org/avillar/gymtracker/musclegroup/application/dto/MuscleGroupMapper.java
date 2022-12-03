@@ -13,6 +13,7 @@ public interface MuscleGroupMapper {
 
 
     <T> List<T> toDtos(Collection<? extends BaseEntity> objects, boolean nested);
+
     <T> Set<T> toEntities(Collection<?> objects);
 
     MuscleGroupDto toDto(MuscleGroup muscleGroup, boolean nested);

@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.auth.application;
 
+import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.measure.domain.Measure;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
@@ -14,6 +15,8 @@ public interface AuthService {
     void logout();
 
     UserApp getLoggedUser();
+
+    void checkAccess(Exercise exercise) throws IllegalAccessException;
 
     void checkAccess(Measure measure) throws IllegalAccessException;
 

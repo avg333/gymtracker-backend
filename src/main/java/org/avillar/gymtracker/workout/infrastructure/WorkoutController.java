@@ -33,7 +33,7 @@ public class WorkoutController extends BaseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
             LOGGER.info("Unauthorized access user={} workouts dates by user={}",
-                    this.authService.getLoggedUser().getId(), userId);
+                    userId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception exception) {
             LOGGER.error("Error accessing user={} workouts dates by user={}",

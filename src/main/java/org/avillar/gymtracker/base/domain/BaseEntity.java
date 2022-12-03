@@ -43,7 +43,7 @@ public abstract class BaseEntity implements Serializable {
         if (this == o) return true;
         if (null == o || getClass() != o.getClass()) return false;
         final BaseEntity baseEntity = (BaseEntity) o;
-        return id.equals(baseEntity.id);
+        return id != null && baseEntity.id != null && id.equals(baseEntity.id);
     }
 
     @Override
