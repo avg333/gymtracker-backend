@@ -15,6 +15,8 @@ public interface MuscleGroupService {
 
     List<MuscleGroupDto> getAllMuscleSupGroupMuscleGroups(Long muscleSupGroupId) throws EntityNotFoundException;
 
+    List<MuscleGroupDto> getAllMuscleGroups();
+
     MuscleGroupDto getMuscleGroup(Long muscleGroupId) throws EntityNotFoundException;
 
     List<MuscleSubGroupDto> getAllMuscleGroupMuscleSubGroups(Long muscleGroupId) throws EntityNotFoundException;

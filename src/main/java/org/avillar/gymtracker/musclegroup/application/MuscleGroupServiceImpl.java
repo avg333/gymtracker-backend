@@ -63,6 +63,12 @@ public class MuscleGroupServiceImpl implements MuscleGroupService {
                 this.muscleGroupDao.findByMuscleSupGroupsOrderByNameAsc(muscleSupGroup), true);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<MuscleGroupDto> getAllMuscleGroups() {
+        return this.muscleGroupMapper.toDtos(this.muscleGroupDao.findAll(), true);
+    }
+
     /**
      * @ {@inheritDoc}
      */

@@ -57,8 +57,21 @@ public class MuscleGroupController extends BaseController {
         }
     }
 
+    @GetMapping("muscleGroups")
+    public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups() {
+        try {
+            return ResponseEntity.ok(this.muscleGroupService.getAllMuscleGroups());
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception exception) {
+            LOGGER.error("Error accessing all MuscleGroups by user={}",
+                    this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("muscleSupGroups/{muscleSupGroupId}/muscleGroups")
-    public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups(@PathVariable final Long muscleSupGroupId) {
+    public ResponseEntity<List<MuscleGroupDto>> getAllMuscleSupGroupMuscleGroups(@PathVariable final Long muscleSupGroupId) {
         try {
             return ResponseEntity.ok(this.muscleGroupService.getAllMuscleSupGroupMuscleGroups(muscleSupGroupId));
         } catch (EntityNotFoundException exception) {
