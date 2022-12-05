@@ -20,6 +20,22 @@ public class WorkoutValidator {
         this.userDao = userDao;
     }
 
+    private static void validateDescription(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
+        final String fieldName = "description";
+        final String description = workoutDto.getDescription();
+        if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
+            errorMap.put(fieldName, "La longitud de la descripcion del workout es superior a la maxima");
+        }
+    }
+
+    private static void validateDate(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
+        final String fieldName = "date";
+        final Date date = workoutDto.getDate();
+        if (date == null) {
+            errorMap.put(fieldName, "La fecha del workout no es valida");
+        } //TODO Añadir fecha maxima y minima
+    }
+
     public Map<String, String> validate(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
         validateDate(workoutDto, errorMap);
         validateDescription(workoutDto, errorMap);
@@ -36,21 +52,5 @@ public class WorkoutValidator {
             errorMap.put(fieldName, "El usuario no existe");
             throw new EntityNotFoundException(USER_NOT_FOUND);
         }
-    }
-
-    private static void validateDescription(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
-        final String fieldName = "description";
-        final String description = workoutDto.getDescription();
-        if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
-            errorMap.put(fieldName, "La longitud de la descripcion del workout es superior a la maxima");
-        }
-    }
-
-    private static void validateDate(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
-        final String fieldName = "date";
-        final Date date = workoutDto.getDate();
-        if (date == null) {
-            errorMap.put(fieldName, "La fecha del workout no es valida");
-        } //TODO Añadir fecha maxima y minima
     }
 }
