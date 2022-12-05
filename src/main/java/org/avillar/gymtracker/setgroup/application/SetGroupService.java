@@ -8,16 +8,15 @@ import java.util.List;
 
 public interface SetGroupService {
 
-    List<SetGroupDto> getAllSessionSetGroups(Long programId) throws IllegalAccessException;
+    List<SetGroupDto> getAllSessionSetGroups(Long programId) throws EntityNotFoundException, IllegalAccessException;
 
     @Transactional(readOnly = true)
-    List<SetGroupDto> getAllWorkoutSetGroups(Long workoutId) throws IllegalAccessException;
+    List<SetGroupDto> getAllWorkoutSetGroups(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 
     SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 
     SetGroupDto createSetGroupInSession(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
 
-    @Transactional
     SetGroupDto createSetGroupInWorkout(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
 
     SetGroupDto updateSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;

@@ -27,7 +27,7 @@ public class SetGroupMapperImpl implements SetGroupMapper {
     }
 
     @Override
-    public List<SetGroupDto> toDtos(Collection<SetGroup> setGroups, boolean nested) {
+    public List<SetGroupDto> toDtos(final Collection<SetGroup> setGroups, boolean nested) {
         if (CollectionUtils.isEmpty(setGroups)) {
             return Collections.emptyList();
         }
@@ -36,7 +36,7 @@ public class SetGroupMapperImpl implements SetGroupMapper {
     }
 
     @Override
-    public List<SetGroup> toEntities(Collection<SetGroupDto> setGroupDtos) {
+    public List<SetGroup> toEntities(final Collection<SetGroupDto> setGroupDtos) {
         if (CollectionUtils.isEmpty(setGroupDtos)) {
             return Collections.emptyList();
         }
@@ -55,15 +55,19 @@ public class SetGroupMapperImpl implements SetGroupMapper {
         setGroupDto.setDescription(setGroup.getDescription());
         setGroupDto.setListOrder(setGroup.getListOrder());
 
-        setGroupDto.setSets(this.setMapper.toDtos(setGroup.getSets(), false));
-        setGroupDto.setExercise(this.exerciseMapper.toDto(setGroup.getExercise(), false));
+        setGroupDto.setSets(nested
+                ? this.setMapper.toDtos(setGroup.getSets(), false)
+                : Collections.emptyList());
+        setGroupDto.setExercise(nested
+                ? this.exerciseMapper.toDto(setGroup.getExercise(), false)
+                : null);
 
-        if (setGroup.getSession() != null) {
+        if (nested && setGroup.getSession() != null) {
             final SessionDto sessionDto = new SessionDto();
             sessionDto.setId(setGroup.getSession().getId());
             setGroupDto.setSession(sessionDto);
         }
-        if (setGroup.getWorkout() != null) {
+        if (nested && setGroup.getWorkout() != null) {
             final WorkoutDto workoutDto = new WorkoutDto();
             workoutDto.setId(setGroup.getWorkout().getId());
             setGroupDto.setWorkout(workoutDto);

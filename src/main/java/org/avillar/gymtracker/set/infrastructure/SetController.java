@@ -77,8 +77,8 @@ public class SetController extends BaseController {
                     setGroupId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception exception) {
-            LOGGER.error("Error creating set by user={}",
-                    this.authService.getLoggedUser().getId(), exception);
+            LOGGER.error("Error creating set for setGroup={} by user={}",
+                    setGroupId, this.authService.getLoggedUser().getId(), exception);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
