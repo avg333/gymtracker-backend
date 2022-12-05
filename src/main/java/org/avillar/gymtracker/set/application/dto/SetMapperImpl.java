@@ -14,7 +14,7 @@ import java.util.List;
 public class SetMapperImpl implements SetMapper {
 
     @Override
-    public List<SetDto> toDtos(Collection<org.avillar.gymtracker.set.domain.Set> sets, boolean nested) {
+    public List<SetDto> toDtos(final Collection<Set> sets, boolean nested) {
         if (CollectionUtils.isEmpty(sets)) {
             return Collections.emptyList();
         }
@@ -23,7 +23,7 @@ public class SetMapperImpl implements SetMapper {
     }
 
     @Override
-    public List<Set> toEntities(Collection<SetDto> setDtos) {
+    public List<Set> toEntities(final Collection<SetDto> setDtos) {
         if (CollectionUtils.isEmpty(setDtos)) {
             return Collections.emptyList();
         }
@@ -32,7 +32,7 @@ public class SetMapperImpl implements SetMapper {
     }
 
     @Override
-    public SetDto toDto(final org.avillar.gymtracker.set.domain.Set set, boolean nested) {
+    public SetDto toDto(final Set set, boolean nested) {
         if (set == null) {
             return null;
         }
@@ -46,7 +46,7 @@ public class SetMapperImpl implements SetMapper {
         setDto.setWeight(set.getWeight());
         setDto.setLastModifiedAt(set.getLastModifiedAt());
 
-        if (set.getSetGroup() != null) {
+        if (nested && set.getSetGroup() != null) {
             final SetGroupDto setGroupDto = new SetGroupDto();
             setGroupDto.setId(set.getSetGroup().getId());
             setDto.setSetGroup(setGroupDto);
@@ -58,12 +58,12 @@ public class SetMapperImpl implements SetMapper {
     }
 
     @Override
-    public org.avillar.gymtracker.set.domain.Set toEntity(final SetDto setDto) {
+    public Set toEntity(final SetDto setDto) {
         if (setDto == null) {
             return null;
         }
 
-        final org.avillar.gymtracker.set.domain.Set set = new org.avillar.gymtracker.set.domain.Set();
+        final Set set = new Set();
         set.setId(setDto.getId());
         set.setDescription(setDto.getDescription());
         set.setListOrder(setDto.getListOrder());
