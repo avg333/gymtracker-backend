@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/exercises")
+@RequestMapping("/api/exercises")//TODO Eliminar barra
 public class ExerciseController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExerciseController.class);

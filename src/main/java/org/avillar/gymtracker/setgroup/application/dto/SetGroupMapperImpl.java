@@ -59,7 +59,7 @@ public class SetGroupMapperImpl implements SetGroupMapper {
                 ? this.setMapper.toDtos(setGroup.getSets(), false)
                 : Collections.emptyList());
         setGroupDto.setExercise(nested
-                ? this.exerciseMapper.toDto(setGroup.getExercise(), false)
+                ? this.exerciseMapper.toDto(setGroup.getExercise(), true)
                 : null);
 
         if (nested && setGroup.getSession() != null) {
