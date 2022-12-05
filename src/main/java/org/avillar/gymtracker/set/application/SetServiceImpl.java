@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.set.application.dto.SetDto;
 import org.avillar.gymtracker.set.application.dto.SetMapper;
+import org.avillar.gymtracker.set.application.dto.SetValidator;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.set.domain.SetDao;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,12 +24,14 @@ public class SetServiceImpl extends BaseService implements SetService {
     private final SetDao setDao;
     private final SetGroupDao setGroupDao;
     private final SetMapper setMapper;
+    private final SetValidator setValidator;
 
     @Autowired
-    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper) {
+    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper, SetValidator setValidator) {
         this.setDao = setDao;
         this.setGroupDao = setGroupDao;
         this.setMapper = setMapper;
+        this.setValidator = setValidator;
     }
 
     /**
@@ -39,7 +43,6 @@ public class SetServiceImpl extends BaseService implements SetService {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SET_GROUP_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(setGroup);
-
         return this.setMapper.toDtos(this.setDao.findBySetGroupOrderByListOrderAsc(setGroup), true);
     }
 
@@ -55,16 +58,21 @@ public class SetServiceImpl extends BaseService implements SetService {
         return this.setMapper.toDto(set, true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public SetDto createSet(final SetDto setDto) throws IllegalAccessException {
-        //TODO Call validator
-        final SetGroup setGroup = this.setGroupDao.findById(setDto.getSetGroup().getId())
-                .orElseThrow(() -> new EntityNotFoundException(SET_GROUP_NOT_FOUND_ERROR_MSG));
+        if (!this.setValidator.validate(setDto, new HashMap<>()).isEmpty()) {
+            throw new RuntimeException("El set esta mal formado");
+        }// TODO Mejorar devolucion de errores
 
+        final SetGroup setGroup = this.setGroupDao.getReferenceById(setDto.getSetGroup().getId());
 
         final Set set = this.setMapper.toEntity(setDto);
         this.authService.checkAccess(set.getSetGroup());
+
         final int setsSize = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup).size();
         if (null == set.getListOrder() || set.getListOrder() > setsSize || 0 > set.getListOrder()) {
             set.setListOrder(setsSize);
@@ -77,10 +85,15 @@ public class SetServiceImpl extends BaseService implements SetService {
         return this.setMapper.toDto(set, true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public SetDto updateSet(final SetDto setDto) throws IllegalAccessException {
-        //TODO Call validator
+        if (!this.setValidator.validate(setDto, new HashMap<>()).isEmpty()) {
+            throw new RuntimeException("El set esta mal formado");
+        }// TODO Mejorar devolucion de errores
 
 
         final Set setDb = this.setDao.getReferenceById(setDto.getId());

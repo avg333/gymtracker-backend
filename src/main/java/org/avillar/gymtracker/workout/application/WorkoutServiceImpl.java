@@ -142,9 +142,9 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(this.userDao.getReferenceById(workout.getUserApp().getId()));
         this.authService.checkAccess(workout);
+
         return this.workoutMapper.toDto(this.workoutDao.save(workout), true);
     }
-
 
     /**
      * @ {@inheritDoc}
@@ -164,7 +164,6 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         workout.setUserApp(workoutDb.getUserApp());
         return this.workoutMapper.toDto(this.workoutDao.save(workout), true);
     }
-
 
     /**
      * @ {@inheritDoc}
