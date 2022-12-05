@@ -1,7 +1,9 @@
-package org.avillar.gymtracker.workout.application;
+package org.avillar.gymtracker.workout.application.dto;
 
 import lombok.Data;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
+import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
+import org.avillar.gymtracker.user.application.UserAppDto;
 
 import java.util.Date;
 import java.util.List;
@@ -11,7 +13,10 @@ public class WorkoutDto {
     private Long id;
     private Date date;
     private String description;
-    private Long userId;
+
+    private UserAppDto userApp;
+
+    private List<SetGroupDto> setGroups;
 
     // Para el calendario
     private List<MuscleGroupDto> muscleGroupDtos;

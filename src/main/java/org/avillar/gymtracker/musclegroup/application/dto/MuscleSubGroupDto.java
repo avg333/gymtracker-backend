@@ -12,5 +12,6 @@ public class MuscleSubGroupDto implements Serializable {
     private String name;
     private String description;
     private MuscleGroupDto muscleGroup;
+    //private List<ExerciseDto> exercises; NO SE USA
 
 }

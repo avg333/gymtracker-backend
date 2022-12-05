@@ -2,15 +2,15 @@ package org.avillar.gymtracker.workout.infrastructure;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.infrastructure.BaseController;
-import org.avillar.gymtracker.workout.application.WorkoutDto;
+import org.avillar.gymtracker.user.application.UserAppDto;
 import org.avillar.gymtracker.workout.application.WorkoutService;
+import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -23,23 +23,6 @@ public class WorkoutController extends BaseController {
 
     public WorkoutController(WorkoutService workoutService) {
         this.workoutService = workoutService;
-    }
-
-    @GetMapping("/users/{userId}/workouts/dates")
-    public ResponseEntity<List<Date>> getAllUserWorkoutsDates(@PathVariable final Long userId) {
-        try {
-            return ResponseEntity.ok(this.workoutService.getAllUserWorkoutsDates(userId));
-        } catch (EntityNotFoundException exception) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (IllegalAccessException exception) {
-            LOGGER.info("Unauthorized access user={} workouts dates by user={}",
-                    userId, this.authService.getLoggedUser().getId());
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        } catch (Exception exception) {
-            LOGGER.error("Error accessing user={} workouts dates by user={}",
-                    userId, this.authService.getLoggedUser().getId(), exception);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @GetMapping("/users/{userId}/workouts")
@@ -79,10 +62,12 @@ public class WorkoutController extends BaseController {
     @PostMapping("/users/{userId}/workouts")
     public ResponseEntity<WorkoutDto> postWorkout(@PathVariable final Long userId, @RequestBody final WorkoutDto workoutDto) {
         workoutDto.setId(null);
-        workoutDto.setUserId(userId);
+        final UserAppDto userAppDto = new UserAppDto();
+        userAppDto.setId(userId);
+        workoutDto.setUserApp(userAppDto);
 
         try {
-            return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto, userId));
+            return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto));
         } catch (IllegalAccessException exception) {
             LOGGER.info("Unauthorized access creating workout for user={} by user={}",
                     userId, this.authService.getLoggedUser().getId());

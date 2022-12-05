@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.exercise.application;
+package org.avillar.gymtracker.base.application;
 
 public class VolumeConstants {
 

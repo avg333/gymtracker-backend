@@ -19,5 +19,5 @@ public class ExerciseDto implements Serializable {
     private List<MuscleGroupExerciseDto> muscleGroupExercises;
     private List<MuscleSubGroupDto> muscleSubGroups;
 
-    //private Set<SetGroup> setGroups
+    //private Set<SetGroup> setGroups NO SE USA
 }

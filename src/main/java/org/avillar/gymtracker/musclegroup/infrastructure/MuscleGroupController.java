@@ -35,8 +35,6 @@ public class MuscleGroupController extends BaseController {
     public ResponseEntity<List<MuscleSupGroupDto>> getAllMuscleSupGroups() {
         try {
             return ResponseEntity.ok(this.muscleGroupService.getAllMuscleSupGroups());
-        } catch (EntityNotFoundException exception) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception exception) {
             LOGGER.error("Error accessing all MuscleSupGroups by user={}",
                     this.authService.getLoggedUser().getId(), exception);
@@ -57,19 +55,6 @@ public class MuscleGroupController extends BaseController {
         }
     }
 
-    @GetMapping("muscleGroups")
-    public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups() {
-        try {
-            return ResponseEntity.ok(this.muscleGroupService.getAllMuscleGroups());
-        } catch (EntityNotFoundException exception) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception exception) {
-            LOGGER.error("Error accessing all MuscleGroups by user={}",
-                    this.authService.getLoggedUser().getId(), exception);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping("muscleSupGroups/{muscleSupGroupId}/muscleGroups")
     public ResponseEntity<List<MuscleGroupDto>> getAllMuscleSupGroupMuscleGroups(@PathVariable final Long muscleSupGroupId) {
         try {
@@ -79,6 +64,17 @@ public class MuscleGroupController extends BaseController {
         } catch (Exception exception) {
             LOGGER.error("Error accessing MuscleSupGroup={} MuscleSupGroups by user={}",
                     muscleSupGroupId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("muscleGroups")
+    public ResponseEntity<List<MuscleGroupDto>> getAllMuscleGroups() {
+        try {
+            return ResponseEntity.ok(this.muscleGroupService.getAllMuscleGroups());
+        } catch (Exception exception) {
+            LOGGER.error("Error accessing all MuscleGroups by user={}",
+                    this.authService.getLoggedUser().getId(), exception);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

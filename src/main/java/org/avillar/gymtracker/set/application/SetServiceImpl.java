@@ -2,6 +2,8 @@ package org.avillar.gymtracker.set.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.set.application.dto.SetDto;
+import org.avillar.gymtracker.set.application.dto.SetMapper;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.set.domain.SetDao;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
@@ -15,80 +17,97 @@ import java.util.Objects;
 
 @Service
 public class SetServiceImpl extends BaseService implements SetService {
-    private static final String NOT_FOUND_PARENT_ERROR_MSG = "El grupo de series no existe";
-    private static final String NOT_FOUND_ERROR_MSG = "La serie no existe";
+    private static final String SET_GROUP_NOT_FOUND_ERROR_MSG = "The setGroup does not exist";
+    private static final String SET_NOT_FOUND_ERROR_MSG = "The set does not exist";
     private final SetDao setDao;
     private final SetGroupDao setGroupDao;
+    private final SetMapper setMapper;
 
     @Autowired
-    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao) {
+    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper) {
         this.setDao = setDao;
         this.setGroupDao = setGroupDao;
+        this.setMapper = setMapper;
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public List<SetDto> getAllSetGroupSets(final Long setGroupId) throws IllegalAccessException {
-        final SetGroup setGroup = this.setGroupDao.findById(setGroupId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
+    public List<SetDto> getAllSetGroupSets(final Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
+        final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
+                .orElseThrow(() -> new EntityNotFoundException(SET_GROUP_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(setGroup);
-        final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
-        return sets.stream().map(set -> this.modelMapper.map(set, SetDto.class)).toList();
+
+        return this.setMapper.toDtos(this.setDao.findBySetGroupOrderByListOrderAsc(setGroup), true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional(readOnly = true)
-    public SetDto getSet(final Long setId) throws IllegalAccessException {
-        final Set set = this.setDao.findById(setId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+    public SetDto getSet(final Long setId) throws EntityNotFoundException, IllegalAccessException {
+        final Set set = this.setDao.findById(setId)
+                .orElseThrow(() -> new EntityNotFoundException(SET_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(set.getSetGroup());
-        return this.modelMapper.map(set, SetDto.class);
+        return this.setMapper.toDto(set, true);
     }
 
     @Override
     @Transactional
     public SetDto createSet(final SetDto setDto) throws IllegalAccessException {
-        final SetGroup setGroup = this.setGroupDao.findById(setDto.getSetGroupId()).orElseThrow(() ->
-                new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
-        this.authService.checkAccess(setGroup);
+        //TODO Call validator
+        final SetGroup setGroup = this.setGroupDao.findById(setDto.getSetGroup().getId())
+                .orElseThrow(() -> new EntityNotFoundException(SET_GROUP_NOT_FOUND_ERROR_MSG));
 
-        final Set set = this.modelMapper.map(setDto, Set.class);
-        final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
-        if (null == set.getListOrder() || set.getListOrder() > sets.size() || 0 > set.getListOrder()) {
-            set.setListOrder(sets.size());
+
+        final Set set = this.setMapper.toEntity(setDto);
+        this.authService.checkAccess(set.getSetGroup());
+        final int setsSize = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup).size();
+        if (null == set.getListOrder() || set.getListOrder() > setsSize || 0 > set.getListOrder()) {
+            set.setListOrder(setsSize);
             this.setDao.save(set);
         } else {
             this.setDao.save(set);
             this.reorderAllSetGroupsSetsAfterPost(setGroup, set);
         }
 
-        return this.modelMapper.map(set, SetDto.class);
+        return this.setMapper.toDto(set, true);
     }
 
     @Override
     @Transactional
     public SetDto updateSet(final SetDto setDto) throws IllegalAccessException {
-        final Set setDb = this.setDao.findById(setDto.getId()).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        this.authService.checkAccess(setDb.getSetGroup());
-        final SetGroup setGroup = this.setGroupDao.findById(setDto.getSetGroupId()).orElseThrow(()
-                -> new EntityNotFoundException(NOT_FOUND_PARENT_ERROR_MSG));
-        this.authService.checkAccess(setGroup);
+        //TODO Call validator
 
-        final Set set = this.modelMapper.map(setDto, Set.class);
+
+        final Set setDb = this.setDao.getReferenceById(setDto.getId());
+        this.authService.checkAccess(setDb.getSetGroup());
+
+        final Set set = this.setMapper.toEntity(setDto);
+        set.setSetGroup(setDb.getSetGroup());
 
         final int oldPosition = set.getListOrder();
         this.setDao.save(set);
         this.reorderAllSetGroupsSetsAfterUpdate(set.getSetGroup(), set, oldPosition);
 
-        return this.modelMapper.map(set, SetDto.class);
+        return this.setMapper.toDto(set, true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
-    public void deleteSet(final Long setGroupId) throws IllegalAccessException {
-        final Set set = this.setDao.findById(setGroupId).orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+    public void deleteSet(final Long setId) throws EntityNotFoundException, IllegalAccessException {
+        final Set set = this.setDao.findById(setId)
+                .orElseThrow(() -> new EntityNotFoundException(SET_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(set.getSetGroup());
 
         final int setGroupPosition = set.getListOrder();
-        this.setDao.deleteById(setGroupId);
+        this.setDao.deleteById(setId);
 
         this.reorderAllSetGroupsSetsAfterDelete(set.getSetGroup(), setGroupPosition);
     }

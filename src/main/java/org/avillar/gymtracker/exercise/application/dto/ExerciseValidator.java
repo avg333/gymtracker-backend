@@ -12,7 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,6 +38,42 @@ public class ExerciseValidator {
     public ExerciseValidator(MuscleGroupDao muscleGroupDao, MuscleSubGroupDao muscleSubGroupDao) {
         this.muscleGroupDao = muscleGroupDao;
         this.muscleSubGroupDao = muscleSubGroupDao;
+    }
+
+    private static void validateLoadType(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
+        final String fieldName = "loadType";
+        final LoadTypeEnum loadTypeEnum = exerciseDto.getLoadType();
+        if (loadTypeEnum == null || !Arrays.asList(LoadTypeEnum.values()).contains(loadTypeEnum)) {
+            errorMap.put(fieldName, "LoadType debe de ser un valor del enumerado");
+        }
+    }
+
+    private static void validateUnilateral(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
+        final String fieldName = "unilateral";
+        final Boolean unilateral = exerciseDto.getUnilateral();
+        if (unilateral == null) {
+            errorMap.put(fieldName, "Unilateral debe tener un valor");
+        }
+    }
+
+    private static void validateDescription(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
+        final String fieldName = "description";
+        final String description = exerciseDto.getDescription();
+        if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
+            errorMap.put(fieldName, "La longitud de la descripcion del ejercicio es superior a la maxima");
+        }
+    }
+
+    private static void validateName(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
+        final String fieldName = "name";
+        final String name = exerciseDto.getName();
+        if (StringUtils.isBlank(name)) {
+            errorMap.put(fieldName, "El nombre del ejercicio esta en blanco");
+        } else if (name.length() < LONG_MIN_NAME) {
+            errorMap.put(fieldName, "La longitud del nombre del ejercicio es inferior a la minima");
+        } else if (name.length() > LONG_MAX_NAME) {
+            errorMap.put(fieldName, "La longitud del nombre del ejercicio es superior a la maxima");
+        }
     }
 
     public Map<String, String> validate(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
@@ -89,7 +128,7 @@ public class ExerciseValidator {
         }
         if (totalWeight > LONG_MAX_WEIGHT) {
             errorMap.put(fieldName, "El total weight no puede ser > " + LONG_MAX_WEIGHT);
-        }else if (totalWeight < LONG_MAX_WEIGHT) {
+        } else if (totalWeight < LONG_MAX_WEIGHT) {
             errorMap.put(fieldName, "El total weight no puede ser < " + LONG_MAX_WEIGHT);
         }
 
@@ -107,42 +146,6 @@ public class ExerciseValidator {
                 this.muscleSubGroupDao.findAllById(muscleSubGroupsIds).size() != muscleSubGroupDtos.size()) {
             errorMap.put(fieldName, "No se han encontrado los muscleSubGroups especificados");
             throw new EntityNotFoundException(MSG_FOUND_ERROR_MSG);
-        }
-    }
-
-    private static void validateLoadType(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
-        final String fieldName = "loadType";
-        final LoadTypeEnum loadTypeEnum = exerciseDto.getLoadType();
-        if (loadTypeEnum == null || !Arrays.asList(LoadTypeEnum.values()).contains(loadTypeEnum)) {
-            errorMap.put(fieldName, "LoadType debe de ser un valor del enumerado");
-        }
-    }
-
-    private static void validateUnilateral(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
-        final String fieldName = "unilateral";
-        final Boolean unilateral = exerciseDto.getUnilateral();
-        if (unilateral == null) {
-            errorMap.put(fieldName, "Unilateral debe tener un valor");
-        }
-    }
-
-    private static void validateDescription(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
-        final String fieldName = "description";
-        final String description = exerciseDto.getDescription();
-        if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
-            errorMap.put(fieldName, "La longitud de la descripcion del ejercicio es superior a la maxima");
-        }
-    }
-
-    private static void validateName(final ExerciseDto exerciseDto, final Map<String, String> errorMap) {
-        final String fieldName = "name";
-        final String name = exerciseDto.getName();
-        if (StringUtils.isBlank(name)) {
-            errorMap.put(fieldName, "El nombre del ejercicio esta en blanco");
-        } else if (name.length() < LONG_MIN_NAME) {
-            errorMap.put(fieldName, "La longitud del nombre del ejercicio es inferior a la minima");
-        } else if (name.length() > LONG_MAX_NAME) {
-            errorMap.put(fieldName, "La longitud del nombre del ejercicio es superior a la maxima");
         }
     }
 }

@@ -1,6 +1,7 @@
-package org.avillar.gymtracker.set.application;
+package org.avillar.gymtracker.set.application.dto;
 
 import lombok.Data;
+import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
 
 import java.util.Date;
 
@@ -13,7 +14,8 @@ public class SetDto {
     private int reps;
     private double rir;
     private double weight;
-    private Long setGroupId;
+
+    private SetGroupDto setGroup;
 
     private Date lastModifiedAt;
 }

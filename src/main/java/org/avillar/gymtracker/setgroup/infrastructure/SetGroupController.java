@@ -1,8 +1,8 @@
 package org.avillar.gymtracker.setgroup.infrastructure;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.avillar.gymtracker.setgroup.application.SetGroupDto;
 import org.avillar.gymtracker.setgroup.application.SetGroupService;
+import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +57,7 @@ public class SetGroupController {
     @PostMapping("/sessions/{sessionId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInSession(@PathVariable final Long sessionId, @RequestBody final SetGroupDto setGroupDto) {
         setGroupDto.setId(null);
-        setGroupDto.setSessionId(sessionId);
+        setGroupDto.getSession().setId(sessionId);
 
         try {
             return ResponseEntity.ok(this.setGroupService.createSetGroupInSession(setGroupDto));
@@ -71,7 +71,7 @@ public class SetGroupController {
     @PostMapping("/workouts/{workoutId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInWorkout(@PathVariable final Long workoutId, @RequestBody final SetGroupDto setGroupDto) {
         setGroupDto.setId(null);
-        setGroupDto.setWorkoutId(workoutId);
+        setGroupDto.getWorkout().setId(workoutId);
 
         try {
             return ResponseEntity.ok(this.setGroupService.createSetGroupInWorkout(setGroupDto));

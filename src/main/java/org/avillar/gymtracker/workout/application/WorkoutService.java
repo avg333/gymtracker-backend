@@ -1,18 +1,17 @@
 package org.avillar.gymtracker.workout.application;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 
-import java.util.Date;
 import java.util.List;
 
 public interface WorkoutService {
-    List<Date> getAllUserWorkoutsDates(Long userId) throws IllegalAccessException;
 
     List<WorkoutDto> getAllUserWorkouts(Long userId) throws IllegalAccessException;
 
     WorkoutDto getWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 
-    WorkoutDto createWorkout(WorkoutDto workoutDto, Long userId) throws EntityNotFoundException, IllegalAccessException;
+    WorkoutDto createWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException;
 
     /**
      * Modify the workout with the specified id in workoutDto

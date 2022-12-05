@@ -8,12 +8,17 @@ import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseValidator;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
-import org.avillar.gymtracker.musclegroup.domain.*;
+import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
+import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExerciseDao;
+import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ExerciseServiceImpl extends BaseService implements ExerciseService {
@@ -30,8 +35,8 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
                                ExerciseMapper exerciseMapper, ExerciseValidator exerciseValidator) {
         this.exerciseDao = exerciseDao;
         this.muscleGroupExerciseDao = muscleGroupExerciseDao;
-        this.exerciseValidator = exerciseValidator;
         this.exerciseMapper = exerciseMapper;
+        this.exerciseValidator = exerciseValidator;
     }
 
     /**
@@ -44,6 +49,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
                 ? exerciseFilterDto
                 : new ExerciseFilterDto();
 
+        // TODO Llevar filtros a la BD
         return this.exerciseDao.findAll()
                 .stream()
                 .filter(exercise -> this.applyFilter(finalExerciseFilterDto, exercise))
@@ -69,13 +75,14 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
     @Override
     @Transactional
     public ExerciseDto createExercise(final ExerciseDto exerciseDto) throws EntityNotFoundException {
-        if(!this.exerciseValidator.validate(exerciseDto, new HashMap<>()).isEmpty()){
+        if (!this.exerciseValidator.validate(exerciseDto, new HashMap<>()).isEmpty()) {
             throw new RuntimeException("El ejercicio esta mal formado");
-        }
+        }//TODO Mejorar como se devuelven los errores
 
         final Exercise exercise = this.exerciseMapper.toEntity(exerciseDto);
         final Exercise exerciseDb = this.exerciseDao.save(exercise);
-        exerciseDb.setMuscleGroupExercises(this.saveMuscleGroupExercises(exercise.getMuscleGroupExercises(), exerciseDb));
+        exercise.getMuscleGroupExercises().forEach(mge -> mge.setExercise(exercise));
+        exerciseDb.setMuscleGroupExercises(new HashSet<>(this.muscleGroupExerciseDao.saveAll(exercise.getMuscleGroupExercises())));
         return this.exerciseMapper.toDto(exerciseDb, true);
     }
 
@@ -85,17 +92,21 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
     @Override
     @Transactional
     public ExerciseDto updateExercise(final ExerciseDto exerciseDto) throws EntityNotFoundException, IllegalAccessException {
-        if(!this.exerciseValidator.validate(exerciseDto, new HashMap<>()).isEmpty()){
+        if (!this.exerciseValidator.validate(exerciseDto, new HashMap<>()).isEmpty()) {
             throw new RuntimeException("El ejercicio esta mal formado");
-        }
+        }//TODO Mejorar como se devuelven los errores
 
-        Exercise exerciseDb = this.exerciseDao.findById(exerciseDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(EX_FOUND_ERROR_MSG));
-        this.authService.checkAccess(exerciseDb);
+        this.authService.checkAccess(
+                this.exerciseDao.findById(exerciseDto.getId())
+                        .orElseThrow(() -> new EntityNotFoundException(EX_FOUND_ERROR_MSG)));
 
         final Exercise exercise = this.exerciseMapper.toEntity(exerciseDto);
-        exerciseDb = this.exerciseDao.save(exercise);
-        exerciseDb.setMuscleGroupExercises(this.saveMuscleGroupExercises(exercise.getMuscleGroupExercises(), exerciseDb));
+        final Exercise exerciseDb = this.exerciseDao.save(exercise);
+
+        this.deleteOldMuscleGroupExerciseRelations(exerciseDb);
+        exercise.getMuscleGroupExercises().forEach(mge -> mge.setExercise(exerciseDb));
+        exerciseDb.setMuscleGroupExercises(new HashSet<>(this.muscleGroupExerciseDao.saveAll(exercise.getMuscleGroupExercises())));
+
         return this.exerciseMapper.toDto(exerciseDb, true);
     }
 
@@ -111,7 +122,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         this.exerciseDao.deleteById(exerciseId);
     }
 
-    private boolean applyFilter(ExerciseFilterDto exerciseFilterDto, Exercise exercise) {
+    private boolean applyFilter(final ExerciseFilterDto exerciseFilterDto, final Exercise exercise) {
         boolean cumple = true;
         if (exerciseFilterDto.getName() != null && exerciseFilterDto.getName().length() > 0) {
             cumple = exercise.getName().contains(exerciseFilterDto.getName());
@@ -128,29 +139,30 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
                     .stream()
                     .map(mge -> mge.getMuscleGroup().getId())
                     .toList();
-            cumple = this.estaEnLista(exerciseFilterDto.getMuscleGroupIds(), muscleGroupIds);
+            cumple = exerciseFilterDto.getMuscleGroupIds().stream().anyMatch(muscleGroupIds::contains);
         }
         if (cumple && exerciseFilterDto.getMuscleSubGroupIds() != null && !exerciseFilterDto.getMuscleSubGroupIds().isEmpty()) {
             final List<Long> muscleSubGroupIds = exercise.getMuscleSubGroups().stream().map(MuscleSubGroup::getId).toList();
-            cumple = this.estaEnLista(exerciseFilterDto.getMuscleSubGroupIds(), muscleSubGroupIds);
+            cumple = exerciseFilterDto.getMuscleSubGroupIds().stream().anyMatch(muscleSubGroupIds::contains);
         }
         if (cumple && exerciseFilterDto.getMuscleSupGroupIds() != null && !exerciseFilterDto.getMuscleSupGroupIds().isEmpty()) {
             final List<Long> muscleSupGroupIds = exercise
                     .getMuscleGroupExercises()
                     .stream()
                     .map(mge -> mge.getMuscleGroup().getMuscleSupGroups().iterator().next().getId()).toList();
-            cumple = this.estaEnLista(exerciseFilterDto.getMuscleSupGroupIds(), muscleSupGroupIds);
+            cumple = exerciseFilterDto.getMuscleSupGroupIds().stream().anyMatch(muscleSupGroupIds::contains);
         }
         return cumple;
     }
 
-    private boolean estaEnLista(final List<Long> elementosBuscados, final List<Long> elementosDelElemento) {
-        return elementosBuscados.stream().anyMatch(elementosDelElemento::contains);
+    private void deleteOldMuscleGroupExerciseRelations(final Exercise exercise) {
+        //TODO Mejorar y hacer mas eficiente esta logica
+        final List<MuscleGroupExercise> muscleGroupExercises = this.muscleGroupExerciseDao.findAll();
+        final List<Long> muscleGroupExercisesIds = muscleGroupExercises.stream()
+                .filter(mge -> mge.getExercise().getId().equals(exercise.getId()))
+                .map(MuscleGroupExercise::getId)
+                .toList();
+        this.muscleGroupExerciseDao.deleteAllById(muscleGroupExercisesIds);
     }
 
-    private Set<MuscleGroupExercise> saveMuscleGroupExercises(final Set<MuscleGroupExercise> muscleGroupExercises,
-                                                              final Exercise exercise) {
-        muscleGroupExercises.forEach(mge -> mge.setExercise(exercise));
-        return new HashSet<>(this.muscleGroupExerciseDao.saveAll(muscleGroupExercises));
-    }
 }

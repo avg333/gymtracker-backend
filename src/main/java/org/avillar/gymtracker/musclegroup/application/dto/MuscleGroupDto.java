@@ -15,6 +15,7 @@ public class MuscleGroupDto implements Serializable {
 
     private List<MuscleSupGroupDto> muscleSupGroups;
     private List<MuscleSubGroupDto> muscleSubGroups;
+    //private List<MuscleGroupExerciseDto> muscleGroupExercises; NO SE USA
 
     private Double volume = 0.0;
 

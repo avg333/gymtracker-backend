@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.setgroup.application;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
