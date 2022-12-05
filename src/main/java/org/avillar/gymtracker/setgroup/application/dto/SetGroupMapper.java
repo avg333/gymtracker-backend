@@ -9,6 +9,8 @@ public interface SetGroupMapper {
 
     List<SetGroupDto> toDtos(Collection<SetGroup> setGroups, boolean nested);
 
+    List<SetGroup> toEntities(Collection<SetGroupDto> setGroupDtos);
+
     SetGroupDto toDto(SetGroup setGroup, boolean nested);
 
     SetGroup toEntity(SetGroupDto setGroupDto);

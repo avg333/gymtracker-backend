@@ -20,6 +20,24 @@ public class WorkoutValidator {
         this.userDao = userDao;
     }
 
+    public Map<String, String> validate(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
+        validateDate(workoutDto, errorMap);
+        validateDescription(workoutDto, errorMap);
+        if (workoutDto.getId() != null) {
+            validateUser(workoutDto, errorMap);
+        }
+        return errorMap;
+    }
+
+    private void validateUser(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
+        final String fieldName = "user";
+        final UserAppDto userAppDto = workoutDto.getUserApp();
+        if (userAppDto == null || userAppDto.getId() == null || !this.userDao.existsById(workoutDto.getId())) {
+            errorMap.put(fieldName, "El usuario no existe");
+            throw new EntityNotFoundException(USER_NOT_FOUND);
+        }
+    }
+
     private static void validateDescription(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
         final String fieldName = "description";
         final String description = workoutDto.getDescription();
@@ -33,22 +51,6 @@ public class WorkoutValidator {
         final Date date = workoutDto.getDate();
         if (date == null) {
             errorMap.put(fieldName, "La fecha del workout no es valida");
-        }
-    }
-
-    public Map<String, String> validate(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
-        validateDate(workoutDto, errorMap);
-        validateDescription(workoutDto, errorMap);
-        validateUser(workoutDto, errorMap);
-        return errorMap;
-    }
-
-    private void validateUser(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
-        final String fieldName = "user";
-        final UserAppDto userAppDto = workoutDto.getUserApp();
-        if (userAppDto != null && userAppDto.getId() != null && !this.userDao.existsById(workoutDto.getId())) {
-            errorMap.put(fieldName, "El usuario no existe");
-            throw new EntityNotFoundException(USER_NOT_FOUND);
-        }
+        } //TODO Añadir fecha maxima y minima
     }
 }

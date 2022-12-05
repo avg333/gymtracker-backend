@@ -1,19 +1,27 @@
 package org.avillar.gymtracker.workout.application.dto;
 
+import org.avillar.gymtracker.setgroup.application.dto.SetGroupMapper;
+import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 @Component
 public class WorkoutMapperImpl implements WorkoutMapper {
 
+    private final SetGroupMapper setGroupMapper;
+
+    public WorkoutMapperImpl(SetGroupMapper setGroupMapper) {
+        this.setGroupMapper = setGroupMapper;
+    }
 
     @Override
-    public List<WorkoutDto> toDtos(Collection<Workout> workouts, boolean nested) {
+    public List<WorkoutDto> toDtos(final Collection<Workout> workouts, boolean nested) {
         if (CollectionUtils.isEmpty(workouts)) {
             return Collections.emptyList();
         }
@@ -32,6 +40,14 @@ public class WorkoutMapperImpl implements WorkoutMapper {
         workoutDto.setDate(workout.getDate());
         workoutDto.setDescription(workout.getDescription());
 
+        workoutDto.setUserApp(null);
+
+        if (nested && workout.getSetGroups() != null) {
+            workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(), false));
+        } else {
+            workoutDto.setSetGroups(null);
+        }
+
         return workoutDto;
     }
 
@@ -45,6 +61,16 @@ public class WorkoutMapperImpl implements WorkoutMapper {
         workout.setId(workoutDto.getId());
         workout.setDate(workoutDto.getDate());
         workout.setDescription(workoutDto.getDescription());
+
+        if (workoutDto.getUserApp() != null) {
+            final UserApp userApp = new UserApp();
+            userApp.setId(workoutDto.getUserApp().getId());
+            workout.setUserApp(userApp);
+        }
+
+        if (workoutDto.getSetGroups() != null) {
+            workout.setSetGroups(new HashSet<>(this.setGroupMapper.toEntities(workoutDto.getSetGroups())));
+        }
 
         return workout;
     }

@@ -36,6 +36,15 @@ public class SetGroupMapperImpl implements SetGroupMapper {
     }
 
     @Override
+    public List<SetGroup> toEntities(Collection<SetGroupDto> setGroupDtos) {
+        if (CollectionUtils.isEmpty(setGroupDtos)) {
+            return Collections.emptyList();
+        }
+
+        return setGroupDtos.stream().map(this::toEntity).toList();
+    }
+
+    @Override
     public SetGroupDto toDto(final SetGroup setGroup, boolean nested) {
         if (setGroup == null) {
             return null;
