@@ -42,13 +42,13 @@ public class SessionMapperImpl implements SessionMapper {
         sessionDto.setDayOfWeek(session.getDayOfWeek());
         sessionDto.setListOrder(session.getListOrder());
 
-        if(session.getProgram() != null && nested){
+        if (session.getProgram() != null && nested) {
             final ProgramDto programDto = new ProgramDto();
             programDto.setId(session.getProgram().getId());
             sessionDto.setProgramDto(programDto);
         }
 
-        if(session.getSetGroups() != null && nested){
+        if (session.getSetGroups() != null && nested) {
             sessionDto.setSetGroups(this.setGroupMapper.toDtos(session.getSetGroups(), false));
         }
 
@@ -67,13 +67,13 @@ public class SessionMapperImpl implements SessionMapper {
         session.setDayOfWeek(sessionDto.getDayOfWeek());
         session.setListOrder(sessionDto.getListOrder());
 
-        if(sessionDto.getProgramDto() != null){
+        if (sessionDto.getProgramDto() != null) {
             final Program program = new Program();
             program.setId(sessionDto.getProgramDto().getId());
             session.setProgram(program);
         }
 
-        if(sessionDto.getSetGroups() != null){
+        if (sessionDto.getSetGroups() != null) {
             session.setSetGroups(new HashSet<>(this.setGroupMapper.toEntities(sessionDto.getSetGroups())));
         }
 

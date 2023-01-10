@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.base.domain.SortableEntity;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
