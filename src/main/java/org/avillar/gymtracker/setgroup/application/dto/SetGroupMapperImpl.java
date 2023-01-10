@@ -27,7 +27,7 @@ public class SetGroupMapperImpl implements SetGroupMapper {
     }
 
     @Override
-    public List<SetGroupDto> toDtos(final Collection<SetGroup> setGroups, boolean nested) {
+    public List<SetGroupDto> toDtos(final Collection<SetGroup> setGroups, final boolean nested) {
         if (CollectionUtils.isEmpty(setGroups)) {
             return Collections.emptyList();
         }
@@ -45,7 +45,7 @@ public class SetGroupMapperImpl implements SetGroupMapper {
     }
 
     @Override
-    public SetGroupDto toDto(final SetGroup setGroup, boolean nested) {
+    public SetGroupDto toDto(final SetGroup setGroup, final boolean nested) {
         if (setGroup == null) {
             return null;
         }
@@ -62,12 +62,12 @@ public class SetGroupMapperImpl implements SetGroupMapper {
                 ? this.exerciseMapper.toDto(setGroup.getExercise(), true)
                 : null);
 
-        if (nested && setGroup.getSession() != null) {
+        if (nested && setGroup.getSession() != null && setGroup.getSession().getId() != null) {
             final SessionDto sessionDto = new SessionDto();
             sessionDto.setId(setGroup.getSession().getId());
             setGroupDto.setSession(sessionDto);
         }
-        if (nested && setGroup.getWorkout() != null) {
+        if (nested && setGroup.getWorkout() != null && setGroup.getWorkout().getId() != null) {
             final WorkoutDto workoutDto = new WorkoutDto();
             workoutDto.setId(setGroup.getWorkout().getId());
             setGroupDto.setWorkout(workoutDto);
@@ -90,12 +90,12 @@ public class SetGroupMapperImpl implements SetGroupMapper {
         setGroup.setSets(new HashSet<>(this.setMapper.toEntities(setGroupDto.getSets())));
         setGroup.setExercise(this.exerciseMapper.toEntity(setGroupDto.getExercise()));
 
-        if (setGroupDto.getSession() != null) {
+        if (setGroupDto.getSession() != null && setGroupDto.getSession().getId() != null) {
             final Session session = new Session();
             session.setId(setGroupDto.getSession().getId());
             setGroup.setSession(session);
         }
-        if (setGroupDto.getWorkout() != null) {
+        if (setGroupDto.getWorkout() != null && setGroupDto.getWorkout().getId() != null) {
             final Workout workout = new Workout();
             workout.setId(setGroupDto.getWorkout().getId());
             setGroup.setWorkout(workout);

@@ -9,13 +9,13 @@ import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.set.domain.SetDao;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
+import org.avillar.gymtracker.utils.application.EntitySorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class SetServiceImpl extends BaseService implements SetService {
@@ -25,13 +25,16 @@ public class SetServiceImpl extends BaseService implements SetService {
     private final SetGroupDao setGroupDao;
     private final SetMapper setMapper;
     private final SetValidator setValidator;
+    private final EntitySorter entitySorter;
 
     @Autowired
-    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper, SetValidator setValidator) {
+    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper, SetValidator setValidator,
+                          EntitySorter entitySorter) {
         this.setDao = setDao;
         this.setGroupDao = setGroupDao;
         this.setMapper = setMapper;
         this.setValidator = setValidator;
+        this.entitySorter = entitySorter;
     }
 
     /**
@@ -76,10 +79,13 @@ public class SetServiceImpl extends BaseService implements SetService {
         final int setsSize = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup).size();
         if (null == set.getListOrder() || set.getListOrder() > setsSize || 0 > set.getListOrder()) {
             set.setListOrder(setsSize);
-            this.setDao.save(set);
-        } else {
-            this.setDao.save(set);
-            this.reorderAllSetGroupsSetsAfterPost(setGroup, set);
+        }
+
+        this.setDao.save(set);
+
+        final java.util.Set<Set> sets = set.getSetGroup().getSets();
+        if (this.entitySorter.sortPost(sets, set)) {
+            this.setDao.saveAll(sets);
         }
 
         return this.setMapper.toDto(set, true);
@@ -104,7 +110,11 @@ public class SetServiceImpl extends BaseService implements SetService {
 
         final int oldPosition = set.getListOrder();
         this.setDao.save(set);
-        this.reorderAllSetGroupsSetsAfterUpdate(set.getSetGroup(), set, oldPosition);
+
+        final java.util.Set<Set> sets = set.getSetGroup().getSets();
+        if (this.entitySorter.sortUpdate(sets, set, oldPosition)) {
+            this.setDao.saveAll(sets);
+        }
 
         return this.setMapper.toDto(set, true);
     }
@@ -119,67 +129,12 @@ public class SetServiceImpl extends BaseService implements SetService {
                 .orElseThrow(() -> new EntityNotFoundException(SET_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(set.getSetGroup());
 
-        final int setGroupPosition = set.getListOrder();
         this.setDao.deleteById(setId);
 
-        this.reorderAllSetGroupsSetsAfterDelete(set.getSetGroup(), setGroupPosition);
+        final java.util.Set<Set> sets = set.getSetGroup().getSets();
+        if (this.entitySorter.sortDelete(sets, set)) {
+            this.setDao.saveAll(sets);
+        }
     }
 
-    private void reorderAllSetGroupsSetsAfterDelete(final SetGroup setGroup, final int sessionPosition) {
-        final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
-        if (sets.isEmpty()) {
-            return;
-        }
-
-        for (final Set set : sets) {
-            if (set.getListOrder() > sessionPosition) {
-                set.setListOrder(set.getListOrder() - 1);
-            }
-        }
-
-        this.setDao.saveAll(sets);
-
-    }
-
-    private void reorderAllSetGroupsSetsAfterUpdate(final SetGroup setGroup, final Set newSet, int oldPosition) {
-        final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
-        if (sets.isEmpty()) {
-            return;
-        }
-
-        final int newPosition = newSet.getListOrder();
-        if (newPosition == oldPosition) {
-            return;
-        }
-
-        final int diferencia = oldPosition > newPosition ? 1 : -1;
-        for (final Set set : sets) {
-            if (!newSet.getId().equals(set.getId())) {
-                final boolean esMismaPosicion = Objects.equals(newSet.getListOrder(), set.getListOrder());
-                final boolean menorQueMaximo = set.getListOrder() < Math.max(oldPosition, newPosition);
-                final boolean mayorQueMinimo = set.getListOrder() > Math.min(oldPosition, newPosition);
-                if (esMismaPosicion || (menorQueMaximo && mayorQueMinimo)) {
-                    set.setListOrder(set.getListOrder() + diferencia);
-                }
-            }
-        }
-
-        this.setDao.saveAll(sets);
-    }
-
-    private void reorderAllSetGroupsSetsAfterPost(final SetGroup setGroup, final Set newSet) {
-        final List<Set> sets = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup);
-        if (sets.isEmpty()) {
-            return;
-        }
-
-        for (final Set set : sets) {
-            if (!newSet.getId().equals(set.getId()) &&
-                    newSet.getListOrder() <= set.getListOrder()) {
-                set.setListOrder(set.getListOrder() + 1);
-            }
-        }
-
-        this.setDao.saveAll(sets);
-    }
 }

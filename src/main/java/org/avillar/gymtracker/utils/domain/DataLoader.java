@@ -345,13 +345,17 @@ public class DataLoader implements ApplicationRunner {
         for (final Session session : sessions) {
             for (int i = 0; 5 > i; i++) {
                 int rnd = random.nextInt(exercises.size() - 1);
-                setGroups.add(new SetGroup("SessionSetGroup" + rnd, i, exercises.get(rnd), session, null, null));
+                final SetGroup setGroup = new SetGroup("SessionSetGroup" + rnd, exercises.get(rnd), session, null, null);
+                setGroup.setListOrder(i);
+                setGroups.add(setGroup);
             }
         }
         for (final Workout workout : workouts) {
             for (int i = 0; 5 > i; i++) {
                 int rnd = random.nextInt(exercises.size() - 1);
-                setGroups.add(new SetGroup("WorkoutSetGroup" + rnd, i, exercises.get(rnd), null, workout, null));
+                final SetGroup setGroup = new SetGroup("WorkoutSetGroup" + rnd, exercises.get(rnd), null, workout, null);
+                setGroup.setListOrder(i);
+                setGroups.add(setGroup);
             }
         }
         this.setGroupDao.saveAll(setGroups);
@@ -363,7 +367,9 @@ public class DataLoader implements ApplicationRunner {
                 final int reps = random.nextInt(3, 15);
                 final double rir = random.nextInt(0, 4);
                 final double weight = Math.round((random.nextDouble(5, 100)) * 100.0) / 100.0;
-                sets.add(new Set("SetDescription", i, reps, rir, weight, setGroup));
+                final Set set = new Set("SetDescription", reps, rir, weight, setGroup);
+                set.setListOrder(i);
+                sets.add(set);
             }
         }
 

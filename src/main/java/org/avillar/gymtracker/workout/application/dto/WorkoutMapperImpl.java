@@ -21,7 +21,7 @@ public class WorkoutMapperImpl implements WorkoutMapper {
     }
 
     @Override
-    public List<WorkoutDto> toDtos(final Collection<Workout> workouts, boolean nested) {
+    public List<WorkoutDto> toDtos(final Collection<Workout> workouts, final boolean nested) {
         if (CollectionUtils.isEmpty(workouts)) {
             return Collections.emptyList();
         }
@@ -30,7 +30,7 @@ public class WorkoutMapperImpl implements WorkoutMapper {
     }
 
     @Override
-    public WorkoutDto toDto(final Workout workout, boolean nested) {
+    public WorkoutDto toDto(final Workout workout, final boolean nested) {
         if (workout == null) {
             return null;
         }
@@ -42,10 +42,8 @@ public class WorkoutMapperImpl implements WorkoutMapper {
 
         workoutDto.setUserApp(null);
 
-        if (nested && workout.getSetGroups() != null) {
+        if (nested && !CollectionUtils.isEmpty(workout.getSetGroups())) {
             workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(), false));
-        } else {
-            workoutDto.setSetGroups(null);
         }
 
         return workoutDto;
@@ -62,13 +60,13 @@ public class WorkoutMapperImpl implements WorkoutMapper {
         workout.setDate(workoutDto.getDate());
         workout.setDescription(workoutDto.getDescription());
 
-        if (workoutDto.getUserApp() != null) {
+        if (workoutDto.getUserApp() != null && workoutDto.getUserApp().getId() != null) {
             final UserApp userApp = new UserApp();
             userApp.setId(workoutDto.getUserApp().getId());
             workout.setUserApp(userApp);
         }
 
-        if (workoutDto.getSetGroups() != null) {
+        if (!CollectionUtils.isEmpty(workoutDto.getSetGroups())) {
             workout.setSetGroups(new HashSet<>(this.setGroupMapper.toEntities(workoutDto.getSetGroups())));
         }
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
+import org.avillar.gymtracker.base.domain.SortableEntity;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 
 @Getter
@@ -13,12 +14,9 @@ import org.avillar.gymtracker.setgroup.domain.SetGroup;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Set extends BaseEntity {
+public class Set extends SortableEntity {
 
     private String description;
-    @OrderBy
-    @Column(nullable = false)
-    private Integer listOrder;
     private Integer reps;
     private Double rir;
     private Double weight;

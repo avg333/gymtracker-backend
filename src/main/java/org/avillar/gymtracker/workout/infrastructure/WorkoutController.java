@@ -60,7 +60,7 @@ public class WorkoutController extends BaseController {
     }
 
     @PostMapping("/users/{userId}/workouts")
-    public ResponseEntity<WorkoutDto> postWorkout(@PathVariable final Long userId, @RequestBody final WorkoutDto workoutDto) {
+    public ResponseEntity<WorkoutDto> postWorkoutInUser(@PathVariable final Long userId, @RequestBody final WorkoutDto workoutDto) {
         workoutDto.setId(null);
         final UserAppDto userAppDto = new UserAppDto();
         userAppDto.setId(userId);

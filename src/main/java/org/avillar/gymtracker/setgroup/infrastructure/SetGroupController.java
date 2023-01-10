@@ -81,10 +81,10 @@ public class SetGroupController extends BaseController {
 
     @PostMapping("/sessions/{sessionId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInSession(@PathVariable final Long sessionId, @RequestBody final SetGroupDto setGroupDto) {
+        setGroupDto.setId(null);
         final SessionDto sessionDto = new SessionDto();
         sessionDto.setId(sessionId);
         setGroupDto.setSession(sessionDto);
-        setGroupDto.setId(null);
 
         try {
             return ResponseEntity.ok(this.setGroupService.createSetGroupInSession(setGroupDto));
@@ -103,10 +103,10 @@ public class SetGroupController extends BaseController {
 
     @PostMapping("/workouts/{workoutId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInWorkout(@PathVariable final Long workoutId, @RequestBody final SetGroupDto setGroupDto) {
+        setGroupDto.setId(null);
         final WorkoutDto workoutDto = new WorkoutDto();
         workoutDto.setId(workoutId);
         setGroupDto.setWorkout(workoutDto);
-        setGroupDto.setId(null);
 
         try {
             return ResponseEntity.ok(this.setGroupService.createSetGroupInWorkout(setGroupDto));

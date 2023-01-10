@@ -80,6 +80,9 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         return this.sessionMapper.toDto(session, true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
@@ -106,6 +109,9 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         return this.sessionMapper.toDto(session, true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public void deleteSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {

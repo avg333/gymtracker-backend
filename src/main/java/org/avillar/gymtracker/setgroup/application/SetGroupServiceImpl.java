@@ -9,6 +9,7 @@ import org.avillar.gymtracker.setgroup.application.dto.SetGroupMapper;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupValidator;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
+import org.avillar.gymtracker.utils.application.EntitySorter;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class SetGroupServiceImpl extends BaseService implements SetGroupService {
@@ -30,15 +31,18 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     private final WorkoutDao workoutDao;
     private final SetGroupMapper setGroupMapper;
     private final SetGroupValidator setGroupValidator;
+    private final EntitySorter entitySorter;
 
     @Autowired
     public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao,
-                               SetGroupMapper setGroupMapper, SetGroupValidator setGroupValidator) {
+                               SetGroupMapper setGroupMapper, SetGroupValidator setGroupValidator,
+                               EntitySorter entitySorter) {
         this.setGroupDao = setGroupDao;
         this.sessionDao = sessionDao;
         this.workoutDao = workoutDao;
         this.setGroupMapper = setGroupMapper;
         this.setGroupValidator = setGroupValidator;
+        this.entitySorter = entitySorter;
     }
 
     /**
@@ -95,11 +99,13 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final int setGroupsSize = this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout).size();
         if (null == setGroup.getListOrder() || setGroup.getListOrder() > setGroupsSize || 0 > setGroup.getListOrder()) {
             setGroup.setListOrder(setGroupsSize);
-            this.setGroupDao.save(setGroup);
-        } else {
-            this.setGroupDao.save(setGroup);
-            final List<SetGroup> setGroups = this.setGroupDao.findBySessionOrderByListOrderAsc(setGroup.getSession());
-            this.reorderAllSessionSetGroupsAfterPost(setGroups, setGroup);
+        }
+
+        this.setGroupDao.save(setGroup);
+
+        final Set<SetGroup> setGroups = setGroup.getWorkout().getSetGroups();
+        if (this.entitySorter.sortPost(setGroups, setGroup)) {
+            this.setGroupDao.saveAll(setGroups);
         }
 
         return this.setGroupMapper.toDto(setGroup, true);
@@ -122,11 +128,13 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final int setGroupsSize = this.setGroupDao.findBySessionOrderByListOrderAsc(session).size();
         if (null == setGroup.getListOrder() || setGroup.getListOrder() > setGroupsSize || 0 > setGroup.getListOrder()) {
             setGroup.setListOrder(setGroupsSize);
-            this.setGroupDao.save(setGroup);
-        } else {
-            this.setGroupDao.save(setGroup);
-            final List<SetGroup> setGroups = this.setGroupDao.findByWorkoutOrderByListOrderAsc(setGroup.getWorkout());
-            this.reorderAllSessionSetGroupsAfterPost(setGroups, setGroup);
+        }
+
+        this.setGroupDao.save(setGroup);
+
+        final Set<SetGroup> setGroups = setGroup.getSession().getSetGroups();
+        if (this.entitySorter.sortPost(setGroups, setGroup)) {
+            this.setGroupDao.saveAll(setGroups);
         }
 
         return this.setGroupMapper.toDto(setGroup, true);
@@ -149,12 +157,22 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
 
         final int oldPosition = setGroupDb.getListOrder();
 
-        final SetGroup setGroup = this.setGroupDao.save(this.setGroupMapper.toEntity(setGroupDto));
+        final SetGroup setGroup = this.setGroupMapper.toEntity(setGroupDto);
 
-        final List<SetGroup> setGroups = setGroup.getSession() != null
-                ? this.setGroupDao.findBySessionOrderByListOrderAsc(setGroup.getSession())
-                : this.setGroupDao.findByWorkoutOrderByListOrderAsc(setGroup.getWorkout());
-        this.reorderAllSessionSetGroupsAfterUpdate(setGroups, setGroup, oldPosition);
+        if (setGroupDb.getSession() != null) {
+            setGroup.setSession(setGroupDb.getSession());
+        } else {
+            setGroup.setWorkout(setGroupDb.getWorkout());
+        }
+
+        this.setGroupDao.save(this.setGroupMapper.toEntity(setGroupDto));
+
+        final Set<SetGroup> setGroups = setGroup.getSession() != null
+                ? setGroup.getSession().getSetGroups()
+                : setGroup.getWorkout().getSetGroups();
+        if (this.entitySorter.sortUpdate(setGroups, setGroup, oldPosition)) {
+            this.setGroupDao.saveAll(setGroups);
+        }
 
         return this.setGroupMapper.toDto(setGroup, true);
     }
@@ -169,66 +187,14 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
                 .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(setGroup);
 
-        final int setGroupPosition = setGroup.getListOrder();
         this.setGroupDao.deleteById(setGroupId);
 
-        final List<SetGroup> setGroups = setGroup.getSession() != null
-                ? this.setGroupDao.findBySessionOrderByListOrderAsc(setGroup.getSession())
-                : this.setGroupDao.findByWorkoutOrderByListOrderAsc(setGroup.getWorkout());
-        this.reorderAllSessionSetGroupsAfterDelete(setGroups, setGroupPosition);
+        final Set<SetGroup> setGroups = setGroup.getSession() != null
+                ? setGroup.getSession().getSetGroups()
+                : setGroup.getWorkout().getSetGroups();
+        if (this.entitySorter.sortDelete(setGroups, setGroup)) {
+            this.setGroupDao.saveAll(setGroups);
+        }
     }
 
-    private void reorderAllSessionSetGroupsAfterDelete(final List<SetGroup> setGroups, final int sessionPosition) {
-        if (setGroups.isEmpty()) {
-            return;
-        }
-
-        for (final SetGroup setGroup : setGroups) {
-            if (setGroup.getListOrder() > sessionPosition) {
-                setGroup.setListOrder(setGroup.getListOrder() - 1);
-            }
-        }
-
-        this.setGroupDao.saveAll(setGroups);
-    }
-
-    private void reorderAllSessionSetGroupsAfterUpdate(final List<SetGroup> setGroups, final SetGroup newSetGroup, int oldPosition) {
-        if (setGroups.isEmpty()) {
-            return;
-        }
-
-        final int newPosition = newSetGroup.getListOrder();
-        if (newPosition == oldPosition) {
-            return;
-        }
-
-        final int diferencia = oldPosition > newPosition ? 1 : -1;
-        for (final SetGroup setGroup : setGroups) {
-            if (!newSetGroup.getId().equals(setGroup.getId())) {
-                final boolean esMismaPosicion = Objects.equals(newSetGroup.getListOrder(), setGroup.getListOrder());
-                final boolean menorQueMaximo = setGroup.getListOrder() < Math.max(oldPosition, newPosition);
-                final boolean mayorQueMinimo = setGroup.getListOrder() > Math.min(oldPosition, newPosition);
-                if (esMismaPosicion || (menorQueMaximo && mayorQueMinimo)) {
-                    setGroup.setListOrder(setGroup.getListOrder() + diferencia);
-                }
-            }
-        }
-
-        this.setGroupDao.saveAll(setGroups);
-    }
-
-    private void reorderAllSessionSetGroupsAfterPost(final List<SetGroup> setGroups, final SetGroup newSetGroup) {
-        if (setGroups.isEmpty()) {
-            return;
-        }
-
-        for (final SetGroup setGroup : setGroups) {
-            if (!newSetGroup.getId().equals(setGroup.getId()) &&
-                    newSetGroup.getListOrder() <= setGroup.getListOrder()) {
-                setGroup.setListOrder(setGroup.getListOrder() + 1);
-            }
-        }
-
-        this.setGroupDao.saveAll(setGroups);
-    }
 }

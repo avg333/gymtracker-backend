@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.avillar.gymtracker.base.domain.BaseEntity;
+import org.avillar.gymtracker.base.domain.SortableEntity;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.set.domain.Set;
@@ -18,12 +18,9 @@ import java.util.HashSet;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class SetGroup extends BaseEntity {
+public class SetGroup extends SortableEntity {
 
     private String description;
-    @OrderBy
-    @Column(nullable = false)
-    private Integer listOrder;
 
     @ManyToOne
     @JoinColumn(name = "exercise_id", nullable = false)

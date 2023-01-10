@@ -14,7 +14,7 @@ import java.util.List;
 public class SetMapperImpl implements SetMapper {
 
     @Override
-    public List<SetDto> toDtos(final Collection<Set> sets, boolean nested) {
+    public List<SetDto> toDtos(final Collection<Set> sets, final boolean nested) {
         if (CollectionUtils.isEmpty(sets)) {
             return Collections.emptyList();
         }
@@ -32,7 +32,7 @@ public class SetMapperImpl implements SetMapper {
     }
 
     @Override
-    public SetDto toDto(final Set set, boolean nested) {
+    public SetDto toDto(final Set set, final boolean nested) {
         if (set == null) {
             return null;
         }
@@ -46,12 +46,10 @@ public class SetMapperImpl implements SetMapper {
         setDto.setWeight(set.getWeight());
         setDto.setLastModifiedAt(set.getLastModifiedAt());
 
-        if (nested && set.getSetGroup() != null) {
+        if (nested && set.getSetGroup() != null && set.getSetGroup().getId() != null) {
             final SetGroupDto setGroupDto = new SetGroupDto();
             setGroupDto.setId(set.getSetGroup().getId());
             setDto.setSetGroup(setGroupDto);
-        } else {
-            setDto.setSetGroup(null);
         }
 
         return setDto;
@@ -70,14 +68,11 @@ public class SetMapperImpl implements SetMapper {
         set.setReps(setDto.getReps());
         set.setRir(setDto.getRir());
         set.setWeight(setDto.getWeight());
-        set.setLastModifiedAt(setDto.getLastModifiedAt());
 
-        if (setDto.getSetGroup() != null) {
+        if (setDto.getSetGroup() != null && setDto.getSetGroup().getId() != null) {
             final SetGroup setGroup = new SetGroup();
             setGroup.setId(setDto.getSetGroup().getId());
             set.setSetGroup(setGroup);
-        } else {
-            set.setSetGroup(null);
         }
 
         return set;

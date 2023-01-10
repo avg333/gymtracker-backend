@@ -2,6 +2,7 @@ package org.avillar.gymtracker.workout.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.base.application.VolumeConstants;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
 import org.avillar.gymtracker.exercise.domain.Exercise;
@@ -32,9 +33,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
     private final WorkoutDao workoutDao;
     private final UserDao userDao;
-
     private final WorkoutValidator workoutValidator;
-
     private final WorkoutMapper workoutMapper;
     private final ExerciseMapper exerciseMapper;
     private final MuscleGroupMapper muscleGroupMapper;
@@ -87,7 +86,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         final Map<Long, MuscleGroupDto> muscleGroups = new HashMap<>();
         final Map<Long, Set> efectiveSets = workout.getSetGroups().stream()
                 .flatMap(setGroup -> setGroup.getSets().stream())
-                .filter(set -> set.getRir() < 4)
+                .filter(set -> set.getRir() <= VolumeConstants.MIN_RIR)
                 .collect(Collectors.toMap(Set::getId, set -> set));
 
         double weight = 0;
@@ -114,7 +113,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
             weight += set.getWeight();
         }
 
-        if (startWo != null && endWo != null) {
+        if (startWo != null) {
             final long duration = endWo.getTime() - startWo.getTime();
             workoutDto.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(duration));
         }
