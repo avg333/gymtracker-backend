@@ -6,9 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
+import org.avillar.gymtracker.base.domain.SortableEntity;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 
+import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,13 +19,11 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Session extends BaseEntity {
+public class Session extends SortableEntity {
     @Column(nullable = false)
     private String name;
     private String description;
-    @OrderBy
-    @Column(nullable = false)
-    private Integer listOrder;
+    private DayOfWeek dayOfWeek;
 
     @ManyToOne
     @JoinColumn(name = "program_id", nullable = false)

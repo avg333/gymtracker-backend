@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.exercise.infrastructure;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.base.application.IncorrectFormException;
 import org.avillar.gymtracker.base.infrastructure.BaseController;
 import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
 import org.avillar.gymtracker.exercise.application.ExerciseService;
@@ -13,10 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/exercises")//TODO Eliminar barra
+@RequestMapping("/api/exercises")
 public class ExerciseController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExerciseController.class);
@@ -39,15 +42,8 @@ public class ExerciseController extends BaseController {
             @RequestParam(required = false) final List<Long> muscleSubGroupIds
     ) {
         try {
-            final ExerciseFilterDto exerciseFilterDto = new ExerciseFilterDto();
-            exerciseFilterDto.setName(name);
-            exerciseFilterDto.setDescription(description);
-            exerciseFilterDto.setUnilateral(unilateral);
-            exerciseFilterDto.setLoadType(loadType);
-            exerciseFilterDto.setMuscleSupGroupIds(muscleSupGroupIds);
-            exerciseFilterDto.setMuscleGroupIds(muscleGroupIds != null ? List.of(muscleGroupIds) : null);
-            exerciseFilterDto.setMuscleSubGroupIds(muscleSubGroupIds);
-
+            final ExerciseFilterDto exerciseFilterDto = new ExerciseFilterDto(name, description, unilateral, loadType,
+                    muscleSupGroupIds, muscleGroupIds != null ? List.of(muscleGroupIds) : null, muscleSubGroupIds);
             return ResponseEntity.ok(this.exerciseService.getAllExercises(exerciseFilterDto));
         } catch (Exception exception) {
             LOGGER.error("Error getting exercises by user={}",
@@ -74,12 +70,15 @@ public class ExerciseController extends BaseController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ExerciseDto> postExercise(@RequestBody final ExerciseDto exerciseDto) {
+    public ResponseEntity<?> postExercise(@RequestBody final ExerciseDto exerciseDto) {
+        final Map<String, String> errorMap = new HashMap<>();
         exerciseDto.setId(null);
         try {
-            return ResponseEntity.ok(this.exerciseService.createExercise(exerciseDto));
+            return ResponseEntity.ok(this.exerciseService.createExercise(exerciseDto, errorMap));
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IncorrectFormException exception) {
+            return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
         } catch (Exception exception) {
             LOGGER.error("Error creating exercise by user={}",
                     this.authService.getLoggedUser().getId(), exception);
@@ -88,12 +87,15 @@ public class ExerciseController extends BaseController {
     }
 
     @PutMapping("/{exerciseId}")
-    public ResponseEntity<ExerciseDto> putExercise(@PathVariable final Long exerciseId, @RequestBody final ExerciseDto exerciseDto) {
+    public ResponseEntity<?> putExercise(@PathVariable final Long exerciseId, @RequestBody final ExerciseDto exerciseDto) {
+        final Map<String, String> errorMap = new HashMap<>();
         exerciseDto.setId(exerciseId);
         try {
-            return ResponseEntity.ok(this.exerciseService.updateExercise(exerciseDto));
+            return ResponseEntity.ok(this.exerciseService.updateExercise(exerciseDto, errorMap));
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IncorrectFormException exception) {
+            return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
         } catch (IllegalAccessException exception) {
             LOGGER.info("Unauthorized update exercise={} by user={}",
                     exerciseId, this.authService.getLoggedUser().getId());
@@ -120,4 +122,5 @@ public class ExerciseController extends BaseController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

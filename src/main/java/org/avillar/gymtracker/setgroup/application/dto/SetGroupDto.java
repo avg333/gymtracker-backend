@@ -2,7 +2,7 @@ package org.avillar.gymtracker.setgroup.application.dto;
 
 import lombok.Data;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
-import org.avillar.gymtracker.session.application.SessionDto;
+import org.avillar.gymtracker.session.application.dto.SessionDto;
 import org.avillar.gymtracker.set.application.dto.SetDto;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 

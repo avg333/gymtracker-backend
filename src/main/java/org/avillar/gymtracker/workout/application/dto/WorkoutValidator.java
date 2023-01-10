@@ -39,7 +39,7 @@ public class WorkoutValidator {
     public Map<String, String> validate(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
         validateDate(workoutDto, errorMap);
         validateDescription(workoutDto, errorMap);
-        if (workoutDto.getId() != null) {
+        if (workoutDto.getId() == null) {
             validateUser(workoutDto, errorMap);
         }
         return errorMap;

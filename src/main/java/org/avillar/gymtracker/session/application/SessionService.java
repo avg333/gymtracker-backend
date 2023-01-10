@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.session.application;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.session.application.dto.SessionDto;
 
 import java.util.List;
 
@@ -46,5 +47,5 @@ public interface SessionService {
      * @throws EntityNotFoundException Se genera si no existe una entidad con ese ID
      * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    void deleteProgram(Long sessionId) throws EntityNotFoundException, IllegalAccessException;
+    void deleteSession(Long sessionId) throws EntityNotFoundException, IllegalAccessException;
 }

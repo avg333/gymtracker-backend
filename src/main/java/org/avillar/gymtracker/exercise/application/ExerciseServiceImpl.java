@@ -2,6 +2,7 @@ package org.avillar.gymtracker.exercise.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.base.application.IncorrectFormException;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class ExerciseServiceImpl extends BaseService implements ExerciseService {
@@ -74,10 +72,10 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
      */
     @Override
     @Transactional
-    public ExerciseDto createExercise(final ExerciseDto exerciseDto) throws EntityNotFoundException {
-        if (!this.exerciseValidator.validate(exerciseDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El ejercicio esta mal formado");
-        }//TODO Mejorar como se devuelven los errores
+    public ExerciseDto createExercise(final ExerciseDto exerciseDto, final Map<String, String> errorMap) throws EntityNotFoundException, IncorrectFormException {
+        if (!this.exerciseValidator.validate(exerciseDto, errorMap).isEmpty()) {
+            throw new IncorrectFormException("El ejercicio esta mal formado");
+        }
 
         final Exercise exercise = this.exerciseMapper.toEntity(exerciseDto);
         final Exercise exerciseDb = this.exerciseDao.save(exercise);
@@ -91,10 +89,10 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
      */
     @Override
     @Transactional
-    public ExerciseDto updateExercise(final ExerciseDto exerciseDto) throws EntityNotFoundException, IllegalAccessException {
-        if (!this.exerciseValidator.validate(exerciseDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El ejercicio esta mal formado");
-        }//TODO Mejorar como se devuelven los errores
+    public ExerciseDto updateExercise(final ExerciseDto exerciseDto, final Map<String, String> errorMap) throws EntityNotFoundException, IllegalAccessException, IncorrectFormException {
+        if (!this.exerciseValidator.validate(exerciseDto, errorMap).isEmpty()) {
+            throw new IncorrectFormException("El ejercicio esta mal formado");
+        }
 
         this.authService.checkAccess(
                 this.exerciseDao.findById(exerciseDto.getId())

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.*;
 
 @Component
@@ -281,24 +282,38 @@ public class DataLoader implements ApplicationRunner {
 
         programDao.saveAll(Arrays.asList(pushPullLegs, fullBody, weider, relleno1, relleno2, relleno3, relleno4, relleno5, relleno6, relleno7, relleno8, relleno9));
 
-        final Session push = new Session("Push", null, 0, pushPullLegs, null);
-        final Session pull = new Session("Pull", null, 1, pushPullLegs, null);
-        final Session legs = new Session("Legs", null, 2, pushPullLegs, null);
-        final Session reversePush = new Session("Reverse push", null, 3, pushPullLegs, null);
-        final Session reversePull = new Session("Reverse pull", null, 4, pushPullLegs, null);
+        final Session push = new Session("Push", null, DayOfWeek.MONDAY, pushPullLegs, null);
+        final Session pull = new Session("Pull", null, DayOfWeek.TUESDAY, pushPullLegs, null);
+        final Session legs = new Session("Legs", null, DayOfWeek.WEDNESDAY, pushPullLegs, null);
+        final Session reversePush = new Session("Reverse push", null, DayOfWeek.THURSDAY, pushPullLegs, null);
+        final Session reversePull = new Session("Reverse pull", null, DayOfWeek.SATURDAY, pushPullLegs, null);
+        push.setListOrder(0);
+        pull.setListOrder(1);
+        legs.setListOrder(2);
+        reversePush.setListOrder(3);
+        reversePull.setListOrder(4);
         final List<Session> sessions = new ArrayList<>(Arrays.asList(push, pull, legs, reversePush, reversePull));
 
-        final Session upperFirst = new Session("Upper first", null, 0, fullBody, null);
-        final Session lowerFirst = new Session("Lower first", null, 1, fullBody, null);
-        final Session upperSecond = new Session("Upper second", null, 2, fullBody, null);
-        final Session lowerSecond = new Session("Lower second", null, 3, fullBody, null);
+        final Session upperFirst = new Session("Upper first", null, DayOfWeek.MONDAY, fullBody, null);
+        final Session lowerFirst = new Session("Lower first", null, DayOfWeek.TUESDAY, fullBody, null);
+        final Session upperSecond = new Session("Upper second", null, DayOfWeek.THURSDAY, fullBody, null);
+        final Session lowerSecond = new Session("Lower second", null, DayOfWeek.FRIDAY, fullBody, null);
+        upperFirst.setListOrder(0);
+        lowerFirst.setListOrder(1);
+        upperSecond.setListOrder(2);
+        lowerSecond.setListOrder(3);
         sessions.addAll(Arrays.asList(upperFirst, lowerFirst, upperSecond, lowerSecond));
 
-        final Session chest = new Session("Chest", null, 0, weider, null);
-        final Session back = new Session("Back", null, 1, weider, null);
-        final Session shoulder = new Session("Shoulder", null, 2, weider, null);
-        final Session legs2 = new Session("Legs", null, 3, weider, null);
-        final Session arms = new Session("Arms", null, 4, weider, null);
+        final Session chest = new Session("Chest", null, DayOfWeek.MONDAY, weider, null);
+        final Session back = new Session("Back", null, DayOfWeek.TUESDAY, weider, null);
+        final Session shoulder = new Session("Shoulder", null, DayOfWeek.WEDNESDAY, weider, null);
+        final Session legs2 = new Session("Legs", null, DayOfWeek.THURSDAY, weider, null);
+        final Session arms = new Session("Arms", null, DayOfWeek.FRIDAY, weider, null);
+        chest.setListOrder(0);
+        back.setListOrder(1);
+        shoulder.setListOrder(2);
+        legs2.setListOrder(3);
+        arms.setListOrder(4);
         sessions.addAll(Arrays.asList(chest, back, shoulder, legs2, arms));
 
         sessionDao.saveAll(sessions);

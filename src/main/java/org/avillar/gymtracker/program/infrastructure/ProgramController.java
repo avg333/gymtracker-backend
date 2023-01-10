@@ -35,7 +35,13 @@ public class ProgramController extends BaseController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access user={} programs by user={}",
+                    userId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error accessing user={} programs by user={}",
+                    userId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -52,11 +58,12 @@ public class ProgramController extends BaseController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
-            LOGGER.info("El usuario con ID={} ha intentado acceder a los programas del usuario con ID={}",
-                    this.authService.getLoggedUser().getId(), userId);
+            LOGGER.info("Unauthorized access user={} programs by user={}",
+                    userId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception exception) {
-            LOGGER.error("Error al intentar obtener los programas del usuario con ID={}", userId, exception);
+            LOGGER.error("Error accessing user={} programs by user={}",
+                    userId, this.authService.getLoggedUser().getId(), exception);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -68,9 +75,13 @@ public class ProgramController extends BaseController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
-            LOGGER.info("El usuario con ID={} ha intentado acceder al programa con ID={} sin autorizacion",
-                    this.authService.getLoggedUser().getId(), programId);
+            LOGGER.info("Unauthorized access program={} by user={}",
+                    programId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error accessing program={} by user={}",
+                    programId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -84,7 +95,13 @@ public class ProgramController extends BaseController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access creating program for user={} by user={}",
+                    userId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error creating program for user={} by user={}",
+                    userId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -97,7 +114,13 @@ public class ProgramController extends BaseController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to update program={} by user={}",
+                    programId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error updating program={} by user={}",
+                    programId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -109,7 +132,13 @@ public class ProgramController extends BaseController {
         } catch (EntityNotFoundException exception) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to remove program={} by user={}",
+                    programId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error removing program={} by user={}",
+                    programId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

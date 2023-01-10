@@ -2,7 +2,7 @@ package org.avillar.gymtracker.setgroup.infrastructure;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.infrastructure.BaseController;
-import org.avillar.gymtracker.session.application.SessionDto;
+import org.avillar.gymtracker.session.application.dto.SessionDto;
 import org.avillar.gymtracker.setgroup.application.SetGroupService;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;

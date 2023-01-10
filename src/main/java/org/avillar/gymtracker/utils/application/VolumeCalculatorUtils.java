@@ -3,7 +3,7 @@ package org.avillar.gymtracker.utils.application;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.program.application.ProgramDto;
 import org.avillar.gymtracker.program.domain.Program;
-import org.avillar.gymtracker.session.application.SessionDto;
+import org.avillar.gymtracker.session.application.dto.SessionDto;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.modelmapper.ModelMapper;
