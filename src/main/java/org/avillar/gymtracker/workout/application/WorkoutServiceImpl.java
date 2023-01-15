@@ -10,7 +10,12 @@ import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupMapper;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
+import org.avillar.gymtracker.session.domain.Session;
+import org.avillar.gymtracker.session.domain.SessionDao;
 import org.avillar.gymtracker.set.domain.Set;
+import org.avillar.gymtracker.set.domain.SetDao;
+import org.avillar.gymtracker.setgroup.domain.SetGroup;
+import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
@@ -27,8 +32,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     private static final String WORKOUT_NOT_FOUND = "The workout does not exist";
+    private static final String SESSION_NOT_FOUND = "The session does not exist";
     private static final String USER_NOT_FOUND = "The user does not exist";
 
     private final WorkoutDao workoutDao;
@@ -37,22 +44,29 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     private final WorkoutMapper workoutMapper;
     private final ExerciseMapper exerciseMapper;
     private final MuscleGroupMapper muscleGroupMapper;
+    private final SetGroupDao setGroupDao;
+    private final SetDao setDao;
+    private final SessionDao sessionDao;
 
     @Autowired
-    public WorkoutServiceImpl(WorkoutDao workoutDao, UserDao userDao, WorkoutValidator workoutValidator, WorkoutMapper workoutMapper, ExerciseMapper exerciseMapper, MuscleGroupMapper muscleGroupMapper) {
+    public WorkoutServiceImpl(WorkoutDao workoutDao, UserDao userDao, WorkoutValidator workoutValidator,
+                              WorkoutMapper workoutMapper, ExerciseMapper exerciseMapper, SessionDao sessionDao,
+                              MuscleGroupMapper muscleGroupMapper, SetGroupDao setGroupDao, SetDao setDao) {
         this.workoutDao = workoutDao;
         this.userDao = userDao;
         this.workoutValidator = workoutValidator;
         this.workoutMapper = workoutMapper;
         this.exerciseMapper = exerciseMapper;
         this.muscleGroupMapper = muscleGroupMapper;
+        this.setGroupDao = setGroupDao;
+        this.setDao = setDao;
+        this.sessionDao = sessionDao;
     }
 
     /**
      * @ {@inheritDoc}
      */
     @Override
-    @Transactional(readOnly = true)
     public List<WorkoutDto> getAllUserWorkouts(final Long userId) throws EntityNotFoundException, IllegalAccessException {
         final UserApp userApp = this.userDao.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
@@ -71,7 +85,6 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
      * @ {@inheritDoc}
      */
     @Override
-    @Transactional(readOnly = true)
     public WorkoutDto getWorkout(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
         final Workout workout = this.workoutDao.findById(workoutId)
                 .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND));
@@ -139,7 +152,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         }
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
-        workout.setUserApp(this.userDao.getReferenceById(workout.getUserApp().getId()));
+        workout.setUserApp(this.userDao.getReferenceById(workoutDto.getUserApp().getId()));
         this.authService.checkAccess(workout);
 
         return this.workoutMapper.toDto(this.workoutDao.save(workout), true);
@@ -176,4 +189,61 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         this.workoutDao.deleteById(workoutId);
     }
 
+    @Override
+    @Transactional
+    public WorkoutDto addSetGroupsToWorkoutFromWorkout(final Long workoutDestinationId, final Long workoutSourceId) throws IllegalAccessException {
+        final Workout workoutSource = this.workoutDao.findById(workoutSourceId)
+                .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND));
+        this.authService.checkAccess(workoutSource);
+
+        final Workout workoutDestination = this.workoutDao.findById(workoutDestinationId)
+                .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND));
+        this.authService.checkAccess(workoutDestination);
+
+        this.copySetGroupsToWorkout(workoutDestination, workoutSource.getSetGroups());
+
+        return this.getWorkoutMetadata(this.workoutDao.getReferenceById(workoutDestinationId));
+    }
+
+    @Override
+    @Transactional
+    public WorkoutDto addSetGroupsToWorkoutFromSession(final Long workoutDestinationId, final Long sessionSourceId) throws IllegalAccessException {
+        final Session sessionSource = this.sessionDao.findById(sessionSourceId)
+                .orElseThrow(() -> new EntityNotFoundException(SESSION_NOT_FOUND));
+        this.authService.checkAccess(sessionSource.getProgram());
+
+        final Workout workoutDestination = this.workoutDao.findById(workoutDestinationId)
+                .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND));
+        this.authService.checkAccess(workoutDestination);
+
+        this.copySetGroupsToWorkout(workoutDestination, sessionSource.getSetGroups());
+
+        return this.getWorkoutMetadata(this.workoutDao.getReferenceById(workoutDestinationId));
+    }
+
+    private void copySetGroupsToWorkout(final Workout workout, final java.util.Set<SetGroup> setGroupsSource){
+        final var setGroups = new ArrayList<SetGroup>();
+        final var sets = new ArrayList<Set>();
+        for (final var setGroupDb : setGroupsSource) {
+            final SetGroup setGroup = new SetGroup();
+            setGroup.setListOrder(setGroupDb.getListOrder());
+            setGroup.setDescription(setGroupDb.getDescription());
+            setGroup.setExercise(setGroupDb.getExercise());
+            setGroup.setWorkout(workout);
+            setGroups.add(setGroup);
+            for (final var setDb : setGroupDb.getSets()) {
+                final Set set = new Set();
+                set.setSetGroup(setGroup);
+                set.setListOrder(setDb.getListOrder());
+                set.setDescription(setDb.getDescription());
+                set.setReps(setDb.getReps());
+                set.setRir(setDb.getRir());
+                set.setWeight(setDb.getWeight());
+                sets.add(set);
+            }
+        }
+
+        this.setGroupDao.saveAll(setGroups);
+        this.setDao.saveAll(sets);
+    }
 }

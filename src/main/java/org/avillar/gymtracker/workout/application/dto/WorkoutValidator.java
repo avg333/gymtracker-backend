@@ -48,7 +48,7 @@ public class WorkoutValidator {
     private void validateUser(final WorkoutDto workoutDto, final Map<String, String> errorMap) {
         final String fieldName = "user";
         final UserAppDto userAppDto = workoutDto.getUserApp();
-        if (userAppDto == null || userAppDto.getId() == null || !this.userDao.existsById(workoutDto.getId())) {
+        if (userAppDto == null || userAppDto.getId() == null || !this.userDao.existsById(userAppDto.getId())) {
             errorMap.put(fieldName, "El usuario no existe");
             throw new EntityNotFoundException(USER_NOT_FOUND);
         }

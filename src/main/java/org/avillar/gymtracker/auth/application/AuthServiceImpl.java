@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
 
-        if (null != measure && !userApp.equals(measure.getUserApp())) {
+        if (null != measure && !userApp.getId().equals(measure.getUserApp().getId())) {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
     }
@@ -96,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
 
-        if (null != program && !userApp.equals(program.getUserApp())) {
+        if (null != program && !userApp.getId().equals(program.getUserApp().getId())) {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
     }
@@ -108,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
 
-        if (null != workout && !userApp.equals(workout.getUserApp())) {
+        if (null != workout && !userApp.getId().equals(workout.getUserApp().getId())) {
             throw new IllegalAccessException(NO_PERMISSIONS);
         }
     }

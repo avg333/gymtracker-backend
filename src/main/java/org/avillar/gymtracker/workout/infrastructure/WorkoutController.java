@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -112,6 +114,40 @@ public class WorkoutController extends BaseController {
         } catch (Exception exception) {
             LOGGER.error("Error removing workout={} by user={}",
                     workoutId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/workouts/{workoutDestinationId}/addSetGroupsFrom/workouts/{workoutSourceId}")
+    public ResponseEntity<WorkoutDto> copySetGroupsFromWorkoutToWorkout(@PathVariable final Long workoutDestinationId, @PathVariable final Long workoutSourceId) {
+        try {
+            return ResponseEntity.ok(this.workoutService.addSetGroupsToWorkoutFromWorkout(workoutDestinationId, workoutSourceId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to copy SetGroups from workout={} to workout={} by user={}",
+                    workoutSourceId, workoutDestinationId, this.authService.getLoggedUser().getId());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error copying SetGroups from workout={} to workout={} by user={}",
+                    workoutSourceId, workoutDestinationId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/workouts/{workoutDestinationId}/addSetGroupsFrom/sessions/{sessionSourceId}")
+    public ResponseEntity<WorkoutDto> copySetGroupsFromSessionToWorkout(@PathVariable final Long workoutDestinationId, @PathVariable final Long sessionSourceId) {
+        try {
+            return ResponseEntity.ok(this.workoutService.addSetGroupsToWorkoutFromSession(workoutDestinationId, sessionSourceId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to copy SetGroups from session={} to workout={} by user={}",
+                    sessionSourceId, workoutDestinationId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error copying SetGroups from session={} to workout={} by user={}",
+                    sessionSourceId, workoutDestinationId, this.authService.getLoggedUser().getId(), exception);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -2,7 +2,9 @@ package org.avillar.gymtracker.workout.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 public interface WorkoutService {
@@ -30,4 +32,8 @@ public interface WorkoutService {
      * @throws IllegalAccessException  if the logged-in user does not have permission to delete the workout
      */
     void deleteWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
+
+    WorkoutDto addSetGroupsToWorkoutFromWorkout(Long workoutDestinationId, Long workoutSourceId) throws IllegalAccessException;
+
+    WorkoutDto addSetGroupsToWorkoutFromSession(Long workoutDestinationId, Long sessionSourceId) throws IllegalAccessException;
 }
