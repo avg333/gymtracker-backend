@@ -157,4 +157,19 @@ public class SetGroupController extends BaseController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/users/{userId}/exercises/{exerciseId}/last")
+    public ResponseEntity<SetGroupDto> getLastUserExerciseSetGroup(@PathVariable final Long userId, @PathVariable final Long exerciseId) throws IllegalAccessException {
+        try {
+            return ResponseEntity.ok(this.setGroupService.getLastTimeUserExerciseSetGroup(userId, exerciseId));
+        } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to get last user={} exercise by user={}",
+                    userId, this.authService.getLoggedUser().getId());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Unauthorized getting last user={} exercise by user={}",
+                    userId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
