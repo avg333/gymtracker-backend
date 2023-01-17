@@ -371,12 +371,15 @@ public class DataLoader implements ApplicationRunner {
 
     private void createWorkouts(final UserApp userApp) {
         final List<Workout> workouts = new ArrayList<>();
-        //final String dt = "2022-10-20";  // Start date
-        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar c = Calendar.getInstance();
+        final int days = 250;
+        final Calendar c = Calendar.getInstance();
         c.setTime(new Date());
-        for (int i = 0; 5 > i; i++) {
+        c.add(Calendar.DATE, -days - 1);
+        for (int i = 0; i < days; i++) {
             c.add(Calendar.DATE, 1);
+            if(random.nextDouble() < 0.2){
+                continue;
+            }
             workouts.add(new Workout(c.getTime(), null, userApp, null));
         }
         this.workoutDao.saveAll(workouts);

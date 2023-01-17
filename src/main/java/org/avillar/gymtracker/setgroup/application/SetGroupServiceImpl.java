@@ -81,6 +81,21 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         return this.setGroupMapper.toDtos(this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout), true);
     }
 
+    @Override
+    public SetGroupDto getLastTimeUserExerciseSetGroup(final Long userId, final Long exerciseId) throws IllegalAccessException {
+        final Exercise exercise = this.exerciseDao.findById(exerciseId)
+                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final UserApp userApp = this.userDao.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+
+        final List<SetGroup> setGroups = this.setGroupDao.findLastUserExerciseSetGroup(userApp, exercise);
+        if (CollectionUtils.isEmpty(setGroups)) {
+            throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
+        }
+        this.authService.checkAccess(setGroups.get(0));
+        return this.setGroupMapper.toDto(setGroups.get(0), true);
+    }
+
     /**
      * @ {@inheritDoc}
      */
@@ -151,6 +166,35 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         return this.setGroupMapper.toDto(setGroup, true);
     }
 
+    @Override
+    @Transactional
+    public SetGroupDto replaceSetGroupSetsFromSetGroup(final Long setGroupDestinationId, final Long setGroupSourceId) throws IllegalAccessException {
+        final SetGroup setGroupDestination = this.setGroupDao.findById(setGroupDestinationId)
+                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+        final SetGroup setGroupSource = this.setGroupDao.findById(setGroupSourceId)
+                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+
+        this.authService.checkAccess(setGroupDestination);
+        this.authService.checkAccess(setGroupSource);
+
+        final var sets = new ArrayList<org.avillar.gymtracker.set.domain.Set>();
+        for (final var setDb : setGroupSource.getSets()) {
+            final org.avillar.gymtracker.set.domain.Set set = new org.avillar.gymtracker.set.domain.Set();
+            set.setSetGroup(setGroupDestination);
+            set.setListOrder(setDb.getListOrder());
+            set.setDescription(setDb.getDescription());
+            set.setReps(setDb.getReps());
+            set.setRir(setDb.getRir());
+            set.setWeight(setDb.getWeight());
+            sets.add(set);
+        }
+
+        this.setDao.deleteAllById(setGroupDestination.getSets().stream().map(org.avillar.gymtracker.set.domain.Set::getId).toList());
+        this.setDao.saveAll(sets);
+
+        return this.setGroupMapper.toDto(this.setGroupDao.getReferenceById(setGroupDestinationId), true);
+    }
+
     /**
      * @ {@inheritDoc}
      */
@@ -208,49 +252,4 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         }
     }
 
-    @Override
-    public SetGroupDto getLastTimeUserExerciseSetGroup(final Long userId, final Long exerciseId) throws IllegalAccessException {
-        final Exercise exercise = this.exerciseDao.findById(exerciseId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        final UserApp userApp = this.userDao.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-
-        final List<SetGroup> setGroups = this.setGroupDao.findLastUserExerciseSetGroup(userApp, exercise);
-        if (CollectionUtils.isEmpty(setGroups)) {
-            throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
-        }
-        this.authService.checkAccess(setGroups.get(0));
-        return this.setGroupMapper.toDto(setGroups.get(0), true);
-    }
-
-    @Override
-    @Transactional
-    public SetGroupDto replaceSetGroupSetsFromSetGroup(final Long setGroupDestinationId, final Long setGroupSourceId) throws IllegalAccessException {
-        final SetGroup setGroupDestination = this.setGroupDao.findById(setGroupDestinationId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-        final SetGroup setGroupSource = this.setGroupDao.findById(setGroupSourceId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
-
-
-        this.authService.checkAccess(setGroupDestination);
-        this.authService.checkAccess(setGroupSource);
-
-
-        final var sets = new ArrayList<org.avillar.gymtracker.set.domain.Set>();
-        for (final var setDb : setGroupSource.getSets()) {
-            final org.avillar.gymtracker.set.domain.Set set = new org.avillar.gymtracker.set.domain.Set();
-            set.setSetGroup(setGroupDestination);
-            set.setListOrder(setDb.getListOrder());
-            set.setDescription(setDb.getDescription());
-            set.setReps(setDb.getReps());
-            set.setRir(setDb.getRir());
-            set.setWeight(setDb.getWeight());
-            sets.add(set);
-        }
-
-        this.setDao.deleteAllById(setGroupDestination.getSets().stream().map(org.avillar.gymtracker.set.domain.Set::getId).toList());
-        this.setDao.saveAll(sets);
-
-        return this.setGroupMapper.toDto(this.setGroupDao.getReferenceById(setGroupDestinationId), true);
-    }
 }

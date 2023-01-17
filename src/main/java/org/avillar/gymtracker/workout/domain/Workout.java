@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.TemporalType.DATE;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,6 +22,7 @@ import java.util.Set;
 @Entity
 public class Workout extends BaseEntity {
     @Column(nullable = false)
+    @Temporal(DATE)
     private Date date;
     private String description;
 

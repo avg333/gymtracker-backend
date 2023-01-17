@@ -62,6 +62,23 @@ public class SetGroupController extends BaseController {
         }
     }
 
+    @GetMapping("/users/{userId}/exercises/{exerciseId}/last")
+    public ResponseEntity<SetGroupDto> getLastUserExerciseSetGroup(@PathVariable final Long userId, @PathVariable final Long exerciseId) {
+        try {
+            return ResponseEntity.ok(this.setGroupService.getLastTimeUserExerciseSetGroup(userId, exerciseId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to get last user={} setGroup with exercise={} by user={}",
+                    userId, exerciseId, this.authService.getLoggedUser().getId());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error getting last user={} setGroup with exercise={} by user={}",
+                    userId, exerciseId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> getSetGroup(@PathVariable final Long setGroupId) {
         try {
@@ -123,6 +140,24 @@ public class SetGroupController extends BaseController {
         }
     }
 
+    @PostMapping("/setGroups/{setGroupDestinationId}/replaceWith/setGroups/{setGroupSourceId}")
+    public ResponseEntity<SetGroupDto> replaceSetGroupSetsWithSetGroup(@PathVariable final Long setGroupDestinationId,
+                                                                       @PathVariable final Long setGroupSourceId) {
+        try {
+            return ResponseEntity.ok(this.setGroupService.replaceSetGroupSetsFromSetGroup(setGroupDestinationId, setGroupSourceId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to replace setGroup={} sets with setGroup={} sets by user={}",
+                    setGroupDestinationId, setGroupSourceId, this.authService.getLoggedUser().getId());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error replacing setGroup={} sets with setGroup={} sets by user={}",
+                    setGroupDestinationId, setGroupSourceId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PutMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> putSetGroup(@PathVariable final Long setGroupId, @RequestBody final SetGroupDto setGroupDto) {
         setGroupDto.setId(setGroupId);
@@ -158,36 +193,4 @@ public class SetGroupController extends BaseController {
         }
     }
 
-    @GetMapping("/users/{userId}/exercises/{exerciseId}/last")
-    public ResponseEntity<SetGroupDto> getLastUserExerciseSetGroup(@PathVariable final Long userId, @PathVariable final Long exerciseId) throws IllegalAccessException {
-        try {
-            return ResponseEntity.ok(this.setGroupService.getLastTimeUserExerciseSetGroup(userId, exerciseId));
-        } catch (IllegalAccessException exception) {
-            LOGGER.info("Unauthorized access to get last user={} exercise by user={}",
-                    userId, this.authService.getLoggedUser().getId());
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        } catch (Exception exception) {
-            LOGGER.error("Error getting last user={} exercise by user={}",
-                    userId, this.authService.getLoggedUser().getId(), exception);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/setGroups/{setGroupDestinationId}/replaceWith/setGroups/{setGroupSourceId}")
-    public ResponseEntity<SetGroupDto> replaceSetGroupSetsWithSetGroup(@PathVariable final Long setGroupDestinationId,
-                                                                       @PathVariable final Long setGroupSourceId) {
-        try {
-            return ResponseEntity.ok(this.setGroupService.replaceSetGroupSetsFromSetGroup(setGroupDestinationId, setGroupSourceId));
-        } catch (EntityNotFoundException exception) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (IllegalAccessException exception) {
-            LOGGER.info("Unauthorized access to create setGroup for workout={} by user={}",
-                    setGroupDestinationId, this.authService.getLoggedUser().getId());
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        } catch (Exception exception) {
-            LOGGER.error("Error creating setGroup for workout={} by user={}",
-                    setGroupDestinationId, this.authService.getLoggedUser().getId(), exception);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

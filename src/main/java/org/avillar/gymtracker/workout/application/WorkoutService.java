@@ -2,18 +2,25 @@ package org.avillar.gymtracker.workout.application;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
 public interface WorkoutService {
 
-    List<WorkoutDto> getAllUserWorkouts(Long userId) throws EntityNotFoundException, IllegalAccessException;
+    List<Date> getAllUserWorkoutDates(Long userId) throws EntityNotFoundException, IllegalAccessException;
+
+    List<Date> getAllUserWorkoutsWithExercise(Long userId, Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
+
+    List<WorkoutDto> getAllUserWorkoutsByDate(Long userId, Date date) throws EntityNotFoundException, IllegalAccessException;
 
     WorkoutDto getWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 
     WorkoutDto createWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException;
+
+    WorkoutDto addSetGroupsToWorkoutFromWorkout(Long workoutDestinationId, Long workoutSourceId) throws IllegalAccessException;
+
+    WorkoutDto addSetGroupsToWorkoutFromSession(Long workoutDestinationId, Long sessionSourceId) throws IllegalAccessException;
 
     /**
      * Modify the workout with the specified id in workoutDto
@@ -32,10 +39,4 @@ public interface WorkoutService {
      * @throws IllegalAccessException  if the logged-in user does not have permission to delete the workout
      */
     void deleteWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
-
-    WorkoutDto addSetGroupsToWorkoutFromWorkout(Long workoutDestinationId, Long workoutSourceId) throws IllegalAccessException;
-
-    WorkoutDto addSetGroupsToWorkoutFromSession(Long workoutDestinationId, Long sessionSourceId) throws IllegalAccessException;
-
-    List<WorkoutDto> getAllUserWorkoutsWithExercise(Long userId, Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
 }
