@@ -167,8 +167,26 @@ public class SetGroupController extends BaseController {
                     userId, this.authService.getLoggedUser().getId());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception exception) {
-            LOGGER.error("Unauthorized getting last user={} exercise by user={}",
+            LOGGER.error("Error getting last user={} exercise by user={}",
                     userId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/setGroups/{setGroupDestinationId}/replaceWith/setGroups/{setGroupSourceId}")
+    public ResponseEntity<SetGroupDto> replaceSetGroupSetsWithSetGroup(@PathVariable final Long setGroupDestinationId,
+                                                                       @PathVariable final Long setGroupSourceId) {
+        try {
+            return ResponseEntity.ok(this.setGroupService.replaceSetGroupSetsFromSetGroup(setGroupDestinationId, setGroupSourceId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access to create setGroup for workout={} by user={}",
+                    setGroupDestinationId, this.authService.getLoggedUser().getId());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error creating setGroup for workout={} by user={}",
+                    setGroupDestinationId, this.authService.getLoggedUser().getId(), exception);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

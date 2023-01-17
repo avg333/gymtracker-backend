@@ -25,5 +25,5 @@ public interface SetGroupDao extends JpaRepository<SetGroup, Long> {
             "AND e = :exercise " +
             "ORDER BY w.date DESC, sg.listOrder DESC " +
             "OFFSET 1 ROW")
-    List<SetGroup> findLastUserExerciseSetGroup(@Param("user") UserApp user, @Param("exercise") Exercise e);
+    List<SetGroup> findLastUserExerciseSetGroup(@Param("user") UserApp user, @Param("exercise") Exercise exercise);
 }

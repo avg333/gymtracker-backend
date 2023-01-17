@@ -81,6 +81,7 @@ public class DataLoader implements ApplicationRunner {
         this.createMeasures(user);
         this.createExercisesWithMuscleGroups();
 
+        this.createVTapper2(user);
         this.createPrograms(user);
         this.createWorkouts(user);
         this.createSets();
@@ -319,17 +320,61 @@ public class DataLoader implements ApplicationRunner {
         sessionDao.saveAll(sessions);
     }
 
+    private void createVTapper2(final UserApp userApp){
+        final Program vTapper2 = new Program("V-TAPER 2.0",
+                "Este programa durará 6 semanas, esta parte es para tres semanas.",
+                "https://nutrihealthgundin.com/", ProgramLevelEnum.MEDIUM, userApp, null, null);
+        programDao.save(vTapper2);
+        final Session upperH1 = new Session("Parte superior del cuerpo (horizontal)", null, DayOfWeek.MONDAY, vTapper2, new HashSet<>());
+        final Session upperV1 = new Session("Parte superior del cuerpo (vertical)", null, DayOfWeek.TUESDAY, vTapper2, new HashSet<>());
+        final Session legs = new Session("Parte inferior del cuerpo", null, DayOfWeek.WEDNESDAY, vTapper2, new HashSet<>());
+        final Session upperH2  = new Session("Parte superior del cuerpo (horizontal)", null, DayOfWeek.FRIDAY, vTapper2, new HashSet<>());
+        final Session upperV2 = new Session("Parte superior del cuerpo (vertical)", null, DayOfWeek.SATURDAY, vTapper2, new HashSet<>());
+        upperH1.setListOrder(0);
+        upperV1.setListOrder(1);
+        legs.setListOrder(2);
+        upperH2.setListOrder(3);
+        upperV2.setListOrder(4);
+        final var sessions = Arrays.asList(upperH1, upperV1, legs, upperH2, upperV2);
+        sessionDao.saveAll(sessions);
+
+        final List<SetGroup> setGroups = new ArrayList<>();
+        final List<Set> sets = new ArrayList<>();
+        final var pressBanca = new SetGroup("", exerciseById(1L), upperH1, null, null);
+        sets.addAll(giveMeSets(pressBanca, 4, 5));
+        pressBanca.setListOrder(0);
+        setGroups.add(pressBanca);
+        final var remoUnaMano = new SetGroup("", exerciseById(2L), upperH1, null, null);
+        sets.addAll(giveMeSets(remoUnaMano, 4, 5));
+        remoUnaMano.setListOrder(1);
+        setGroups.add(remoUnaMano);
+
+        this.setGroupDao.saveAll(setGroups);
+        this.setDao.saveAll(sets);
+    }
+
+    private Exercise exerciseById(final Long id){
+        final var exercise = new Exercise();
+        exercise.setId(id);
+        return exercise;
+    }
+
+    private List<Set> giveMeSets(final SetGroup setGroup, final int setSize, final int reps){
+        final var sets = new ArrayList<Set>(setSize);
+        for (int i = 0; i < setSize; i++) {
+            final Set set = new Set("", reps, 2.0, null, setGroup);
+            set.setListOrder(i);
+            sets.add(set);
+        }
+        return sets;
+    }
+
     private void createWorkouts(final UserApp userApp) {
         final List<Workout> workouts = new ArrayList<>();
-        final String dt = "2022-10-20";  // Start date
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        //final String dt = "2022-10-20";  // Start date
+        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(sdf.parse(dt));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return;
-        }// number of days to add
+        c.setTime(new Date());
         for (int i = 0; 5 > i; i++) {
             c.add(Calendar.DATE, 1);
             workouts.add(new Workout(c.getTime(), null, userApp, null));

@@ -24,4 +24,7 @@ public interface SetGroupService {
     void deleteSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 
     SetGroupDto getLastTimeUserExerciseSetGroup(Long userId, Long exerciseId) throws IllegalAccessException;
+
+    @Transactional
+    SetGroupDto replaceSetGroupSetsFromSetGroup(Long setGroupDestinationId, Long setGroupSourceId) throws IllegalAccessException;
 }

@@ -38,6 +38,7 @@ public class SessionMapperImpl implements SessionMapper {
 
         final SessionDto sessionDto = new SessionDto();
         sessionDto.setId(session.getId());
+        sessionDto.setName(session.getName());
         sessionDto.setDescription(session.getDescription());
         sessionDto.setDayOfWeek(session.getDayOfWeek());
         sessionDto.setListOrder(session.getListOrder());
@@ -63,6 +64,7 @@ public class SessionMapperImpl implements SessionMapper {
 
         final Session session = new Session();
         session.setId(sessionDto.getId());
+        session.setName(sessionDto.getName());
         session.setDescription(sessionDto.getDescription());
         session.setDayOfWeek(sessionDto.getDayOfWeek());
         session.setListOrder(sessionDto.getListOrder());

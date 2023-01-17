@@ -6,6 +6,7 @@ import org.avillar.gymtracker.base.application.VolumeConstants;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
 import org.avillar.gymtracker.exercise.domain.Exercise;
+import org.avillar.gymtracker.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupMapper;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
@@ -14,6 +15,7 @@ import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.session.domain.SessionDao;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.set.domain.SetDao;
+import org.avillar.gymtracker.setgroup.application.dto.SetGroupMapper;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.user.domain.UserApp;
@@ -47,11 +49,14 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     private final SetGroupDao setGroupDao;
     private final SetDao setDao;
     private final SessionDao sessionDao;
+    private final ExerciseDao exerciseDao;
+    private final SetGroupMapper setGroupMapper;
 
     @Autowired
     public WorkoutServiceImpl(WorkoutDao workoutDao, UserDao userDao, WorkoutValidator workoutValidator,
                               WorkoutMapper workoutMapper, ExerciseMapper exerciseMapper, SessionDao sessionDao,
-                              MuscleGroupMapper muscleGroupMapper, SetGroupDao setGroupDao, SetDao setDao) {
+                              MuscleGroupMapper muscleGroupMapper, SetGroupDao setGroupDao, SetDao setDao,
+                              ExerciseDao exerciseDao, SetGroupMapper setGroupMapper) {
         this.workoutDao = workoutDao;
         this.userDao = userDao;
         this.workoutValidator = workoutValidator;
@@ -61,6 +66,8 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         this.setGroupDao = setGroupDao;
         this.setDao = setDao;
         this.sessionDao = sessionDao;
+        this.exerciseDao = exerciseDao;
+        this.setGroupMapper = setGroupMapper;
     }
 
     /**
@@ -123,7 +130,9 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
                 muscleGroups.get(muscleGroupSet.getId()).setVolume(muscleGroups.get(muscleGroupSet.getId()).getVolume() + 1);
             }
 
-            weight += set.getWeight();
+            if (set.getWeight() != null){
+                weight += set.getWeight();
+            }
         }
 
         if (startWo != null) {
@@ -137,6 +146,8 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         workoutDto.setMuscleGroupDtos(muscleGroupDtos);
         workoutDto.setSetsNumber(efectiveSets.size());
         workoutDto.setWeightVolume((int) weight);
+
+        workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(),true));
 
         return workoutDto;
     }
@@ -245,5 +256,22 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
         this.setGroupDao.saveAll(setGroups);
         this.setDao.saveAll(sets);
+    }
+
+    @Override
+    public List<WorkoutDto> getAllUserWorkoutsWithExercise(final Long userId, final Long exerciseId) throws EntityNotFoundException, IllegalAccessException {
+        final UserApp userApp = this.userDao.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
+        final Exercise exercise = this.exerciseDao.findById(exerciseId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
+
+        final Workout workout = new Workout();
+        workout.setUserApp(userApp);
+        this.authService.checkAccess(workout);
+
+        return this.workoutDao.findWorkoutsWithUserAndExercise(userApp, exercise)
+                .stream()
+                .map(this::getWorkoutMetadata)
+                .toList();
     }
 }

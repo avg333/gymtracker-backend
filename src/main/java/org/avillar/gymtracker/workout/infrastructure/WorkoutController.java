@@ -151,4 +151,22 @@ public class WorkoutController extends BaseController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/users/{userId}/exercises/{exerciseId}/workouts")
+    public ResponseEntity<List<WorkoutDto>> getAllUserWorkoutsWithExercise(@PathVariable final Long userId,
+                                                                           @PathVariable final Long exerciseId) {
+        try {
+            return ResponseEntity.ok(this.workoutService.getAllUserWorkoutsWithExercise(userId, exerciseId));
+        } catch (EntityNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalAccessException exception) {
+            LOGGER.info("Unauthorized access user={} workouts by user={}",
+                    userId, this.authService.getLoggedUser().getId());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (Exception exception) {
+            LOGGER.error("Error accessing user={} workouts by user={}",
+                    userId, this.authService.getLoggedUser().getId(), exception);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
