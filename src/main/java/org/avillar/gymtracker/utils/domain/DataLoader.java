@@ -320,7 +320,7 @@ public class DataLoader implements ApplicationRunner {
         sessionDao.saveAll(sessions);
     }
 
-    private void createVTapper2(final UserApp userApp){
+    private void createVTapper2(final UserApp userApp) {
         final Program vTapper2 = new Program("V-TAPER 2.0",
                 "Este programa durará 6 semanas, esta parte es para tres semanas.",
                 "https://nutrihealthgundin.com/", ProgramLevelEnum.MEDIUM, userApp, null, null);
@@ -328,7 +328,7 @@ public class DataLoader implements ApplicationRunner {
         final Session upperH1 = new Session("Parte superior del cuerpo (horizontal)", null, DayOfWeek.MONDAY, vTapper2, new HashSet<>());
         final Session upperV1 = new Session("Parte superior del cuerpo (vertical)", null, DayOfWeek.TUESDAY, vTapper2, new HashSet<>());
         final Session legs = new Session("Parte inferior del cuerpo", null, DayOfWeek.WEDNESDAY, vTapper2, new HashSet<>());
-        final Session upperH2  = new Session("Parte superior del cuerpo (horizontal)", null, DayOfWeek.FRIDAY, vTapper2, new HashSet<>());
+        final Session upperH2 = new Session("Parte superior del cuerpo (horizontal)", null, DayOfWeek.FRIDAY, vTapper2, new HashSet<>());
         final Session upperV2 = new Session("Parte superior del cuerpo (vertical)", null, DayOfWeek.SATURDAY, vTapper2, new HashSet<>());
         upperH1.setListOrder(0);
         upperV1.setListOrder(1);
@@ -353,13 +353,13 @@ public class DataLoader implements ApplicationRunner {
         this.setDao.saveAll(sets);
     }
 
-    private Exercise exerciseById(final Long id){
+    private Exercise exerciseById(final Long id) {
         final var exercise = new Exercise();
         exercise.setId(id);
         return exercise;
     }
 
-    private List<Set> giveMeSets(final SetGroup setGroup, final int setSize, final int reps){
+    private List<Set> giveMeSets(final SetGroup setGroup, final int setSize, final int reps) {
         final var sets = new ArrayList<Set>(setSize);
         for (int i = 0; i < setSize; i++) {
             final Set set = new Set("", reps, 2.0, null, setGroup);
@@ -371,13 +371,13 @@ public class DataLoader implements ApplicationRunner {
 
     private void createWorkouts(final UserApp userApp) {
         final List<Workout> workouts = new ArrayList<>();
-        final int days = 250;
+        final int days = 500;
         final Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         c.add(Calendar.DATE, -days - 1);
         for (int i = 0; i < days; i++) {
             c.add(Calendar.DATE, 1);
-            if(random.nextDouble() < 0.2){
+            if (random.nextDouble() < 0.2) {
                 continue;
             }
             workouts.add(new Workout(c.getTime(), null, userApp, null));
@@ -401,7 +401,7 @@ public class DataLoader implements ApplicationRunner {
         for (final Workout workout : workouts) {
             for (int i = 0; 5 > i; i++) {
                 int rnd = random.nextInt(exercises.size() - 1);
-                final SetGroup setGroup = new SetGroup("WorkoutSetGroup" + rnd, exercises.get(rnd), null, workout, null);
+                final SetGroup setGroup = new SetGroup(random.nextDouble() < 0.2 ? "WorkoutSetGroup" + rnd : null, exercises.get(rnd), null, workout, null);
                 setGroup.setListOrder(i);
                 setGroups.add(setGroup);
             }
@@ -415,7 +415,7 @@ public class DataLoader implements ApplicationRunner {
                 final int reps = random.nextInt(3, 15);
                 final double rir = random.nextInt(0, 4);
                 final double weight = Math.round((random.nextDouble(5, 100)) * 100.0) / 100.0;
-                final Set set = new Set("SetDescription", reps, rir, weight, setGroup);
+                final Set set = new Set(random.nextDouble() < 0.2 ? "SetDescription" : null, reps, rir, weight, setGroup);
                 set.setListOrder(i);
                 sets.add(set);
             }
