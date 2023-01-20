@@ -70,6 +70,9 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
+        if(!userDao.findAll().isEmpty()){
+            return;
+        }
         final UserApp user = this.userDao.save(new UserApp(
                 "chema", new BCryptPasswordEncoder().encode("chema69"), null, "Chema",
                 "Garcia", "Romero", null, GenderEnum.MALE, ActivityLevelEnum.EXTREME,
@@ -371,7 +374,7 @@ public class DataLoader implements ApplicationRunner {
 
     private void createWorkouts(final UserApp userApp) {
         final List<Workout> workouts = new ArrayList<>();
-        final int days = 500;
+        final int days = 35;
         final Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         c.add(Calendar.DATE, -days - 1);

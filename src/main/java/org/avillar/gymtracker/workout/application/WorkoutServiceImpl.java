@@ -71,15 +71,17 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     }
 
     @Override
-    public List<Date> getAllUserWorkoutDates(final Long userId) throws EntityNotFoundException, IllegalAccessException {
+    public Map<Date, Long> getAllUserWorkoutDates(final Long userId) throws EntityNotFoundException, IllegalAccessException {
         final UserApp userApp = this.userDao.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
 
-        final Workout workout = new Workout();
-        workout.setUserApp(userApp);
-        this.authService.checkAccess(workout);
+        final Workout workoutAux = new Workout();
+        workoutAux.setUserApp(userApp);
+        this.authService.checkAccess(workoutAux);
 
-        return this.workoutDao.getWorkoutDatesByUser(userApp);
+        return this.workoutDao.getWorkoutDatesByUser(userApp)
+                .stream()
+                .collect(Collectors.toMap(Workout::getDate, Workout::getId));
     }
 
     @Override
@@ -188,6 +190,12 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(this.userDao.getReferenceById(workoutDto.getUserApp().getId()));
         this.authService.checkAccess(workout);
+
+        final int workoutsInDate = this.workoutDao.countByUserAppAndDate(workout.getUserApp(), workout.getDate());
+        if (workoutsInDate >0) {
+            throw new RuntimeException("Ya existe un workout ese dia!!!"); //TODO Mejorar
+        }
+
 
         return this.workoutMapper.toDto(this.workoutDao.save(workout), true);
     }

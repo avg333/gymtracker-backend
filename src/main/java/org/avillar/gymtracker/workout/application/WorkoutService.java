@@ -5,10 +5,11 @@ import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface WorkoutService {
 
-    List<Date> getAllUserWorkoutDates(Long userId) throws EntityNotFoundException, IllegalAccessException;
+    Map<Date, Long> getAllUserWorkoutDates(Long userId) throws EntityNotFoundException, IllegalAccessException;
 
     List<Date> getAllUserWorkoutsWithExercise(Long userId, Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
 

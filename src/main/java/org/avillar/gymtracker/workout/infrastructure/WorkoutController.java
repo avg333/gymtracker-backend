@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -28,7 +29,7 @@ public class WorkoutController extends BaseController {
     }
 
     @GetMapping("/users/{userId}/workouts/dates")
-    public ResponseEntity<List<Date>> getAllWorkoutDatesByUser(@PathVariable final Long userId) {
+    public ResponseEntity<Map<Date, Long>> getAllWorkoutDatesByUser(@PathVariable final Long userId) {
         try {
             return ResponseEntity.ok(this.workoutService.getAllUserWorkoutDates(userId));
         } catch (EntityNotFoundException exception) {

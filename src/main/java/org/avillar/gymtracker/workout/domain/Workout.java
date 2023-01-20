@@ -23,6 +23,8 @@ import static jakarta.persistence.TemporalType.DATE;
 public class Workout extends BaseEntity {
     @Column(nullable = false)
     @Temporal(DATE)
+    //@JsonFormat(pattern="yyyy-MM-dd")
+    //@DateTimeFormat(pattern="yyyy-MM-dd")
     private Date date;
     private String description;
 
