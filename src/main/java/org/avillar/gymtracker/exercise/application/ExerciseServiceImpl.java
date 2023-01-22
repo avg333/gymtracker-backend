@@ -54,7 +54,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         return this.exerciseDao.findAll()
                 .stream()
                 .filter(exercise -> this.applyFilter(finalExerciseFilterDto, exercise))
-                .map(exercise -> this.exerciseMapper.toDto(exercise, false))
+                .map(exercise -> this.exerciseMapper.toDto(exercise, 0))
                 .toList();
     }
 
@@ -67,7 +67,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
                 .orElseThrow(() -> new EntityNotFoundException(EX_FOUND_ERROR_MSG));
         this.authService.checkAccess(exercise);
-        return this.exerciseMapper.toDto(exercise, true);
+        return this.exerciseMapper.toDto(exercise, -1);
     }
 
     /**
@@ -84,7 +84,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         final Exercise exerciseDb = this.exerciseDao.save(exercise);
         exercise.getMuscleGroupExercises().forEach(mge -> mge.setExercise(exercise));
         exerciseDb.setMuscleGroupExercises(new HashSet<>(this.muscleGroupExerciseDao.saveAll(exercise.getMuscleGroupExercises())));
-        return this.exerciseMapper.toDto(exerciseDb, true);
+        return this.exerciseMapper.toDto(exerciseDb, -1);
     }
 
     /**
@@ -108,7 +108,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
         exercise.getMuscleGroupExercises().forEach(mge -> mge.setExercise(exerciseDb));
         exerciseDb.setMuscleGroupExercises(new HashSet<>(this.muscleGroupExerciseDao.saveAll(exercise.getMuscleGroupExercises())));
 
-        return this.exerciseMapper.toDto(exerciseDb, true);
+        return this.exerciseMapper.toDto(exerciseDb, -1);
     }
 
     /**

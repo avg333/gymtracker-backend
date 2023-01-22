@@ -27,12 +27,12 @@ public class SetGroupMapperImpl implements SetGroupMapper {
     }
 
     @Override
-    public List<SetGroupDto> toDtos(final Collection<SetGroup> setGroups, final boolean nested) {
+    public List<SetGroupDto> toDtos(final Collection<SetGroup> setGroups, final int depth) {
         if (CollectionUtils.isEmpty(setGroups)) {
             return Collections.emptyList();
         }
 
-        return setGroups.stream().map(setGroup -> this.toDto(setGroup, nested)).toList();
+        return setGroups.stream().map(setGroup -> this.toDto(setGroup, depth)).toList();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SetGroupMapperImpl implements SetGroupMapper {
     }
 
     @Override
-    public SetGroupDto toDto(final SetGroup setGroup, final boolean nested) {
+    public SetGroupDto toDto(final SetGroup setGroup, final int depth) {
         if (setGroup == null) {
             return null;
         }
@@ -55,19 +55,19 @@ public class SetGroupMapperImpl implements SetGroupMapper {
         setGroupDto.setDescription(setGroup.getDescription());
         setGroupDto.setListOrder(setGroup.getListOrder());
 
-        setGroupDto.setSets(nested
-                ? this.setMapper.toDtos(setGroup.getSets(), false)
+        setGroupDto.setSets(depth != 0
+                ? this.setMapper.toDtos(setGroup.getSets(), depth - 1)
                 : Collections.emptyList());
-        setGroupDto.setExercise(nested
-                ? this.exerciseMapper.toDto(setGroup.getExercise(), true)
+        setGroupDto.setExercise(depth != 0
+                ? this.exerciseMapper.toDto(setGroup.getExercise(), depth - 1)
                 : null);
 
-        if (nested && setGroup.getSession() != null && setGroup.getSession().getId() != null) {
+        if (depth != 0 && setGroup.getSession() != null && setGroup.getSession().getId() != null) {
             final SessionDto sessionDto = new SessionDto();
             sessionDto.setId(setGroup.getSession().getId());
             setGroupDto.setSession(sessionDto);
         }
-        if (nested && setGroup.getWorkout() != null && setGroup.getWorkout().getId() != null) {
+        if (depth != 0 && setGroup.getWorkout() != null && setGroup.getWorkout().getId() != null) {
             final WorkoutDto workoutDto = new WorkoutDto();
             workoutDto.setId(setGroup.getWorkout().getId());
             setGroupDto.setWorkout(workoutDto);

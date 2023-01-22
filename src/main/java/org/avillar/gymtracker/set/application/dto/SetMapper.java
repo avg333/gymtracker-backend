@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface SetMapper {
 
-    List<SetDto> toDtos(Collection<Set> sets, boolean nested);
+    List<SetDto> toDtos(Collection<Set> sets, int depth);
 
     List<Set> toEntities(Collection<SetDto> setDtos);
 
-    SetDto toDto(Set set, boolean nested);
+    SetDto toDto(Set set, int depth);
 
     Set toEntity(SetDto setDto);
 

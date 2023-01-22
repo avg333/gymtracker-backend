@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface ExerciseMapper {
 
-    List<ExerciseDto> toDtos(Collection<Exercise> objects, boolean nested);
+    List<ExerciseDto> toDtos(Collection<Exercise> objects, int depth);
 
-    ExerciseDto toDto(Exercise exercise, boolean nested);
+    ExerciseDto toDto(Exercise exercise, int depth);
 
     Exercise toEntity(ExerciseDto exerciseDto);
 

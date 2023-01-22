@@ -85,7 +85,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     }
 
     @Override
-    public List<Date> getAllUserWorkoutsWithExercise(final Long userId, final Long exerciseId) throws EntityNotFoundException, IllegalAccessException {
+    public Map<Date, Long> getAllUserWorkoutsWithExercise(final Long userId, final Long exerciseId) throws EntityNotFoundException, IllegalAccessException {
         final UserApp userApp = this.userDao.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
@@ -95,7 +95,9 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         workout.setUserApp(userApp);
         this.authService.checkAccess(workout);
 
-        return this.workoutDao.findWorkoutsWithUserAndExercise(userApp, exercise);
+        return this.workoutDao.findWorkoutsWithUserAndExercise(userApp, exercise)
+                .stream()
+                .collect(Collectors.toMap(Workout::getDate, Workout::getId));
     }
 
     @Override
@@ -125,7 +127,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     }
 
     private WorkoutDto getWorkoutMetadata(final Workout workout) {
-        final WorkoutDto workoutDto = this.workoutMapper.toDto(workout, true);
+        final WorkoutDto workoutDto = this.workoutMapper.toDto(workout, -1);
 
         final Map<Long, ExerciseDto> exercises = new HashMap<>();
         final Map<Long, MuscleGroupDto> muscleGroups = new HashMap<>();
@@ -146,7 +148,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
             }
 
             final Exercise exercise = set.getSetGroup().getExercise();
-            exercises.putIfAbsent(exercise.getId(), this.exerciseMapper.toDto(exercise, true));
+            exercises.putIfAbsent(exercise.getId(), this.exerciseMapper.toDto(exercise, -1));
 
             for (final MuscleGroup muscleGroupSet : exercise.getMuscleGroupExercises().stream()
                     .map(MuscleGroupExercise::getMuscleGroup)
@@ -172,7 +174,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         workoutDto.setSetsNumber(efectiveSets.size());
         workoutDto.setWeightVolume((int) weight);
 
-        workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(),true));
+        workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(),-1));
 
         return workoutDto;
     }
@@ -197,7 +199,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         }
 
 
-        return this.workoutMapper.toDto(this.workoutDao.save(workout), true);
+        return this.workoutMapper.toDto(this.workoutDao.save(workout), -1);
     }
 
     @Override
@@ -275,7 +277,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(workoutDb.getUserApp());
-        return this.workoutMapper.toDto(this.workoutDao.save(workout), true);
+        return this.workoutMapper.toDto(this.workoutDao.save(workout), -1);
     }
 
     /**

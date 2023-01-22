@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface WorkoutMapper {
 
-    List<WorkoutDto> toDtos(Collection<Workout> workouts, boolean nested);
+    List<WorkoutDto> toDtos(Collection<Workout> workouts, int depth);
 
-    WorkoutDto toDto(Workout workout, boolean nested);
+    WorkoutDto toDto(Workout workout, int depth);
 
     Workout toEntity(WorkoutDto workoutDto);
 

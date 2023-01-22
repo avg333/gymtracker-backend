@@ -21,6 +21,9 @@ import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
+import org.avillar.gymtracker.workout.infrastructure.WorkoutController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -34,6 +37,9 @@ import java.util.*;
 
 @Component
 public class DataLoader implements ApplicationRunner {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class);
+
 
     private final Random random = new Random();
 
@@ -71,6 +77,7 @@ public class DataLoader implements ApplicationRunner {
 
     public void run(ApplicationArguments args) {
         if(!userDao.findAll().isEmpty()){
+            LOGGER.info("La base de datos ya tiene datos. No se insertaran mas");
             return;
         }
         final UserApp user = this.userDao.save(new UserApp(
@@ -81,6 +88,8 @@ public class DataLoader implements ApplicationRunner {
                 "alex", new BCryptPasswordEncoder().encode("alex69"), null, "Alex",
                 "Garcia", "Fernandez", null, GenderEnum.FEMALE, ActivityLevelEnum.MODERATE,
                 null, null, null, null));
+        LOGGER.info("Creados dos usuarios");
+
         this.createMeasures(user);
         this.createExercisesWithMuscleGroups();
 
@@ -425,5 +434,6 @@ public class DataLoader implements ApplicationRunner {
         }
 
         setDao.saveAll(sets);
+        LOGGER.info("Creados las sets");
     }
 }

@@ -46,7 +46,7 @@ public class WorkoutController extends BaseController {
     }
 
     @GetMapping("/users/{userId}/exercises/{exerciseId}/workouts/dates")
-    public ResponseEntity<List<Date>> getAllUserWorkoutDatesWithExercise(@PathVariable final Long userId, @PathVariable final Long exerciseId) {
+    public ResponseEntity<Map<Date, Long>> getAllUserWorkoutDatesWithExercise(@PathVariable final Long userId, @PathVariable final Long exerciseId) {
         try {
             return ResponseEntity.ok(this.workoutService.getAllUserWorkoutsWithExercise(userId, exerciseId));
         } catch (EntityNotFoundException exception) {

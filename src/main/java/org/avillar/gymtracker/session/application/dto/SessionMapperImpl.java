@@ -50,7 +50,7 @@ public class SessionMapperImpl implements SessionMapper {
         }
 
         if (session.getSetGroups() != null && nested) {
-            sessionDto.setSetGroups(this.setGroupMapper.toDtos(session.getSetGroups(), false));
+            sessionDto.setSetGroups(this.setGroupMapper.toDtos(session.getSetGroups(), 0));
         }
 
         return sessionDto;

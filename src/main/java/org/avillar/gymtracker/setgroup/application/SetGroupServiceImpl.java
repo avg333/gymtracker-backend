@@ -67,7 +67,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final Session session = this.sessionDao.findById(sessionId)
                 .orElseThrow(() -> new EntityNotFoundException(SESSION_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(session.getProgram());
-        return this.setGroupMapper.toDtos(this.setGroupDao.findBySessionOrderByListOrderAsc(session), true);
+        return this.setGroupMapper.toDtos(this.setGroupDao.findBySessionOrderByListOrderAsc(session), -1);
     }
 
     /**
@@ -78,7 +78,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final Workout workout = this.workoutDao.findById(workoutId)
                 .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(workout);
-        return this.setGroupMapper.toDtos(this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout), true);
+        return this.setGroupMapper.toDtos(this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout), -1);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
             throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
         }
         this.authService.checkAccess(setGroups.get(0));
-        return this.setGroupMapper.toDto(setGroups.get(0), true);
+        return this.setGroupMapper.toDto(setGroups.get(0), -1);
     }
 
     /**
@@ -104,7 +104,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(setGroup);
-        return this.setGroupMapper.toDto(setGroup, true);
+        return this.setGroupMapper.toDto(setGroup, -1);
     }
 
     /**
@@ -134,7 +134,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
             this.setGroupDao.saveAll(setGroups);
         }
 
-        return this.setGroupMapper.toDto(setGroup, true);
+        return this.setGroupMapper.toDto(setGroup, -1);
     }
 
     /**
@@ -163,7 +163,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
             this.setGroupDao.saveAll(setGroups);
         }
 
-        return this.setGroupMapper.toDto(setGroup, true);
+        return this.setGroupMapper.toDto(setGroup, -1);
     }
 
     @Override
@@ -192,7 +192,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         this.setDao.deleteAllById(setGroupDestination.getSets().stream().map(org.avillar.gymtracker.set.domain.Set::getId).toList());
         this.setDao.saveAll(sets);
 
-        return this.setGroupMapper.toDto(this.setGroupDao.getReferenceById(setGroupDestinationId), true);
+        return this.setGroupMapper.toDto(this.setGroupDao.getReferenceById(setGroupDestinationId), -1);
     }
 
     /**
@@ -229,7 +229,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
             this.setGroupDao.saveAll(setGroups);
         }
 
-        return this.setGroupMapper.toDto(setGroup, true);
+        return this.setGroupMapper.toDto(setGroup, -1);
     }
 
     /**

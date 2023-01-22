@@ -14,12 +14,12 @@ import java.util.List;
 public class SetMapperImpl implements SetMapper {
 
     @Override
-    public List<SetDto> toDtos(final Collection<Set> sets, final boolean nested) {
+    public List<SetDto> toDtos(final Collection<Set> sets, final int depth) {
         if (CollectionUtils.isEmpty(sets)) {
             return Collections.emptyList();
         }
 
-        return sets.stream().map(set -> this.toDto(set, nested)).toList();
+        return sets.stream().map(set -> this.toDto(set, depth)).toList();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class SetMapperImpl implements SetMapper {
     }
 
     @Override
-    public SetDto toDto(final Set set, final boolean nested) {
+    public SetDto toDto(final Set set, final int depth) {
         if (set == null) {
             return null;
         }
@@ -46,7 +46,7 @@ public class SetMapperImpl implements SetMapper {
         setDto.setWeight(set.getWeight());
         setDto.setLastModifiedAt(set.getLastModifiedAt());
 
-        if (nested && set.getSetGroup() != null && set.getSetGroup().getId() != null) {
+        if (depth != 0 && set.getSetGroup() != null && set.getSetGroup().getId() != null) {
             final SetGroupDto setGroupDto = new SetGroupDto();
             setGroupDto.setId(set.getSetGroup().getId());
             setDto.setSetGroup(setGroupDto);

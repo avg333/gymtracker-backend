@@ -46,7 +46,7 @@ public class SetServiceImpl extends BaseService implements SetService {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SET_GROUP_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(setGroup);
-        return this.setMapper.toDtos(this.setDao.findBySetGroupOrderByListOrderAsc(setGroup), true);
+        return this.setMapper.toDtos(this.setDao.findBySetGroupOrderByListOrderAsc(setGroup), -1);
     }
 
     /**
@@ -58,7 +58,7 @@ public class SetServiceImpl extends BaseService implements SetService {
         final Set set = this.setDao.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException(SET_NOT_FOUND_ERROR_MSG));
         this.authService.checkAccess(set.getSetGroup());
-        return this.setMapper.toDto(set, true);
+        return this.setMapper.toDto(set, -1);
     }
 
     /**
@@ -88,7 +88,7 @@ public class SetServiceImpl extends BaseService implements SetService {
             this.setDao.saveAll(sets);
         }
 
-        return this.setMapper.toDto(set, true);
+        return this.setMapper.toDto(set, -1);
     }
 
     /**
@@ -116,7 +116,7 @@ public class SetServiceImpl extends BaseService implements SetService {
             this.setDao.saveAll(sets);
         }
 
-        return this.setMapper.toDto(set, true);
+        return this.setMapper.toDto(set, -1);
     }
 
     /**

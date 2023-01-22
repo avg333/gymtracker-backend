@@ -21,16 +21,16 @@ public class WorkoutMapperImpl implements WorkoutMapper {
     }
 
     @Override
-    public List<WorkoutDto> toDtos(final Collection<Workout> workouts, final boolean nested) {
+    public List<WorkoutDto> toDtos(final Collection<Workout> workouts, final int depth) {
         if (CollectionUtils.isEmpty(workouts)) {
             return Collections.emptyList();
         }
 
-        return workouts.stream().map(workout -> this.toDto(workout, nested)).toList();
+        return workouts.stream().map(workout -> this.toDto(workout, depth)).toList();
     }
 
     @Override
-    public WorkoutDto toDto(final Workout workout, final boolean nested) {
+    public WorkoutDto toDto(final Workout workout, final int depth) {
         if (workout == null) {
             return null;
         }
@@ -42,8 +42,8 @@ public class WorkoutMapperImpl implements WorkoutMapper {
 
         workoutDto.setUserApp(null);
 
-        if (nested && !CollectionUtils.isEmpty(workout.getSetGroups())) {
-            workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(), false));
+        if (depth != 0 && !CollectionUtils.isEmpty(workout.getSetGroups())) {
+            workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(), depth -1 ));
         }
 
         return workoutDto;

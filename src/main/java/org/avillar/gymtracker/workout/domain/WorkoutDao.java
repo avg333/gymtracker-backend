@@ -21,10 +21,10 @@ public interface WorkoutDao extends JpaRepository<Workout, Long> {
     List<Workout> findByUserAppAndDate(UserApp userApp, Date date);
 
     @Query("""
-            SELECT w.date FROM Workout w
+            SELECT w FROM Workout w
             JOIN w.setGroups sg JOIN sg.exercise e JOIN w.userApp u
             WHERE u = :user AND e = :exercise
             ORDER BY w.date DESC
             """)
-    List<Date> findWorkoutsWithUserAndExercise(@Param("user") UserApp user, @Param("exercise") Exercise exercise);
+    List<Workout> findWorkoutsWithUserAndExercise(@Param("user") UserApp user, @Param("exercise") Exercise exercise);
 }

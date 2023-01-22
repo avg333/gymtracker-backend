@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface SetGroupMapper {
 
-    List<SetGroupDto> toDtos(Collection<SetGroup> setGroups, boolean nested);
+    List<SetGroupDto> toDtos(Collection<SetGroup> setGroups, int depth);
 
     List<SetGroup> toEntities(Collection<SetGroupDto> setGroupDtos);
 
-    SetGroupDto toDto(SetGroup setGroup, boolean nested);
+    SetGroupDto toDto(SetGroup setGroup, int depth);
 
     SetGroup toEntity(SetGroupDto setGroupDto);
 

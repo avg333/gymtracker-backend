@@ -18,16 +18,16 @@ public class ExerciseMapperImpl implements ExerciseMapper {
     }
 
     @Override
-    public List<ExerciseDto> toDtos(final Collection<Exercise> exercises, final boolean nested) {
+    public List<ExerciseDto> toDtos(final Collection<Exercise> exercises, final int depth) {
         if (CollectionUtils.isEmpty(exercises)) {
             return Collections.emptyList();
         }
 
-        return exercises.stream().map(exercise -> this.toDto(exercise, nested)).toList();
+        return exercises.stream().map(exercise -> this.toDto(exercise, depth)).toList();
     }
 
     @Override
-    public ExerciseDto toDto(final Exercise exercise, final boolean nested) {
+    public ExerciseDto toDto(final Exercise exercise, final int depth) {
         if (exercise == null) {
             return null;
         }
@@ -38,10 +38,10 @@ public class ExerciseMapperImpl implements ExerciseMapper {
         exerciseDto.setDescription(exercise.getDescription());
         exerciseDto.setUnilateral(exercise.getUnilateral());
         exerciseDto.setLoadType(exercise.getLoadType());
-        exerciseDto.setMuscleSubGroups(nested
+        exerciseDto.setMuscleSubGroups(depth != 0
                 ? this.muscleGroupMapper.toDtos(exercise.getMuscleSubGroups(), false)
                 : Collections.emptyList());
-        exerciseDto.setMuscleGroupExercises(nested
+        exerciseDto.setMuscleGroupExercises(depth != 0
                 ? this.muscleGroupExercisesToDtos(exercise.getMuscleGroupExercises())
                 : Collections.emptyList());
 

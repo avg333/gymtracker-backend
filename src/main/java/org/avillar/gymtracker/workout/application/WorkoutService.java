@@ -11,7 +11,7 @@ public interface WorkoutService {
 
     Map<Date, Long> getAllUserWorkoutDates(Long userId) throws EntityNotFoundException, IllegalAccessException;
 
-    List<Date> getAllUserWorkoutsWithExercise(Long userId, Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
+    Map<Date, Long> getAllUserWorkoutsWithExercise(Long userId, Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
 
     List<WorkoutDto> getAllUserWorkoutsByDate(Long userId, Date date) throws EntityNotFoundException, IllegalAccessException;
 
