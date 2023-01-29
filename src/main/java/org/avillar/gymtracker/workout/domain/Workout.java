@@ -33,5 +33,6 @@ public class Workout extends BaseEntity {
     private UserApp userApp;
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OrderBy("listOrder ASC")
     private Set<SetGroup> setGroups = new HashSet<>();
 }

@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.workout.application.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;

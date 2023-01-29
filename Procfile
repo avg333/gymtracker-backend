@@ -1,1 +1,0 @@
-web: java -Dspring.profiles.active=default -jar target/gymtracker-backend-0.0.1-SNAPSHOT.jar

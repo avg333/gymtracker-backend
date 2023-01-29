@@ -157,7 +157,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
                 muscleGroups.get(muscleGroupSet.getId()).setVolume(muscleGroups.get(muscleGroupSet.getId()).getVolume() + 1);
             }
 
-            if (set.getWeight() != null){
+            if (set.getWeight() != null) {
                 weight += set.getWeight();
             }
         }
@@ -174,7 +174,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         workoutDto.setSetsNumber(efectiveSets.size());
         workoutDto.setWeightVolume((int) weight);
 
-        workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(),-1));
+        workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(), -1));
 
         return workoutDto;
     }
@@ -194,7 +194,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         this.authService.checkAccess(workout);
 
         final int workoutsInDate = this.workoutDao.countByUserAppAndDate(workout.getUserApp(), workout.getDate());
-        if (workoutsInDate >0) {
+        if (workoutsInDate > 0) {
             throw new RuntimeException("Ya existe un workout ese dia!!!"); //TODO Mejorar
         }
 
@@ -234,7 +234,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         return this.getWorkoutMetadata(this.workoutDao.getReferenceById(workoutDestinationId));
     }
 
-    private void copySetGroupsToWorkout(final Workout workout, final java.util.Set<SetGroup> setGroupsSource){
+    private void copySetGroupsToWorkout(final Workout workout, final java.util.Set<SetGroup> setGroupsSource) {
         final int listOrderOffset = workout.getSetGroups().size();
         final var setGroups = new ArrayList<SetGroup>();
         final var sets = new ArrayList<Set>();

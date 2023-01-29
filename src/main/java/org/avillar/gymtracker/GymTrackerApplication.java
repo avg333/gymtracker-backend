@@ -16,9 +16,10 @@ public class GymTrackerApplication {
     }
 
     @PostConstruct
-    public void init(){
+    public void init() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
+
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();

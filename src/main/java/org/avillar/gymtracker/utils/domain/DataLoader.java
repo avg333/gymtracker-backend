@@ -21,7 +21,6 @@ import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
-import org.avillar.gymtracker.workout.infrastructure.WorkoutController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +75,7 @@ public class DataLoader implements ApplicationRunner {
     }
 
     public void run(ApplicationArguments args) {
-        if(!userDao.findAll().isEmpty()){
+        if (!userDao.findAll().isEmpty()) {
             LOGGER.info("La base de datos ya tiene datos. No se insertaran mas");
             return;
         }
@@ -426,7 +425,7 @@ public class DataLoader implements ApplicationRunner {
             for (int i = 0; i < totalSeries; i++) {
                 final int reps = random.nextInt(3, 15);
                 final double rir = random.nextInt(0, 4);
-                final double weight = Math.round((random.nextDouble(5, 100)) * 100.0) / 100.0;
+                final double weight = Math.round((random.nextInt(5, 100)) * 100.0) / 100.0;
                 final Set set = new Set(random.nextDouble() < 0.2 ? "SetDescription" : null, reps, rir, weight, setGroup);
                 set.setListOrder(i);
                 sets.add(set);

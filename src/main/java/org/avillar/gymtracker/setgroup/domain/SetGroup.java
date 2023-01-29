@@ -34,5 +34,6 @@ public class SetGroup extends SortableEntity {
     private Workout workout;
 
     @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OrderBy("listOrder ASC")
     private java.util.Set<Set> sets = new HashSet<>();
 }
