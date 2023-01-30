@@ -1,5 +1,7 @@
 package org.avillar.gymtracker.measure.application;
 
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
+
 import java.util.List;
 
 public interface MeasureService {

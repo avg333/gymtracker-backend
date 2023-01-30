@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.measure.infrastructure;
 
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.measure.application.MeasureDto;
 import org.avillar.gymtracker.measure.application.MeasureService;
 import org.springframework.beans.factory.annotation.Autowired;

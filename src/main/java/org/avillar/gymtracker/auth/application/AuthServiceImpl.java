@@ -2,6 +2,7 @@ package org.avillar.gymtracker.auth.application;
 
 import org.avillar.gymtracker.auth.application.jwt.JwtTokenUtil;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.measure.domain.Measure;
 import org.avillar.gymtracker.program.domain.Program;
@@ -67,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
             return userDetailsImpl.getUserApp();
         } catch (Exception e) {
             LOGGER.error("Error al obtener el usuario logueado", e);
-            return null;
+            throw new EntityNotFoundException(UserApp.class, "null", "null"); //TODO
         }
     }
 
@@ -78,46 +79,32 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void checkAccess(final Measure measure) throws IllegalAccessException {
         final UserApp userApp = this.getLoggedUser();
-        if (null == userApp) {
-            throw new IllegalAccessException(NO_PERMISSIONS);
-        }
 
         if (null != measure && !userApp.getId().equals(measure.getUserApp().getId())) {
-            throw new IllegalAccessException(NO_PERMISSIONS);
+            throw new IllegalAccessException(measure, "READ", userApp);
         }
     }
 
     @Override
     public void checkAccess(final Program program) throws IllegalAccessException {
         final UserApp userApp = this.getLoggedUser();
-        if (null == userApp) {
-            throw new IllegalAccessException(NO_PERMISSIONS);
-        }
 
         if (null != program && !userApp.getId().equals(program.getUserApp().getId())) {
-            throw new IllegalAccessException(NO_PERMISSIONS);
+            throw new IllegalAccessException(program, "READ", userApp);
         }
     }
 
     @Override
     public void checkAccess(final Workout workout) throws IllegalAccessException {
         final UserApp userApp = this.getLoggedUser();
-        if (null == userApp) {
-            throw new IllegalAccessException(NO_PERMISSIONS);
-        }
 
         if (null != workout && !userApp.getId().equals(workout.getUserApp().getId())) {
-            throw new IllegalAccessException(NO_PERMISSIONS);
+            throw new IllegalAccessException(workout, "READ", userApp);
         }
     }
 
     @Override
     public void checkAccess(final SetGroup setGroup) throws IllegalAccessException {
-        final UserApp userApp = this.getLoggedUser();
-        if (null == userApp) {
-            throw new IllegalAccessException(NO_PERMISSIONS);
-        }
-
         if (null != setGroup.getSession())
             this.checkAccess(setGroup.getSession().getProgram());
         else if (null != setGroup.getWorkout()) {

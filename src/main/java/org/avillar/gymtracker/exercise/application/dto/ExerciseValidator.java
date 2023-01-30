@@ -9,8 +9,6 @@ import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroupDao;
 import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroupDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 

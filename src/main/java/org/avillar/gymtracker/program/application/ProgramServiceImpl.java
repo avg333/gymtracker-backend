@@ -2,6 +2,7 @@ package org.avillar.gymtracker.program.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.program.domain.ProgramDao;
 import org.avillar.gymtracker.user.domain.UserApp;

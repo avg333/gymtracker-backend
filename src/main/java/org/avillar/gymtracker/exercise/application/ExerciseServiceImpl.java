@@ -3,6 +3,7 @@ package org.avillar.gymtracker.exercise.application;
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.base.application.IncorrectFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;

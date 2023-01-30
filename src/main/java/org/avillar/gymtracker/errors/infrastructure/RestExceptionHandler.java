@@ -3,6 +3,7 @@ package org.avillar.gymtracker.errors.infrastructure;
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.errors.application.ApiError;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +28,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ApiError> handleIllegalAccessException(final IllegalAccessException ex) {
         ApiError apiError = new ApiError(FORBIDDEN);
         apiError.setMessage(ex.getMessage());
+        log.debug("Acceso ilegal a la entidad {} con id {} por el usuario con id {}", ex.getEntityClassName(), ex.getEntityId(), ex.getCurrentUserId());
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 }

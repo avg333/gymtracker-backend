@@ -2,6 +2,7 @@ package org.avillar.gymtracker.measure.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.measure.domain.Measure;
 import org.avillar.gymtracker.measure.domain.MeasureDao;
 import org.avillar.gymtracker.user.domain.UserApp;

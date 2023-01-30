@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.workout.application;
 
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 
 import java.util.Date;

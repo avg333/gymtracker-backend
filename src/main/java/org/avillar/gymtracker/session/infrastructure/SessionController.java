@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.session.infrastructure;
 
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.program.application.ProgramDto;
 import org.avillar.gymtracker.session.application.SessionService;
 import org.avillar.gymtracker.session.application.dto.SessionDto;

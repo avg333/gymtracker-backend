@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.program.application;
 
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
