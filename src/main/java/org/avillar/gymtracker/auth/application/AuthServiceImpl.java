@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.auth.application;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.auth.application.jwt.JwtTokenUtil;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.measure.domain.Measure;
 import org.avillar.gymtracker.program.domain.Program;
@@ -24,8 +24,6 @@ public class AuthServiceImpl implements AuthService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
 
-    private static final String USER_NOT_FOUND = "The user does not exist";
-
     private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
 
     private final UserDao userDao;
@@ -42,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserAppDto login(final UserAppDto userAppDto) {
         if (this.userDao.findByUsername(userAppDto.getUsername()) == null) {
-            throw new EntityNotFoundException(USER_NOT_FOUND);
+            throw new EntityNotFoundException(UserApp.class, "userName", userAppDto.getUsername());
         }
 
         final UsernamePasswordAuthenticationToken token =

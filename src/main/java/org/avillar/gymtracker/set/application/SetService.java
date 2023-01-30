@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.set.application;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.set.application.dto.SetDto;
 
 import java.util.List;

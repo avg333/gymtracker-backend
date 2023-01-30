@@ -350,9 +350,8 @@ public class DataLoader implements ApplicationRunner {
         sessionDao.saveAll(sessions);
 
         final List<SetGroup> setGroups = new ArrayList<>();
-        final List<Set> sets = new ArrayList<>();
         final var pressBanca = new SetGroup("", exerciseById(1L), upperH1, null, null);
-        sets.addAll(giveMeSets(pressBanca, 4, 5));
+        final List<Set> sets = new ArrayList<>(giveMeSets(pressBanca, 4, 5));
         pressBanca.setListOrder(0);
         setGroups.add(pressBanca);
         final var remoUnaMano = new SetGroup("", exerciseById(2L), upperH1, null, null);

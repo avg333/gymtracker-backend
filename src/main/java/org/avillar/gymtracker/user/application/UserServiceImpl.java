@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.user.application;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.modelmapper.ModelMapper;
@@ -12,7 +12,6 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private static final String USER_NOT_FOUND = "The user does not exist";
 
     private final UserDao userDao;
     private final ModelMapper modelMapper;
@@ -34,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAppDto getUser(final Long userId) {
         return this.modelMapper.map(this.userDao.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND)), UserAppDto.class);
+                .orElseThrow(() -> new EntityNotFoundException(UserApp.class, userId)), UserAppDto.class);
     }
 
     @Override

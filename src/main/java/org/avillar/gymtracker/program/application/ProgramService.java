@@ -1,15 +1,15 @@
 package org.avillar.gymtracker.program.application;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ProgramService {
 
-    long getAllUserProgramsSize(Long userId) throws IllegalAccessException;
+    long getAllUserProgramsSize(Long userId) throws EntityNotFoundException, IllegalAccessException;
 
-    List<ProgramDto> getAllUserPrograms(Long userId, Pageable pageable) throws IllegalAccessException;
+    List<ProgramDto> getAllUserPrograms(Long userId, Pageable pageable) throws EntityNotFoundException, IllegalAccessException;
 
     /**
      * Devuelve el DTO de la entidad con el ID especificado

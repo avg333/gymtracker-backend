@@ -1,8 +1,9 @@
 package org.avillar.gymtracker.setgroup.application.dto;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.set.application.dto.SetDto;
+import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,6 @@ import java.util.Map;
 @Component
 public class SetGroupValidator {
     private static final int LONG_MAX_DESC = 255;
-    private static final String SET_GROUP_NOT_FOUND_ERROR_MSG = "The setGroup does not exist";
 
     private final SetGroupDao setGroupDao;
 
@@ -51,7 +51,7 @@ public class SetGroupValidator {
         final SetGroupDto setGroupDto = setDto.getSetGroup();
         if (setGroupDto == null || setGroupDto.getId() == null || !this.setGroupDao.existsById(setGroupDto.getId())) {
             errorMap.put(fieldName, "El SetGroup no existe");
-            throw new EntityNotFoundException(SET_GROUP_NOT_FOUND_ERROR_MSG);
+            throw new EntityNotFoundException(SetGroup.class, setGroupDto != null ? setGroupDto.getId() : 0L);
         }
 
     }

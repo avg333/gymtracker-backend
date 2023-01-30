@@ -1,8 +1,8 @@
 package org.avillar.gymtracker.errors.infrastructure;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.errors.application.ApiError;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +19,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ApiError> handleEntityNotFound(final EntityNotFoundException ex) {
         ApiError apiError = new ApiError(NOT_FOUND);
         apiError.setMessage(ex.getMessage());
+        log.debug("No se ha encontrado la entidad {} con el id {}", ex.getClassName(), ex.getId());
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 

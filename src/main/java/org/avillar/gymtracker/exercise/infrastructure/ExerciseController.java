@@ -1,8 +1,8 @@
 package org.avillar.gymtracker.exercise.infrastructure;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.IncorrectFormException;
 import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.exercise.application.ExerciseService;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;

@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.workout.infrastructure;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.user.application.UserAppDto;
 import org.avillar.gymtracker.workout.application.WorkoutService;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;

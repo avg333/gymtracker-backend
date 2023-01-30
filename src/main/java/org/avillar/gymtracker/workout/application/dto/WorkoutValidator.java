@@ -1,8 +1,9 @@
 package org.avillar.gymtracker.workout.application.dto;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.user.application.UserAppDto;
+import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,6 @@ import java.util.Map;
 @Component
 public class WorkoutValidator {
     private static final int LONG_MAX_DESC = 255;
-    private static final String USER_NOT_FOUND = "The user does not exist";
 
     private final UserDao userDao;
 
@@ -50,7 +50,7 @@ public class WorkoutValidator {
         final UserAppDto userAppDto = workoutDto.getUserApp();
         if (userAppDto == null || userAppDto.getId() == null || !this.userDao.existsById(userAppDto.getId())) {
             errorMap.put(fieldName, "El usuario no existe");
-            throw new EntityNotFoundException(USER_NOT_FOUND);
+            throw new EntityNotFoundException(UserApp.class, userAppDto != null ? userAppDto.getId() : 0L);
         }
     }
 }

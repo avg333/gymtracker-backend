@@ -1,13 +1,13 @@
 package org.avillar.gymtracker.session.application;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.session.application.dto.SessionDto;
 
 import java.util.List;
 
 public interface SessionService {
 
-    List<SessionDto> getAllProgramSessions(Long programId) throws IllegalAccessException;
+    List<SessionDto> getAllProgramSessions(Long programId) throws EntityNotFoundException, IllegalAccessException;
 
     /**
      * Devuelve el DTO de la entidad con el ID especificado

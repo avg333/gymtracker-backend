@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.set.application;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.set.application.dto.SetDto;
 import org.avillar.gymtracker.set.application.dto.SetMapper;
 import org.avillar.gymtracker.set.application.dto.SetValidator;
@@ -20,8 +20,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class SetServiceImpl extends BaseService implements SetService {
-    private static final String SET_GROUP_NOT_FOUND_ERROR_MSG = "The setGroup does not exist";
-    private static final String SET_NOT_FOUND_ERROR_MSG = "The set does not exist";
+
     private final SetDao setDao;
     private final SetGroupDao setGroupDao;
     private final SetMapper setMapper;
@@ -44,7 +43,7 @@ public class SetServiceImpl extends BaseService implements SetService {
     @Override
     public List<SetDto> getAllSetGroupSets(final Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
-                .orElseThrow(() -> new EntityNotFoundException(SET_GROUP_NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
         return this.setMapper.toDtos(this.setDao.findBySetGroupOrderByListOrderAsc(setGroup), -1);
     }
@@ -55,7 +54,7 @@ public class SetServiceImpl extends BaseService implements SetService {
     @Override
     public SetDto getSet(final Long setId) throws EntityNotFoundException, IllegalAccessException {
         final Set set = this.setDao.findById(setId)
-                .orElseThrow(() -> new EntityNotFoundException(SET_NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(Set.class, setId));
         this.authService.checkAccess(set.getSetGroup());
         return this.setMapper.toDto(set, -1);
     }
@@ -125,7 +124,7 @@ public class SetServiceImpl extends BaseService implements SetService {
     @Transactional
     public void deleteSet(final Long setId) throws EntityNotFoundException, IllegalAccessException {
         final Set set = this.setDao.findById(setId)
-                .orElseThrow(() -> new EntityNotFoundException(SET_NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(Set.class, setId));
         this.authService.checkAccess(set.getSetGroup());
 
         this.setDao.deleteById(setId);

@@ -1,11 +1,13 @@
 package org.avillar.gymtracker.exercise.application.dto;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
+import org.avillar.gymtracker.musclegroup.domain.MuscleGroup;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroupDao;
+import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroupDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +23,11 @@ import java.util.stream.Collectors;
 @Component
 public class ExerciseValidator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExerciseValidator.class);
-
     private static final int LONG_MIN_NAME = 10;
     private static final int LONG_MAX_NAME = 100;
     private static final int LONG_MAX_DESC = 255;
     private static final int LONG_MIN_WEIGHT = 0;
     private static final int LONG_MAX_WEIGHT = 1;
-
-    private static final String MG_FOUND_ERROR_MSG = "The muscle group does not exist";
-    private static final String MSG_FOUND_ERROR_MSG = "The muscle sub group does not exist";
 
     private final MuscleGroupDao muscleGroupDao;
     private final MuscleSubGroupDao muscleSubGroupDao;
@@ -105,7 +102,7 @@ public class ExerciseValidator {
         if (muscleGroupIds.size() < muscleGroupDtos.size() ||
                 this.muscleGroupDao.findAllById(muscleGroupIds).size() != muscleGroupDtos.size()) {
             errorMap.put(fieldName, "No se han encontrado los muscleSubGroups especificados");
-            throw new EntityNotFoundException(MG_FOUND_ERROR_MSG);
+            throw new EntityNotFoundException(MuscleGroup.class, "id", muscleGroupIds.toString());
         }
     }
 
@@ -145,7 +142,7 @@ public class ExerciseValidator {
         if (muscleSubGroupsIds.size() < muscleSubGroupDtos.size() ||
                 this.muscleSubGroupDao.findAllById(muscleSubGroupsIds).size() != muscleSubGroupDtos.size()) {
             errorMap.put(fieldName, "No se han encontrado los muscleSubGroups especificados");
-            throw new EntityNotFoundException(MSG_FOUND_ERROR_MSG);
+            throw new EntityNotFoundException(MuscleSubGroup.class, "id", muscleSubGroupsIds.toString());
         }
     }
 }

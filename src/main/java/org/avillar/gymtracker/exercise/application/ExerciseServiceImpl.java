@@ -1,8 +1,8 @@
 package org.avillar.gymtracker.exercise.application;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.base.application.IncorrectFormException;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
@@ -22,9 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
+@Transactional(readOnly = true)
 public class ExerciseServiceImpl extends BaseService implements ExerciseService {
-
-    private static final String EX_FOUND_ERROR_MSG = "The exercise does not exist";
 
     private final ExerciseDao exerciseDao;
     private final MuscleGroupExerciseDao muscleGroupExerciseDao;
@@ -44,7 +43,6 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
      * @ {@inheritDoc}
      */
     @Override
-    @Transactional(readOnly = true)
     public List<ExerciseDto> getAllExercises(ExerciseFilterDto exerciseFilterDto) {
         final ExerciseFilterDto finalExerciseFilterDto = exerciseFilterDto != null
                 ? exerciseFilterDto
@@ -62,10 +60,9 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
      * @ {@inheritDoc}
      */
     @Override
-    @Transactional(readOnly = true)
     public ExerciseDto getExercise(final Long exerciseId) throws EntityNotFoundException, IllegalAccessException {
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
-                .orElseThrow(() -> new EntityNotFoundException(EX_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId));
         this.authService.checkAccess(exercise);
         return this.exerciseMapper.toDto(exercise, -1);
     }
@@ -99,7 +96,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
 
         this.authService.checkAccess(
                 this.exerciseDao.findById(exerciseDto.getId())
-                        .orElseThrow(() -> new EntityNotFoundException(EX_FOUND_ERROR_MSG)));
+                        .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseDto.getId())));
 
         final Exercise exercise = this.exerciseMapper.toEntity(exerciseDto);
         final Exercise exerciseDb = this.exerciseDao.save(exercise);
@@ -118,7 +115,7 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
     @Transactional
     public void deleteExercise(final Long exerciseId) throws EntityNotFoundException, IllegalAccessException {
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
-                .orElseThrow(() -> new EntityNotFoundException(EX_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId));
         this.authService.checkAccess(exercise);
         this.exerciseDao.deleteById(exerciseId);
     }

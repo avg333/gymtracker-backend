@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.setgroup.application;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.session.domain.Session;
@@ -30,9 +30,6 @@ import java.util.Set;
 @Service
 @Transactional(readOnly = true)
 public class SetGroupServiceImpl extends BaseService implements SetGroupService {
-    private static final String SESSION_NOT_FOUND_ERROR_MSG = "The session does not exist";
-    private static final String WORKOUT_NOT_FOUND_ERROR_MSG = "The workout does not exist";
-    private static final String NOT_FOUND_ERROR_MSG = "The setGroup does not exist";
 
     private final SetGroupDao setGroupDao;
     private final SessionDao sessionDao;
@@ -65,7 +62,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Override
     public List<SetGroupDto> getAllSessionSetGroups(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionDao.findById(sessionId)
-                .orElseThrow(() -> new EntityNotFoundException(SESSION_NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(Session.class, sessionId));
         this.authService.checkAccess(session.getProgram());
         return this.setGroupMapper.toDtos(this.setGroupDao.findBySessionOrderByListOrderAsc(session), -1);
     }
@@ -76,7 +73,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Override
     public List<SetGroupDto> getAllWorkoutSetGroups(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
         final Workout workout = this.workoutDao.findById(workoutId)
-                .orElseThrow(() -> new EntityNotFoundException(WORKOUT_NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
         this.authService.checkAccess(workout);
         return this.setGroupMapper.toDtos(this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout), -1);
     }
@@ -87,13 +84,13 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Override
     public SetGroupDto getLastTimeUserExerciseSetGroup(final Long userId, final Long exerciseId) throws IllegalAccessException {
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId));
         final UserApp userApp = this.userDao.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(UserApp.class, userId));
 
         final List<SetGroup> setGroups = this.setGroupDao.findLastUserExerciseSetGroup(userApp, exercise);
         if (CollectionUtils.isEmpty(setGroups)) {
-            throw new EntityNotFoundException(NOT_FOUND_ERROR_MSG);
+            throw new EntityNotFoundException(SetGroup.class, "x", "x");//TODO Arreglar
         }
         this.authService.checkAccess(setGroups.get(0));
         return this.setGroupMapper.toDto(setGroups.get(0), -1);
@@ -105,7 +102,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Override
     public SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
         return this.setGroupMapper.toDto(setGroup, -1);
     }
@@ -173,9 +170,9 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Transactional
     public SetGroupDto replaceSetGroupSetsFromSetGroup(final Long setGroupDestinationId, final Long setGroupSourceId) throws IllegalAccessException {
         final SetGroup setGroupDestination = this.setGroupDao.findById(setGroupDestinationId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupDestinationId));
         final SetGroup setGroupSource = this.setGroupDao.findById(setGroupSourceId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupSourceId));
 
         this.authService.checkAccess(setGroupDestination);
         this.authService.checkAccess(setGroupSource);
@@ -211,7 +208,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
 
 
         final SetGroup setGroupDb = this.setGroupDao.findById(setGroupDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupDto.getId()));
         this.authService.checkAccess(setGroupDb);
 
         final int oldPosition = setGroupDb.getListOrder();
@@ -243,7 +240,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Transactional
     public void deleteSetGroup(final Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
-                .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_ERROR_MSG));
+                .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
 
         this.setGroupDao.deleteById(setGroupId);
