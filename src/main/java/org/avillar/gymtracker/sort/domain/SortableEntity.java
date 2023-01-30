@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.base.domain;
+package org.avillar.gymtracker.sort.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -6,6 +6,7 @@ import jakarta.persistence.OrderBy;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.avillar.gymtracker.base.domain.BaseEntity;
 
 @Getter
 @Setter

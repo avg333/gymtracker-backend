@@ -62,6 +62,7 @@ public class SetGroupController extends BaseController {
         }
     }
 
+    //TODO Completar esto
     @GetMapping("/users/{userId}/exercises/{exerciseId}/last")
     public ResponseEntity<SetGroupDto> getLastUserExerciseSetGroup(@PathVariable final Long userId, @PathVariable final Long exerciseId) {
         try {
@@ -103,6 +104,7 @@ public class SetGroupController extends BaseController {
         sessionDto.setId(sessionId);
         setGroupDto.setSession(sessionDto);
 
+        //TODO Validate
         try {
             return ResponseEntity.ok(this.setGroupService.createSetGroupInSession(setGroupDto));
         } catch (EntityNotFoundException exception) {
@@ -125,6 +127,7 @@ public class SetGroupController extends BaseController {
         workoutDto.setId(workoutId);
         setGroupDto.setWorkout(workoutDto);
 
+        //TODO Validate
         try {
             return ResponseEntity.ok(this.setGroupService.createSetGroupInWorkout(setGroupDto));
         } catch (EntityNotFoundException exception) {
@@ -162,6 +165,7 @@ public class SetGroupController extends BaseController {
     public ResponseEntity<SetGroupDto> putSetGroup(@PathVariable final Long setGroupId, @RequestBody final SetGroupDto setGroupDto) {
         setGroupDto.setId(setGroupId);
 
+        //TODO Validate
         try {
             return ResponseEntity.ok(this.setGroupService.updateSetGroup(setGroupDto));
         } catch (IllegalAccessException exception) {

@@ -47,6 +47,7 @@ public class WorkoutController extends BaseController {
 
     @GetMapping("/users/{userId}/exercises/{exerciseId}/workouts/dates")
     public ResponseEntity<Map<Date, Long>> getAllUserWorkoutDatesWithExercise(@PathVariable final Long userId, @PathVariable final Long exerciseId) {
+        // TODO Mejorar URL
         try {
             return ResponseEntity.ok(this.workoutService.getAllUserWorkoutsWithExercise(userId, exerciseId));
         } catch (EntityNotFoundException exception) {
@@ -103,6 +104,7 @@ public class WorkoutController extends BaseController {
         userAppDto.setId(userId);
         workoutDto.setUserApp(userAppDto);
 
+        //TODO Contemplar validate
         try {
             return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto));
         } catch (IllegalAccessException exception) {
@@ -154,6 +156,7 @@ public class WorkoutController extends BaseController {
     public ResponseEntity<WorkoutDto> putWorkout(@PathVariable final Long workoutId, @RequestBody final WorkoutDto workoutDto) {
         workoutDto.setId(workoutId);
 
+        //TODO Contemplar validate
         try {
             return ResponseEntity.ok(this.workoutService.updateWorkout(workoutDto));
         } catch (EntityNotFoundException exception) {

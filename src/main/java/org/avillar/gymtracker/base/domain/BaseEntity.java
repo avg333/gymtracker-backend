@@ -37,6 +37,9 @@ public abstract class BaseEntity implements Serializable {
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedAt;
+    public BaseEntity(Long id) {
+        this.id = id;
+    }
 
     @Override
     public boolean equals(final Object o) {

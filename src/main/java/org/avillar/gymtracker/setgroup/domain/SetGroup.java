@@ -5,10 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.avillar.gymtracker.base.domain.SortableEntity;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.set.domain.Set;
+import org.avillar.gymtracker.sort.domain.SortableEntity;
 import org.avillar.gymtracker.workout.domain.Workout;
 
 import java.util.HashSet;

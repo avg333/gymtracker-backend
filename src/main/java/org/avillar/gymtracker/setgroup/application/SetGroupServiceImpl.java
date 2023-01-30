@@ -12,9 +12,9 @@ import org.avillar.gymtracker.setgroup.application.dto.SetGroupMapper;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupValidator;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
+import org.avillar.gymtracker.sort.application.EntitySorter;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
-import org.avillar.gymtracker.utils.application.EntitySorter;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +81,9 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         return this.setGroupMapper.toDtos(this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout), -1);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     public SetGroupDto getLastTimeUserExerciseSetGroup(final Long userId, final Long exerciseId) throws IllegalAccessException {
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
@@ -177,6 +180,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         this.authService.checkAccess(setGroupDestination);
         this.authService.checkAccess(setGroupSource);
 
+        //TODO Mejorar
         final var sets = new ArrayList<org.avillar.gymtracker.set.domain.Set>();
         for (final var setDb : setGroupSource.getSets()) {
             final org.avillar.gymtracker.set.domain.Set set = new org.avillar.gymtracker.set.domain.Set();

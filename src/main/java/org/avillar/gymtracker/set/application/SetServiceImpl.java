@@ -9,7 +9,7 @@ import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.set.domain.SetDao;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
-import org.avillar.gymtracker.utils.application.EntitySorter;
+import org.avillar.gymtracker.sort.application.EntitySorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class SetServiceImpl extends BaseService implements SetService {
     private static final String SET_GROUP_NOT_FOUND_ERROR_MSG = "The setGroup does not exist";
     private static final String SET_NOT_FOUND_ERROR_MSG = "The set does not exist";
@@ -41,7 +42,6 @@ public class SetServiceImpl extends BaseService implements SetService {
      * @ {@inheritDoc}
      */
     @Override
-    @Transactional(readOnly = true)
     public List<SetDto> getAllSetGroupSets(final Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SET_GROUP_NOT_FOUND_ERROR_MSG));
@@ -53,7 +53,6 @@ public class SetServiceImpl extends BaseService implements SetService {
      * @ {@inheritDoc}
      */
     @Override
-    @Transactional(readOnly = true)
     public SetDto getSet(final Long setId) throws EntityNotFoundException, IllegalAccessException {
         final Set set = this.setDao.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException(SET_NOT_FOUND_ERROR_MSG));

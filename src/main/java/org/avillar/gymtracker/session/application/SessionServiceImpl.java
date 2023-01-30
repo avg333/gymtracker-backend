@@ -8,7 +8,7 @@ import org.avillar.gymtracker.session.application.dto.SessionDto;
 import org.avillar.gymtracker.session.application.dto.SessionMapper;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.session.domain.SessionDao;
-import org.avillar.gymtracker.utils.application.EntitySorter;
+import org.avillar.gymtracker.sort.application.EntitySorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

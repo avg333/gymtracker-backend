@@ -1,6 +1,6 @@
-package org.avillar.gymtracker.utils.application;
+package org.avillar.gymtracker.sort.application;
 
-import org.avillar.gymtracker.base.domain.SortableEntity;
+import org.avillar.gymtracker.sort.domain.SortableEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Component
 public class EntitySorter {
-
+    //TODO Devolver solo los que hay que guardar
     public <T extends SortableEntity> boolean sortDelete(final Set<? extends SortableEntity> entities, final T entity) {
         boolean changes = false;
         entities.removeIf(e -> e.getId().equals(entity.getId()));

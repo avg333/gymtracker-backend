@@ -29,6 +29,14 @@ public class WorkoutMapperImpl implements WorkoutMapper {
         return workouts.stream().map(workout -> this.toDto(workout, depth)).toList();
     }
 
+    public List<Workout> toEntities(final Collection<WorkoutDto> workoutDtos) {
+        if (CollectionUtils.isEmpty(workoutDtos)) {
+            return Collections.emptyList();
+        }
+
+        return workoutDtos.stream().map(this::toEntity).toList();
+    }
+
     @Override
     public WorkoutDto toDto(final Workout workout, final int depth) {
         if (workout == null) {
@@ -39,7 +47,6 @@ public class WorkoutMapperImpl implements WorkoutMapper {
         workoutDto.setId(workout.getId());
         workoutDto.setDate(workout.getDate());
         workoutDto.setDescription(workout.getDescription());
-
         workoutDto.setUserApp(null);
 
         if (depth != 0 && !CollectionUtils.isEmpty(workout.getSetGroups())) {
@@ -61,9 +68,7 @@ public class WorkoutMapperImpl implements WorkoutMapper {
         workout.setDescription(workoutDto.getDescription());
 
         if (workoutDto.getUserApp() != null && workoutDto.getUserApp().getId() != null) {
-            final UserApp userApp = new UserApp();
-            userApp.setId(workoutDto.getUserApp().getId());
-            workout.setUserApp(userApp);
+            workout.setUserApp(new UserApp(workoutDto.getUserApp().getId()));
         }
 
         if (!CollectionUtils.isEmpty(workoutDto.getSetGroups())) {

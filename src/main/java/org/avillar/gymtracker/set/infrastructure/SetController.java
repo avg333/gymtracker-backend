@@ -68,6 +68,7 @@ public class SetController extends BaseController {
         setDto.setSetGroup(setGroupDto);
         setDto.setId(null);
 
+        // TODO Validate
         try {
             return ResponseEntity.ok(this.setService.createSet(setDto));
         } catch (EntityNotFoundException exception) {
@@ -87,6 +88,7 @@ public class SetController extends BaseController {
     public ResponseEntity<SetDto> updateSet(@PathVariable final Long setId, @RequestBody final SetDto setDto) {
         setDto.setId(setId);
 
+        // TODO Validate
         try {
             return ResponseEntity.ok(this.setService.updateSet(setDto));
         } catch (EntityNotFoundException exception) {

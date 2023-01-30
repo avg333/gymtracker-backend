@@ -14,8 +14,6 @@ public interface WorkoutDao extends JpaRepository<Workout, Long> {
 
     Integer countByUserAppAndDate(UserApp userApp, Date date);
 
-    List<Workout> findByUserAppOrderByDateDesc(UserApp userApp);
-
     @Query("SELECT w FROM Workout w JOIN w.userApp u WHERE u = :user ORDER BY w.id ASC")
     List<Workout> getWorkoutDatesByUser(@Param("user") UserApp userApp);
 
