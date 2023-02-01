@@ -25,8 +25,6 @@ public class AuthServiceImpl implements AuthService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
 
-    private static final String NO_PERMISSIONS = "El usuario logeado no tiene permisos para acceder al recurso";
-
     private final UserDao userDao;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
@@ -74,6 +72,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void checkAccess(final Exercise exercise) throws IllegalAccessException {
+        //TODO
     }
 
     @Override

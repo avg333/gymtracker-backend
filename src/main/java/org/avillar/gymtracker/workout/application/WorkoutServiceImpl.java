@@ -22,7 +22,6 @@ import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
-import org.avillar.gymtracker.workout.application.dto.WorkoutDtoValidator;
 import org.avillar.gymtracker.workout.application.dto.WorkoutMapper;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
@@ -48,17 +47,14 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     private final ExerciseMapper exerciseMapper;
     private final MuscleGroupMapper muscleGroupMapper;
     private final SetGroupMapper setGroupMapper;
-    private final WorkoutDtoValidator workoutDtoValidator;
 
     @Autowired
     public WorkoutServiceImpl(WorkoutDao workoutDao, UserDao userDao,
                               WorkoutMapper workoutMapper, ExerciseMapper exerciseMapper, SessionDao sessionDao,
                               MuscleGroupMapper muscleGroupMapper, SetGroupDao setGroupDao, SetDao setDao,
-                              ExerciseDao exerciseDao, SetGroupMapper setGroupMapper,
-                              WorkoutDtoValidator workoutDtoValidator) {
+                              ExerciseDao exerciseDao, SetGroupMapper setGroupMapper) {
         this.workoutDao = workoutDao;
         this.userDao = userDao;
-        this.workoutDtoValidator = workoutDtoValidator;
         this.workoutMapper = workoutMapper;
         this.exerciseMapper = exerciseMapper;
         this.muscleGroupMapper = muscleGroupMapper;

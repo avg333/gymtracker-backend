@@ -38,7 +38,7 @@ public abstract class BaseEntity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedAt;
 
-    public BaseEntity(Long id) {
+    protected BaseEntity(Long id) {
         this.id = id;
     }
 

@@ -9,10 +9,10 @@ import org.avillar.gymtracker.user.domain.UserApp;
 @EqualsAndHashCode(callSuper = false)
 public class IllegalAccessException extends ReflectiveOperationException {
 
-    private String entityClassName;
-    private Long entityId;
-    private String operation;
-    private Long currentUserId;
+    private final String entityClassName;
+    private final Long entityId;
+    private final String operation;
+    private final Long currentUserId;
 
     public <T extends BaseEntity, I extends BaseEntity> IllegalAccessException(T entity, String operation, UserApp userApp) {
         super(IllegalAccessException.generateMessage(entity.getClass().getSimpleName(), entity.getId().toString(), operation, userApp.getId().toString()));

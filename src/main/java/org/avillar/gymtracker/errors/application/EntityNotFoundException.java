@@ -10,11 +10,13 @@ import org.springframework.util.StringUtils;
 @EqualsAndHashCode(callSuper = false)
 public class EntityNotFoundException extends PersistenceException {
 
-    private String className;
-    private Long id;
+    private final String className;
+    private final Long id;
 
     public <T extends BaseEntity> EntityNotFoundException(Class<T> entityClass, String searchParamType, String searchParamsValue) {
         super(EntityNotFoundException.generateMessage(entityClass.getSimpleName(), searchParamType, searchParamsValue));
+        this.className = entityClass.getSimpleName();
+        this.id = null;
     }
 
     public <T extends BaseEntity> EntityNotFoundException(Class<T> entityClass, Long id) {
