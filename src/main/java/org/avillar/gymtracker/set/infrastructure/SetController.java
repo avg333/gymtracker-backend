@@ -34,12 +34,16 @@ public class SetController {
         return ResponseEntity.ok(this.setService.getSet(setId));
     }
 
+    @GetMapping("setGroups/{setGroupId}/sets/newSet")
+    public ResponseEntity<SetDto> getSetDefaultDataForNewSet(@PathVariable final Long setGroupId)
+            throws EntityNotFoundException, IllegalAccessException {
+        return ResponseEntity.ok(this.setService.getSetDefaultDataForNewSet(setGroupId));
+    }
+
     @PostMapping("setGroups/{setGroupId}/sets")
     public ResponseEntity<SetDto> postSet(@PathVariable final Long setGroupId, @RequestBody final SetDto setDto)
             throws EntityNotFoundException, IllegalAccessException {
-        final SetGroupDto setGroupDto = new SetGroupDto();
-        setGroupDto.setId(setGroupId);
-        setDto.setSetGroup(setGroupDto);
+        setDto.setSetGroup(new SetGroupDto(setGroupId));
         setDto.setId(null);
 
         // TODO Validate

@@ -35,13 +35,6 @@ public class SetGroupController {
         return ResponseEntity.ok(this.setGroupService.getAllWorkoutSetGroups(workoutId));
     }
 
-    //TODO Completar esto
-    @GetMapping("/users/{userId}/exercises/{exerciseId}/last")
-    public ResponseEntity<SetGroupDto> getLastUserExerciseSetGroup(@PathVariable final Long userId, @PathVariable final Long exerciseId)
-            throws EntityNotFoundException, IllegalAccessException {
-        return ResponseEntity.ok(this.setGroupService.getLastTimeUserExerciseSetGroup(userId, exerciseId));
-    }
-
     @GetMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> getSetGroup(@PathVariable final Long setGroupId)
             throws EntityNotFoundException, IllegalAccessException {
@@ -52,9 +45,7 @@ public class SetGroupController {
     public ResponseEntity<SetGroupDto> postSetGroupInSession(@PathVariable final Long sessionId, @RequestBody final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException {
         setGroupDto.setId(null);
-        final SessionDto sessionDto = new SessionDto();
-        sessionDto.setId(sessionId);
-        setGroupDto.setSession(sessionDto);
+        setGroupDto.setSession(new SessionDto(sessionId));
 
         return ResponseEntity.ok(this.setGroupService.createSetGroupInSession(setGroupDto));
         //TODO Validate
@@ -64,17 +55,14 @@ public class SetGroupController {
     public ResponseEntity<SetGroupDto> postSetGroupInWorkout(@PathVariable final Long workoutId, @RequestBody final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException {
         setGroupDto.setId(null);
-        final WorkoutDto workoutDto = new WorkoutDto();
-        workoutDto.setId(workoutId);
-        setGroupDto.setWorkout(workoutDto);
+        setGroupDto.setWorkout(new WorkoutDto(workoutId));
 
         return ResponseEntity.ok(this.setGroupService.createSetGroupInWorkout(setGroupDto));
         //TODO Validate
     }
 
     @PostMapping("/setGroups/{setGroupDestinationId}/replaceWith/setGroups/{setGroupSourceId}")
-    public ResponseEntity<SetGroupDto> replaceSetGroupSetsWithSetGroup(@PathVariable final Long setGroupDestinationId,
-                                                                       @PathVariable final Long setGroupSourceId)
+    public ResponseEntity<SetGroupDto> replaceSetGroupSetsWithSetGroup(@PathVariable final Long setGroupDestinationId, @PathVariable final Long setGroupSourceId)
             throws EntityNotFoundException, IllegalAccessException {
         return ResponseEntity.ok(this.setGroupService.replaceSetGroupSetsFromSetGroup(setGroupDestinationId, setGroupSourceId));
     }
@@ -83,6 +71,7 @@ public class SetGroupController {
     public ResponseEntity<SetGroupDto> putSetGroup(@PathVariable final Long setGroupId, @RequestBody final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException {
         setGroupDto.setId(setGroupId);
+
         return ResponseEntity.ok(this.setGroupService.updateSetGroup(setGroupDto));
         //TODO Validate
     }

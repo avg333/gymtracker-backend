@@ -38,9 +38,7 @@ public class SessionController {
     public ResponseEntity<SessionDto> postSession(@PathVariable final Long programId, @RequestBody final SessionDto sessionDto)
             throws EntityNotFoundException, IllegalAccessException {
         sessionDto.setId(null);
-        final ProgramDto programDto = new ProgramDto();
-        programDto.setId(programId);
-        sessionDto.setProgramDto(programDto);
+        sessionDto.setProgramDto(new ProgramDto(programId));
 
         return ResponseEntity.ok(this.sessionService.createSession(sessionDto));
         //TODO Validate

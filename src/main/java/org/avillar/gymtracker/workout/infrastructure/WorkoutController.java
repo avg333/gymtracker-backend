@@ -32,7 +32,7 @@ public class WorkoutController {
     @GetMapping("/users/{userId}/exercises/{exerciseId}/workouts/dates")
     public ResponseEntity<Map<Date, Long>> getAllUserWorkoutDatesWithExercise(@PathVariable final Long userId, @PathVariable final Long exerciseId)
             throws EntityNotFoundException, IllegalAccessException {
-        // TODO Mejorar URL
+        //TODO Mejorar URL
         return ResponseEntity.ok(this.workoutService.getAllUserWorkoutsWithExercise(userId, exerciseId));
     }
 
@@ -52,9 +52,7 @@ public class WorkoutController {
     public ResponseEntity<WorkoutDto> postWorkoutInUser(@PathVariable final Long userId, @RequestBody final WorkoutDto workoutDto)
             throws EntityNotFoundException, IllegalAccessException {
         workoutDto.setId(null);
-        final UserAppDto userAppDto = new UserAppDto();
-        userAppDto.setId(userId);
-        workoutDto.setUserApp(userAppDto);
+        workoutDto.setUserApp(new UserAppDto(userId));
 
         //TODO Contemplar validate
         return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto));
@@ -76,8 +74,9 @@ public class WorkoutController {
     public ResponseEntity<WorkoutDto> putWorkout(@PathVariable final Long workoutId, @RequestBody final WorkoutDto workoutDto)
             throws EntityNotFoundException, IllegalAccessException {
         workoutDto.setId(workoutId);
-        return ResponseEntity.ok(this.workoutService.updateWorkout(workoutDto));
+
         //TODO Contemplar validate
+        return ResponseEntity.ok(this.workoutService.updateWorkout(workoutDto));
     }
 
     @DeleteMapping("/workouts/{workoutId}")

@@ -24,4 +24,8 @@ public class UserAppDto {
     private GenderEnum gender;
     private ActivityLevelEnum activityLevel;
     private MultipartFile image;
+
+    public UserAppDto(Long id) {
+        this.id = id;
+    }
 }

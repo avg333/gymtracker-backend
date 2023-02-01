@@ -3,8 +3,6 @@ package org.avillar.gymtracker.setgroup.application;
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
-import org.avillar.gymtracker.exercise.domain.Exercise;
-import org.avillar.gymtracker.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.session.domain.SessionDao;
 import org.avillar.gymtracker.set.domain.SetDao;
@@ -14,14 +12,11 @@ import org.avillar.gymtracker.setgroup.application.dto.SetGroupValidator;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.sort.application.EntitySorter;
-import org.avillar.gymtracker.user.domain.UserApp;
-import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,26 +30,22 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     private final SetGroupDao setGroupDao;
     private final SessionDao sessionDao;
     private final WorkoutDao workoutDao;
+    private final SetDao setDao;
     private final SetGroupMapper setGroupMapper;
     private final SetGroupValidator setGroupValidator;
     private final EntitySorter entitySorter;
-    private final ExerciseDao exerciseDao;
-    private final UserDao userDao;
-    private final SetDao setDao;
 
     @Autowired
-    public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao,
+    public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao, SetDao setDao,
                                SetGroupMapper setGroupMapper, SetGroupValidator setGroupValidator,
-                               EntitySorter entitySorter, ExerciseDao exerciseDao, UserDao userDao, SetDao setDao) {
+                               EntitySorter entitySorter) {
         this.setGroupDao = setGroupDao;
         this.sessionDao = sessionDao;
         this.workoutDao = workoutDao;
+        this.setDao = setDao;
         this.setGroupMapper = setGroupMapper;
         this.setGroupValidator = setGroupValidator;
         this.entitySorter = entitySorter;
-        this.exerciseDao = exerciseDao;
-        this.userDao = userDao;
-        this.setDao = setDao;
     }
 
     /**
@@ -83,24 +74,6 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      * @ {@inheritDoc}
      */
     @Override
-    public SetGroupDto getLastTimeUserExerciseSetGroup(final Long userId, final Long exerciseId) throws IllegalAccessException {
-        final Exercise exercise = this.exerciseDao.findById(exerciseId)
-                .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId));
-        final UserApp userApp = this.userDao.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(UserApp.class, userId));
-
-        final List<SetGroup> setGroups = this.setGroupDao.findLastUserExerciseSetGroup(userApp, exercise);
-        if (CollectionUtils.isEmpty(setGroups)) {
-            throw new EntityNotFoundException(SetGroup.class, "x", "x");//TODO Arreglar
-        }
-        this.authService.checkAccess(setGroups.get(0));
-        return this.setGroupMapper.toDto(setGroups.get(0), -1);
-    }
-
-    /**
-     * @ {@inheritDoc}
-     */
-    @Override
     public SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
@@ -117,7 +90,6 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         if (!this.setGroupValidator.validate(setGroupDto, new HashMap<>()).isEmpty()) {
             throw new RuntimeException("El set esta mal formado");
         }// TODO Mejorar devolucion de errores
-
 
         final Workout workout = this.workoutDao.getReferenceById(setGroupDto.getWorkout().getId());
         this.authService.checkAccess(workout);
@@ -167,6 +139,9 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         return this.setGroupMapper.toDto(setGroup, -1);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
     public SetGroupDto replaceSetGroupSetsFromSetGroup(final Long setGroupDestinationId, final Long setGroupSourceId) throws IllegalAccessException {
@@ -179,7 +154,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         this.authService.checkAccess(setGroupSource);
 
         //TODO Mejorar
-        final var sets = new ArrayList<org.avillar.gymtracker.set.domain.Set>();
+        final var sets = new ArrayList<org.avillar.gymtracker.set.domain.Set>(setGroupSource.getSets().size());
         for (final var setDb : setGroupSource.getSets()) {
             final org.avillar.gymtracker.set.domain.Set set = new org.avillar.gymtracker.set.domain.Set();
             set.setSetGroup(setGroupDestination);

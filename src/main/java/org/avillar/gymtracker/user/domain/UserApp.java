@@ -11,6 +11,7 @@ import org.avillar.gymtracker.enums.domain.GenderEnum;
 import org.avillar.gymtracker.image.domain.Image;
 import org.avillar.gymtracker.measure.domain.Measure;
 import org.avillar.gymtracker.program.domain.Program;
+import org.avillar.gymtracker.settings.domain.Settings;
 import org.avillar.gymtracker.workout.domain.Workout;
 
 import java.util.Date;
@@ -42,6 +43,9 @@ public class UserApp extends BaseEntity {
     private Set<Workout> workouts = new HashSet<>();
     @OneToMany(mappedBy = "userApp", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Measure> measures = new HashSet<>();
+
+    @OneToOne(mappedBy = "userApp", orphanRemoval = true)
+    private Settings settings;
 
     public UserApp(Long id) {
         super(id);

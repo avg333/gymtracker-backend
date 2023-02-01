@@ -22,8 +22,8 @@ import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
+import org.avillar.gymtracker.workout.application.dto.WorkoutDtoValidator;
 import org.avillar.gymtracker.workout.application.dto.WorkoutMapper;
-import org.avillar.gymtracker.workout.application.dto.WorkoutValidator;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,24 +40,25 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
     private final WorkoutDao workoutDao;
     private final UserDao userDao;
-    private final WorkoutValidator workoutValidator;
-    private final WorkoutMapper workoutMapper;
-    private final ExerciseMapper exerciseMapper;
-    private final MuscleGroupMapper muscleGroupMapper;
     private final SetGroupDao setGroupDao;
     private final SetDao setDao;
     private final SessionDao sessionDao;
     private final ExerciseDao exerciseDao;
+    private final WorkoutMapper workoutMapper;
+    private final ExerciseMapper exerciseMapper;
+    private final MuscleGroupMapper muscleGroupMapper;
     private final SetGroupMapper setGroupMapper;
+    private final WorkoutDtoValidator workoutDtoValidator;
 
     @Autowired
-    public WorkoutServiceImpl(WorkoutDao workoutDao, UserDao userDao, WorkoutValidator workoutValidator,
+    public WorkoutServiceImpl(WorkoutDao workoutDao, UserDao userDao,
                               WorkoutMapper workoutMapper, ExerciseMapper exerciseMapper, SessionDao sessionDao,
                               MuscleGroupMapper muscleGroupMapper, SetGroupDao setGroupDao, SetDao setDao,
-                              ExerciseDao exerciseDao, SetGroupMapper setGroupMapper) {
+                              ExerciseDao exerciseDao, SetGroupMapper setGroupMapper,
+                              WorkoutDtoValidator workoutDtoValidator) {
         this.workoutDao = workoutDao;
         this.userDao = userDao;
-        this.workoutValidator = workoutValidator;
+        this.workoutDtoValidator = workoutDtoValidator;
         this.workoutMapper = workoutMapper;
         this.exerciseMapper = exerciseMapper;
         this.muscleGroupMapper = muscleGroupMapper;
@@ -194,9 +195,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     @Override
     @Transactional
     public WorkoutDto createWorkout(final WorkoutDto workoutDto) throws IllegalAccessException {
-        if (!this.workoutValidator.validate(workoutDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El workout esta mal formado");
-        }//TODO Validar
+        //TODO Validar
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(this.userDao.getReferenceById(workoutDto.getUserApp().getId()));
@@ -204,9 +203,8 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
         final int workoutsInDate = this.workoutDao.countByUserAppAndDate(workout.getUserApp(), workout.getDate());
         if (workoutsInDate > 0) {
-            throw new RuntimeException("Ya existe un workout ese dia!!!"); //TODO Mejorar
+            throw new RuntimeException("Ya existe un workout ese dia!!!"); //TODO Mover al validator
         }
-
 
         return this.workoutMapper.toDto(this.workoutDao.save(workout), -1);
     }
@@ -250,7 +248,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     }
 
     private void copySetGroupsToWorkout(final Workout workout, final java.util.Set<SetGroup> setGroupsSource) {
-        // TODO Mejorar esto
+        //TODO Mejorar esto
         final int listOrderOffset = workout.getSetGroups().size();
         final var setGroups = new ArrayList<SetGroup>();
         final var sets = new ArrayList<Set>();
@@ -283,12 +281,9 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     @Override
     @Transactional
     public WorkoutDto updateWorkout(final WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException {
-        if (!this.workoutValidator.validate(workoutDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El workout esta mal formado");
-        }//TODO Validar
+        //TODO Validar
 
-        final Workout workoutDb = this.workoutDao.findById(workoutDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutDto.getId()));
+        final Workout workoutDb = this.workoutDao.getReferenceById(workoutDto.getId());
         this.authService.checkAccess(workoutDb);
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);

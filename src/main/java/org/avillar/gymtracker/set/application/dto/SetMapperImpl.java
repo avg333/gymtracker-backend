@@ -47,9 +47,7 @@ public class SetMapperImpl implements SetMapper {
         setDto.setLastModifiedAt(set.getLastModifiedAt());
 
         if (depth != 0 && set.getSetGroup() != null && set.getSetGroup().getId() != null) {
-            final SetGroupDto setGroupDto = new SetGroupDto();
-            setGroupDto.setId(set.getSetGroup().getId());
-            setDto.setSetGroup(setGroupDto);
+            setDto.setSetGroup(new SetGroupDto(set.getSetGroup().getId()));
         }
 
         return setDto;

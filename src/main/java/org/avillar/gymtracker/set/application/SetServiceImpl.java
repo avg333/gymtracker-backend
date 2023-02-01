@@ -64,6 +64,28 @@ public class SetServiceImpl extends BaseService implements SetService {
      * @ {@inheritDoc}
      */
     @Override
+    public SetDto getSetDefaultDataForNewSet(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
+        final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
+                .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
+        this.authService.checkAccess(setGroup);
+
+        final List<Set> sets = this.setDao.findLastSetForExerciseAndUser(this.authService.getLoggedUser(), setGroup.getExercise(), setGroup);
+        if (!sets.isEmpty()) {
+            return this.setMapper.toDto(sets.get(0), -1);
+        }//TODO Mejorar esto
+    //FIXME Deberia devolver resultados solo sobre el ultimos setGroup
+        final List<Set> setsAux = this.setDao.findLastSetForExerciseAndUserAux(setGroup);
+        if (!setsAux.isEmpty()) {
+            return this.setMapper.toDto(setsAux.get(0), -1);
+        }
+
+        return new SetDto();
+    }
+
+    /**
+     * @ {@inheritDoc}
+     */
+    @Override
     @Transactional
     public SetDto createSet(final SetDto setDto) throws IllegalAccessException {
         if (!this.setValidator.validate(setDto, new HashMap<>()).isEmpty()) {
