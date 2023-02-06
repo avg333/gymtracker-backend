@@ -34,16 +34,19 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     private final SetDao setDao;
     private final SetGroupMapper setGroupMapper;
     private final EntitySorter entitySorter;
+    private final SetGroupDtoValidator setGroupDtoValidator;
 
     @Autowired
     public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao, SetDao setDao,
-                               SetGroupMapper setGroupMapper, EntitySorter entitySorter) {
+                               SetGroupMapper setGroupMapper, EntitySorter entitySorter,
+                               SetGroupDtoValidator setGroupDtoValidator) {
         this.setGroupDao = setGroupDao;
         this.sessionDao = sessionDao;
         this.workoutDao = workoutDao;
         this.setDao = setDao;
         this.setGroupMapper = setGroupMapper;
         this.entitySorter = entitySorter;
+        this.setGroupDtoValidator = setGroupDtoValidator;
     }
 
     /**
@@ -90,14 +93,13 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     public SetGroupDto createSetGroupInWorkout(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
-        dataBinder.addValidators(new SetGroupDtoValidator());
+        dataBinder.addValidators(setGroupDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());
         }
 
         final Workout workout = this.workoutDao.getReferenceById(setGroupDto.getWorkout().getId());
-        this.authService.checkAccess(workout);
 
         final SetGroup setGroup = this.setGroupMapper.toEntity(setGroupDto);
         final int setGroupsSize = this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout).size();
@@ -123,14 +125,13 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     public SetGroupDto createSetGroupInSession(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
-        dataBinder.addValidators(new SetGroupDtoValidator());
+        dataBinder.addValidators(setGroupDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());
         }
 
         final Session session = this.sessionDao.getReferenceById(setGroupDto.getSession().getId());
-        this.authService.checkAccess(session.getProgram());
 
         final SetGroup setGroup = this.setGroupMapper.toEntity(setGroupDto);
         final int setGroupsSize = this.setGroupDao.findBySessionOrderByListOrderAsc(session).size();
@@ -190,14 +191,13 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     public SetGroupDto updateSetGroup(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
-        dataBinder.addValidators(new SetGroupDtoValidator());
+        dataBinder.addValidators(setGroupDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());
         }
 
         final SetGroup setGroupDb = this.setGroupDao.getReferenceById(setGroupDto.getId());
-        this.authService.checkAccess(setGroupDb);
 
         final int oldPosition = setGroupDb.getListOrder();
 

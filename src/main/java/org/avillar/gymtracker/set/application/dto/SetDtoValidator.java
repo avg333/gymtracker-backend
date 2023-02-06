@@ -19,13 +19,16 @@ public class SetDtoValidator implements Validator {
     private static final double MAX_RIR = 5;
     private static final double MAX_WEIGHT = 2000;
 
-    @Autowired
-    private SetDao setDao;
-    @Autowired
-    private SetGroupDao setGroupDao;
-    @Autowired
-    private AuthService authService;
+    private final SetDao setDao;
+    private final SetGroupDao setGroupDao;
+    private final AuthService authService;
 
+    @Autowired
+    public SetDtoValidator(SetDao setDao, SetGroupDao setGroupDao, AuthService authService) {
+        this.setDao = setDao;
+        this.setGroupDao = setGroupDao;
+        this.authService = authService;
+    }
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -42,9 +45,9 @@ public class SetDtoValidator implements Validator {
         this.validateRir(setDto, errors);
         this.validateWeight(setDto, errors);
 
-        if(exists){
+        if (exists) {
             this.validateAccess(setDto, errors);
-        } else{
+        } else {
             this.validateSetGroup(setDto, errors);
         }
     }
@@ -91,7 +94,7 @@ public class SetDtoValidator implements Validator {
         }
     }
 
-    private void validateAccess(final SetDto setDto, final Errors errors){
+    private void validateAccess(final SetDto setDto, final Errors errors) {
         final String fieldName = "id";
         final Long setId = setDto.getId();
         if (!this.setDao.existsById(setId)) {
