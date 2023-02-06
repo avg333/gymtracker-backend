@@ -19,8 +19,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ApiError> handleBadForm(final BadFormException ex) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
-        apiError.addValidationError(ex.getBindingResult().getAllErrors());
-        //log.debug("No se ha encontrado la entidad {} con el id {}", ex.getClassName(), ex.getId());
+        apiError.addValidationError(ex.getObjectErrors());
+        log.debug("Clase {} mal formada. Nº de errores: {}", ex.getClassName(), ex.getObjectErrors().size());
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 

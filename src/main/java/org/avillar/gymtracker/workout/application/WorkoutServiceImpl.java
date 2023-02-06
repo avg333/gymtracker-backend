@@ -50,12 +50,14 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     private final ExerciseMapper exerciseMapper;
     private final MuscleGroupMapper muscleGroupMapper;
     private final SetGroupMapper setGroupMapper;
+    private final WorkoutDtoValidator workoutDtoValidator;
 
     @Autowired
     public WorkoutServiceImpl(WorkoutDao workoutDao, UserDao userDao,
                               WorkoutMapper workoutMapper, ExerciseMapper exerciseMapper, SessionDao sessionDao,
                               MuscleGroupMapper muscleGroupMapper, SetGroupDao setGroupDao, SetDao setDao,
-                              ExerciseDao exerciseDao, SetGroupMapper setGroupMapper) {
+                              ExerciseDao exerciseDao, SetGroupMapper setGroupMapper,
+                              WorkoutDtoValidator workoutDtoValidator) {
         this.workoutDao = workoutDao;
         this.userDao = userDao;
         this.workoutMapper = workoutMapper;
@@ -66,6 +68,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         this.sessionDao = sessionDao;
         this.exerciseDao = exerciseDao;
         this.setGroupMapper = setGroupMapper;
+        this.workoutDtoValidator = workoutDtoValidator;
     }
 
     /**
@@ -196,7 +199,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     public WorkoutDto createWorkout(final WorkoutDto workoutDto)
             throws IllegalAccessException, EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(workoutDto);
-        dataBinder.addValidators(new WorkoutDtoValidator());
+        dataBinder.addValidators(workoutDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(WorkoutDto.class, dataBinder.getBindingResult());
@@ -204,7 +207,6 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(this.userDao.getReferenceById(workoutDto.getUserApp().getId()));
-        this.authService.checkAccess(workout);
 
         return this.workoutMapper.toDto(this.workoutDao.save(workout), -1);
     }
@@ -285,14 +287,13 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     public WorkoutDto updateWorkout(final WorkoutDto workoutDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(workoutDto);
-        dataBinder.addValidators(new WorkoutDtoValidator());
+        dataBinder.addValidators(workoutDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(WorkoutDto.class, dataBinder.getBindingResult());
         }
 
         final Workout workoutDb = this.workoutDao.getReferenceById(workoutDto.getId());
-        this.authService.checkAccess(workoutDb);
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(workoutDb.getUserApp());

@@ -49,19 +49,14 @@ public class ApiError {
         subErrors.add(subError);
     }
 
-    private void addValidationError(String object, String field, Object rejectedValue, String message) {
-        addSubError(new ApiValidationError(object, field, rejectedValue, message));
-    }
-
-    private void addValidationError(String object, String message) {
-        addSubError(new ApiValidationError(object, message));
+    private void addValidationError(String field, String errorCode, String defaultMessage) {
+        addSubError(new ApiValidationError(field, errorCode, defaultMessage));
     }
 
     private void addValidationError(ObjectError objectError) {
         this.addValidationError(
-                objectError.getObjectName(),
+                ((FieldError) objectError).getField(),
                 objectError.getCode(),
-                null,
                 objectError.getDefaultMessage());
     }
 
