@@ -27,13 +27,16 @@ public class SetServiceImpl extends BaseService implements SetService {
     private final SetGroupDao setGroupDao;
     private final SetMapper setMapper;
     private final EntitySorter entitySorter;
+    private final SetDtoValidator setDtoValidator;
 
     @Autowired
-    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper, EntitySorter entitySorter) {
+    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper, EntitySorter entitySorter,
+                          SetDtoValidator setDtoValidator) {
         this.setDao = setDao;
         this.setGroupDao = setGroupDao;
         this.setMapper = setMapper;
         this.entitySorter = entitySorter;
+        this.setDtoValidator = setDtoValidator;
     }
 
     /**
@@ -91,7 +94,7 @@ public class SetServiceImpl extends BaseService implements SetService {
     public SetDto createSet(final SetDto setDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setDto);
-        dataBinder.addValidators(new SetDtoValidator());
+        dataBinder.addValidators(this.setDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(SetDto.class, dataBinder.getBindingResult());
@@ -100,7 +103,6 @@ public class SetServiceImpl extends BaseService implements SetService {
         final SetGroup setGroup = this.setGroupDao.getReferenceById(setDto.getSetGroup().getId());
 
         final Set set = this.setMapper.toEntity(setDto);
-        this.authService.checkAccess(set.getSetGroup());
 
         final int setsSize = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup).size();
         if (null == set.getListOrder() || set.getListOrder() > setsSize || 0 > set.getListOrder()) {
@@ -125,14 +127,13 @@ public class SetServiceImpl extends BaseService implements SetService {
     public SetDto updateSet(final SetDto setDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setDto);
-        dataBinder.addValidators(new SetDtoValidator());
+        dataBinder.addValidators(this.setDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(SetDto.class, dataBinder.getBindingResult());
         }
 
         final Set setDb = this.setDao.getReferenceById(setDto.getId());
-        this.authService.checkAccess(setDb.getSetGroup());
 
         final Set set = this.setMapper.toEntity(setDto);
         set.setSetGroup(setDb.getSetGroup());
