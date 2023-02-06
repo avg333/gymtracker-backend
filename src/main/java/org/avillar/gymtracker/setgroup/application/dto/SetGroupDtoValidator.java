@@ -93,47 +93,53 @@ public class SetGroupDtoValidator implements Validator {
     }
 
     private void validateParent(final SetGroupDto setGroupDto, final Errors errors) {
-        final String fieldName = "exercise";
+        final String fieldName = "parent";
         final SessionDto sessionDto = setGroupDto.getSession();
         final WorkoutDto workoutDto = setGroupDto.getWorkout();
         final boolean existsSession = sessionDto != null && sessionDto.getId() != null && sessionDto.getId() > 0L;
         final boolean existsWorkout = workoutDto != null && workoutDto.getId() != null && workoutDto.getId() > 0L;
-
-        final String notExistsErrorCode = "field.parent.notExists";
 
         if (existsSession && existsWorkout) {
             errors.rejectValue(fieldName, "field.parent.multiple", "El setGroup no puede tener session y workout simultaneamente");
             return;
         }
         if (!existsSession && !existsWorkout) {
-            errors.rejectValue(fieldName, notExistsErrorCode, "El setGroup debe tener una session o un workout");
-            return;
-        }
-
-        if (existsSession && !this.sessionDao.existsById(sessionDto.getId())) {
-            errors.rejectValue(fieldName, notExistsErrorCode, "La session especificada no existe");
-            return;
-        }
-
-        if (existsWorkout && !this.workoutDao.existsById(workoutDto.getId())) {
-            errors.rejectValue(fieldName, notExistsErrorCode, "El workout especificada no existe");
+            errors.rejectValue(fieldName, "field.parent.notExists", "El setGroup debe tener una session o un workout");
             return;
         }
 
         if (existsSession) {
-            try {
-                this.authService.checkAccess(this.sessionDao.getReferenceById(sessionDto.getId()).getProgram());
-            } catch (IllegalAccessException e) {
-                errors.rejectValue(fieldName, "field.session.notPermission", "Acceso a la session especificada no permitido");
-            }
+            this.validateSession(sessionDto, errors);
+        } else {
+            this.validateWorkout(workoutDto, errors);
+        }
+    }
+
+    private void validateSession(final SessionDto sessionDto, final Errors errors) {
+        final String fieldName = "session";
+        if (!this.sessionDao.existsById(sessionDto.getId())) {
+            errors.rejectValue(fieldName, "field.session.notExists", "La session especificada no existe");
+            return;
         }
 
-        if (existsWorkout) {
-            try {
-                this.authService.checkAccess(this.workoutDao.getReferenceById(workoutDto.getId()));
-            } catch (IllegalAccessException e) {
-                errors.rejectValue(fieldName, "field.workout.notPermission", "Acceso al workout especificado no permitido");
-            }
+        try {
+            this.authService.checkAccess(this.sessionDao.getReferenceById(sessionDto.getId()).getProgram());
+        } catch (IllegalAccessException e) {
+            errors.rejectValue(fieldName, "field.session.notPermission", "Acceso a la session especificada no permitido");
+        }
+    }
+
+    private void validateWorkout(final WorkoutDto workoutDto, final Errors errors) {
+        final String fieldName = "workout";
+        if (!this.workoutDao.existsById(workoutDto.getId())) {
+            errors.rejectValue(fieldName, "field.workout.notExists", "El workout especificado no existe");
+            return;
+        }
+
+        try {
+            this.authService.checkAccess(this.workoutDao.getReferenceById(workoutDto.getId()));
+        } catch (IllegalAccessException e) {
+            errors.rejectValue(fieldName, "field.workout.notPermission", "Acceso al workout especificado no permitido");
         }
     }
 

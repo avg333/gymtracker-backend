@@ -2,6 +2,7 @@ package org.avillar.gymtracker.errors.infrastructure;
 
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.errors.application.ApiError;
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(BadFormException.class)
+    protected ResponseEntity<ApiError> handleBadForm(final BadFormException ex) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        apiError.addValidationError(ex.getBindingResult().getAllErrors());
+        //log.debug("No se ha encontrado la entidad {} con el id {}", ex.getClassName(), ex.getId());
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<ApiError> handleEntityNotFound(final EntityNotFoundException ex) {
