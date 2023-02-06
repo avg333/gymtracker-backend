@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.program.infrastructure;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.program.application.ProgramDto;
@@ -49,21 +50,19 @@ public class ProgramController {
 
     @PostMapping("/users/{userId}/programs")
     public ResponseEntity<ProgramDto> postProgram(@PathVariable final Long userId, @RequestBody final ProgramDto programDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         programDto.setId(null);
         programDto.setUserAppId(userId);
 
         return ResponseEntity.ok(this.programService.createProgram(programDto));
-        //TODO Validate
     }
 
     @PutMapping("/programs/{programId}")
     public ResponseEntity<ProgramDto> putProgram(@PathVariable final Long programId, @RequestBody final ProgramDto programDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         programDto.setId(programId);
 
         return ResponseEntity.ok(this.programService.updateProgram(programDto));
-        //TODO Validate
     }
 
     @DeleteMapping("/programs/{programId}")
@@ -72,4 +71,5 @@ public class ProgramController {
         this.programService.deleteProgram(programId);
         return ResponseEntity.ok().build();
     }
+
 }

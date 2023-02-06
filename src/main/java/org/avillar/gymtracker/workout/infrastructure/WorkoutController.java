@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workout.infrastructure;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.user.application.UserAppDto;
@@ -50,11 +51,10 @@ public class WorkoutController {
 
     @PostMapping("/users/{userId}/workouts")
     public ResponseEntity<WorkoutDto> postWorkoutInUser(@PathVariable final Long userId, @RequestBody final WorkoutDto workoutDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         workoutDto.setId(null);
         workoutDto.setUserApp(new UserAppDto(userId));
 
-        //TODO Contemplar validate
         return ResponseEntity.ok(this.workoutService.createWorkout(workoutDto));
     }
 
@@ -72,10 +72,9 @@ public class WorkoutController {
 
     @PutMapping("/workouts/{workoutId}")
     public ResponseEntity<WorkoutDto> putWorkout(@PathVariable final Long workoutId, @RequestBody final WorkoutDto workoutDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         workoutDto.setId(workoutId);
 
-        //TODO Contemplar validate
         return ResponseEntity.ok(this.workoutService.updateWorkout(workoutDto));
     }
 

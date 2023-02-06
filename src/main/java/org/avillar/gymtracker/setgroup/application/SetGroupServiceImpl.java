@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.setgroup.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.session.domain.Session;
@@ -52,7 +53,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      * @ {@inheritDoc}
      */
     @Override
-    public List<SetGroupDto> getAllSessionSetGroups(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
+    public List<SetGroupDto> getAllSessionSetGroups(final Long sessionId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionDao.findById(sessionId)
                 .orElseThrow(() -> new EntityNotFoundException(Session.class, sessionId));
         this.authService.checkAccess(session.getProgram());
@@ -63,7 +65,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      * @ {@inheritDoc}
      */
     @Override
-    public List<SetGroupDto> getAllWorkoutSetGroups(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
+    public List<SetGroupDto> getAllWorkoutSetGroups(final Long workoutId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Workout workout = this.workoutDao.findById(workoutId)
                 .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
         this.authService.checkAccess(workout);
@@ -74,7 +77,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      * @ {@inheritDoc}
      */
     @Override
-    public SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
+    public SetGroupDto getSetGroup(final Long setGroupId)
+            throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
@@ -86,10 +90,11 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      */
     @Override
     @Transactional
-    public SetGroupDto createSetGroupInWorkout(final SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
+    public SetGroupDto createSetGroupInWorkout(final SetGroupDto setGroupDto)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         if (!this.setGroupValidator.validate(setGroupDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El set esta mal formado");
-        }// TODO Mejorar devolucion de errores
+            throw new BadFormException("El set esta mal formado");
+        }// TODO Validate
 
         final Workout workout = this.workoutDao.getReferenceById(setGroupDto.getWorkout().getId());
         this.authService.checkAccess(workout);
@@ -115,10 +120,11 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      */
     @Override
     @Transactional
-    public SetGroupDto createSetGroupInSession(final SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
+    public SetGroupDto createSetGroupInSession(final SetGroupDto setGroupDto)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         if (!this.setGroupValidator.validate(setGroupDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El set esta mal formado");
-        }// TODO Mejorar devolucion de errores
+            throw new BadFormException("El set esta mal formado");
+        }// TODO Validate
 
         final Session session = this.sessionDao.getReferenceById(setGroupDto.getSession().getId());
         this.authService.checkAccess(session.getProgram());
@@ -177,14 +183,13 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      */
     @Override
     @Transactional
-    public SetGroupDto updateSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException {
+    public SetGroupDto updateSetGroup(final SetGroupDto setGroupDto)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         if (!this.setGroupValidator.validate(setGroupDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El set esta mal formado");
-        }// TODO Mejorar devolucion de errores
+            throw new BadFormException("El set esta mal formado");
+        }// TODO Validar
 
-
-        final SetGroup setGroupDb = this.setGroupDao.findById(setGroupDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupDto.getId()));
+        final SetGroup setGroupDb = this.setGroupDao.getReferenceById(setGroupDto.getId());
         this.authService.checkAccess(setGroupDb);
 
         final int oldPosition = setGroupDb.getListOrder();
@@ -193,7 +198,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
 
         if (setGroupDb.getSession() != null) {
             setGroup.setSession(setGroupDb.getSession());
-        } else {
+        } else if (setGroupDb.getWorkout() != null) {
             setGroup.setWorkout(setGroupDb.getWorkout());
         }
 
@@ -214,7 +219,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      */
     @Override
     @Transactional
-    public void deleteSetGroup(final Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
+    public void deleteSetGroup(final Long setGroupId)
+            throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);

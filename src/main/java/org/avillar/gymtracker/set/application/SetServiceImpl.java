@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.set.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.set.application.dto.SetDto;
@@ -42,7 +43,8 @@ public class SetServiceImpl extends BaseService implements SetService {
      * @ {@inheritDoc}
      */
     @Override
-    public List<SetDto> getAllSetGroupSets(final Long setGroupId) throws EntityNotFoundException, IllegalAccessException {
+    public List<SetDto> getAllSetGroupSets(final Long setGroupId)
+            throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
@@ -53,7 +55,8 @@ public class SetServiceImpl extends BaseService implements SetService {
      * @ {@inheritDoc}
      */
     @Override
-    public SetDto getSet(final Long setId) throws EntityNotFoundException, IllegalAccessException {
+    public SetDto getSet(final Long setId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Set set = this.setDao.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException(Set.class, setId));
         this.authService.checkAccess(set.getSetGroup());
@@ -64,7 +67,8 @@ public class SetServiceImpl extends BaseService implements SetService {
      * @ {@inheritDoc}
      */
     @Override
-    public SetDto getSetDefaultDataForNewSet(Long setGroupId, Integer setNumber) throws EntityNotFoundException, IllegalAccessException {
+    public SetDto getSetDefaultDataForNewSet(Long setGroupId, Integer setNumber)
+            throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
@@ -87,10 +91,11 @@ public class SetServiceImpl extends BaseService implements SetService {
      */
     @Override
     @Transactional
-    public SetDto createSet(final SetDto setDto) throws IllegalAccessException {
+    public SetDto createSet(final SetDto setDto)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         if (!this.setValidator.validate(setDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El set esta mal formado");
-        }// TODO Mejorar devolucion de errores
+            throw new BadFormException("El set esta mal formado");
+        }// TODO Validar
 
         final SetGroup setGroup = this.setGroupDao.getReferenceById(setDto.getSetGroup().getId());
 
@@ -117,10 +122,11 @@ public class SetServiceImpl extends BaseService implements SetService {
      */
     @Override
     @Transactional
-    public SetDto updateSet(final SetDto setDto) throws IllegalAccessException {
+    public SetDto updateSet(final SetDto setDto)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         if (!this.setValidator.validate(setDto, new HashMap<>()).isEmpty()) {
-            throw new RuntimeException("El set esta mal formado");
-        }// TODO Mejorar devolucion de errores
+            throw new BadFormException("El set esta mal formado");
+        }// TODO Validar
 
 
         final Set setDb = this.setDao.getReferenceById(setDto.getId());
@@ -145,7 +151,8 @@ public class SetServiceImpl extends BaseService implements SetService {
      */
     @Override
     @Transactional
-    public void deleteSet(final Long setId) throws EntityNotFoundException, IllegalAccessException {
+    public void deleteSet(final Long setId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Set set = this.setDao.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException(Set.class, setId));
         this.authService.checkAccess(set.getSetGroup());

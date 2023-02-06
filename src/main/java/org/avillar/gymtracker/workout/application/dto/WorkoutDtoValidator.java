@@ -25,21 +25,6 @@ public class WorkoutDtoValidator implements Validator {
         this.workoutDao = workoutDao;
     }
 
-    @Override
-    public boolean supports(Class<?> clazz) {
-        return WorkoutDto.class.equals(clazz);
-    }
-
-    @Override
-    public void validate(Object target, Errors errors) {
-        final WorkoutDto workoutDto = (WorkoutDto) target;
-        validateDate(workoutDto, errors);
-        validateDescription(workoutDto, errors);
-        if (workoutDto.getId() == null) {
-            validateUser(workoutDto, errors);
-        }
-    }
-
     private static void validateDescription(final WorkoutDto workoutDto, final Errors errors) {
         final String fieldName = "description";
         final String description = workoutDto.getDescription();
@@ -54,6 +39,21 @@ public class WorkoutDtoValidator implements Validator {
         if (date == null) {
             errors.rejectValue(fieldName, "103", "La fecha del workout no es valida");
         } //TODO Añadir fecha maxima y minima
+    }
+
+    @Override
+    public boolean supports(Class<?> clazz) {
+        return WorkoutDto.class.equals(clazz);
+    }
+
+    @Override
+    public void validate(Object target, Errors errors) {
+        final WorkoutDto workoutDto = (WorkoutDto) target;
+        validateDate(workoutDto, errors);
+        validateDescription(workoutDto, errors);
+        if (workoutDto.getId() == null) {
+            validateUser(workoutDto, errors);
+        }
     }
 
     private void validateUser(final WorkoutDto workoutDto, final Errors errors) {

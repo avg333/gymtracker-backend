@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.session.infrastructure;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.program.application.ProgramDto;
@@ -36,7 +37,7 @@ public class SessionController {
 
     @PostMapping("/programs/{programId}/sessions")
     public ResponseEntity<SessionDto> postSession(@PathVariable final Long programId, @RequestBody final SessionDto sessionDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         sessionDto.setId(null);
         sessionDto.setProgramDto(new ProgramDto(programId));
 
@@ -46,11 +47,10 @@ public class SessionController {
 
     @PutMapping("/sessions/{sessionId}")
     public ResponseEntity<SessionDto> putSession(@PathVariable final Long sessionId, @RequestBody final SessionDto sessionDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         sessionDto.setId(sessionId);
 
         return ResponseEntity.ok(this.sessionService.updateSession(sessionDto));
-        //TODO Validate
     }
 
     @DeleteMapping("/sessions/{sessionId}")
@@ -59,4 +59,5 @@ public class SessionController {
         this.sessionService.deleteSession(sessionId);
         return ResponseEntity.ok().build();
     }
+
 }

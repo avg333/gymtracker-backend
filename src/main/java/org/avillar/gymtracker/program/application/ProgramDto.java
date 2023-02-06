@@ -9,10 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class ProgramDto {
 
-    public ProgramDto(Long id) {
-        this.id = id;
-    }
-
     private Long id;
     private String name;
     private String description;
@@ -21,13 +17,15 @@ public class ProgramDto {
     private Boolean favourite = false;
     private Long userAppId;
     private MultipartFile image;
-    //sessions
-
     private int sessionNumber;
+    //sessions
     private int averageVolumePerMuscleGroup;
     private int averageVolumePerSession;
     private int averageExercisesNumberPerSession;
     private String ownerName;
+    public ProgramDto(Long id) {
+        this.id = id;
+    }
 
 
 }

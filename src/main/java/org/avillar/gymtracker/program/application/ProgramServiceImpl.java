@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.program.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.program.domain.Program;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,12 +35,15 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
      * @ {@inheritDoc}
      */
     @Override
-    public long getAllUserProgramsSize(final Long userId) throws EntityNotFoundException, IllegalAccessException {
+    public long getAllUserProgramsSize(final Long userId)
+            throws EntityNotFoundException, IllegalAccessException {
         final UserApp userApp = this.userDao.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(UserApp.class, userId));
+
         final Program program = new Program();
         program.setUserApp(userApp);
         this.authService.checkAccess(program);
+
         return this.programDao.countByUserApp(userApp);
     }
 
@@ -48,25 +51,27 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
      * @ {@inheritDoc}
      */
     @Override
-    public List<ProgramDto> getAllUserPrograms(final Long userId, final Pageable pageable) throws EntityNotFoundException, IllegalAccessException {
+    public List<ProgramDto> getAllUserPrograms(final Long userId, final Pageable pageable)
+            throws EntityNotFoundException, IllegalAccessException {
         final UserApp userApp = this.userDao.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(UserApp.class, userId));
-        final List<Program> programs = this.programDao.findByUserApp(userApp, pageable);
-        final List<ProgramDto> programDtos = new ArrayList<>(programs.size());
 
-        for (final Program program : programs) {
-            this.authService.checkAccess(program);
-            programDtos.add(this.volumeCalculatorUtils.calculateProgramVolume(program));
-        }
+        final Program program = new Program();
+        program.setUserApp(userApp);
+        this.authService.checkAccess(program);
 
-        return programDtos;
+        return this.programDao.findByUserApp(userApp, pageable)
+                .stream()
+                .map(programAux -> this.volumeCalculatorUtils.calculateProgramVolume(program))
+                .toList();
     }
 
     /**
      * @ {@inheritDoc}
      */
     @Override
-    public ProgramDto getProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
+    public ProgramDto getProgram(final Long programId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Program program = this.programDao.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(Program.class, programId));
         this.authService.checkAccess(program);
@@ -78,7 +83,8 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
      */
     @Override
     @Transactional
-    public ProgramDto createProgram(final ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException {
+    public ProgramDto createProgram(final ProgramDto programDto)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final UserApp userApp = this.userDao.findById(programDto.getUserAppId()).orElseThrow(() ->
                 new EntityNotFoundException(UserApp.class, programDto.getUserAppId()));
 
@@ -94,7 +100,8 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
      */
     @Override
     @Transactional
-    public ProgramDto updateProgram(final ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException {
+    public ProgramDto updateProgram(final ProgramDto programDto)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         //TODO Validar programDto
         final Program programDb = this.programDao.findById(programDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(Program.class, programDto.getId()));
@@ -109,7 +116,8 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
      */
     @Override
     @Transactional
-    public void deleteProgram(final Long programId) throws EntityNotFoundException, IllegalAccessException {
+    public void deleteProgram(final Long programId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Program program = this.programDao.findById(programId)
                 .orElseThrow(() -> new EntityNotFoundException(Program.class, programId));
         this.authService.checkAccess(program);

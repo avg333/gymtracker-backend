@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.set.infrastructure;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.set.application.SetService;
@@ -37,26 +38,25 @@ public class SetController {
     @GetMapping("setGroups/{setGroupId}/sets/newSet/{setNumber}")
     public ResponseEntity<SetDto> getSetDefaultDataForNewSet(@PathVariable final Long setGroupId, @PathVariable final Integer setNumber)
             throws EntityNotFoundException, IllegalAccessException {
+        //TODO Mejorar URL
         return ResponseEntity.ok(this.setService.getSetDefaultDataForNewSet(setGroupId, setNumber));
     }
 
     @PostMapping("setGroups/{setGroupId}/sets")
     public ResponseEntity<SetDto> postSet(@PathVariable final Long setGroupId, @RequestBody final SetDto setDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         setDto.setSetGroup(new SetGroupDto(setGroupId));
         setDto.setId(null);
 
-        // TODO Validate
         return ResponseEntity.ok(this.setService.createSet(setDto));
     }
 
     @PutMapping("sets/{setId}")
     public ResponseEntity<SetDto> updateSet(@PathVariable final Long setId, @RequestBody final SetDto setDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         setDto.setId(setId);
 
         return ResponseEntity.ok(this.setService.updateSet(setDto));
-        // TODO Validate
     }
 
     @DeleteMapping("sets/{setId}")
@@ -65,4 +65,5 @@ public class SetController {
         this.setService.deleteSet(setId);
         return ResponseEntity.ok().build();
     }
+
 }

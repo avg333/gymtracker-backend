@@ -2,6 +2,7 @@ package org.avillar.gymtracker.workout.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.base.application.VolumeConstants;
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
@@ -190,7 +191,8 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
      */
     @Override
     @Transactional
-    public WorkoutDto createWorkout(final WorkoutDto workoutDto) throws IllegalAccessException {
+    public WorkoutDto createWorkout(final WorkoutDto workoutDto)
+            throws IllegalAccessException, EntityNotFoundException, BadFormException {
         //TODO Validar
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
@@ -210,13 +212,14 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
      */
     @Override
     @Transactional
-    public WorkoutDto addSetGroupsToWorkoutFromWorkout(final Long workoutDestinationId, final Long workoutSourceId) throws IllegalAccessException {
+    public WorkoutDto addSetGroupsToWorkoutFromWorkout(final Long workoutDestinationId, final Long workoutSourceId)
+            throws IllegalAccessException, EntityNotFoundException {
         final Workout workoutSource = this.workoutDao.findById(workoutSourceId)
                 .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutSourceId));
-        this.authService.checkAccess(workoutSource);
-
         final Workout workoutDestination = this.workoutDao.findById(workoutDestinationId)
                 .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutDestinationId));
+
+        this.authService.checkAccess(workoutSource);
         this.authService.checkAccess(workoutDestination);
 
         this.copySetGroupsToWorkout(workoutDestination, workoutSource.getSetGroups());
@@ -229,13 +232,14 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
      */
     @Override
     @Transactional
-    public WorkoutDto addSetGroupsToWorkoutFromSession(final Long workoutDestinationId, final Long sessionSourceId) throws IllegalAccessException {
+    public WorkoutDto addSetGroupsToWorkoutFromSession(final Long workoutDestinationId, final Long sessionSourceId)
+            throws IllegalAccessException, EntityNotFoundException {
         final Session sessionSource = this.sessionDao.findById(sessionSourceId)
                 .orElseThrow(() -> new EntityNotFoundException(Session.class, sessionSourceId));
-        this.authService.checkAccess(sessionSource.getProgram());
-
         final Workout workoutDestination = this.workoutDao.findById(workoutDestinationId)
                 .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutDestinationId));
+
+        this.authService.checkAccess(sessionSource.getProgram());
         this.authService.checkAccess(workoutDestination);
 
         this.copySetGroupsToWorkout(workoutDestination, sessionSource.getSetGroups());
@@ -276,14 +280,16 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
      */
     @Override
     @Transactional
-    public WorkoutDto updateWorkout(final WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException {
-        //TODO Validar
+    public WorkoutDto updateWorkout(final WorkoutDto workoutDto)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+        //TODO Validar BadFormException
 
         final Workout workoutDb = this.workoutDao.getReferenceById(workoutDto.getId());
         this.authService.checkAccess(workoutDb);
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(workoutDb.getUserApp());
+
         return this.workoutMapper.toDto(this.workoutDao.save(workout), -1);
     }
 
@@ -292,7 +298,8 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
      */
     @Override
     @Transactional
-    public void deleteWorkout(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
+    public void deleteWorkout(final Long workoutId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Workout workout = this.workoutDao.findById(workoutId)
                 .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
         this.authService.checkAccess(workout);

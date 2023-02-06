@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.setgroup.infrastructure;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.session.application.dto.SessionDto;
@@ -43,22 +44,20 @@ public class SetGroupController {
 
     @PostMapping("/sessions/{sessionId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInSession(@PathVariable final Long sessionId, @RequestBody final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         setGroupDto.setId(null);
         setGroupDto.setSession(new SessionDto(sessionId));
 
         return ResponseEntity.ok(this.setGroupService.createSetGroupInSession(setGroupDto));
-        //TODO Validate
     }
 
     @PostMapping("/workouts/{workoutId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInWorkout(@PathVariable final Long workoutId, @RequestBody final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         setGroupDto.setId(null);
         setGroupDto.setWorkout(new WorkoutDto(workoutId));
 
         return ResponseEntity.ok(this.setGroupService.createSetGroupInWorkout(setGroupDto));
-        //TODO Validate
     }
 
     @PostMapping("/setGroups/{setGroupDestinationId}/replaceWith/setGroups/{setGroupSourceId}")
@@ -69,11 +68,10 @@ public class SetGroupController {
 
     @PutMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> putSetGroup(@PathVariable final Long setGroupId, @RequestBody final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException {
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
         setGroupDto.setId(setGroupId);
 
         return ResponseEntity.ok(this.setGroupService.updateSetGroup(setGroupDto));
-        //TODO Validate
     }
 
     @DeleteMapping("/setGroups/{setGroupId}")

@@ -82,11 +82,11 @@ public class DataLoader implements ApplicationRunner {
         final UserApp user = this.userDao.save(new UserApp(
                 "chema", new BCryptPasswordEncoder().encode("chema69"), null, "Chema",
                 "Garcia", "Romero", null, GenderEnum.MALE, ActivityLevelEnum.EXTREME,
-                null, null, null, null,null));
+                null, null, null, null, null));
         this.userDao.save(new UserApp(
                 "alex", new BCryptPasswordEncoder().encode("alex69"), null, "Alex",
                 "Garcia", "Fernandez", null, GenderEnum.FEMALE, ActivityLevelEnum.MODERATE,
-                null, null, null, null,null));
+                null, null, null, null, null));
         LOGGER.info("Creados dos usuarios");
 
         this.createMeasures(user);

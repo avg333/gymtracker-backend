@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.session.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.program.domain.Program;
@@ -36,6 +37,9 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         this.sessionMapper = sessionMapper;
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     public List<SessionDto> getAllProgramSessions(final Long programId) throws EntityNotFoundException, IllegalAccessException {
         final Program program = this.programDao.findById(programId)
@@ -45,6 +49,9 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         return this.sessionMapper.toDtos(this.sessionDao.findByProgramOrderByListOrder(program), true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     public SessionDto getSession(final Long sessionId) throws EntityNotFoundException, IllegalAccessException {
         final Session session = this.sessionDao.findById(sessionId)
@@ -53,12 +60,14 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         return this.sessionMapper.toDto(session, true);
     }
 
+    /**
+     * @ {@inheritDoc}
+     */
     @Override
     @Transactional
-    public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
+    public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException {
         //TODO Validar sessionDto
-        final Program program = this.programDao.findById(sessionDto.getProgramDto().getId())
-                .orElseThrow(() -> new EntityNotFoundException(Program.class, sessionDto.getProgramDto().getId()));
+        final Program program = this.programDao.getReferenceById(sessionDto.getProgramDto().getId());
         this.authService.checkAccess(program);
         final Session session = this.sessionMapper.toEntity(sessionDto);
 
@@ -82,15 +91,14 @@ public class SessionServiceImpl extends BaseService implements SessionService {
      */
     @Override
     @Transactional
-    public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException {
+    public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException {
         //TODO Validar sessionDto
-        final Session sessionDb = this.sessionDao.findById(sessionDto.getId()).orElseThrow(()
-                -> new EntityNotFoundException(Session.class, sessionDto.getId()));
+        final Session sessionDb = this.sessionDao.getReferenceById(sessionDto.getId());
         this.authService.checkAccess(sessionDb.getProgram());
-        final Program program = this.programDao.findById(sessionDto.getProgramDto().getId()).orElseThrow(()
-                -> new EntityNotFoundException(Program.class, sessionDto.getProgramDto().getId()));
 
+        final Program program = this.programDao.getReferenceById(sessionDto.getProgramDto().getId());
         this.authService.checkAccess(program);
+
         final Session session = this.sessionMapper.toEntity(sessionDto);
         this.authService.checkAccess(sessionDb.getProgram());
 

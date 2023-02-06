@@ -4,12 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.errors.application.ApiError;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import org.springframework.http.HttpStatus;
 
 @Slf4j
 @ControllerAdvice

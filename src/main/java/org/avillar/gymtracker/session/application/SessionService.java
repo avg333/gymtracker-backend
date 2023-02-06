@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.session.application;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.session.application.dto.SessionDto;
@@ -29,7 +30,7 @@ public interface SessionService {
      * @throws EntityNotFoundException Se genera si no existe una entidad padre con ese ID
      * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    SessionDto createSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException;
+    SessionDto createSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
     /**
      * Actualiza la entidad con el ID del DTO a los campos del DTO si lo solicita su usuario propietario o un admin
@@ -39,7 +40,7 @@ public interface SessionService {
      * @throws EntityNotFoundException Se genera si no existe una entidad con ese ID
      * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    SessionDto updateSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException;
+    SessionDto updateSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
     /**
      * Elimina la entidad con el ID indicado

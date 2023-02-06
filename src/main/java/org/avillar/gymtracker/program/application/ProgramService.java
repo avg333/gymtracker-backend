@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.program.application;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ public interface ProgramService {
      * @param programDto DTO de la entidad a crear
      * @return DTO de la entidad creada
      */
-    ProgramDto createProgram(ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException;
+    ProgramDto createProgram(ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
     /**
      * Actualiza la entidad con el ID del DTO a los campos del DTO si lo solicita su usuario propietario o un admin
@@ -38,7 +39,7 @@ public interface ProgramService {
      * @throws EntityNotFoundException Se genera si no existe una entidad con ese ID
      * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    ProgramDto updateProgram(ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException;
+    ProgramDto updateProgram(ProgramDto programDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
     /**
      * Elimina la entidad con el ID indicado

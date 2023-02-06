@@ -22,7 +22,7 @@ public class SetGroupDto {
 
     private List<SetDto> sets;
 
-    public SetGroupDto(Long id){
+    public SetGroupDto(Long id) {
         this.id = id;
     }
 }

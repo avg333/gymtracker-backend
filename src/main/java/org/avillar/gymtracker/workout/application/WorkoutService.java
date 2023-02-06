@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workout.application;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
@@ -18,11 +19,11 @@ public interface WorkoutService {
 
     WorkoutDto getWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 
-    WorkoutDto createWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException;
+    WorkoutDto createWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
-    WorkoutDto addSetGroupsToWorkoutFromWorkout(Long workoutDestinationId, Long workoutSourceId) throws IllegalAccessException;
+    WorkoutDto addSetGroupsToWorkoutFromWorkout(Long workoutDestinationId, Long workoutSourceId) throws IllegalAccessException, EntityNotFoundException;
 
-    WorkoutDto addSetGroupsToWorkoutFromSession(Long workoutDestinationId, Long sessionSourceId) throws IllegalAccessException;
+    WorkoutDto addSetGroupsToWorkoutFromSession(Long workoutDestinationId, Long sessionSourceId) throws IllegalAccessException, EntityNotFoundException;
 
     /**
      * Modify the workout with the specified id in workoutDto
@@ -31,7 +32,7 @@ public interface WorkoutService {
      * @throws EntityNotFoundException if there is no workout with that id in workoutDto
      * @throws IllegalAccessException  if the logged-in user does not have permission to modify the workout
      */
-    WorkoutDto updateWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException;
+    WorkoutDto updateWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
     /**
      * Delete the workout with the specified id

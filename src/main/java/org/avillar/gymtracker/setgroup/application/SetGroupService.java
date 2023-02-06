@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.setgroup.application;
 
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
@@ -14,13 +15,13 @@ public interface SetGroupService {
 
     SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 
-    SetGroupDto createSetGroupInSession(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
+    SetGroupDto createSetGroupInSession(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
-    SetGroupDto createSetGroupInWorkout(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
+    SetGroupDto createSetGroupInWorkout(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
     SetGroupDto replaceSetGroupSetsFromSetGroup(Long setGroupDestinationId, Long setGroupSourceId) throws IllegalAccessException;
 
-    SetGroupDto updateSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException;
+    SetGroupDto updateSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
     void deleteSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 }
