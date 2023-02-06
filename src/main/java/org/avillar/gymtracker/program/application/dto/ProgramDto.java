@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.program.application;
+package org.avillar.gymtracker.program.application.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +23,7 @@ public class ProgramDto {
     private int averageVolumePerSession;
     private int averageExercisesNumberPerSession;
     private String ownerName;
+
     public ProgramDto(Long id) {
         this.id = id;
     }

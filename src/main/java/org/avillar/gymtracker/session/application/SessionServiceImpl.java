@@ -7,6 +7,7 @@ import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.program.domain.ProgramDao;
 import org.avillar.gymtracker.session.application.dto.SessionDto;
+import org.avillar.gymtracker.session.application.dto.SessionDtoValidator;
 import org.avillar.gymtracker.session.application.dto.SessionMapper;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.session.domain.SessionDao;
@@ -14,6 +15,7 @@ import org.avillar.gymtracker.sort.application.EntitySorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.DataBinder;
 
 import java.util.List;
 import java.util.Set;
@@ -66,7 +68,13 @@ public class SessionServiceImpl extends BaseService implements SessionService {
     @Override
     @Transactional
     public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        //TODO Validar sessionDto
+        final DataBinder dataBinder = new DataBinder(sessionDto);
+        dataBinder.addValidators(new SessionDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(SessionDto.class, dataBinder.getBindingResult());
+        }
+
         final Program program = this.programDao.getReferenceById(sessionDto.getProgramDto().getId());
         this.authService.checkAccess(program);
         final Session session = this.sessionMapper.toEntity(sessionDto);
@@ -92,7 +100,13 @@ public class SessionServiceImpl extends BaseService implements SessionService {
     @Override
     @Transactional
     public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        //TODO Validar sessionDto
+        final DataBinder dataBinder = new DataBinder(sessionDto);
+        dataBinder.addValidators(new SessionDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(SessionDto.class, dataBinder.getBindingResult());
+        }
+
         final Session sessionDb = this.sessionDao.getReferenceById(sessionDto.getId());
         this.authService.checkAccess(sessionDb.getProgram());
 

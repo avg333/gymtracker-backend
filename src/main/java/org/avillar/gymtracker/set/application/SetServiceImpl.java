@@ -5,8 +5,8 @@ import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.set.application.dto.SetDto;
+import org.avillar.gymtracker.set.application.dto.SetDtoValidator;
 import org.avillar.gymtracker.set.application.dto.SetMapper;
-import org.avillar.gymtracker.set.application.dto.SetValidator;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.set.domain.SetDao;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
@@ -15,8 +15,8 @@ import org.avillar.gymtracker.sort.application.EntitySorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.DataBinder;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -26,16 +26,13 @@ public class SetServiceImpl extends BaseService implements SetService {
     private final SetDao setDao;
     private final SetGroupDao setGroupDao;
     private final SetMapper setMapper;
-    private final SetValidator setValidator;
     private final EntitySorter entitySorter;
 
     @Autowired
-    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper, SetValidator setValidator,
-                          EntitySorter entitySorter) {
+    public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper, EntitySorter entitySorter) {
         this.setDao = setDao;
         this.setGroupDao = setGroupDao;
         this.setMapper = setMapper;
-        this.setValidator = setValidator;
         this.entitySorter = entitySorter;
     }
 
@@ -93,9 +90,12 @@ public class SetServiceImpl extends BaseService implements SetService {
     @Transactional
     public SetDto createSet(final SetDto setDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        if (!this.setValidator.validate(setDto, new HashMap<>()).isEmpty()) {
-            throw new BadFormException("El set esta mal formado");
-        }// TODO Validar
+        final DataBinder dataBinder = new DataBinder(setDto);
+        dataBinder.addValidators(new SetDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(SetDto.class, dataBinder.getBindingResult());
+        }
 
         final SetGroup setGroup = this.setGroupDao.getReferenceById(setDto.getSetGroup().getId());
 
@@ -124,10 +124,12 @@ public class SetServiceImpl extends BaseService implements SetService {
     @Transactional
     public SetDto updateSet(final SetDto setDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        if (!this.setValidator.validate(setDto, new HashMap<>()).isEmpty()) {
-            throw new BadFormException("El set esta mal formado");
-        }// TODO Validar
-
+        final DataBinder dataBinder = new DataBinder(setDto);
+        dataBinder.addValidators(new SetDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(SetDto.class, dataBinder.getBindingResult());
+        }
 
         final Set setDb = this.setDao.getReferenceById(setDto.getId());
         this.authService.checkAccess(setDb.getSetGroup());

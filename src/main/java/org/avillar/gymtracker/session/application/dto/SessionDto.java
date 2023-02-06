@@ -2,7 +2,7 @@ package org.avillar.gymtracker.session.application.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.avillar.gymtracker.program.application.ProgramDto;
+import org.avillar.gymtracker.program.application.dto.ProgramDto;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
 
 import java.time.DayOfWeek;

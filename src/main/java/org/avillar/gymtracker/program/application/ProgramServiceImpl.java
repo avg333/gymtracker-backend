@@ -4,6 +4,8 @@ import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
+import org.avillar.gymtracker.program.application.dto.ProgramDto;
+import org.avillar.gymtracker.program.application.dto.ProgramDtoValidator;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.program.domain.ProgramDao;
 import org.avillar.gymtracker.user.domain.UserApp;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.DataBinder;
 
 import java.util.List;
 
@@ -85,12 +88,15 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
     @Transactional
     public ProgramDto createProgram(final ProgramDto programDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        final UserApp userApp = this.userDao.findById(programDto.getUserAppId()).orElseThrow(() ->
-                new EntityNotFoundException(UserApp.class, programDto.getUserAppId()));
+        final DataBinder dataBinder = new DataBinder(programDto);
+        dataBinder.addValidators(new ProgramDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(ProgramDto.class, dataBinder.getBindingResult());
+        }
 
-        //TODO Validar programDto
         final Program program = this.modelMapper.map(programDto, Program.class);
-        program.setUserApp(userApp);
+        program.setUserApp(this.userDao.getReferenceById(programDto.getUserAppId()));
         this.authService.checkAccess(program);
         return this.modelMapper.map(this.programDao.save(program), ProgramDto.class);
     }
@@ -102,12 +108,20 @@ public class ProgramServiceImpl extends BaseService implements ProgramService {
     @Transactional
     public ProgramDto updateProgram(final ProgramDto programDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        //TODO Validar programDto
-        final Program programDb = this.programDao.findById(programDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(Program.class, programDto.getId()));
+        final DataBinder dataBinder = new DataBinder(programDto);
+        dataBinder.addValidators(new ProgramDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(ProgramDto.class, dataBinder.getBindingResult());
+        }
+
+
+        final Program programDb = this.programDao.getReferenceById(programDto.getId());
         this.authService.checkAccess(programDb);
+
         final Program program = this.modelMapper.map(programDto, Program.class);
         program.setUserApp(programDb.getUserApp());
+
         return this.modelMapper.map(this.programDao.save(program), ProgramDto.class);
     }
 

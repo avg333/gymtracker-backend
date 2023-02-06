@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.exercise.application;
 
-import org.avillar.gymtracker.base.application.IncorrectFormException;
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
@@ -15,9 +15,9 @@ public interface ExerciseService {
 
     ExerciseDto getExercise(Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
 
-    ExerciseDto createExercise(ExerciseDto exerciseDto, final Map<String, String> errorMap) throws EntityNotFoundException, IncorrectFormException;
+    ExerciseDto createExercise(ExerciseDto exerciseDto, final Map<String, String> errorMap) throws EntityNotFoundException, BadFormException;
 
-    ExerciseDto updateExercise(ExerciseDto exerciseDto, final Map<String, String> errorMap) throws EntityNotFoundException, IllegalAccessException, IncorrectFormException;
+    ExerciseDto updateExercise(ExerciseDto exerciseDto, final Map<String, String> errorMap) throws EntityNotFoundException, IllegalAccessException, BadFormException;
 
     void deleteExercise(Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
 }

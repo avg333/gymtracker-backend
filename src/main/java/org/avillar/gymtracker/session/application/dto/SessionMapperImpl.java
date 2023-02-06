@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.session.application.dto;
 
-import org.avillar.gymtracker.program.application.ProgramDto;
+import org.avillar.gymtracker.program.application.dto.ProgramDto;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupMapper;

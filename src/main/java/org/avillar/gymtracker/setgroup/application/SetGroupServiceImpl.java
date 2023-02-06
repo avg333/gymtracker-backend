@@ -8,8 +8,8 @@ import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.session.domain.SessionDao;
 import org.avillar.gymtracker.set.domain.SetDao;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
+import org.avillar.gymtracker.setgroup.application.dto.SetGroupDtoValidator;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupMapper;
-import org.avillar.gymtracker.setgroup.application.dto.SetGroupValidator;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.sort.application.EntitySorter;
@@ -18,9 +18,9 @@ import org.avillar.gymtracker.workout.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.DataBinder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -33,19 +33,16 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     private final WorkoutDao workoutDao;
     private final SetDao setDao;
     private final SetGroupMapper setGroupMapper;
-    private final SetGroupValidator setGroupValidator;
     private final EntitySorter entitySorter;
 
     @Autowired
     public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao, SetDao setDao,
-                               SetGroupMapper setGroupMapper, SetGroupValidator setGroupValidator,
-                               EntitySorter entitySorter) {
+                               SetGroupMapper setGroupMapper, EntitySorter entitySorter) {
         this.setGroupDao = setGroupDao;
         this.sessionDao = sessionDao;
         this.workoutDao = workoutDao;
         this.setDao = setDao;
         this.setGroupMapper = setGroupMapper;
-        this.setGroupValidator = setGroupValidator;
         this.entitySorter = entitySorter;
     }
 
@@ -92,9 +89,12 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Transactional
     public SetGroupDto createSetGroupInWorkout(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        if (!this.setGroupValidator.validate(setGroupDto, new HashMap<>()).isEmpty()) {
-            throw new BadFormException("El set esta mal formado");
-        }// TODO Validate
+        final DataBinder dataBinder = new DataBinder(setGroupDto);
+        dataBinder.addValidators(new SetGroupDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());
+        }
 
         final Workout workout = this.workoutDao.getReferenceById(setGroupDto.getWorkout().getId());
         this.authService.checkAccess(workout);
@@ -122,9 +122,12 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Transactional
     public SetGroupDto createSetGroupInSession(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        if (!this.setGroupValidator.validate(setGroupDto, new HashMap<>()).isEmpty()) {
-            throw new BadFormException("El set esta mal formado");
-        }// TODO Validate
+        final DataBinder dataBinder = new DataBinder(setGroupDto);
+        dataBinder.addValidators(new SetGroupDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());
+        }
 
         final Session session = this.sessionDao.getReferenceById(setGroupDto.getSession().getId());
         this.authService.checkAccess(session.getProgram());
@@ -150,7 +153,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
      */
     @Override
     @Transactional
-    public SetGroupDto replaceSetGroupSetsFromSetGroup(final Long setGroupDestinationId, final Long setGroupSourceId) throws IllegalAccessException {
+    public SetGroupDto replaceSetGroupSetsFromSetGroup(final Long setGroupDestinationId, final Long setGroupSourceId)
+            throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroupDestination = this.setGroupDao.findById(setGroupDestinationId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupDestinationId));
         final SetGroup setGroupSource = this.setGroupDao.findById(setGroupSourceId)
@@ -185,9 +189,12 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Transactional
     public SetGroupDto updateSetGroup(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        if (!this.setGroupValidator.validate(setGroupDto, new HashMap<>()).isEmpty()) {
-            throw new BadFormException("El set esta mal formado");
-        }// TODO Validar
+        final DataBinder dataBinder = new DataBinder(setGroupDto);
+        dataBinder.addValidators(new SetGroupDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());
+        }
 
         final SetGroup setGroupDb = this.setGroupDao.getReferenceById(setGroupDto.getId());
         this.authService.checkAccess(setGroupDb);

@@ -23,12 +23,14 @@ import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
+import org.avillar.gymtracker.workout.application.dto.WorkoutDtoValidator;
 import org.avillar.gymtracker.workout.application.dto.WorkoutMapper;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.DataBinder;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -193,16 +195,16 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     @Transactional
     public WorkoutDto createWorkout(final WorkoutDto workoutDto)
             throws IllegalAccessException, EntityNotFoundException, BadFormException {
-        //TODO Validar
+        final DataBinder dataBinder = new DataBinder(workoutDto);
+        dataBinder.addValidators(new WorkoutDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(WorkoutDto.class, dataBinder.getBindingResult());
+        }
 
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(this.userDao.getReferenceById(workoutDto.getUserApp().getId()));
         this.authService.checkAccess(workout);
-
-        final int workoutsInDate = this.workoutDao.countByUserAppAndDate(workout.getUserApp(), workout.getDate());
-        if (workoutsInDate > 0) {
-            throw new RuntimeException("Ya existe un workout ese dia!!!"); //TODO Mover al validator
-        }
 
         return this.workoutMapper.toDto(this.workoutDao.save(workout), -1);
     }
@@ -282,7 +284,12 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     @Transactional
     public WorkoutDto updateWorkout(final WorkoutDto workoutDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
-        //TODO Validar BadFormException
+        final DataBinder dataBinder = new DataBinder(workoutDto);
+        dataBinder.addValidators(new WorkoutDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(WorkoutDto.class, dataBinder.getBindingResult());
+        }
 
         final Workout workoutDb = this.workoutDao.getReferenceById(workoutDto.getId());
         this.authService.checkAccess(workoutDb);

@@ -1,13 +1,13 @@
 package org.avillar.gymtracker.exercise.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
-import org.avillar.gymtracker.base.application.IncorrectFormException;
+import org.avillar.gymtracker.errors.application.BadFormException;
 import org.avillar.gymtracker.errors.application.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.IllegalAccessException;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
+import org.avillar.gymtracker.exercise.application.dto.ExerciseDtoValidator;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseFilterDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
-import org.avillar.gymtracker.exercise.application.dto.ExerciseValidator;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
@@ -16,6 +16,7 @@ import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.DataBinder;
 
 import java.util.HashSet;
 import java.util.List;
@@ -29,15 +30,13 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
     private final ExerciseDao exerciseDao;
     private final MuscleGroupExerciseDao muscleGroupExerciseDao;
     private final ExerciseMapper exerciseMapper;
-    private final ExerciseValidator exerciseValidator;
 
     @Autowired
     public ExerciseServiceImpl(ExerciseDao exerciseDao, MuscleGroupExerciseDao muscleGroupExerciseDao,
-                               ExerciseMapper exerciseMapper, ExerciseValidator exerciseValidator) {
+                               ExerciseMapper exerciseMapper) {
         this.exerciseDao = exerciseDao;
         this.muscleGroupExerciseDao = muscleGroupExerciseDao;
         this.exerciseMapper = exerciseMapper;
-        this.exerciseValidator = exerciseValidator;
     }
 
     /**
@@ -61,7 +60,8 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
      * @ {@inheritDoc}
      */
     @Override
-    public ExerciseDto getExercise(final Long exerciseId) throws EntityNotFoundException, IllegalAccessException {
+    public ExerciseDto getExercise(final Long exerciseId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
                 .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId));
         this.authService.checkAccess(exercise);
@@ -73,9 +73,13 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
      */
     @Override
     @Transactional
-    public ExerciseDto createExercise(final ExerciseDto exerciseDto, final Map<String, String> errorMap) throws EntityNotFoundException, IncorrectFormException {
-        if (!this.exerciseValidator.validate(exerciseDto, errorMap).isEmpty()) {
-            throw new IncorrectFormException("El ejercicio esta mal formado");
+    public ExerciseDto createExercise(final ExerciseDto exerciseDto, final Map<String, String> errorMap)
+            throws EntityNotFoundException, BadFormException {
+        final DataBinder dataBinder = new DataBinder(exerciseDto);
+        dataBinder.addValidators(new ExerciseDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(ExerciseDto.class, dataBinder.getBindingResult());
         }
 
         final Exercise exercise = this.exerciseMapper.toEntity(exerciseDto);
@@ -90,9 +94,13 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
      */
     @Override
     @Transactional
-    public ExerciseDto updateExercise(final ExerciseDto exerciseDto, final Map<String, String> errorMap) throws EntityNotFoundException, IllegalAccessException, IncorrectFormException {
-        if (!this.exerciseValidator.validate(exerciseDto, errorMap).isEmpty()) {
-            throw new IncorrectFormException("El ejercicio esta mal formado");
+    public ExerciseDto updateExercise(final ExerciseDto exerciseDto, final Map<String, String> errorMap)
+            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+        final DataBinder dataBinder = new DataBinder(exerciseDto);
+        dataBinder.addValidators(new ExerciseDtoValidator());
+        dataBinder.validate();
+        if (dataBinder.getBindingResult().hasErrors()) {
+            throw new BadFormException(ExerciseDto.class, dataBinder.getBindingResult());
         }
 
         this.authService.checkAccess(
@@ -114,7 +122,8 @@ public class ExerciseServiceImpl extends BaseService implements ExerciseService 
      */
     @Override
     @Transactional
-    public void deleteExercise(final Long exerciseId) throws EntityNotFoundException, IllegalAccessException {
+    public void deleteExercise(final Long exerciseId)
+            throws EntityNotFoundException, IllegalAccessException {
         final Exercise exercise = this.exerciseDao.findById(exerciseId)
                 .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId));
         this.authService.checkAccess(exercise);
