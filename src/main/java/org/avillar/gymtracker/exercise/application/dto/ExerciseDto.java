@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.exercise.application.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class ExerciseDto implements Serializable {
 
     private Long id;

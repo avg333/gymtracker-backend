@@ -2,7 +2,7 @@ package org.avillar.gymtracker.workout.application.dto;
 
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.auth.application.AuthService;
-import org.avillar.gymtracker.errors.application.IllegalAccessException;
+import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.user.application.UserAppDto;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
@@ -60,7 +60,7 @@ public class WorkoutDtoValidator implements Validator {
         final String fieldName = "date";
         final Date date = workoutDto.getDate();
         if (date == null) {
-            errors.rejectValue(fieldName, ERR701.name(), ERR701.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_20.name(), ERR_BF_WORKOUT_20.defaultMessage);
             return;
         }
 
@@ -76,9 +76,9 @@ public class WorkoutDtoValidator implements Validator {
         final Date minDate = c.getTime();
 
         if (date.after(maxDate)) {
-            errors.rejectValue(fieldName, ERR702.name(), ERR702.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_21.name(), ERR_BF_WORKOUT_21.defaultMessage);
         } else if (date.before(minDate)) {
-            errors.rejectValue(fieldName, ERR703.name(), ERR703.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_22.name(), ERR_BF_WORKOUT_22.defaultMessage);
         }
     }
 
@@ -86,7 +86,7 @@ public class WorkoutDtoValidator implements Validator {
         final String fieldName = "description";
         final String description = workoutDto.getDescription();
         if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
-            errors.rejectValue(fieldName, ERR300.name(), ERR300.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_CMM_20.name(), ERR_BF_CMM_20.defaultMessage);
         }
     }
 
@@ -94,14 +94,14 @@ public class WorkoutDtoValidator implements Validator {
         final String fieldName = "id";
         final Long workoutId = setDto.getId();
         if (!this.workoutDao.existsById(workoutId)) {
-            errors.rejectValue(fieldName, ERR709.name(), ERR709.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_04.name(), ERR_BF_WORKOUT_04.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.workoutDao.getReferenceById(workoutId));
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, ERR710.name(), ERR710.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_03.name(), ERR_BF_WORKOUT_03.defaultMessage);
         }
     }
 
@@ -110,7 +110,7 @@ public class WorkoutDtoValidator implements Validator {
         final UserAppDto userAppDto = workoutDto.getUserApp();
 
         if (userAppDto == null || userAppDto.getId() == null || userAppDto.getId() <= 0L || !this.userDao.existsById(userAppDto.getId())) {
-            errors.rejectValue(fieldName, ERR809.name(), ERR809.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_USER_04.name(), ERR_BF_USER_04.defaultMessage);
             return;
         }
 
@@ -120,7 +120,7 @@ public class WorkoutDtoValidator implements Validator {
             workout.setUserApp(userApp);
             this.authService.checkAccess(workout);
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, ERR710.name(), ERR710.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_03.name(), ERR_BF_WORKOUT_03.defaultMessage);
         }
     }
 
@@ -130,7 +130,7 @@ public class WorkoutDtoValidator implements Validator {
         final UserApp userApp = new UserApp(workoutDto.getUserApp().getId());
 
         if (this.workoutDao.countByUserAppAndDate(userApp, date) > 0) {
-            errors.rejectValue(fieldName, ERR700.name(), ERR700.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_10.name(), ERR_BF_WORKOUT_10.defaultMessage);
         }
     }
 

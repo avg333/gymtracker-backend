@@ -1,9 +1,9 @@
 package org.avillar.gymtracker.session.application;
 
 import org.avillar.gymtracker.base.application.BaseService;
-import org.avillar.gymtracker.errors.application.BadFormException;
-import org.avillar.gymtracker.errors.application.EntityNotFoundException;
-import org.avillar.gymtracker.errors.application.IllegalAccessException;
+import org.avillar.gymtracker.errors.application.exceptions.BadFormException;
+import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.program.domain.Program;
 import org.avillar.gymtracker.program.domain.ProgramDao;
 import org.avillar.gymtracker.session.application.dto.SessionDto;

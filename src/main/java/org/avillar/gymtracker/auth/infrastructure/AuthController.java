@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.auth.infrastructure;
 
 import org.avillar.gymtracker.auth.application.AuthService;
-import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.user.application.UserAppDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

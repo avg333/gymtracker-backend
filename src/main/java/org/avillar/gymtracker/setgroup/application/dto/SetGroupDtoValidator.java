@@ -2,7 +2,7 @@ package org.avillar.gymtracker.setgroup.application.dto;
 
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.auth.application.AuthService;
-import org.avillar.gymtracker.errors.application.IllegalAccessException;
+import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.session.application.dto.SessionDto;
@@ -61,7 +61,7 @@ public class SetGroupDtoValidator implements Validator {
         final String fieldName = "description";
         final String description = setGroupDto.getDescription();
         if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
-            errors.rejectValue(fieldName, ERR300.name(), ERR300.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_CMM_20.name(), ERR_BF_CMM_20.defaultMessage);
         }
     }
 
@@ -69,14 +69,14 @@ public class SetGroupDtoValidator implements Validator {
         final String fieldName = "exercise";
         final ExerciseDto exerciseDto = setGroupDto.getExercise();
         if (exerciseDto == null || exerciseDto.getId() == null || exerciseDto.getId() <= 0L || !this.exerciseDao.existsById(exerciseDto.getId())) {
-            errors.rejectValue(fieldName, ERR509.name(), ERR509.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_EXERCISE_04.name(), ERR_BF_EXERCISE_04.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.exerciseDao.getReferenceById(exerciseDto.getId()));
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, ERR510.name(), ERR510.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_EXERCISE_03.name(), ERR_BF_EXERCISE_03.defaultMessage);
         }
     }
 
@@ -84,14 +84,14 @@ public class SetGroupDtoValidator implements Validator {
         final String fieldName = "id";
         final Long setGroupId = setGroupDto.getId();
         if (!this.setGroupDao.existsById(setGroupId)) {
-            errors.rejectValue(fieldName, ERR309.name(), ERR309.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_SETGROUP_04.name(), ERR_BF_SETGROUP_04.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.setGroupDao.getReferenceById(setGroupId));
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, ERR310.name(), ERR310.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_SETGROUP_03.name(), ERR_BF_SETGROUP_03.defaultMessage);
         }
     }
 
@@ -103,10 +103,10 @@ public class SetGroupDtoValidator implements Validator {
         final boolean existsWorkout = workoutDto != null && workoutDto.getId() != null && workoutDto.getId() > 0L;
 
         if (existsSession && existsWorkout) {
-            errors.rejectValue(fieldName, ERR400.name(), ERR400.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_SETGROUP_10.name(), ERR_BF_SETGROUP_10.defaultMessage);
             return;
         } else if (!existsSession && !existsWorkout) {
-            errors.rejectValue(fieldName, ERR401.name(), ERR401.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_SETGROUP_11.name(), ERR_BF_SETGROUP_11.defaultMessage);
             return;
         }
 
@@ -120,28 +120,28 @@ public class SetGroupDtoValidator implements Validator {
     private void validateSession(final SessionDto sessionDto, final Errors errors) {
         final String fieldName = "session";
         if (!this.sessionDao.existsById(sessionDto.getId())) {
-            errors.rejectValue(fieldName, ERR609.name(), ERR609.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_SESSION_04.name(), ERR_BF_SESSION_04.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.sessionDao.getReferenceById(sessionDto.getId()).getProgram());
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, ERR610.name(), ERR610.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_SESSION_03.name(), ERR_BF_SESSION_03.defaultMessage);
         }
     }
 
     private void validateWorkout(final WorkoutDto workoutDto, final Errors errors) {
         final String fieldName = "workout";
         if (!this.workoutDao.existsById(workoutDto.getId())) {
-            errors.rejectValue(fieldName, ERR709.name(), ERR709.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_04.name(), ERR_BF_WORKOUT_04.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.workoutDao.getReferenceById(workoutDto.getId()));
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, ERR710.name(), ERR710.defaultMessage);
+            errors.rejectValue(fieldName, ERR_BF_WORKOUT_03.name(), ERR_BF_WORKOUT_03.defaultMessage);
         }
     }
 

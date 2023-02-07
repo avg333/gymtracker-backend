@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.musclegroup.application;
 
-import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSubGroupDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleSupGroupDto;

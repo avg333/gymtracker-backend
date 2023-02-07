@@ -1,8 +1,9 @@
 package org.avillar.gymtracker.auth.application;
 
+import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.auth.application.jwt.JwtTokenUtil;
-import org.avillar.gymtracker.errors.application.EntityNotFoundException;
-import org.avillar.gymtracker.errors.application.IllegalAccessException;
+import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercise.domain.Exercise;
 import org.avillar.gymtracker.measure.domain.Measure;
 import org.avillar.gymtracker.program.domain.Program;
@@ -12,18 +13,15 @@ import org.avillar.gymtracker.user.application.UserDetailsImpl;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.avillar.gymtracker.workout.domain.Workout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     private final UserDao userDao;
     private final AuthenticationManager authenticationManager;
@@ -65,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
             final UserDetailsImpl userDetailsImpl = (UserDetailsImpl) auth.getPrincipal();
             return userDetailsImpl.getUserApp();
         } catch (Exception e) {
-            LOGGER.error("Error al obtener el usuario logueado", e);
+            log.error("Error al obtener el usuario logueado", e);
             throw new EntityNotFoundException(UserApp.class, "null", "null"); //TODO
         }
     }

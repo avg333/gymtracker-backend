@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.errors.application;
+package org.avillar.gymtracker.errors.application.exceptions;
 
 import jakarta.persistence.PersistenceException;
 import lombok.Data;

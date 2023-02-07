@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.measure.application;
 
-import org.avillar.gymtracker.errors.application.IllegalAccessException;
+import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
 
 import java.util.List;
 

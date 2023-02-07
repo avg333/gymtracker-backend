@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.errors.application;
+package org.avillar.gymtracker.errors.application.exceptions;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

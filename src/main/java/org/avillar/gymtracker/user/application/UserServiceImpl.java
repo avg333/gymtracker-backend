@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.user.application;
 
-import org.avillar.gymtracker.errors.application.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.user.domain.UserApp;
 import org.avillar.gymtracker.user.domain.UserDao;
 import org.modelmapper.ModelMapper;

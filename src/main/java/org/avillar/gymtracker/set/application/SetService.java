@@ -1,8 +1,8 @@
 package org.avillar.gymtracker.set.application;
 
-import org.avillar.gymtracker.errors.application.BadFormException;
-import org.avillar.gymtracker.errors.application.EntityNotFoundException;
-import org.avillar.gymtracker.errors.application.IllegalAccessException;
+import org.avillar.gymtracker.errors.application.exceptions.BadFormException;
+import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.set.application.dto.SetDto;
 
 import java.util.List;
