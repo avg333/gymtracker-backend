@@ -15,13 +15,13 @@ public interface SetGroupService {
 
     SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 
-    SetGroupDto createSetGroupInSession(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    SetGroupDto createSetGroupInSession(SetGroupDto setGroupDto) throws EntityNotFoundException, BadFormException;
 
-    SetGroupDto createSetGroupInWorkout(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    SetGroupDto createSetGroupInWorkout(SetGroupDto setGroupDto) throws EntityNotFoundException, BadFormException;
 
     SetGroupDto replaceSetGroupSetsFromSetGroup(Long setGroupDestinationId, Long setGroupSourceId) throws IllegalAccessException;
 
-    SetGroupDto updateSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    SetGroupDto updateSetGroup(SetGroupDto setGroupDto) throws EntityNotFoundException, BadFormException;
 
     void deleteSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 }

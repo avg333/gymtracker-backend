@@ -91,7 +91,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Override
     @Transactional
     public SetGroupDto createSetGroupInWorkout(final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
         dataBinder.addValidators(this.setGroupDtoValidator);
         dataBinder.validate();
@@ -123,7 +123,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Override
     @Transactional
     public SetGroupDto createSetGroupInSession(final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
         dataBinder.addValidators(this.setGroupDtoValidator);
         dataBinder.validate();
@@ -189,7 +189,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     @Override
     @Transactional
     public SetGroupDto updateSetGroup(final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
         dataBinder.addValidators(this.setGroupDtoValidator);
         dataBinder.validate();
@@ -199,16 +199,14 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
 
         final SetGroup setGroupDb = this.setGroupDao.getReferenceById(setGroupDto.getId());
 
-        final int oldPosition = setGroupDb.getListOrder();
-
         final SetGroup setGroup = this.setGroupMapper.toEntity(setGroupDto);
-
         if (setGroupDb.getSession() != null) {
             setGroup.setSession(setGroupDb.getSession());
         } else if (setGroupDb.getWorkout() != null) {
             setGroup.setWorkout(setGroupDb.getWorkout());
         }
 
+        final int oldPosition = setGroupDb.getListOrder();
         this.setGroupDao.save(this.setGroupMapper.toEntity(setGroupDto));
 
         final Set<SetGroup> setGroups = setGroup.getSession() != null

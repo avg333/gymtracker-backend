@@ -11,6 +11,7 @@ import org.avillar.gymtracker.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -38,12 +39,12 @@ public class SetGroupDtoValidator implements Validator {
     }
 
     @Override
-    public boolean supports(Class<?> clazz) {
+    public boolean supports(@NonNull Class<?> clazz) {
         return SetGroupDto.class.equals(clazz);
     }
 
     @Override
-    public void validate(Object target, Errors errors) {
+    public void validate(@NonNull Object target, @NonNull Errors errors) {
         final SetGroupDto setGroupDto = (SetGroupDto) target;
         final boolean exists = setGroupDto.getId() != null && setGroupDto.getId() > 0L;
 

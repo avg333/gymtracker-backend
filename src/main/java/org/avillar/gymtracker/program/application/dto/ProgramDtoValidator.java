@@ -3,6 +3,7 @@ package org.avillar.gymtracker.program.application.dto;
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.session.application.dto.SessionDto;
 import org.avillar.gymtracker.set.application.dto.SetDto;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -16,12 +17,12 @@ public class ProgramDtoValidator implements Validator {
 
 
     @Override
-    public boolean supports(Class<?> clazz) {
+    public boolean supports(@NonNull Class<?> clazz) {
         return ProgramDto.class.equals(clazz);
     }
 
     @Override
-    public void validate(Object target, Errors errors) {
+    public void validate(@NonNull Object target, @NonNull Errors errors) {
         final ProgramDto programDto = (ProgramDto) target;
 
         this.validateDescription(programDto, errors);

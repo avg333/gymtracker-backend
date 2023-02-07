@@ -15,9 +15,9 @@ public interface SetService {
 
     SetDto getSetDefaultDataForNewSet(Long setGroupId, Integer setNumber) throws EntityNotFoundException, IllegalAccessException;
 
-    SetDto createSet(SetDto setDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    SetDto createSet(SetDto setDto) throws EntityNotFoundException, BadFormException;
 
-    SetDto updateSet(SetDto setDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    SetDto updateSet(SetDto setDto) throws EntityNotFoundException, BadFormException;
 
     void deleteSet(Long setId) throws EntityNotFoundException, IllegalAccessException;
 

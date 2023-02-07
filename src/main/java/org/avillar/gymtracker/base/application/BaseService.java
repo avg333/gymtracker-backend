@@ -7,8 +7,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public abstract class BaseService {
-    @Autowired
+
     protected ModelMapper modelMapper;
-    @Autowired
     protected AuthService authService;
+
+    @Autowired
+    public final void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
+    @Autowired
+    public final void setAuthService(AuthService authService) {
+        this.authService = authService;
+    }
+
 }

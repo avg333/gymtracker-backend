@@ -44,7 +44,7 @@ public class SetController {
 
     @PostMapping("setGroups/{setGroupId}/sets")
     public ResponseEntity<SetDto> postSet(@PathVariable final Long setGroupId, @RequestBody final SetDto setDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         setDto.setSetGroup(new SetGroupDto(setGroupId));
         setDto.setId(null);
 
@@ -53,7 +53,7 @@ public class SetController {
 
     @PutMapping("sets/{setId}")
     public ResponseEntity<SetDto> updateSet(@PathVariable final Long setId, @RequestBody final SetDto setDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         setDto.setId(setId);
 
         return ResponseEntity.ok(this.setService.updateSet(setDto));

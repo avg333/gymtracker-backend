@@ -92,7 +92,7 @@ public class SetServiceImpl extends BaseService implements SetService {
     @Override
     @Transactional
     public SetDto createSet(final SetDto setDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setDto);
         dataBinder.addValidators(this.setDtoValidator);
         dataBinder.validate();
@@ -125,7 +125,7 @@ public class SetServiceImpl extends BaseService implements SetService {
     @Override
     @Transactional
     public SetDto updateSet(final SetDto setDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setDto);
         dataBinder.addValidators(this.setDtoValidator);
         dataBinder.validate();
