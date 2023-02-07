@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.setgroup.application.dto;
 
+import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseMapper;
 import org.avillar.gymtracker.session.application.dto.SessionDto;
 import org.avillar.gymtracker.session.domain.Session;
@@ -52,26 +53,23 @@ public class SetGroupMapperImpl implements SetGroupMapper {
 
         final SetGroupDto setGroupDto = new SetGroupDto();
         setGroupDto.setId(setGroup.getId());
-        setGroupDto.setDescription(setGroup.getDescription());
         setGroupDto.setListOrder(setGroup.getListOrder());
+        setGroupDto.setDescription(setGroup.getDescription());
 
-        setGroupDto.setSets(depth != 0
-                ? this.setMapper.toDtos(setGroup.getSets(), depth - 1)
-                : Collections.emptyList());
         setGroupDto.setExercise(depth != 0
                 ? this.exerciseMapper.toDto(setGroup.getExercise(), depth - 1)
                 : null);
 
-        if (depth != 0 && setGroup.getSession() != null && setGroup.getSession().getId() != null) {
-            final SessionDto sessionDto = new SessionDto();
-            sessionDto.setId(setGroup.getSession().getId());
-            setGroupDto.setSession(sessionDto);
+        if (depth != 0 && BaseEntity.exists(setGroup.getSession())) {
+            setGroupDto.setSession(new SessionDto(setGroup.getSession().getId()));
         }
-        if (depth != 0 && setGroup.getWorkout() != null && setGroup.getWorkout().getId() != null) {
-            final WorkoutDto workoutDto = new WorkoutDto();
-            workoutDto.setId(setGroup.getWorkout().getId());
-            setGroupDto.setWorkout(workoutDto);
+        if (depth != 0 && BaseEntity.exists(setGroup.getWorkout())) {
+            setGroupDto.setWorkout(new WorkoutDto(setGroup.getWorkout().getId()));
         }
+
+        setGroupDto.setSets(depth != 0
+                ? this.setMapper.toDtos(setGroup.getSets(), depth - 1)
+                : Collections.emptyList());
 
         return setGroupDto;
     }
@@ -84,23 +82,21 @@ public class SetGroupMapperImpl implements SetGroupMapper {
 
         final SetGroup setGroup = new SetGroup();
         setGroup.setId(setGroupDto.getId());
-        setGroup.setDescription(setGroupDto.getDescription());
         setGroup.setListOrder(setGroupDto.getListOrder());
+        setGroup.setDescription(setGroupDto.getDescription());
 
-        setGroup.setSets(new HashSet<>(this.setMapper.toEntities(setGroupDto.getSets())));
         setGroup.setExercise(this.exerciseMapper.toEntity(setGroupDto.getExercise()));
 
         if (setGroupDto.getSession() != null && setGroupDto.getSession().getId() != null) {
-            final Session session = new Session();
-            session.setId(setGroupDto.getSession().getId());
-            setGroup.setSession(session);
+            setGroup.setSession(new Session(setGroupDto.getSession().getId()));
         }
         if (setGroupDto.getWorkout() != null && setGroupDto.getWorkout().getId() != null) {
-            final Workout workout = new Workout();
-            workout.setId(setGroupDto.getWorkout().getId());
-            setGroup.setWorkout(workout);
+            setGroup.setWorkout(new Workout(setGroupDto.getWorkout().getId()));
         }
+
+        setGroup.setSets(new HashSet<>(this.setMapper.toEntities(setGroupDto.getSets())));
 
         return setGroup;
     }
+
 }

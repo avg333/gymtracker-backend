@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import static org.avillar.gymtracker.errors.application.ErrorCodes.*;
+
 @Component
 public class SetDtoValidator implements Validator {
     private static final int LONG_MAX_DESC = 255;
@@ -56,7 +58,7 @@ public class SetDtoValidator implements Validator {
         final String fieldName = "description";
         final String description = setDto.getDescription();
         if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
-            errors.rejectValue(fieldName, "field.description.max", "La longitud de la descripción es superior a la máxima");
+            errors.rejectValue(fieldName, ERR300.name(), ERR300.defaultMessage);
         }
     }
 
@@ -64,10 +66,9 @@ public class SetDtoValidator implements Validator {
         final String fieldName = "reps";
         final int reps = setDto.getReps();
         if (reps < 0) {
-            errors.rejectValue(fieldName, "field.reps.negative", "El número de repeticiones no puede ser negativo");
-        }
-        if (reps > MAX_REPS) {
-            errors.rejectValue(fieldName, "field.reps.max", "El número de repeticiones excede el máximo (" + MAX_REPS + ")");
+            errors.rejectValue(fieldName, ERR301.name(), ERR301.defaultMessage);
+        } else if (reps > MAX_REPS) {
+            errors.rejectValue(fieldName, ERR302.name(), ERR302.defaultMessage);
         }
     }
 
@@ -75,10 +76,9 @@ public class SetDtoValidator implements Validator {
         final String fieldName = "rir";
         final double rir = setDto.getRir();
         if (rir < MIN_RIR) {
-            errors.rejectValue(fieldName, "field.rir.min", "El RIR es inferior al mínimo (" + MIN_RIR + ")");
-        }
-        if (rir > MAX_RIR) {
-            errors.rejectValue(fieldName, "field.rir.max", "El RIR es superior al máximo (" + MAX_RIR + ")");
+            errors.rejectValue(fieldName, ERR303.name(), ERR303.defaultMessage);
+        } else if (rir > MAX_RIR) {
+            errors.rejectValue(fieldName, ERR304.name(), ERR304.defaultMessage);
         }
         //TODO Verificar si es +-0,5
     }
@@ -87,10 +87,9 @@ public class SetDtoValidator implements Validator {
         final String fieldName = "weight";
         final double weight = setDto.getWeight();
         if (weight < 0) {
-            errors.rejectValue(fieldName, "field.weight.negative", "El peso no puede ser negativo");
-        }
-        if (weight > MAX_WEIGHT) {
-            errors.rejectValue(fieldName, "field.weight.max", "El peso no puede ser superior al máximo (" + MAX_WEIGHT + ")");
+            errors.rejectValue(fieldName, ERR305.name(), ERR305.defaultMessage);
+        } else if (weight > MAX_WEIGHT) {
+            errors.rejectValue(fieldName, ERR306.name(), ERR306.defaultMessage);
         }
     }
 
@@ -98,14 +97,14 @@ public class SetDtoValidator implements Validator {
         final String fieldName = "id";
         final Long setId = setDto.getId();
         if (!this.setDao.existsById(setId)) {
-            errors.rejectValue(fieldName, "field.set.notExists", "El set especificado no existe");
+            errors.rejectValue(fieldName, ERR307.name(), ERR307.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.setDao.getReferenceById(setId).getSetGroup().getWorkout());
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, "field.setGroup.notPermission", "Acceso al set especificado no permitido");
+            errors.rejectValue(fieldName, ERR308.name(), ERR308.defaultMessage);
         }
     }
 
@@ -113,14 +112,15 @@ public class SetDtoValidator implements Validator {
         final String fieldName = "setGroup";
         final SetGroupDto setGroupDto = setDto.getSetGroup();
         if (setGroupDto == null || setGroupDto.getId() == null || setGroupDto.getId() <= 0L || !this.setGroupDao.existsById(setGroupDto.getId())) {
-            errors.rejectValue(fieldName, "field.setGroup.notExists", "El setGroup especificado no existe");
+            errors.rejectValue(fieldName, ERR309.name(), ERR309.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.setGroupDao.getReferenceById(setGroupDto.getId()).getWorkout());
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, "field.setGroup.notPermission", "Acceso al setGroup especificado no permitido");
+            errors.rejectValue(fieldName, ERR310.name(), ERR310.defaultMessage);
         }
     }
+
 }

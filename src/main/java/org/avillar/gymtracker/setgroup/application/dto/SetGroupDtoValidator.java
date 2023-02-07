@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import static org.avillar.gymtracker.errors.application.ErrorCodes.*;
+
 @Component
 public class SetGroupDtoValidator implements Validator {
     private static final int LONG_MAX_DESC = 255;
@@ -47,6 +49,7 @@ public class SetGroupDtoValidator implements Validator {
 
         this.validateDescription(setGroupDto, errors);
         this.validateExercise(setGroupDto, errors);
+
         if (exists) {
             this.validateAccess(setGroupDto, errors);
         } else {
@@ -58,7 +61,7 @@ public class SetGroupDtoValidator implements Validator {
         final String fieldName = "description";
         final String description = setGroupDto.getDescription();
         if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
-            errors.rejectValue(fieldName, "field.description.max", "La longitud de la descripcion de la set es superior a la maxima");
+            errors.rejectValue(fieldName, ERR300.name(), ERR300.defaultMessage);
         }
     }
 
@@ -66,14 +69,14 @@ public class SetGroupDtoValidator implements Validator {
         final String fieldName = "exercise";
         final ExerciseDto exerciseDto = setGroupDto.getExercise();
         if (exerciseDto == null || exerciseDto.getId() == null || exerciseDto.getId() <= 0L || !this.exerciseDao.existsById(exerciseDto.getId())) {
-            errors.rejectValue(fieldName, "field.exercise.notExists", "El ejercicio especificado no existe");
+            errors.rejectValue(fieldName, ERR509.name(), ERR509.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.exerciseDao.getReferenceById(exerciseDto.getId()));
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, "field.exercise.notPermission", "Acceso al ejercicio especificado no permitido");
+            errors.rejectValue(fieldName, ERR510.name(), ERR510.defaultMessage);
         }
     }
 
@@ -81,30 +84,29 @@ public class SetGroupDtoValidator implements Validator {
         final String fieldName = "id";
         final Long setGroupId = setGroupDto.getId();
         if (!this.setGroupDao.existsById(setGroupId)) {
-            errors.rejectValue(fieldName, "field.setGroup.notExists", "El setGroup especificado no existe");
+            errors.rejectValue(fieldName, ERR309.name(), ERR309.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.setGroupDao.getReferenceById(setGroupId));
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, "field.setGroup.notPermission", "Acceso al setGroup especificado no permitido");
+            errors.rejectValue(fieldName, ERR310.name(), ERR310.defaultMessage);
         }
     }
 
     private void validateParent(final SetGroupDto setGroupDto, final Errors errors) {
-        final String fieldName = "parent";
+        final String fieldName = "session-workout";
         final SessionDto sessionDto = setGroupDto.getSession();
         final WorkoutDto workoutDto = setGroupDto.getWorkout();
         final boolean existsSession = sessionDto != null && sessionDto.getId() != null && sessionDto.getId() > 0L;
         final boolean existsWorkout = workoutDto != null && workoutDto.getId() != null && workoutDto.getId() > 0L;
 
         if (existsSession && existsWorkout) {
-            errors.rejectValue(fieldName, "field.parent.multiple", "El setGroup no puede tener session y workout simultaneamente");
+            errors.rejectValue(fieldName, ERR400.name(), ERR400.defaultMessage);
             return;
-        }
-        if (!existsSession && !existsWorkout) {
-            errors.rejectValue(fieldName, "field.parent.notExists", "El setGroup debe tener una session o un workout");
+        } else if (!existsSession && !existsWorkout) {
+            errors.rejectValue(fieldName, ERR401.name(), ERR401.defaultMessage);
             return;
         }
 
@@ -118,28 +120,28 @@ public class SetGroupDtoValidator implements Validator {
     private void validateSession(final SessionDto sessionDto, final Errors errors) {
         final String fieldName = "session";
         if (!this.sessionDao.existsById(sessionDto.getId())) {
-            errors.rejectValue(fieldName, "field.session.notExists", "La session especificada no existe");
+            errors.rejectValue(fieldName, ERR609.name(), ERR609.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.sessionDao.getReferenceById(sessionDto.getId()).getProgram());
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, "field.session.notPermission", "Acceso a la session especificada no permitido");
+            errors.rejectValue(fieldName, ERR610.name(), ERR610.defaultMessage);
         }
     }
 
     private void validateWorkout(final WorkoutDto workoutDto, final Errors errors) {
         final String fieldName = "workout";
         if (!this.workoutDao.existsById(workoutDto.getId())) {
-            errors.rejectValue(fieldName, "field.workout.notExists", "El workout especificado no existe");
+            errors.rejectValue(fieldName, ERR709.name(), ERR709.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.workoutDao.getReferenceById(workoutDto.getId()));
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, "field.workout.notPermission", "Acceso al workout especificado no permitido");
+            errors.rejectValue(fieldName, ERR710.name(), ERR710.defaultMessage);
         }
     }
 

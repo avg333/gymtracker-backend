@@ -12,8 +12,12 @@ import org.avillar.gymtracker.base.domain.BaseEntity;
 @Setter
 @NoArgsConstructor
 @MappedSuperclass
-public class SortableEntity extends BaseEntity {
+public abstract class SortableEntity extends BaseEntity {
     @OrderBy
     @Column(nullable = false)
     private Integer listOrder;
+
+    protected SortableEntity(Long id){
+        super(id);
+    }
 }

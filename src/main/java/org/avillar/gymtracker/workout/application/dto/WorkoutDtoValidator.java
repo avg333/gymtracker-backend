@@ -15,6 +15,8 @@ import org.springframework.validation.Validator;
 import java.util.Calendar;
 import java.util.Date;
 
+import static org.avillar.gymtracker.errors.application.ErrorCodes.*;
+
 @Component
 public class WorkoutDtoValidator implements Validator {
     private static final int LONG_MAX_DESC = 255;
@@ -40,25 +42,29 @@ public class WorkoutDtoValidator implements Validator {
         final WorkoutDto workoutDto = (WorkoutDto) target;
         final boolean exists = workoutDto.getId() != null && workoutDto.getId() > 0L;
 
+        this.validateDate(workoutDto, errors);
         this.validateDescription(workoutDto, errors);
+
         if (exists) {
             this.validateAccess(workoutDto, errors);
         } else {
             this.validateUser(workoutDto, errors);
         }
-        this.validateDate(workoutDto, errors);
+
+        if (!errors.hasErrors()) {
+            this.validateUniqueWorkoutDateForUser(workoutDto, errors);
+        }
     }
 
     private void validateDate(final WorkoutDto workoutDto, final Errors errors) {
         final String fieldName = "date";
         final Date date = workoutDto.getDate();
         if (date == null) {
-            errors.rejectValue(fieldName, "field.date.notValid", "La fecha del workout no es valida");
+            errors.rejectValue(fieldName, ERR701.name(), ERR701.defaultMessage);
             return;
         }
 
         final Date currentDate = new Date();
-
         final Calendar c = Calendar.getInstance();
 
         c.setTime(currentDate);
@@ -69,24 +75,10 @@ public class WorkoutDtoValidator implements Validator {
         c.add(Calendar.DATE, MAX_DAYS_DATE_RANGE_FROM_TODAY * -1);
         final Date minDate = c.getTime();
 
-        if(date.after(maxDate)){
-            errors.rejectValue(fieldName, "field.date.tooLate", "La fecha es anterior al rango máximo permitido");
-            return;
-        }
-
-        if(date.before(minDate)){
-            errors.rejectValue(fieldName, "field.date.tooEarly", "La fecha es posterior al rango maximo permitido");
-            return;
-        }
-
-        if (errors.hasErrors()) {
-            return;
-        }
-
-        //TODO Mejorar
-        final UserApp userApp = new UserApp(workoutDto.getUserApp().getId());
-        if (this.workoutDao.countByUserAppAndDate(userApp, date) > 0) {
-            errors.rejectValue(fieldName, "field.date.notValid", "Ya existe un workout en esa fecha");
+        if (date.after(maxDate)) {
+            errors.rejectValue(fieldName, ERR702.name(), ERR702.defaultMessage);
+        } else if (date.before(minDate)) {
+            errors.rejectValue(fieldName, ERR703.name(), ERR703.defaultMessage);
         }
     }
 
@@ -94,7 +86,7 @@ public class WorkoutDtoValidator implements Validator {
         final String fieldName = "description";
         final String description = workoutDto.getDescription();
         if (StringUtils.isNotEmpty(description) && description.length() > LONG_MAX_DESC) {
-            errors.rejectValue(fieldName, "field.description.max", "La longitud de la descripcion de la set es superior a la maxima");
+            errors.rejectValue(fieldName, ERR300.name(), ERR300.defaultMessage);
         }
     }
 
@@ -102,14 +94,14 @@ public class WorkoutDtoValidator implements Validator {
         final String fieldName = "id";
         final Long workoutId = setDto.getId();
         if (!this.workoutDao.existsById(workoutId)) {
-            errors.rejectValue(fieldName, "field.workout.notExists", "El workout especificado no existe");
+            errors.rejectValue(fieldName, ERR709.name(), ERR709.defaultMessage);
             return;
         }
 
         try {
             this.authService.checkAccess(this.workoutDao.getReferenceById(workoutId));
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, "field.workout.notPermission", "Acceso al workout especificado no permitido");
+            errors.rejectValue(fieldName, ERR710.name(), ERR710.defaultMessage);
         }
     }
 
@@ -118,7 +110,7 @@ public class WorkoutDtoValidator implements Validator {
         final UserAppDto userAppDto = workoutDto.getUserApp();
 
         if (userAppDto == null || userAppDto.getId() == null || userAppDto.getId() <= 0L || !this.userDao.existsById(userAppDto.getId())) {
-            errors.rejectValue(fieldName, "field.user.notExists", "El usuario especificado no existe");
+            errors.rejectValue(fieldName, ERR809.name(), ERR809.defaultMessage);
             return;
         }
 
@@ -128,7 +120,17 @@ public class WorkoutDtoValidator implements Validator {
             workout.setUserApp(userApp);
             this.authService.checkAccess(workout);
         } catch (IllegalAccessException e) {
-            errors.rejectValue(fieldName, "field.workout.notPermission", "Acceso al workout especificado no permitido");
+            errors.rejectValue(fieldName, ERR710.name(), ERR710.defaultMessage);
+        }
+    }
+
+    private void validateUniqueWorkoutDateForUser(final WorkoutDto workoutDto, final Errors errors) {
+        final String fieldName = "date";
+        final Date date = workoutDto.getDate();
+        final UserApp userApp = new UserApp(workoutDto.getUserApp().getId());
+
+        if (this.workoutDao.countByUserAppAndDate(userApp, date) > 0) {
+            errors.rejectValue(fieldName, ERR700.name(), ERR700.defaultMessage);
         }
     }
 

@@ -49,9 +49,9 @@ public class WorkoutMapperImpl implements WorkoutMapper {
         workoutDto.setDescription(workout.getDescription());
         workoutDto.setUserApp(null);
 
-        if (depth != 0 && !CollectionUtils.isEmpty(workout.getSetGroups())) {
-            workoutDto.setSetGroups(this.setGroupMapper.toDtos(workout.getSetGroups(), depth - 1));
-        }
+        workoutDto.setSetGroups(depth != 0
+                ? this.setGroupMapper.toDtos(workout.getSetGroups(), depth - 1)
+                : Collections.emptyList());
 
         return workoutDto;
     }
@@ -77,4 +77,5 @@ public class WorkoutMapperImpl implements WorkoutMapper {
 
         return workout;
     }
+
 }

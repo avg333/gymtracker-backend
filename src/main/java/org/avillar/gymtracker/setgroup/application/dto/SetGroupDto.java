@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 public class SetGroupDto {
     private Long id;
-    private String description;
     private int listOrder;
+    private String description;
 
     private ExerciseDto exercise;
     private SessionDto session;
@@ -25,4 +25,5 @@ public class SetGroupDto {
     public SetGroupDto(Long id) {
         this.id = id;
     }
+
 }

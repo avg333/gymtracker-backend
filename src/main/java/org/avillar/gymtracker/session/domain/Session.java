@@ -30,4 +30,9 @@ public class Session extends SortableEntity {
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<SetGroup> setGroups = new HashSet<>();
+
+    public Session(Long id){
+        super(id);
+    }
+
 }

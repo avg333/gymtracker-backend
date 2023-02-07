@@ -93,7 +93,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     public SetGroupDto createSetGroupInWorkout(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
-        dataBinder.addValidators(setGroupDtoValidator);
+        dataBinder.addValidators(this.setGroupDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());
@@ -125,7 +125,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     public SetGroupDto createSetGroupInSession(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
-        dataBinder.addValidators(setGroupDtoValidator);
+        dataBinder.addValidators(this.setGroupDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());
@@ -191,7 +191,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     public SetGroupDto updateSetGroup(final SetGroupDto setGroupDto)
             throws EntityNotFoundException, IllegalAccessException, BadFormException {
         final DataBinder dataBinder = new DataBinder(setGroupDto);
-        dataBinder.addValidators(setGroupDtoValidator);
+        dataBinder.addValidators(this.setGroupDtoValidator);
         dataBinder.validate();
         if (dataBinder.getBindingResult().hasErrors()) {
             throw new BadFormException(SetGroupDto.class, dataBinder.getBindingResult());

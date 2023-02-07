@@ -20,4 +20,9 @@ public class ExerciseDto implements Serializable {
     private List<MuscleSubGroupDto> muscleSubGroups;
 
     //private Set<SetGroup> setGroups NO SE USA
+
+    public ExerciseDto(Long id){
+        this.id = id;
+    }
+
 }

@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.set.application.dto;
 
+import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
@@ -46,7 +47,7 @@ public class SetMapperImpl implements SetMapper {
         setDto.setWeight(set.getWeight());
         setDto.setLastModifiedAt(set.getLastModifiedAt());
 
-        if (depth != 0 && set.getSetGroup() != null && set.getSetGroup().getId() != null) {
+        if (depth != 0 && BaseEntity.exists(set.getSetGroup())) {
             setDto.setSetGroup(new SetGroupDto(set.getSetGroup().getId()));
         }
 
@@ -68,11 +69,10 @@ public class SetMapperImpl implements SetMapper {
         set.setWeight(setDto.getWeight());
 
         if (setDto.getSetGroup() != null && setDto.getSetGroup().getId() != null) {
-            final SetGroup setGroup = new SetGroup();
-            setGroup.setId(setDto.getSetGroup().getId());
-            set.setSetGroup(setGroup);
+            set.setSetGroup(new SetGroup(setDto.getSetGroup().getId()));
         }
 
         return set;
     }
+
 }

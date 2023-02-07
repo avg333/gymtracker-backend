@@ -28,7 +28,6 @@ public class SetGroup extends SortableEntity {
     @ManyToOne
     @JoinColumn(name = "session_id")
     private Session session;
-
     @ManyToOne
     @JoinColumn(name = "workout_id")
     private Workout workout;
@@ -36,4 +35,9 @@ public class SetGroup extends SortableEntity {
     @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("listOrder ASC")
     private java.util.Set<Set> sets = new HashSet<>();
+
+    public SetGroup(Long id) {
+        super(id);
+    }
+
 }

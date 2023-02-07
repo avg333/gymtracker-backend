@@ -25,4 +25,9 @@ public class Set extends SortableEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "set_group_id", nullable = false)
     private SetGroup setGroup;
+
+    public Set(Long id) {
+        super(id);
+    }
+
 }

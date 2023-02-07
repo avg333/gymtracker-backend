@@ -9,8 +9,8 @@ import java.util.Date;
 @Data
 public class SetDto {
     private Long id;
-    private String description;
     private int listOrder;
+    private String description;
     private int reps;
     private double rir;
     private double weight;

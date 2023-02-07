@@ -65,4 +65,9 @@ public abstract class BaseEntity implements Serializable {
                 ", lastModifiedAt=" + lastModifiedAt +
                 '}';
     }
+
+    public static <T extends BaseEntity> boolean exists(T baseEntity) {
+        return baseEntity != null && baseEntity.getId() != null && baseEntity.getId() > 0L;
+    }
+
 }

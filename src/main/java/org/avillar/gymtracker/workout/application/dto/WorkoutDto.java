@@ -33,4 +33,5 @@ public class WorkoutDto {
     public WorkoutDto(Long id) {
         this.id = id;
     }
+
 }
