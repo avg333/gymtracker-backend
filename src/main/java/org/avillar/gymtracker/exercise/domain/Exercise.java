@@ -27,10 +27,10 @@ public class Exercise extends BaseEntity {
     @Column(nullable = false)
     private LoadTypeEnum loadType;
 
-    @OneToMany(mappedBy = "exercise", orphanRemoval = true)
+    @OneToMany(mappedBy = "exercise", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<MuscleGroupExercise> muscleGroupExercises = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "exercise_muscle_sub_groups",
             joinColumns = @JoinColumn(name = "exercise_null"),
             inverseJoinColumns = @JoinColumn(name = "muscle_sub_groups_id"))

@@ -32,7 +32,7 @@ public class Workout extends BaseEntity {
     @JoinColumn(name = "user_app_id", nullable = false)
     private UserApp userApp;
 
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("listOrder ASC")//TODO Ordenar tambien por workout
     private Set<SetGroup> setGroups = new HashSet<>();
 

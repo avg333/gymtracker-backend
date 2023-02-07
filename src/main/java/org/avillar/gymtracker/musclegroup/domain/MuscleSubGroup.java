@@ -24,7 +24,7 @@ public class MuscleSubGroup extends BaseEntity {
     private String description;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "muscle_group_id")
     private MuscleGroup muscleGroup;
 

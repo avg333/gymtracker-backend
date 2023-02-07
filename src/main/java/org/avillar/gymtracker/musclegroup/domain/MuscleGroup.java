@@ -22,14 +22,14 @@ public class MuscleGroup extends BaseEntity {
     @Column
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "muscle_group_muscle_sup_groups",
             joinColumns = @JoinColumn(name = "muscle_group_id"),
             inverseJoinColumns = @JoinColumn(name = "muscle_sup_groups_id"))
     private Set<MuscleSupGroup> muscleSupGroups = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true)
+    @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<MuscleSubGroup> muscleSubGroups = new HashSet<>();
 
     @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true)

@@ -32,7 +32,7 @@ public class SetGroup extends SortableEntity {
     @JoinColumn(name = "workout_id")
     private Workout workout;
 
-    @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("listOrder ASC")
     private java.util.Set<Set> sets = new HashSet<>();
 
