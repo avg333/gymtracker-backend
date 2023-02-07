@@ -36,7 +36,7 @@ public class Workout extends BaseEntity {
     @OrderBy("listOrder ASC")//TODO Ordenar tambien por workout
     private Set<SetGroup> setGroups = new HashSet<>();
 
-    public Workout(Long id){
+    public Workout(Long id) {
         super(id);
     }
 

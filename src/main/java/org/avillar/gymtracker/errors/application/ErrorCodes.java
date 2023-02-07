@@ -47,7 +47,7 @@ public enum ErrorCodes {
 
     public final String defaultMessage;
 
-    private ErrorCodes(final String defaultMessage) {
+    ErrorCodes(final String defaultMessage) {
         this.defaultMessage = defaultMessage;
     }
 }

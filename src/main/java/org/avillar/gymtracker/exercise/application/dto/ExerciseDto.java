@@ -21,7 +21,7 @@ public class ExerciseDto implements Serializable {
 
     //private Set<SetGroup> setGroups NO SE USA
 
-    public ExerciseDto(Long id){
+    public ExerciseDto(Long id) {
         this.id = id;
     }
 

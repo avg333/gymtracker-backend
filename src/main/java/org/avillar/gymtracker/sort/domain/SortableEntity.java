@@ -17,7 +17,7 @@ public abstract class SortableEntity extends BaseEntity {
     @Column(nullable = false)
     private Integer listOrder;
 
-    protected SortableEntity(Long id){
+    protected SortableEntity(Long id) {
         super(id);
     }
 }

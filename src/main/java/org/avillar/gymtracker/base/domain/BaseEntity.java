@@ -42,6 +42,10 @@ public abstract class BaseEntity implements Serializable {
         this.id = id;
     }
 
+    public static <T extends BaseEntity> boolean exists(T baseEntity) {
+        return baseEntity != null && baseEntity.getId() != null && baseEntity.getId() > 0L;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -64,10 +68,6 @@ public abstract class BaseEntity implements Serializable {
                 ", lastModifiedBy='" + lastModifiedBy + '\'' +
                 ", lastModifiedAt=" + lastModifiedAt +
                 '}';
-    }
-
-    public static <T extends BaseEntity> boolean exists(T baseEntity) {
-        return baseEntity != null && baseEntity.getId() != null && baseEntity.getId() > 0L;
     }
 
 }
