@@ -353,7 +353,7 @@ public class DataLoader implements ApplicationRunner {
         pressBanca.setListOrder(0);
         setGroups.add(pressBanca);
         final var remoUnaMano = new SetGroup("", exerciseById(2L), upperH1, null, null);
-        sets.addAll(giveMeSets(remoUnaMano, 4, 5));
+        sets.addAll(giveMeSets(remoUnaMano, 3, 4));
         remoUnaMano.setListOrder(1);
         setGroups.add(remoUnaMano);
 

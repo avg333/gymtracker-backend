@@ -70,6 +70,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void checkAccess(final Exercise exercise) throws IllegalAccessException {
+        this.getLoggedUser();
+
         //TODO
     }
 
