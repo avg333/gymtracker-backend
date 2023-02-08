@@ -18,6 +18,7 @@ import org.avillar.gymtracker.workout.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DataBinder;
 
 import java.util.ArrayList;
@@ -110,7 +111,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         this.setGroupDao.save(setGroup);
 
         final Set<SetGroup> setGroups = setGroup.getWorkout().getSetGroups();
-        if (this.entitySorter.sortPost(setGroups, setGroup)) {
+        this.entitySorter.sortPost(setGroups, setGroup);
+        if (!CollectionUtils.isEmpty(setGroups)) {
             this.setGroupDao.saveAll(setGroups);
         }
 
@@ -142,7 +144,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         this.setGroupDao.save(setGroup);
 
         final Set<SetGroup> setGroups = setGroup.getSession().getSetGroups();
-        if (this.entitySorter.sortPost(setGroups, setGroup)) {
+        this.entitySorter.sortPost(setGroups, setGroup);
+        if (!CollectionUtils.isEmpty(setGroups)) {
             this.setGroupDao.saveAll(setGroups);
         }
 
@@ -164,20 +167,17 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         this.authService.checkAccess(setGroupDestination);
         this.authService.checkAccess(setGroupSource);
 
-        //TODO Mejorar
-        final var sets = new ArrayList<org.avillar.gymtracker.set.domain.Set>(setGroupSource.getSets().size());
-        for (final var setDb : setGroupSource.getSets()) {
-            final org.avillar.gymtracker.set.domain.Set set = new org.avillar.gymtracker.set.domain.Set();
+        final List<org.avillar.gymtracker.set.domain.Set> sets = new ArrayList<>(setGroupSource.getSets().size());
+        for (final org.avillar.gymtracker.set.domain.Set setDb : setGroupSource.getSets()) {
+            final org.avillar.gymtracker.set.domain.Set set = org.avillar.gymtracker.set.domain.Set.clone(setDb);
             set.setSetGroup(setGroupDestination);
-            set.setListOrder(setDb.getListOrder());
-            set.setDescription(setDb.getDescription());
-            set.setReps(setDb.getReps());
-            set.setRir(setDb.getRir());
-            set.setWeight(setDb.getWeight());
             sets.add(set);
         }
 
-        this.setDao.deleteAllById(setGroupDestination.getSets().stream().map(org.avillar.gymtracker.set.domain.Set::getId).toList());
+        this.setDao.deleteAllById(setGroupDestination.getSets()
+                .stream()
+                .map(org.avillar.gymtracker.set.domain.Set::getId)
+                .toList());
         this.setDao.saveAll(sets);
 
         return this.setGroupMapper.toDto(this.setGroupDao.getReferenceById(setGroupDestinationId), -1);
@@ -212,7 +212,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final Set<SetGroup> setGroups = setGroup.getSession() != null
                 ? setGroup.getSession().getSetGroups()
                 : setGroup.getWorkout().getSetGroups();
-        if (this.entitySorter.sortUpdate(setGroups, setGroup, oldPosition)) {
+        this.entitySorter.sortUpdate(setGroups, setGroup, oldPosition);
+        if (!CollectionUtils.isEmpty(setGroups)) {
             this.setGroupDao.saveAll(setGroups);
         }
 
@@ -235,7 +236,8 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final Set<SetGroup> setGroups = setGroup.getSession() != null
                 ? setGroup.getSession().getSetGroups()
                 : setGroup.getWorkout().getSetGroups();
-        if (this.entitySorter.sortDelete(setGroups, setGroup)) {
+        this.entitySorter.sortDelete(setGroups, setGroup);
+        if (!CollectionUtils.isEmpty(setGroups)) {
             this.setGroupDao.saveAll(setGroups);
         }
     }

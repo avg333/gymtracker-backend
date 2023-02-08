@@ -30,4 +30,14 @@ public class Set extends SortableEntity {
         super(id);
     }
 
+    public static Set clone(final Set set) {
+        final Set newSet = new Set();
+        set.setListOrder(set.getListOrder());
+        set.setDescription(set.getDescription());
+        set.setReps(set.getReps());
+        set.setRir(set.getRir());
+        set.setWeight(set.getWeight());
+        return newSet;
+    }
+
 }

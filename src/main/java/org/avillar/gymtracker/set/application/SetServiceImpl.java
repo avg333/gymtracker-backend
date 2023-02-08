@@ -15,6 +15,7 @@ import org.avillar.gymtracker.sort.application.EntitySorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DataBinder;
 
 import java.util.List;
@@ -112,7 +113,8 @@ public class SetServiceImpl extends BaseService implements SetService {
         this.setDao.save(set);
 
         final java.util.Set<Set> sets = set.getSetGroup().getSets();
-        if (this.entitySorter.sortPost(sets, set)) {
+        this.entitySorter.sortPost(sets, set);
+        if (!CollectionUtils.isEmpty(sets)) {
             this.setDao.saveAll(sets);
         }
 
@@ -142,7 +144,8 @@ public class SetServiceImpl extends BaseService implements SetService {
         this.setDao.save(set);
 
         final java.util.Set<Set> sets = set.getSetGroup().getSets();
-        if (this.entitySorter.sortUpdate(sets, set, oldPosition)) {
+        this.entitySorter.sortUpdate(sets, set, oldPosition);
+        if (!CollectionUtils.isEmpty(sets)) {
             this.setDao.saveAll(sets);
         }
 
@@ -163,7 +166,8 @@ public class SetServiceImpl extends BaseService implements SetService {
         this.setDao.deleteById(setId);
 
         final java.util.Set<Set> sets = set.getSetGroup().getSets();
-        if (this.entitySorter.sortDelete(sets, set)) {
+        this.entitySorter.sortDelete(sets, set);
+        if (!CollectionUtils.isEmpty(sets)) {
             this.setDao.saveAll(sets);
         }
     }

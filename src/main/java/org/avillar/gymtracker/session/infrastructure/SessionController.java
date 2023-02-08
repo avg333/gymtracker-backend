@@ -42,7 +42,6 @@ public class SessionController {
         sessionDto.setProgramDto(new ProgramDto(programId));
 
         return ResponseEntity.ok(this.sessionService.createSession(sessionDto));
-        //TODO Validate
     }
 
     @PutMapping("/sessions/{sessionId}")

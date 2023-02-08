@@ -81,16 +81,20 @@ public class SetDtoValidator implements Validator {
         } else if (rir > MAX_RIR) {
             errors.rejectValue(fieldName, ERR_BF_SET_23.name(), ERR_BF_SET_23.defaultMessage);
         }
-        //TODO Verificar si es +-0,5
+
+        double decimalPart = rir - Math.floor(rir);
+        if (decimalPart != 0 && decimalPart != 0.5) {
+            errors.rejectValue(fieldName, ERR_BF_SET_24.name(), ERR_BF_SET_24.defaultMessage);
+        }
     }
 
     private void validateWeight(final SetDto setDto, final Errors errors) {
         final String fieldName = "weight";
         final double weight = setDto.getWeight();
         if (weight < 0) {
-            errors.rejectValue(fieldName, ERR_BF_SET_24.name(), ERR_BF_SET_24.defaultMessage);
-        } else if (weight > MAX_WEIGHT) {
             errors.rejectValue(fieldName, ERR_BF_SET_25.name(), ERR_BF_SET_25.defaultMessage);
+        } else if (weight > MAX_WEIGHT) {
+            errors.rejectValue(fieldName, ERR_BF_SET_26.name(), ERR_BF_SET_26.defaultMessage);
         }
     }
 

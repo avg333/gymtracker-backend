@@ -15,6 +15,7 @@ import org.avillar.gymtracker.sort.application.EntitySorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DataBinder;
 
 import java.util.List;
@@ -87,7 +88,8 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         this.sessionDao.save(session);
 
         final Set<Session> sessions = session.getProgram().getSessions();
-        if (this.entitySorter.sortPost(sessions, session)) {
+        this.entitySorter.sortPost(sessions, session);
+        if (!CollectionUtils.isEmpty(sessions)) {
             this.sessionDao.saveAll(sessions);
         }
 
@@ -108,19 +110,16 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         }
 
         final Session sessionDb = this.sessionDao.getReferenceById(sessionDto.getId());
-        this.authService.checkAccess(sessionDb.getProgram());
-
-        final Program program = this.programDao.getReferenceById(sessionDto.getProgramDto().getId());
-        this.authService.checkAccess(program);
 
         final Session session = this.sessionMapper.toEntity(sessionDto);
-        this.authService.checkAccess(sessionDb.getProgram());
+        session.setProgram(sessionDb.getProgram());
 
         final int oldPosition = sessionDb.getListOrder();
         this.sessionDao.save(session);
 
         final Set<Session> sessions = session.getProgram().getSessions();
-        if (this.entitySorter.sortUpdate(sessions, session, oldPosition)) {
+        this.entitySorter.sortUpdate(sessions, session, oldPosition);
+        if (!CollectionUtils.isEmpty(sessions)) {
             this.sessionDao.saveAll(sessions);
         }
 
@@ -140,7 +139,8 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         this.sessionDao.deleteById(sessionId);
 
         final Set<Session> sessions = session.getProgram().getSessions();
-        if (this.entitySorter.sortDelete(sessions, session)) {
+        this.entitySorter.sortDelete(sessions, session);
+        if (!CollectionUtils.isEmpty(sessions)) {
             this.sessionDao.saveAll(sessions);
         }
     }

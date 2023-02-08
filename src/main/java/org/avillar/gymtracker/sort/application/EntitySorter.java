@@ -3,60 +3,62 @@ package org.avillar.gymtracker.sort.application;
 import org.avillar.gymtracker.sort.domain.SortableEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
 @Component
 public class EntitySorter {
-    //TODO Devolver solo los que hay que guardar
-    public <T extends SortableEntity> boolean sortDelete(final Set<? extends SortableEntity> entities, final T entity) {
-        boolean changes = false;
+
+    public <T extends SortableEntity> void sortDelete(final Set<? extends SortableEntity> entities, final T entity) {
         entities.removeIf(e -> e.getId().equals(entity.getId()));
 
-        for (final SortableEntity sortableEntity : entities) {
+        final Iterator<? extends SortableEntity> iterator = entities.iterator();
+        while (iterator.hasNext()) {
+            final SortableEntity sortableEntity = iterator.next();
             if (sortableEntity.getListOrder() > entity.getListOrder()) {
                 sortableEntity.setListOrder(sortableEntity.getListOrder() - 1);
-                changes = true;
+            } else {
+                iterator.remove();
             }
         }
-
-        return changes;
     }
 
-    public <T extends SortableEntity> boolean sortPost(final Set<? extends SortableEntity> entities, final T entity) {
-        boolean changes = false;
+    public <T extends SortableEntity> void sortPost(final Set<? extends SortableEntity> entities, final T entity) {
         entities.removeIf(e -> e.getId().equals(entity.getId()));
 
-        for (final SortableEntity sortableEntity : entities) {
+        final Iterator<? extends SortableEntity> iterator = entities.iterator();
+        while (iterator.hasNext()) {
+            final SortableEntity sortableEntity = iterator.next();
             if (entity.getListOrder() <= sortableEntity.getListOrder()) {
                 sortableEntity.setListOrder(sortableEntity.getListOrder() + 1);
+            } else {
+                iterator.remove();
             }
         }
-
-        return changes;
     }
 
-    public <T extends SortableEntity> boolean sortUpdate(final Set<? extends SortableEntity> entities, final T entity, final int oldPosition) {
+    public <T extends SortableEntity> void sortUpdate(final Set<? extends SortableEntity> entities, final T entity, final int oldPosition) {
         final int newPosition = entity.getListOrder();
         if (newPosition == oldPosition) {
-            return false;
+            entities.clear();
+            return;
         }
 
-        boolean changes = false;
         entities.removeIf(e -> e.getId().equals(entity.getId()));
 
-        final int diferencia = oldPosition > newPosition ? 1 : -1;
-        for (final SortableEntity sortableEntity : entities) {
+        final Iterator<? extends SortableEntity> iterator = entities.iterator();
+        while (iterator.hasNext()) {
+            final SortableEntity sortableEntity = iterator.next();
             final boolean esMismaPosicion = Objects.equals(entity.getListOrder(), sortableEntity.getListOrder());
             final boolean menorQueMaximo = sortableEntity.getListOrder() < Math.max(oldPosition, newPosition);
             final boolean mayorQueMinimo = sortableEntity.getListOrder() > Math.min(oldPosition, newPosition);
             if (esMismaPosicion || (menorQueMaximo && mayorQueMinimo)) {
-                sortableEntity.setListOrder(sortableEntity.getListOrder() + diferencia);
-                changes = true;
+                sortableEntity.setListOrder(sortableEntity.getListOrder() + oldPosition > newPosition ? 1 : -1);
+            } else {
+                iterator.remove();
             }
         }
-
-        return changes;
     }
 
 }

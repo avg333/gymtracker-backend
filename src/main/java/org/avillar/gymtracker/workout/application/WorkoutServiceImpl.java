@@ -252,25 +252,18 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     }
 
     private void copySetGroupsToWorkout(final Workout workout, final java.util.Set<SetGroup> setGroupsSource) {
-        //TODO Mejorar esto
         final int listOrderOffset = workout.getSetGroups().size();
-        final var setGroups = new ArrayList<SetGroup>();
-        final var sets = new ArrayList<Set>();
-        for (final var setGroupDb : setGroupsSource) {
-            final SetGroup setGroup = new SetGroup();
+
+        final List<SetGroup> setGroups = new ArrayList<>(setGroupsSource.size());
+        final List<Set> sets = new ArrayList<>();
+        for (final SetGroup setGroupDb : setGroupsSource) {
+            final SetGroup setGroup = SetGroup.clone(setGroupDb);
             setGroup.setListOrder(setGroupDb.getListOrder() + listOrderOffset);
-            setGroup.setDescription(setGroupDb.getDescription());
-            setGroup.setExercise(setGroupDb.getExercise());
             setGroup.setWorkout(workout);
             setGroups.add(setGroup);
             for (final var setDb : setGroupDb.getSets()) {
-                final Set set = new Set();
+                final Set set = Set.clone(setDb);
                 set.setSetGroup(setGroup);
-                set.setListOrder(setDb.getListOrder());
-                set.setDescription(setDb.getDescription());
-                set.setReps(setDb.getReps());
-                set.setRir(setDb.getRir());
-                set.setWeight(setDb.getWeight());
                 sets.add(set);
             }
         }

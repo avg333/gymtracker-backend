@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.exercise.infrastructure;
 
-import org.avillar.gymtracker.base.application.IncorrectFormException;
 import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
 import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
@@ -50,7 +49,7 @@ public class ExerciseController {
 
     @PostMapping("")
     public ResponseEntity<ExerciseDto> postExercise(@RequestBody final ExerciseDto exerciseDto)
-            throws EntityNotFoundException, IncorrectFormException {
+            throws EntityNotFoundException {
         final Map<String, String> errorMap = new HashMap<>();
         exerciseDto.setId(null);
 
@@ -60,7 +59,7 @@ public class ExerciseController {
 
     @PutMapping("/{exerciseId}")
     public ResponseEntity<ExerciseDto> putExercise(@PathVariable final Long exerciseId, @RequestBody final ExerciseDto exerciseDto)
-            throws EntityNotFoundException, IllegalAccessException, IncorrectFormException {
+            throws EntityNotFoundException, IllegalAccessException {
         final Map<String, String> errorMap = new HashMap<>();
         exerciseDto.setId(exerciseId);
 

@@ -12,8 +12,9 @@ public enum ErrorCodes {
     ERR_BF_SET_21("El número de repeticiones excede el máximo"),
     ERR_BF_SET_22("El RIR es inferior al mínimo"),
     ERR_BF_SET_23("El RIR es superior al máximo"),
-    ERR_BF_SET_24("El peso no puede ser negativo"),
-    ERR_BF_SET_25("El peso no puede ser superior al máximo"),
+    ERR_BF_SET_24("La parte decimal del RIR debe ser 0,5 si existe"),
+    ERR_BF_SET_25("El peso no puede ser negativo"),
+    ERR_BF_SET_26("El peso no puede ser superior al máximo"),
 
     // SETGROUP ERROR CODES
     ERR_BF_SETGROUP_03("Acceso al setGroup especificado no permitido"),
