@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.set.application;
 
+import org.avillar.gymtracker.auth.application.AuthService;
 import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.errors.application.exceptions.BadFormException;
 import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
@@ -22,7 +23,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class SetServiceImpl extends BaseService implements SetService {
+public class SetServiceImpl implements SetService {
 
     private final SetDao setDao;
     private final SetGroupDao setGroupDao;
@@ -30,14 +31,17 @@ public class SetServiceImpl extends BaseService implements SetService {
     private final EntitySorter entitySorter;
     private final SetDtoValidator setDtoValidator;
 
+    private final AuthService authService;
+
     @Autowired
     public SetServiceImpl(SetDao setDao, SetGroupDao setGroupDao, SetMapper setMapper, EntitySorter entitySorter,
-                          SetDtoValidator setDtoValidator) {
+                          SetDtoValidator setDtoValidator, AuthService authService) {
         this.setDao = setDao;
         this.setGroupDao = setGroupDao;
         this.setMapper = setMapper;
         this.entitySorter = entitySorter;
         this.setDtoValidator = setDtoValidator;
+        this.authService = authService;
     }
 
     /**
