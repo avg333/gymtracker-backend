@@ -36,6 +36,12 @@ public class SetGroupController {
         return ResponseEntity.ok(this.setGroupService.getAllWorkoutSetGroups(workoutId));
     }
 
+    @GetMapping("/users/{userId}/exercises/{exerciseId}/setGroups")
+    public ResponseEntity<List<SetGroupDto>> getAllUserAndExerciseSetGroups(@PathVariable final Long userId, @PathVariable final Long exerciseId)
+            throws EntityNotFoundException, IllegalAccessException {
+        return ResponseEntity.ok(this.setGroupService.getAllUserAndExerciseSetGroups(userId, exerciseId));
+    }
+
     @GetMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> getSetGroup(@PathVariable final Long setGroupId)
             throws EntityNotFoundException, IllegalAccessException {
@@ -44,7 +50,7 @@ public class SetGroupController {
 
     @PostMapping("/sessions/{sessionId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInSession(@PathVariable final Long sessionId, @RequestBody final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         setGroupDto.setId(null);
         setGroupDto.setSession(new SessionDto(sessionId));
 
@@ -53,7 +59,7 @@ public class SetGroupController {
 
     @PostMapping("/workouts/{workoutId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInWorkout(@PathVariable final Long workoutId, @RequestBody final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         setGroupDto.setId(null);
         setGroupDto.setWorkout(new WorkoutDto(workoutId));
 
@@ -68,7 +74,7 @@ public class SetGroupController {
 
     @PutMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> putSetGroup(@PathVariable final Long setGroupId, @RequestBody final SetGroupDto setGroupDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         setGroupDto.setId(setGroupId);
 
         return ResponseEntity.ok(this.setGroupService.updateSetGroup(setGroupDto));

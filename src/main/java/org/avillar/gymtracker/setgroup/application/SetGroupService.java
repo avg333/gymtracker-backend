@@ -13,6 +13,8 @@ public interface SetGroupService {
 
     List<SetGroupDto> getAllWorkoutSetGroups(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 
+    List<SetGroupDto> getAllUserAndExerciseSetGroups(Long userId, Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
+
     SetGroupDto getSetGroup(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 
     SetGroupDto createSetGroupInSession(SetGroupDto setGroupDto) throws EntityNotFoundException, BadFormException;
