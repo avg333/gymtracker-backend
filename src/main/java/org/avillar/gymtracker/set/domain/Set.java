@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.set.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class Set extends SortableEntity {
     private Double rir;
     private Double weight;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "set_group_id", nullable = false)
     private SetGroup setGroup;
 

@@ -33,7 +33,6 @@ public class WorkoutController {
     @GetMapping("/users/{userId}/exercises/{exerciseId}/workouts/dates")
     public ResponseEntity<Map<Date, Long>> getAllUserWorkoutDatesWithExercise(@PathVariable final Long userId, @PathVariable final Long exerciseId)
             throws EntityNotFoundException, IllegalAccessException {
-        //TODO Mejorar URL
         return ResponseEntity.ok(this.workoutService.getAllUserWorkoutsWithExercise(userId, exerciseId));
     }
 
@@ -51,7 +50,7 @@ public class WorkoutController {
 
     @PostMapping("/users/{userId}/workouts")
     public ResponseEntity<WorkoutDto> postWorkoutInUser(@PathVariable final Long userId, @RequestBody final WorkoutDto workoutDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         workoutDto.setId(null);
         workoutDto.setUserApp(new UserAppDto(userId));
 
@@ -72,7 +71,7 @@ public class WorkoutController {
 
     @PutMapping("/workouts/{workoutId}")
     public ResponseEntity<WorkoutDto> putWorkout(@PathVariable final Long workoutId, @RequestBody final WorkoutDto workoutDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         workoutDto.setId(workoutId);
 
         return ResponseEntity.ok(this.workoutService.updateWorkout(workoutDto));

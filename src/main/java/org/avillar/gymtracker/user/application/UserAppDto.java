@@ -1,19 +1,20 @@
 package org.avillar.gymtracker.user.application;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.avillar.gymtracker.base.application.BaseDto;
 import org.avillar.gymtracker.enums.domain.ActivityLevelEnum;
 import org.avillar.gymtracker.enums.domain.GenderEnum;
-import org.springframework.web.multipart.MultipartFile;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAppDto {
+public class UserAppDto extends BaseDto {
     private static final String type = "Bearer";
     private String token;
-    private Long id;
 
     private String username;
     private String password;
@@ -23,9 +24,8 @@ public class UserAppDto {
     private String lastNameSecond;
     private GenderEnum gender;
     private ActivityLevelEnum activityLevel;
-    private MultipartFile image;
 
     public UserAppDto(Long id) {
-        this.id = id;
+        super(id);
     }
 }

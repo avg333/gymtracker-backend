@@ -28,9 +28,8 @@ public interface SessionService {
      * @param sessionDto DTO de la entidad a crear
      * @return DTO de la entidad creada
      * @throws EntityNotFoundException Se genera si no existe una entidad padre con ese ID
-     * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    SessionDto createSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    SessionDto createSession(SessionDto sessionDto) throws EntityNotFoundException, BadFormException;
 
     /**
      * Actualiza la entidad con el ID del DTO a los campos del DTO si lo solicita su usuario propietario o un admin
@@ -38,9 +37,8 @@ public interface SessionService {
      * @param sessionDto DTO de la entidad a actualizar, con su ID y sus datos
      * @return DTO de la entidad con los datos ya actualizados
      * @throws EntityNotFoundException Se genera si no existe una entidad con ese ID
-     * @throws IllegalAccessException  Se genera si solicita la operación un usuario no propietario ni admin
      */
-    SessionDto updateSession(SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    SessionDto updateSession(SessionDto sessionDto) throws EntityNotFoundException, BadFormException;
 
     /**
      * Elimina la entidad con el ID indicado

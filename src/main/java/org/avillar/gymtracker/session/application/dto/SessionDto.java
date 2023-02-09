@@ -1,17 +1,19 @@
 package org.avillar.gymtracker.session.application.dto;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.avillar.gymtracker.base.application.BaseDto;
 import org.avillar.gymtracker.program.application.dto.ProgramDto;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
 
 import java.time.DayOfWeek;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-public class SessionDto {
-    private Long id;
+public class SessionDto extends BaseDto {
     private String name;
     private String description;
     private DayOfWeek dayOfWeek;
@@ -25,6 +27,6 @@ public class SessionDto {
     private int setsNumber;
 
     public SessionDto(Long id) {
-        this.id = id;
+        super(id);
     }
 }

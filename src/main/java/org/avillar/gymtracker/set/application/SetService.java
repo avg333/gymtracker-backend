@@ -13,7 +13,7 @@ public interface SetService {
 
     SetDto getSet(Long setId) throws EntityNotFoundException, IllegalAccessException;
 
-    SetDto getSetDefaultDataForNewSet(Long setGroupId, Integer setNumber) throws EntityNotFoundException, IllegalAccessException;
+    SetDto getSetDefaultDataForNewSet(Long setGroupId) throws EntityNotFoundException, IllegalAccessException;
 
     SetDto createSet(SetDto setDto) throws EntityNotFoundException, BadFormException;
 

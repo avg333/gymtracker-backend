@@ -20,10 +20,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -69,8 +71,9 @@ class SetServiceImplTest {
     void deleteSetWhenNotExists() {
         final Long setId = 12L;
         given(setDao.findById(anyLong())).willReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class,() ->setService.deleteSet(setId));
+        assertThrows(EntityNotFoundException.class, () -> setService.deleteSet(setId));
     }
+
     @Test
     void deleteSetWhenNotPermission() throws IllegalAccessException {
         final Long setId = 12L;
@@ -81,8 +84,9 @@ class SetServiceImplTest {
         given(setDao.findById(anyLong())).willReturn(Optional.of(set));
         doThrow(IllegalAccessException.class).when(authService).checkAccess(setGroup);
 
-        assertThrows(IllegalAccessException.class,() ->setService.deleteSet(setId));
+        assertThrows(IllegalAccessException.class, () -> setService.deleteSet(setId));
     }
+
     @Test
     void deleteSetOk() throws IllegalAccessException {
         final Long setId = 12L;
@@ -95,6 +99,6 @@ class SetServiceImplTest {
         doNothing().when(authService).checkAccess(set.getSetGroup());
         doNothing().when(entitySorter).sortDelete(anySet(), eq(set));
 
-        assertDoesNotThrow(() ->setService.deleteSet(setId));
+        assertDoesNotThrow(() -> setService.deleteSet(setId));
     }
 }

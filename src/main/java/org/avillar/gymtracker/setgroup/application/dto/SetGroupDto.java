@@ -1,7 +1,9 @@
 package org.avillar.gymtracker.setgroup.application.dto;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.avillar.gymtracker.base.application.BaseDto;
 import org.avillar.gymtracker.exercise.application.dto.ExerciseDto;
 import org.avillar.gymtracker.session.application.dto.SessionDto;
 import org.avillar.gymtracker.set.application.dto.SetDto;
@@ -9,10 +11,10 @@ import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-public class SetGroupDto {
-    private Long id;
+public class SetGroupDto extends BaseDto {
     private int listOrder;
     private String description;
 
@@ -23,7 +25,7 @@ public class SetGroupDto {
     private List<SetDto> sets;
 
     public SetGroupDto(Long id) {
-        this.id = id;
+        super(id);
     }
 
 }

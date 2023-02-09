@@ -1,7 +1,10 @@
 package org.avillar.gymtracker.workout.application.dto;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.avillar.gymtracker.base.application.BaseDto;
 import org.avillar.gymtracker.musclegroup.application.dto.MuscleGroupDto;
 import org.avillar.gymtracker.setgroup.application.dto.SetGroupDto;
 import org.avillar.gymtracker.user.application.UserAppDto;
@@ -9,11 +12,11 @@ import org.avillar.gymtracker.user.application.UserAppDto;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-public class WorkoutDto {
-    private Long id;
-    //@JsonFormat(pattern="yyyy-MM-dd")
+public class WorkoutDto extends BaseDto {
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
     private String description;
 
@@ -21,17 +24,15 @@ public class WorkoutDto {
 
     private List<SetGroupDto> setGroups;
 
-    // Para el calendario
-    private List<MuscleGroupDto> muscleGroupDtos;
-
     // Para el summary
+    private List<MuscleGroupDto> muscleGroupDtos;
     private Integer exerciseNumber;
     private Integer setsNumber;
     private Integer weightVolume;
     private Integer duration;
 
     public WorkoutDto(Long id) {
-        this.id = id;
+        super(id);
     }
 
 }

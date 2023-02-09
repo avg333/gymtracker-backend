@@ -46,9 +46,11 @@ public class AuthServiceImpl implements AuthService {
         final Authentication auth = this.authenticationManager.authenticate(token);
         final UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
 
-        return new UserAppDto(this.jwtTokenUtil.generateToken(userDetails),
-                userDetails.getUserApp().getId(), userDetails.getUserApp().getUsername(),
-                null, null, null, null, null, null, null, null);
+        final UserAppDto userAppDtoResponse = new UserAppDto(this.jwtTokenUtil.generateToken(userDetails),
+                userDetails.getUserApp().getUsername(),
+                null, null, null, null, null, null, null);
+        userAppDtoResponse.setId(userDetails.getUserApp().getId());
+        return userAppDtoResponse;
     }
 
     @Override

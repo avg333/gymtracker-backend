@@ -1,22 +1,22 @@
 package org.avillar.gymtracker.program.application.dto;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.avillar.gymtracker.base.application.BaseDto;
 import org.avillar.gymtracker.enums.domain.ProgramLevelEnum;
-import org.springframework.web.multipart.MultipartFile;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-public class ProgramDto {
+public class ProgramDto extends BaseDto {
 
-    private Long id;
     private String name;
     private String description;
     private String url;
     private ProgramLevelEnum level = ProgramLevelEnum.ANY;
     private Boolean favourite = false;
     private Long userAppId;
-    private MultipartFile image;
     private int sessionNumber;
     //sessions
     private int averageVolumePerMuscleGroup;
@@ -25,7 +25,7 @@ public class ProgramDto {
     private String ownerName;
 
     public ProgramDto(Long id) {
-        this.id = id;
+        super(id);
     }
 
 

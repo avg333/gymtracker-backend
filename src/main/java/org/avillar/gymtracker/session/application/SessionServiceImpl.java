@@ -68,7 +68,7 @@ public class SessionServiceImpl extends BaseService implements SessionService {
      */
     @Override
     @Transactional
-    public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException {
+    public SessionDto createSession(final SessionDto sessionDto) throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(sessionDto);
         dataBinder.addValidators(new SessionDtoValidator());
         dataBinder.validate();
@@ -77,7 +77,6 @@ public class SessionServiceImpl extends BaseService implements SessionService {
         }
 
         final Program program = this.programDao.getReferenceById(sessionDto.getProgramDto().getId());
-        this.authService.checkAccess(program);
         final Session session = this.sessionMapper.toEntity(sessionDto);
 
         final int sessionsSize = this.sessionDao.findByProgramOrderByListOrder(program).size();
@@ -101,7 +100,7 @@ public class SessionServiceImpl extends BaseService implements SessionService {
      */
     @Override
     @Transactional
-    public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, IllegalAccessException, BadFormException {
+    public SessionDto updateSession(final SessionDto sessionDto) throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(sessionDto);
         dataBinder.addValidators(new SessionDtoValidator());
         dataBinder.validate();

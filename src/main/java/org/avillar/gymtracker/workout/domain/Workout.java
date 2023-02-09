@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.user.domain.UserApp;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -28,12 +29,13 @@ public class Workout extends BaseEntity {
     private Date date;
     private String description;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_app_id", nullable = false)
     private UserApp userApp;
 
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("listOrder ASC")//TODO Ordenar tambien por workout
+    @BatchSize(size = 20)
     private Set<SetGroup> setGroups = new HashSet<>();
 
     public Workout(Long id) {

@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.set.application;
 
 import org.avillar.gymtracker.auth.application.AuthService;
-import org.avillar.gymtracker.base.application.BaseService;
 import org.avillar.gymtracker.errors.application.exceptions.BadFormException;
 import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
@@ -30,7 +29,6 @@ public class SetServiceImpl implements SetService {
     private final SetMapper setMapper;
     private final EntitySorter entitySorter;
     private final SetDtoValidator setDtoValidator;
-
     private final AuthService authService;
 
     @Autowired
@@ -53,7 +51,7 @@ public class SetServiceImpl implements SetService {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
-        return this.setMapper.toDtos(this.setDao.findBySetGroupOrderByListOrderAsc(setGroup), -1);
+        return this.setMapper.toDtos(this.setDao.findBySetGroupOrderByListOrderAsc(setGroup));
     }
 
     /**
@@ -65,27 +63,27 @@ public class SetServiceImpl implements SetService {
         final Set set = this.setDao.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundException(Set.class, setId));
         this.authService.checkAccess(set.getSetGroup());
-        return this.setMapper.toDto(set, -1);
+        return this.setMapper.toDto(set);
     }
 
     /**
      * @ {@inheritDoc}
      */
     @Override
-    public SetDto getSetDefaultDataForNewSet(Long setGroupId, Integer setNumber)
+    public SetDto getSetDefaultDataForNewSet(final Long setGroupId)
             throws EntityNotFoundException, IllegalAccessException {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
 
-        final List<Set> sets = this.setDao.findLastSetForExerciseAndUser(this.authService.getLoggedUser(), setGroup.getExercise(), setNumber, setGroup.getWorkout().getDate());
+        final List<Set> sets = this.setDao.findLastSetForExerciseAndUser(this.authService.getLoggedUser(), setGroup.getExercise(), setGroup.getWorkout().getDate());
         if (!sets.isEmpty()) {
-            return this.setMapper.toDto(sets.get(0), -1);
+            return this.setMapper.toDto(sets.get(0));
         }//TODO Mejorar esto
 
         final List<Set> setsAux = this.setDao.findLastSetForExerciseAndUserAux(setGroup);
         if (!setsAux.isEmpty()) {
-            return this.setMapper.toDto(setsAux.get(0), -1);
+            return this.setMapper.toDto(setsAux.get(0));
         }
 
         return new SetDto();
@@ -122,7 +120,7 @@ public class SetServiceImpl implements SetService {
             this.setDao.saveAll(sets);
         }
 
-        return this.setMapper.toDto(set, -1);
+        return this.setMapper.toDto(set);
     }
 
     /**
@@ -153,7 +151,7 @@ public class SetServiceImpl implements SetService {
             this.setDao.saveAll(sets);
         }
 
-        return this.setMapper.toDto(set, -1);
+        return this.setMapper.toDto(set);
     }
 
     /**

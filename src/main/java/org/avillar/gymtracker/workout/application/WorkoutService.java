@@ -19,7 +19,7 @@ public interface WorkoutService {
 
     WorkoutDto getWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
 
-    WorkoutDto createWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    WorkoutDto createWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, BadFormException;
 
     WorkoutDto addSetGroupsToWorkoutFromWorkout(Long workoutDestinationId, Long workoutSourceId) throws IllegalAccessException, EntityNotFoundException;
 
@@ -30,9 +30,8 @@ public interface WorkoutService {
      *
      * @param workoutDto workout data to replace the previous workout data
      * @throws EntityNotFoundException if there is no workout with that id in workoutDto
-     * @throws IllegalAccessException  if the logged-in user does not have permission to modify the workout
      */
-    WorkoutDto updateWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, IllegalAccessException, BadFormException;
+    WorkoutDto updateWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, BadFormException;
 
     /**
      * Delete the workout with the specified id

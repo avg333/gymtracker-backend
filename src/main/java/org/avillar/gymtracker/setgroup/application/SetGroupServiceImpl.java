@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.setgroup.application;
 
-import org.avillar.gymtracker.base.application.BaseService;
+import org.avillar.gymtracker.auth.application.AuthService;
+import org.avillar.gymtracker.base.domain.BaseEntity;
 import org.avillar.gymtracker.errors.application.exceptions.BadFormException;
 import org.avillar.gymtracker.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessException;
@@ -31,7 +32,7 @@ import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
-public class SetGroupServiceImpl extends BaseService implements SetGroupService {
+public class SetGroupServiceImpl implements SetGroupService {
 
     private final SetGroupDao setGroupDao;
     private final SessionDao sessionDao;
@@ -42,11 +43,13 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
     private final SetGroupMapper setGroupMapper;
     private final EntitySorter entitySorter;
     private final SetGroupDtoValidator setGroupDtoValidator;
+    private final AuthService authService;
 
     @Autowired
     public SetGroupServiceImpl(SetGroupDao setGroupDao, SessionDao sessionDao, WorkoutDao workoutDao, SetDao setDao,
                                UserDao userDao, ExerciseDao exerciseDao, SetGroupMapper setGroupMapper,
-                               EntitySorter entitySorter, SetGroupDtoValidator setGroupDtoValidator) {
+                               EntitySorter entitySorter, SetGroupDtoValidator setGroupDtoValidator,
+                               AuthService authService) {
         this.setGroupDao = setGroupDao;
         this.sessionDao = sessionDao;
         this.workoutDao = workoutDao;
@@ -56,6 +59,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         this.setGroupMapper = setGroupMapper;
         this.entitySorter = entitySorter;
         this.setGroupDtoValidator = setGroupDtoValidator;
+        this.authService = authService;
     }
 
     /**
@@ -141,7 +145,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
             this.setGroupDao.saveAll(setGroups);
         }
 
-        return this.setGroupMapper.toDto(setGroup, -1);
+        return this.setGroupMapper.toDto(setGroup, 0);
     }
 
     /**
@@ -174,7 +178,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
             this.setGroupDao.saveAll(setGroups);
         }
 
-        return this.setGroupMapper.toDto(setGroup, -1);
+        return this.setGroupMapper.toDto(setGroup, 0);
     }
 
     /**
@@ -205,7 +209,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
                 .toList());
         this.setDao.saveAll(sets);
 
-        return this.setGroupMapper.toDto(this.setGroupDao.getReferenceById(setGroupDestinationId), -1);
+        return this.setGroupMapper.toDto(this.setGroupDao.getReferenceById(setGroupDestinationId), 0);
     }
 
     /**
@@ -225,9 +229,9 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
         final SetGroup setGroupDb = this.setGroupDao.getReferenceById(setGroupDto.getId());
 
         final SetGroup setGroup = this.setGroupMapper.toEntity(setGroupDto);
-        if (setGroupDb.getSession() != null) {
+        if (BaseEntity.exists(setGroupDb.getSession())) {
             setGroup.setSession(setGroupDb.getSession());
-        } else if (setGroupDb.getWorkout() != null) {
+        } else if (BaseEntity.exists(setGroupDb.getWorkout())) {
             setGroup.setWorkout(setGroupDb.getWorkout());
         }
 
@@ -242,7 +246,7 @@ public class SetGroupServiceImpl extends BaseService implements SetGroupService 
             this.setGroupDao.saveAll(setGroups);
         }
 
-        return this.setGroupMapper.toDto(setGroup, -1);
+        return this.setGroupMapper.toDto(setGroup, 0);
     }
 
     /**

@@ -37,7 +37,7 @@ public class SessionController {
 
     @PostMapping("/programs/{programId}/sessions")
     public ResponseEntity<SessionDto> postSession(@PathVariable final Long programId, @RequestBody final SessionDto sessionDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         sessionDto.setId(null);
         sessionDto.setProgramDto(new ProgramDto(programId));
 
@@ -46,7 +46,7 @@ public class SessionController {
 
     @PutMapping("/sessions/{sessionId}")
     public ResponseEntity<SessionDto> putSession(@PathVariable final Long sessionId, @RequestBody final SessionDto sessionDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         sessionDto.setId(sessionId);
 
         return ResponseEntity.ok(this.sessionService.updateSession(sessionDto));

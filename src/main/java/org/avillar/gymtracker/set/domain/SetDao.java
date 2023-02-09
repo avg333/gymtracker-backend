@@ -17,12 +17,10 @@ public interface SetDao extends JpaRepository<Set, Long> {
     @Query("""
             SELECT s FROM Set s
             JOIN s.setGroup sg JOIN sg.workout w JOIN sg.exercise e JOIN w.userApp u
-            WHERE u = :user AND e = :exercise AND w.date < :dateWorkoutSetGroup AND s.listOrder = :setNumber
+            WHERE u = :user AND e = :exercise AND w.date < :dateWorkoutSetGroup
             ORDER BY w.date DESC, sg.listOrder DESC, s.listOrder DESC
             """)
-    List<Set> findLastSetForExerciseAndUser(@Param("user") UserApp user, @Param("exercise") Exercise exercise, @Param("setNumber") Integer setNumber, @Param("dateWorkoutSetGroup") Date dateWorkoutSetGroup);
-
-    //Parametros ->SetGroup (Workout)
+    List<Set> findLastSetForExerciseAndUser(@Param("user") UserApp user, @Param("exercise") Exercise exercise, @Param("dateWorkoutSetGroup") Date dateWorkoutSetGroup);
 
     @Query("""
             SELECT s FROM Set s JOIN s.setGroup sg

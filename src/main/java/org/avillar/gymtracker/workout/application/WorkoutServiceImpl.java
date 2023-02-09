@@ -197,7 +197,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     @Override
     @Transactional
     public WorkoutDto createWorkout(final WorkoutDto workoutDto)
-            throws IllegalAccessException, EntityNotFoundException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(workoutDto);
         dataBinder.addValidators(workoutDtoValidator);
         dataBinder.validate();
@@ -261,7 +261,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
             setGroup.setListOrder(setGroupDb.getListOrder() + listOrderOffset);
             setGroup.setWorkout(workout);
             setGroups.add(setGroup);
-            for (final var setDb : setGroupDb.getSets()) {
+            for (final Set setDb : setGroupDb.getSets()) {
                 final Set set = Set.clone(setDb);
                 set.setSetGroup(setGroup);
                 sets.add(set);
@@ -278,7 +278,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
     @Override
     @Transactional
     public WorkoutDto updateWorkout(final WorkoutDto workoutDto)
-            throws EntityNotFoundException, IllegalAccessException, BadFormException {
+            throws EntityNotFoundException, BadFormException {
         final DataBinder dataBinder = new DataBinder(workoutDto);
         dataBinder.addValidators(workoutDtoValidator);
         dataBinder.validate();

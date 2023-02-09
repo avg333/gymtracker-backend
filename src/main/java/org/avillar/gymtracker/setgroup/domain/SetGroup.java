@@ -10,6 +10,7 @@ import org.avillar.gymtracker.session.domain.Session;
 import org.avillar.gymtracker.set.domain.Set;
 import org.avillar.gymtracker.sort.domain.SortableEntity;
 import org.avillar.gymtracker.workout.domain.Workout;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.HashSet;
 
@@ -22,18 +23,19 @@ public class SetGroup extends SortableEntity {
 
     private String description;
 
-    @ManyToOne
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "session_id")
     private Session session;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "workout_id")
     private Workout workout;
 
-    @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "setGroup", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("listOrder ASC")
+    @BatchSize(size = 20)
     private java.util.Set<Set> sets = new HashSet<>();
 
     public SetGroup(Long id) {
