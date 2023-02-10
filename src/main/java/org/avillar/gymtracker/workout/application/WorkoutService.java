@@ -6,7 +6,6 @@ import org.avillar.gymtracker.errors.application.exceptions.IllegalAccessExcepti
 import org.avillar.gymtracker.workout.application.dto.WorkoutDto;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public interface WorkoutService {
@@ -15,9 +14,7 @@ public interface WorkoutService {
 
     Map<Date, Long> getAllUserWorkoutsWithExercise(Long userId, Long exerciseId) throws EntityNotFoundException, IllegalAccessException;
 
-    List<WorkoutDto> getAllUserWorkoutsByDate(Long userId, Date date) throws EntityNotFoundException, IllegalAccessException;
-
-    WorkoutDto getWorkout(Long workoutId) throws EntityNotFoundException, IllegalAccessException;
+    WorkoutDto getWorkout(Long workoutId, Integer depth) throws EntityNotFoundException, IllegalAccessException;
 
     WorkoutDto createWorkout(WorkoutDto workoutDto) throws EntityNotFoundException, BadFormException;
 

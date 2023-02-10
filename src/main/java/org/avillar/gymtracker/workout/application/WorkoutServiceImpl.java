@@ -27,6 +27,7 @@ import org.avillar.gymtracker.workout.application.dto.WorkoutDtoValidator;
 import org.avillar.gymtracker.workout.application.dto.WorkoutMapper;
 import org.avillar.gymtracker.workout.domain.Workout;
 import org.avillar.gymtracker.workout.domain.WorkoutDao;
+import org.avillar.gymtracker.workout.domain.WorkoutDateAndId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,10 +84,9 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         workout.setUserApp(userApp);
         this.authService.checkAccess(workout);
 
-        //TODO Obtener solo fecha e ID
         return this.workoutDao.getWorkoutDatesByUser(userApp)
                 .stream()
-                .collect(Collectors.toMap(Workout::getDate, Workout::getId));
+                .collect(Collectors.toMap(WorkoutDateAndId::getDate, WorkoutDateAndId::getId));
     }
 
     /**
@@ -103,39 +103,20 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         workout.setUserApp(userApp);
         this.authService.checkAccess(workout);
 
-        //TODO Obtener solo fecha e ID
         return this.workoutDao.findWorkoutsWithUserAndExercise(userApp, exercise)
                 .stream()
-                .collect(Collectors.toMap(Workout::getDate, Workout::getId));
+                .collect(Collectors.toMap(WorkoutDateAndId::getDate, WorkoutDateAndId::getId));
     }
 
     /**
      * @ {@inheritDoc}
      */
     @Override
-    public List<WorkoutDto> getAllUserWorkoutsByDate(final Long userId, final Date date) throws EntityNotFoundException, IllegalAccessException {
-        final UserApp userApp = this.userDao.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(UserApp.class, userId));
-
-        final Workout workout = new Workout();
-        workout.setUserApp(userApp);
-        this.authService.checkAccess(workout);
-
-        return this.workoutDao.findByUserAppAndDate(userApp, date)
-                .stream()
-                .map(this::getWorkoutMetadata)
-                .toList();
-    }
-
-    /**
-     * @ {@inheritDoc}
-     */
-    @Override
-    public WorkoutDto getWorkout(final Long workoutId) throws EntityNotFoundException, IllegalAccessException {
+    public WorkoutDto getWorkout(final Long workoutId, final Integer depth) throws EntityNotFoundException, IllegalAccessException {
         final Workout workout = this.workoutDao.findById(workoutId)
                 .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
         this.authService.checkAccess(workout);
-        return this.getWorkoutMetadata(workout);
+        return depth < 0 ? this.getWorkoutMetadata(workout) : this.workoutMapper.toDto(workout, depth);
     }
 
     private WorkoutDto getWorkoutMetadata(final Workout workout) {
@@ -208,7 +189,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(this.userDao.getReferenceById(workoutDto.getUserApp().getId()));
 
-        return this.workoutMapper.toDto(this.workoutDao.save(workout), -1);
+        return this.workoutMapper.toDto(this.workoutDao.save(workout), 0);
     }
 
     /**
@@ -228,7 +209,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
         this.copySetGroupsToWorkout(workoutDestination, workoutSource.getSetGroups());
 
-        return this.getWorkoutMetadata(this.workoutDao.getReferenceById(workoutDestinationId));
+        return this.workoutMapper.toDto(this.workoutDao.getReferenceById(workoutDestinationId), 0);
     }
 
     /**
@@ -248,7 +229,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
 
         this.copySetGroupsToWorkout(workoutDestination, sessionSource.getSetGroups());
 
-        return this.getWorkoutMetadata(this.workoutDao.getReferenceById(workoutDestinationId));
+        return this.workoutMapper.toDto(this.workoutDao.getReferenceById(workoutDestinationId), 0);
     }
 
     private void copySetGroupsToWorkout(final Workout workout, final java.util.Set<SetGroup> setGroupsSource) {
@@ -291,7 +272,7 @@ public class WorkoutServiceImpl extends BaseService implements WorkoutService {
         final Workout workout = this.workoutMapper.toEntity(workoutDto);
         workout.setUserApp(workoutDb.getUserApp());
 
-        return this.workoutMapper.toDto(this.workoutDao.save(workout), -1);
+        return this.workoutMapper.toDto(this.workoutDao.save(workout), 0);
     }
 
     /**

@@ -9,6 +9,7 @@ import org.avillar.gymtracker.enums.domain.LoadTypeEnum;
 import org.avillar.gymtracker.musclegroup.domain.MuscleGroupExercise;
 import org.avillar.gymtracker.musclegroup.domain.MuscleSubGroup;
 import org.avillar.gymtracker.setgroup.domain.SetGroup;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,16 +28,19 @@ public class Exercise extends BaseEntity {
     @Column(nullable = false)
     private LoadTypeEnum loadType;
 
-    @OneToMany(mappedBy = "exercise", orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "exercise", orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 20)
     private Set<MuscleGroupExercise> muscleGroupExercises = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "exercise_muscle_sub_groups",
             joinColumns = @JoinColumn(name = "exercise_null"),
             inverseJoinColumns = @JoinColumn(name = "muscle_sub_groups_id"))
+    @BatchSize(size = 20)
     private Set<MuscleSubGroup> muscleSubGroups = new HashSet<>();
 
-    @OneToMany(mappedBy = "exercise", orphanRemoval = true)
+    @OneToMany(mappedBy = "exercise", orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 20)
     private Set<SetGroup> setGroups = new HashSet<>();
 
     public Exercise(String name, String description, Boolean unilateral, LoadTypeEnum loadType, java.util.Set<MuscleSubGroup> muscleSubGroups) {

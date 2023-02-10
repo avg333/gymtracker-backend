@@ -24,30 +24,48 @@ public class SetGroupController {
         this.setGroupService = setGroupService;
     }
 
+    /**
+     * No se usa DE MOMENTO
+     */
     @GetMapping("/sessions/{sessionId}/setGroups")
     public ResponseEntity<List<SetGroupDto>> getAllSessionSetGroups(@PathVariable final Long sessionId)
             throws EntityNotFoundException, IllegalAccessException {
         return ResponseEntity.ok(this.setGroupService.getAllSessionSetGroups(sessionId));
     }
 
+    /**
+     * No se usa
+     */
     @GetMapping("/workouts/{workoutId}/setGroups")
     public ResponseEntity<List<SetGroupDto>> getAllWorkoutSetGroups(@PathVariable final Long workoutId)
             throws EntityNotFoundException, IllegalAccessException {
         return ResponseEntity.ok(this.setGroupService.getAllWorkoutSetGroups(workoutId));
     }
 
+    /**
+     * Se usa en la pantalla ejercicio para ver el historico. TODO traer workouts?
+     */
     @GetMapping("/users/{userId}/exercises/{exerciseId}/setGroups")
     public ResponseEntity<List<SetGroupDto>> getAllUserAndExerciseSetGroups(@PathVariable final Long userId, @PathVariable final Long exerciseId)
             throws EntityNotFoundException, IllegalAccessException {
         return ResponseEntity.ok(this.setGroupService.getAllUserAndExerciseSetGroups(userId, exerciseId));
     }
 
+    /**
+     * Casos de uso:
+     * 1º Pantalla ejercicios (cambio de ejercicio de un setGroup).
+     * -Necesita de Ejercicio (Contemplar no traer ejercicio y obtenerlo en otra llamada. Solo se usa el nombre)
+     * -Necesita de WorkoutId
+     */
     @GetMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> getSetGroup(@PathVariable final Long setGroupId)
             throws EntityNotFoundException, IllegalAccessException {
         return ResponseEntity.ok(this.setGroupService.getSetGroup(setGroupId));
     }
 
+    /**
+     * Se usa para añadir ejercicios a una sesion. No usa el retorno.
+     */
     @PostMapping("/sessions/{sessionId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInSession(@PathVariable final Long sessionId, @RequestBody final SetGroupDto setGroupDto)
             throws EntityNotFoundException, BadFormException {
@@ -57,6 +75,9 @@ public class SetGroupController {
         return ResponseEntity.ok(this.setGroupService.createSetGroupInSession(setGroupDto));
     }
 
+    /**
+     * Se usa para añadir ejercicios a un workout. No usa el retorno.
+     */
     @PostMapping("/workouts/{workoutId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInWorkout(@PathVariable final Long workoutId, @RequestBody final SetGroupDto setGroupDto)
             throws EntityNotFoundException, BadFormException {
@@ -66,12 +87,18 @@ public class SetGroupController {
         return ResponseEntity.ok(this.setGroupService.createSetGroupInWorkout(setGroupDto));
     }
 
+    /**
+     * Se usa para sustituir las series de un SG por las de otro. No se usa el retorno.
+     */
     @PostMapping("/setGroups/{setGroupDestinationId}/replaceWith/setGroups/{setGroupSourceId}")
     public ResponseEntity<SetGroupDto> replaceSetGroupSetsWithSetGroup(@PathVariable final Long setGroupDestinationId, @PathVariable final Long setGroupSourceId)
             throws EntityNotFoundException, IllegalAccessException {
         return ResponseEntity.ok(this.setGroupService.replaceSetGroupSetsFromSetGroup(setGroupDestinationId, setGroupSourceId));
     }
 
+    /**
+     * Se usa para cambiar el ejercicio de un SG. No usa el retorno.
+     */
     @PutMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> putSetGroup(@PathVariable final Long setGroupId, @RequestBody final SetGroupDto setGroupDto)
             throws EntityNotFoundException, BadFormException {

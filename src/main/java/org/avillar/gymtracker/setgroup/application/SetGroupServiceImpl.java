@@ -112,7 +112,7 @@ public class SetGroupServiceImpl implements SetGroupService {
         final SetGroup setGroup = this.setGroupDao.findById(setGroupId)
                 .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
         this.authService.checkAccess(setGroup);
-        return this.setGroupMapper.toDto(setGroup, -1);
+        return this.setGroupMapper.toDto(setGroup, 1);
     }
 
     /**
