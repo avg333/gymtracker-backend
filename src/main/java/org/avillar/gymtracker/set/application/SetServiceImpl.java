@@ -79,7 +79,7 @@ public class SetServiceImpl implements SetService {
         final List<Set> sets = this.setDao.findLastSetForExerciseAndUser(this.authService.getLoggedUser(), setGroup.getExercise(), setGroup.getWorkout().getDate());
         if (!sets.isEmpty()) {
             return this.setMapper.toDto(sets.get(0));
-        }//TODO Mejorar esto
+        }//TODO Hacer mas eficiente y elegante
 
         final List<Set> setsAux = this.setDao.findLastSetForExerciseAndUserAux(setGroup);
         if (!setsAux.isEmpty()) {

@@ -43,7 +43,7 @@ public class SetGroupController {
     }
 
     /**
-     * Se usa en la pantalla ejercicio para ver el historico. TODO traer workouts?
+     * Se usa en la pantalla ejercicio para ver el historico
      */
     @GetMapping("/users/{userId}/exercises/{exerciseId}/setGroups")
     public ResponseEntity<List<SetGroupDto>> getAllUserAndExerciseSetGroups(@PathVariable final Long userId, @PathVariable final Long exerciseId)

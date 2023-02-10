@@ -24,8 +24,6 @@ import static jakarta.persistence.TemporalType.DATE;
 public class Workout extends BaseEntity {
     @Column(nullable = false)
     @Temporal(DATE)
-    //@JsonFormat(pattern="yyyy-MM-dd")
-    //@DateTimeFormat(pattern="yyyy-MM-dd")
     private Date date;
     private String description;
 
@@ -34,7 +32,7 @@ public class Workout extends BaseEntity {
     private UserApp userApp;
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
-    @OrderBy("listOrder ASC")//TODO Ordenar tambien por workout
+    @OrderBy("listOrder ASC")
     @BatchSize(size = 20)
     private Set<SetGroup> setGroups = new HashSet<>();
 
