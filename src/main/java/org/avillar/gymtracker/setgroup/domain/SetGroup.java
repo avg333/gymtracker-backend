@@ -23,7 +23,7 @@ public class SetGroup extends SortableEntity {
 
     private String description;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
     @ManyToOne(fetch = FetchType.EAGER)

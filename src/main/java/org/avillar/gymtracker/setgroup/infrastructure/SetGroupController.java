@@ -43,7 +43,9 @@ public class SetGroupController {
     }
 
     /**
-     * Se usa en la pantalla ejercicio para ver el historico
+     * Obtiene todos los setGroups del usuario especificado y el ejercicio especificado.
+     * Estos SetGroups deben tener el Exercise (y sus subcategorías) y las Sets.
+     * Se usa en ExercisePage para ver el histórico.
      */
     @GetMapping("/users/{userId}/exercises/{exerciseId}/setGroups")
     public ResponseEntity<List<SetGroupDto>> getAllUserAndExerciseSetGroups(@PathVariable final Long userId, @PathVariable final Long exerciseId)
@@ -52,10 +54,8 @@ public class SetGroupController {
     }
 
     /**
-     * Casos de uso:
-     * 1º Pantalla ejercicios (cambio de ejercicio de un setGroup).
-     * -Necesita de Ejercicio (Contemplar no traer ejercicio y obtenerlo en otra llamada. Solo se usa el nombre)
-     * -Necesita de WorkoutId
+     * Obtiene el SetGroupDto del SetGroup con el ID especificado.
+     * Se usa en ChangeFromWorkoutModal y solo necesita el ID del Exercise
      */
     @GetMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> getSetGroup(@PathVariable final Long setGroupId)
@@ -64,7 +64,7 @@ public class SetGroupController {
     }
 
     /**
-     * Se usa para añadir ejercicios a una sesion. No usa el retorno.
+     * Crea un nuevo SetGroup en la Session especificada. No usa el retorno.
      */
     @PostMapping("/sessions/{sessionId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInSession(@PathVariable final Long sessionId, @RequestBody final SetGroupDto setGroupDto)
@@ -76,7 +76,7 @@ public class SetGroupController {
     }
 
     /**
-     * Se usa para añadir ejercicios a un workout. No usa el retorno.
+     * Crea un nuevo SetGroup en el Workout especificada. No usa el retorno.
      */
     @PostMapping("/workouts/{workoutId}/setGroups")
     public ResponseEntity<SetGroupDto> postSetGroupInWorkout(@PathVariable final Long workoutId, @RequestBody final SetGroupDto setGroupDto)
@@ -88,7 +88,9 @@ public class SetGroupController {
     }
 
     /**
-     * Se usa para sustituir las series de un SG por las de otro. No se usa el retorno.
+     * Sustituye las Sets del SetGroup especificado por las Sets del otro SetGroup especificado.
+     * Retorna el SetGroup modificado.
+     * Se usa en ChangeFromWorkoutModal y no usa el retorno.
      */
     @PostMapping("/setGroups/{setGroupDestinationId}/replaceWith/setGroups/{setGroupSourceId}")
     public ResponseEntity<SetGroupDto> replaceSetGroupSetsWithSetGroup(@PathVariable final Long setGroupDestinationId, @PathVariable final Long setGroupSourceId)
@@ -97,7 +99,9 @@ public class SetGroupController {
     }
 
     /**
-     * Se usa para cambiar el ejercicio de un SG. No usa el retorno.
+     * Sustituye el SetGroup con el ID especicado por otro con los datos del SetGroupID.
+     * No se sustituye el padre original (Workout / Session) ni el ID del SetGroup.
+     * Solo se usa para la sustitución del Exercise (exerciseId) del SetGroup especificado desde ExercisesPage y no usa el retorno.
      */
     @PutMapping("/setGroups/{setGroupId}")
     public ResponseEntity<SetGroupDto> putSetGroup(@PathVariable final Long setGroupId, @RequestBody final SetGroupDto setGroupDto)
@@ -107,6 +111,10 @@ public class SetGroupController {
         return ResponseEntity.ok(this.setGroupService.updateSetGroup(setGroupDto));
     }
 
+    /**
+     * Elimina el SetGroup con el ID especificado.
+     * Se usa en SetGroupCard para eliminar el SetGroup especificado.
+     */
     @DeleteMapping("/setGroups/{setGroupId}")
     public ResponseEntity<Void> deleteSetGroup(@PathVariable final Long setGroupId)
             throws EntityNotFoundException, IllegalAccessException {

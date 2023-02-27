@@ -108,7 +108,7 @@ public class SetServiceImpl implements SetService {
         final Set set = this.setMapper.toEntity(setDto);
 
         final int setsSize = this.setDao.findBySetGroupOrderByListOrderAsc(setGroup).size();
-        if (null == set.getListOrder() || set.getListOrder() > setsSize || 0 > set.getListOrder()) {
+        if (!EntitySorter.isValidNewListOrder(set.getListOrder(), setsSize)) {
             set.setListOrder(setsSize);
         }
 
@@ -143,6 +143,12 @@ public class SetServiceImpl implements SetService {
         set.setSetGroup(setDb.getSetGroup());
 
         final int oldPosition = set.getListOrder();
+
+        final int setsSize = this.setDao.findBySetGroupOrderByListOrderAsc(setDb.getSetGroup()).size();
+        if (!EntitySorter.isValidNewListOrder(set.getListOrder(), setsSize)) {
+            set.setListOrder(setsSize);
+        }
+
         this.setDao.save(set);
 
         final java.util.Set<Set> sets = set.getSetGroup().getSets();

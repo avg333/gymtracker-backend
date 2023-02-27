@@ -21,7 +21,7 @@ public interface SetGroupDao extends JpaRepository<SetGroup, Long> {
             FROM SetGroup sg
             JOIN sg.workout w
             JOIN w.userApp u
-            JOIN sg.exercise e
+            JOIN FETCH sg.exercise e
             WHERE u = :user
             AND e = :exercise
             ORDER BY w.date DESC, sg.listOrder DESC

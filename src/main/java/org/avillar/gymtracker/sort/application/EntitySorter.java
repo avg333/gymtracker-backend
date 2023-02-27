@@ -61,4 +61,8 @@ public class EntitySorter {
         }
     }
 
+    public static boolean isValidNewListOrder(final Integer listOrder, final int setsSize){
+        return !(null == listOrder || listOrder > setsSize || 0 > listOrder);
+    }
+
 }

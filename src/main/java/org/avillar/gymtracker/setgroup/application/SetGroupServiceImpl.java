@@ -133,7 +133,7 @@ public class SetGroupServiceImpl implements SetGroupService {
 
         final SetGroup setGroup = this.setGroupMapper.toEntity(setGroupDto);
         final int setGroupsSize = this.setGroupDao.findByWorkoutOrderByListOrderAsc(workout).size();
-        if (null == setGroup.getListOrder() || setGroup.getListOrder() > setGroupsSize || 0 > setGroup.getListOrder()) {
+        if (!EntitySorter.isValidNewListOrder(setGroup.getListOrder(), setGroupsSize)) {
             setGroup.setListOrder(setGroupsSize);
         }
 
@@ -166,7 +166,7 @@ public class SetGroupServiceImpl implements SetGroupService {
 
         final SetGroup setGroup = this.setGroupMapper.toEntity(setGroupDto);
         final int setGroupsSize = this.setGroupDao.findBySessionOrderByListOrderAsc(session).size();
-        if (null == setGroup.getListOrder() || setGroup.getListOrder() > setGroupsSize || 0 > setGroup.getListOrder()) {
+        if (!EntitySorter.isValidNewListOrder(setGroup.getListOrder(), setGroupsSize)) {
             setGroup.setListOrder(setGroupsSize);
         }
 

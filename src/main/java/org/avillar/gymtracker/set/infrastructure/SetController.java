@@ -33,7 +33,8 @@ public class SetController {
     }
 
     /**
-     * ModalSet para obtener la set en edicion
+     * Obtiene el setDTO del set con el ID especificado
+     * Se usa cuando en SetModal cuando se modifica una set existente
      */
     @GetMapping("sets/{setId}")
     public ResponseEntity<SetDto> getSet(@PathVariable final Long setId)
@@ -42,7 +43,7 @@ public class SetController {
     }
 
     /**
-     * ModalSet para obtener los datos de las nueva set
+     * Obtiene una Set con los datos por defecto para una nueva set en ese SetGroup
      */
     @GetMapping("setGroups/{setGroupId}/sets/newSet")
     public ResponseEntity<SetDto> getSetDefaultDataForNewSet(@PathVariable final Long setGroupId)
@@ -51,7 +52,8 @@ public class SetController {
     }
 
     /**
-     * ModalSet para crear la nueva set. No se usa el retorno
+     * Crea una nueva Set en el SetGroup especificado.
+     * Se usa en SetModal al guardar una Set nueva, pero no usa el retorno.
      */
     @PostMapping("setGroups/{setGroupId}/sets")
     public ResponseEntity<SetDto> postSet(@PathVariable final Long setGroupId, @RequestBody final SetDto setDto)
@@ -63,7 +65,10 @@ public class SetController {
     }
 
     /**
-     * ModalSet para editar una set. No se usa el retorno
+     * Sustituye la set con el ID especificado por otra con los datos del SetDto enviado.
+     * No se sustituye el padre de la Set original ni el ID de la set.
+     * Devuelve el SetDto resultado de la actualización.
+     * Se usa en SetModal cuando se modifica una Set existente, pero no se usa el retorno.
      */
     @PutMapping("sets/{setId}")
     public ResponseEntity<SetDto> updateSet(@PathVariable final Long setId, @RequestBody final SetDto setDto)
@@ -74,7 +79,8 @@ public class SetController {
     }
 
     /**
-     * ModalSet para eliminar una set. No se usa el retorno
+     * Elimina la set con el ID especificado.
+     * Se usa en SetModal para eliminar la set en edición.
      */
     @DeleteMapping("sets/{setId}")
     public ResponseEntity<Void> deleteSet(@PathVariable final Long setId)
