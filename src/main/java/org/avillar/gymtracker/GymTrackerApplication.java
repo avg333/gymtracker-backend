@@ -1,28 +1,23 @@
 package org.avillar.gymtracker;
 
 import jakarta.annotation.PostConstruct;
-import org.modelmapper.ModelMapper;
+import java.util.TimeZone;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-
-import java.util.TimeZone;
 
 @SpringBootApplication
 public class GymTrackerApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(GymTrackerApplication.class, args);
-    }
+  @Value("${spring.jpa.properties.hibernate.jdbc.time_zone}")
+  private String timeZone;
 
-    @PostConstruct
-    public void init() {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(GymTrackerApplication.class, args);
+  }
 
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
-
+  @PostConstruct
+  public void init() {
+    TimeZone.setDefault(TimeZone.getTimeZone(timeZone));
+  }
 }
