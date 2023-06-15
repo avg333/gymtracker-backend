@@ -40,7 +40,7 @@ public class AuthWorkoutsServiceImpl implements AuthWorkoutsService {
     }
   }
 
-  private UUID getLoggedUserId() {
+  private UUID getLoggedUserId() { // TODO Controlar cuando esto falla!!
     final UserDetailsImpl userDetails =
         (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     return userDetails.getId();

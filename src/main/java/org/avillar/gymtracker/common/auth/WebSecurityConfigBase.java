@@ -41,13 +41,15 @@ public class WebSecurityConfigBase {
         .configurationSource(this::corsConfiguration)
         .and()
         .csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(
-            requests ->
-                requests
-                    .requestMatchers(new AntPathRequestMatcher(authApiPrefix + authEndpoint))
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
+        .authorizeHttpRequests( // FIXME Autorizar solo API
+            authorize -> authorize.requestMatchers("/**").permitAll().anyRequest().authenticated())
+//        .authorizeHttpRequests(
+//            requests ->
+//                requests
+//                    .requestMatchers(new AntPathRequestMatcher(authApiPrefix + authEndpoint))
+//                    .permitAll()
+//                    .anyRequest()
+//                    .authenticated())
         .exceptionHandling()
         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
         .and()
