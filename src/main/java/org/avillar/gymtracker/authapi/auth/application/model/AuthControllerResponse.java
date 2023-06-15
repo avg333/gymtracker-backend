@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthControllerResponse {
 
-    private static final String type = "Bearer";
-    private String token;
+  private static final String type = "Bearer";
+  private String token;
 
-    private UUID id;
-    private String username;
+  private UUID id;
+  private String username;
 }

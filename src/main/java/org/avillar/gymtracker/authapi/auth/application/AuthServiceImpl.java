@@ -17,19 +17,23 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final AuthServiceMapper authServiceMapper;
+  private final AuthenticationManager authenticationManager;
+  private final JwtTokenUtil jwtTokenUtil;
+  private final AuthServiceMapper authServiceMapper;
 
-    @Override
-    public AuthControllerResponse login(final AuthControllerRequest authControllerRequest) {
-        final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(authControllerRequest.getUsername(), authControllerRequest.getPassword());
-        final Authentication auth = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        final UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-        final String jwt = jwtTokenUtil.generateToken(userDetails);
+  @Override
+  public AuthControllerResponse login(final AuthControllerRequest authControllerRequest) {
+    final Authentication auth =
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                authControllerRequest.getUsername(), authControllerRequest.getPassword()));
 
-        final AuthControllerResponse authControllerResponse = authServiceMapper.postResponse(userDetails);
-        authControllerResponse.setToken(jwt);
-        return authControllerResponse;
-    }
+    final UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+    final String jwt = jwtTokenUtil.generateToken(userDetails);
+
+    final AuthControllerResponse authControllerResponse =
+        authServiceMapper.postResponse(userDetails);
+    authControllerResponse.setToken(jwt);
+    return authControllerResponse;
+  }
 }

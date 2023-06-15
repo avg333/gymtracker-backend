@@ -7,7 +7,10 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface AuthControllerMapper {
 
-    AuthControllerResponse postResponse(org.avillar.gymtracker.authapi.auth.application.model.AuthControllerResponse postWorkoutResponse);
+  AuthControllerResponse postResponse(
+      org.avillar.gymtracker.authapi.auth.application.model.AuthControllerResponse
+          postWorkoutResponse);
 
-    org.avillar.gymtracker.authapi.auth.application.model.AuthControllerRequest postRequest(AuthControllerRequest postWorkoutRequest);
+  org.avillar.gymtracker.authapi.auth.application.model.AuthControllerRequest postRequest(
+      AuthControllerRequest postWorkoutRequest);
 }

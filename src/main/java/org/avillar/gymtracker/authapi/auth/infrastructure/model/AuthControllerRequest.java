@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class AuthControllerRequest {
 
-    @NotNull(message = "The username is obligatory")
-    private String username;
+  @NotNull(message = "The username is obligatory")
+  private String username;
 
-    @NotNull(message = "The password is obligatory")
-    private String password;
+  @NotNull(message = "The password is obligatory")
+  private String password;
 }

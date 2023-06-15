@@ -21,13 +21,30 @@ public class AuthDataLoader implements ApplicationRunner {
       log.info("La base de datos ya tiene datos. No se insertaran mas");
       return;
     }
-    userDao.save(new UserApp(null,
-        "chema", new BCryptPasswordEncoder().encode("chema69"), null, "Chema",
-        "Garcia", "Romero", null, UserApp.GenderEnum.MALE, UserApp.ActivityLevelEnum.EXTREME));
-    userDao.save(new UserApp(null,
-        "alex", new BCryptPasswordEncoder().encode("alex69"), null, "Alex",
-        "Garcia", "Fernandez", null, UserApp.GenderEnum.FEMALE,
-        UserApp.ActivityLevelEnum.MODERATE));
+    userDao.save(
+        new UserApp(
+            null,
+            "chema",
+            new BCryptPasswordEncoder().encode("chema69"),
+            null,
+            "Chema",
+            "Garcia",
+            "Romero",
+            null,
+            UserApp.GenderEnum.MALE,
+            UserApp.ActivityLevelEnum.EXTREME));
+    userDao.save(
+        new UserApp(
+            null,
+            "alex",
+            new BCryptPasswordEncoder().encode("alex69"),
+            null,
+            "Alex",
+            "Garcia",
+            "Fernandez",
+            null,
+            UserApp.GenderEnum.FEMALE,
+            UserApp.ActivityLevelEnum.MODERATE));
     log.info("Creados dos usuarios");
   }
 }

@@ -17,21 +17,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableMethodSecurity
 public class WebSecurityConfig extends WebSecurityConfigBase {
 
-    private final UserDetailsService userDetailsService;
+  private final UserDetailsService userDetailsService;
 
-    @Autowired
-    public WebSecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtRequestFilter jwtRequestFilter, UserDetailsService userDetailsService) {
-        super(jwtAuthenticationEntryPoint, jwtRequestFilter);
-        this.userDetailsService = userDetailsService;
-    }
+  @Autowired
+  public WebSecurityConfig(
+      JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+      JwtRequestFilter jwtRequestFilter,
+      UserDetailsService userDetailsService) {
+    super(jwtAuthenticationEntryPoint, jwtRequestFilter);
+    this.userDetailsService = userDetailsService;
+  }
 
-    @Autowired
-    public void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
-    }
+  @Autowired
+  public void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {
+    auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+  }
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

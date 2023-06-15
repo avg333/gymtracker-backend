@@ -14,12 +14,16 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 @RequiredArgsConstructor
 public class WebSecurityConfigBase {
 
-  @Value("${authApiPrefix}/")
+  @Value("${authApiPrefix}")
+  private String authApiPrefix;
+
+  @Value("${authApiEndpoint}")
   private String authEndpoint;
 
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -38,7 +42,12 @@ public class WebSecurityConfigBase {
         .and()
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            authorize -> authorize.requestMatchers("/**").permitAll().anyRequest().authenticated())
+            requests ->
+                requests
+                    .requestMatchers(new AntPathRequestMatcher(authApiPrefix + authEndpoint))
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
         .exceptionHandling()
         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
         .and()

@@ -5,5 +5,5 @@ import org.avillar.gymtracker.authapi.auth.application.model.AuthControllerRespo
 
 public interface AuthService {
 
-    AuthControllerResponse login(AuthControllerRequest authControllerRequest);
+  AuthControllerResponse login(AuthControllerRequest authControllerRequest);
 }

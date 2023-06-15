@@ -19,24 +19,31 @@ import lombok.Setter;
 @Entity
 public class UserApp implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-    private String username;
-    private String password;
-    private String email;
-    private String name;
-    private String lastNameFirst;
-    private String lastNameSecond;
-    private Date birth;
-    private GenderEnum gender;
-    private ActivityLevelEnum activityLevel;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    public enum ActivityLevelEnum {
-        SEDENTARY, LIGHT, MODERATE, HIGH, EXTREME
-    }
+  private String username;
+  private String password;
 
-    public enum GenderEnum {
-        MALE, FEMALE
-    }
+  private String email;
+  private String name;
+  private String lastNameFirst;
+  private String lastNameSecond;
+  private Date birth;
+  private GenderEnum gender;
+  private ActivityLevelEnum activityLevel;
+
+  public enum ActivityLevelEnum {
+    SEDENTARY,
+    LIGHT,
+    MODERATE,
+    HIGH,
+    EXTREME
+  }
+
+  public enum GenderEnum {
+    MALE,
+    FEMALE
+  }
 }

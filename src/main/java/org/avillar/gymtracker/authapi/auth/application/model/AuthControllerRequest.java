@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class AuthControllerRequest {
 
-    private String username;
+  private String username;
 
-    private String password;
+  private String password;
 }
