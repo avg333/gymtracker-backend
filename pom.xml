@@ -20,8 +20,7 @@
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <org.jjwt.version>0.11.5</org.jjwt.version>
         <org.commons-lang3.version>3.12.0</org.commons-lang3.version>
-
-        <spring-cloud.version>2022.0.3</spring-cloud.version>
+        <testcontainers.version>1.18.3</testcontainers.version>
     </properties>
     <dependencies>
         <dependency>
@@ -105,14 +104,25 @@
             <artifactId>commons-lang3</artifactId>
             <version>${org.commons-lang3.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -147,6 +157,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <finalName>docker-gymtracker</finalName>
     </build>
 
 </project>
