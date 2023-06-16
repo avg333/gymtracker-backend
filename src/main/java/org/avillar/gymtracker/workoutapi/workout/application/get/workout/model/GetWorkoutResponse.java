@@ -2,7 +2,6 @@ package org.avillar.gymtracker.workoutapi.workout.application.get.workout.model;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

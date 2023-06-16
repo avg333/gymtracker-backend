@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
@@ -51,7 +52,10 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
                             getExerciseResponse ->
                                 getExerciseResponse.getId().equals(setGroup.getExerciseId()))
                         .findAny()
-                        .get()));
+                        .orElseThrow( // Esto nunca deberia saltar
+                            () ->
+                                new EntityNotFoundException(
+                                    Exercise.class, setGroup.getExerciseId()))));
 
     return getWorkoutResponse; // FIXME Arreglar mapeo no full
   }

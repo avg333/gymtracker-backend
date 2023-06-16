@@ -5,7 +5,6 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseResponse.MuscleSupGroup;
 
 @Data
 @NoArgsConstructor

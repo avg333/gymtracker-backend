@@ -1,7 +1,5 @@
 package org.avillar.gymtracker.workoutapi.workout.infrastructure.delete;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.workout.application.delete.DeleteWorkoutService;
 import org.junit.jupiter.api.Assertions;
