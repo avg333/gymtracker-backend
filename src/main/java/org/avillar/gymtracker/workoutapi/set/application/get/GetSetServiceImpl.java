@@ -56,7 +56,7 @@ public class GetSetServiceImpl implements GetSetService {
             .orElseThrow(
                 () ->
                     new EntityNotFoundException(
-                        SetGroup.class, setGroupId))); // TODO Arreglar esta excepcion
+                        Set.class, "setGroupId", setGroupId))); // TODO Arreglar esta excepcion
   }
 
   private Set getSetFull(final UUID setId) {

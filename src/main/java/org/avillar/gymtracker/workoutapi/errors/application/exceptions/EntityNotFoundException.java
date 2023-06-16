@@ -12,12 +12,20 @@ import org.springframework.util.StringUtils;
 public class EntityNotFoundException extends PersistenceException {
 
   private final String className;
+  private final String searchParam;
   private final UUID id;
 
   public <T extends BaseEntity> EntityNotFoundException(Class<T> entityClass, UUID id) {
+    this(entityClass, "id", id);
+  }
+
+  public <T extends BaseEntity> EntityNotFoundException(
+      Class<T> entityClass, String searchParam, UUID id) {
     super(
-        EntityNotFoundException.generateMessage(entityClass.getSimpleName(), "id", id.toString()));
-    className = entityClass.getSimpleName();
+        EntityNotFoundException.generateMessage(
+            entityClass.getSimpleName(), searchParam, id.toString()));
+    this.className = entityClass.getSimpleName();
+    this.searchParam = searchParam;
     this.id = id;
   }
 

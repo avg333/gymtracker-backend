@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.auditing;
+package org.avillar.gymtracker.common.auditing;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;

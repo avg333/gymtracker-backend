@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.workout.application.delete.DeleteWorkoutService;
-import org.avillar.gymtracker.workoutapi.workout.infrastructure.post.mapper.PostWorkoutControllerMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

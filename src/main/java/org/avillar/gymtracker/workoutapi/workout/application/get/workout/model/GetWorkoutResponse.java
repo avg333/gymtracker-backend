@@ -2,11 +2,13 @@ package org.avillar.gymtracker.workoutapi.workout.application.get.workout.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponse;
 
 @Data
 @NoArgsConstructor
@@ -29,6 +31,8 @@ public class GetWorkoutResponse {
     private String description;
     private UUID exerciseId;
     private List<Set> sets;
+
+    private GetExerciseResponse exercise;
   }
 
   @Data

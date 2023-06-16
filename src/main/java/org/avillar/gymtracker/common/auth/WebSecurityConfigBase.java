@@ -14,20 +14,17 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 @RequiredArgsConstructor
 public class WebSecurityConfigBase {
 
-  @Value("${authApiPrefix}")
-  private String authApiPrefix;
-
-  @Value("${authApiEndpoint}")
-  private String authEndpoint;
-
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtRequestFilter jwtRequestFilter;
+  @Value("${authApiPrefix}")
+  private String authApiPrefix;
+  @Value("${authApiEndpoint}")
+  private String authEndpoint;
 
   @Bean
   public AuthenticationManager authenticationManager(final AuthenticationConfiguration authConfig)

@@ -3,6 +3,10 @@ package org.avillar.gymtracker.workoutapi;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.avillar.gymtracker.authapi.auth.domain.UserApp;
+import org.avillar.gymtracker.authapi.auth.domain.UserDao;
+import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
+import org.avillar.gymtracker.exercisesapi.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
 import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
@@ -18,12 +22,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class WorkoutsDataLoader implements ApplicationRunner {
 
-  private static final int TOTAL_USERS = 3;
-  private static final int TOTAL_DIAS = 90;
+  private static final int TOTAL_USERS = 5;
+  private static final int TOTAL_DIAS = 365;
   private static final double PROB_GO_TO_THE_GIM = 0.7;
   private static final int MIN_EXERCISES = 3;
   private static final int MAX_EXERCISES = 6;
+
+  private static final int MAX_INSERTS = 250000;
   private final Random random = new Random();
+
+  private final UserDao userDao;
+  private final ExerciseDao exerciseDao;
+  private final List<UUID> exerciseIds = new ArrayList<>();
+
   private final SetGroupDao setGroupDao;
   private final SetDao setDao;
   private final WorkoutDao workoutDao;
@@ -32,85 +43,56 @@ public class WorkoutsDataLoader implements ApplicationRunner {
   private final List<Set> sets = new ArrayList<>();
 
   public void run(ApplicationArguments args) {
+    final long start = System.currentTimeMillis();
     if (!workoutDao.findAll().isEmpty()) {
-      log.info("La base de datos ya tiene datos. No se insertaran mas");
+      log.info("Micro workouts is already populated");
+      return;
     }
+    log.info("Populating workouts micro...");
+
     createHeavyData();
     saveHeavyData();
+    int totalInserts = workouts.size() + setGroups.size() + sets.size();
+    long finish = System.currentTimeMillis();
+    log.info(
+        "Populated workouts micro with "
+            + totalInserts
+            + " enitities in "
+            + (finish - start)
+            + "ms");
   }
 
   private void saveHeavyData() {
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("Guardando " + workouts.size() + " workouts");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
+    log.info("\tInserting " + workouts.size() + " workouts...");
     workoutDao.saveAll(workouts);
+    log.info("\tInserted " + workouts.size() + " workouts");
 
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("Guardando " + setGroups.size() + " setGroups");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
+    log.info("\tInserting " + setGroups.size() + " setGroups...");
     setGroupDao.saveAll(setGroups);
+    log.info("\tInserted " + setGroups.size() + " setGroups");
 
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("Guardando " + sets.size() + " sets");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    setDao.saveAll(sets.subList(0, Math.min(sets.size(), 250000)));
-    if (sets.size() > 250000) {
-      setDao.saveAll(sets.subList(250000, Math.min(sets.size(), 500000)));
+    log.info("\tInserting " + sets.size() + " sets...");
+    for (int i = 0; i < sets.size(); i += MAX_INSERTS) {
+      saveSets(sets, i, i + MAX_INSERTS);
     }
-    if (sets.size() > 500000) {
-      setDao.saveAll(sets.subList(500000, Math.min(sets.size(), 750000)));
-    }
-    if (sets.size() > 750000) {
-      setDao.saveAll(sets.subList(750000, Math.min(sets.size(), 1000000)));
-    }
-    if (sets.size() > 1000000) {
-      setDao.saveAll(sets.subList(1000000, sets.size() - 1));
-    }
+    log.info("\tInserted " + sets.size() + " sets");
+  }
 
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("FINISH");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
-    log.info("------------------------------------------------------");
+  private void saveSets(final List<Set> sets, int min, int max) {
+    log.info("\t\tInserting(sub) " + sets.size() + " sets...");
+    setDao.saveAll(sets.subList(min, Math.min(sets.size(), max)));
+    log.info("\t\tInserted(sub) " + sets.size() + " sets");
   }
 
   private void createHeavyData() {
-    var userIds = createUsers();
-    int contador = 1;
+    var userIds = userDao.findAll().stream().map(UserApp::getId).toList();
+    exerciseIds.addAll(exerciseDao.findAll().stream().map(Exercise::getId).toList());
+    // var userIds = createUsers();
+    log.info("\tCreating " + TOTAL_USERS + " users...");
     for (var userId : userIds) {
       createWorkoutsForUser(userId);
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("CREADO USUARIO " + contador++ + " de " + TOTAL_USERS);
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
-      log.info("------------------------------------------------------");
     }
+    log.info("\tCreated " + TOTAL_USERS + " users");
   }
 
   private void createWorkoutsForUser(UUID userId) {
@@ -136,7 +118,9 @@ public class WorkoutsDataLoader implements ApplicationRunner {
   }
 
   private void createSetGroup(Workout workout, int listOrder) {
-    var setGroup = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
+    var setGroup =
+        new SetGroup(
+            null, exerciseIds.get(random.nextInt(exerciseIds.size())), workout, new HashSet<>());
     setGroup.setListOrder(listOrder);
     int totalSets = MIN_EXERCISES + random.nextInt(MAX_EXERCISES - MIN_EXERCISES + 1);
     setGroups.add(setGroup);
