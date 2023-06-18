@@ -178,6 +178,6 @@
     <org.postgresql.version>42.6.0</org.postgresql.version>
   </properties>
 
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
 
 </project>
