@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetSetResponseInfrastructure {
+
   private UUID id;
   private Integer listOrder;
   private String description;

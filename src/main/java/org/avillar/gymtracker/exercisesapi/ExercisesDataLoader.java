@@ -275,7 +275,20 @@ public class ExercisesDataLoader implements ApplicationRunner {
             bar,
             new HashSet<>(List.of(chestLower, chestMiddle)),
             new HashSet<>());
-    var exercises = List.of(pressBanca, pressBancaInclinado);
+    var exercises =
+        List.of(
+            pressBanca,
+            pressBancaInclinado,
+            pressBancaDeclinado,
+            pressMancuernas,
+            pressMancuernasInclinado,
+            pressMancuernasDeclinado,
+            pressMultipower,
+            pressMultipowerInclinado,
+            pressMultipowerDeclinado,
+            aperturasMancuernas,
+            aperturasMancuernasInclinado,
+            aperturasMancuernasDeclinado);
     log.info("\tInserting " + exercises.size() + " exercises...");
     exerciseDao.saveAll(exercises);
     log.info("\tInserting " + exercises.size() + " exercises");
