@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.setgroup.application.update.description.UpdateSetGroupDescriptionService;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.description.model.UpdateSetGroupDescriptionRequest;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.description.model.UpdateSetGroupDescriptionResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.description.model.UpdateSetGroupDescriptionRequestInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.description.model.UpdateSetGroupDescriptionResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +21,14 @@ public class UpdateSetGroupDescriptionController {
   private final UpdateSetGroupDescriptionService updateSetGroupDescriptionService;
 
   @PatchMapping("/setGroups/{setGroupId}/description")
-  public ResponseEntity<UpdateSetGroupDescriptionResponse> putSetGroup(
+  public ResponseEntity<UpdateSetGroupDescriptionResponseInfrastructure> updateSetGroupDescription(
       @PathVariable final UUID setGroupId,
-      @Valid @RequestBody final UpdateSetGroupDescriptionRequest updateSetGroupDescriptionRequest) {
+      @Valid @RequestBody
+          final UpdateSetGroupDescriptionRequestInfrastructure
+              updateSetGroupDescriptionRequestInfrastructure) {
     return ResponseEntity.ok(
-        new UpdateSetGroupDescriptionResponse(
+        new UpdateSetGroupDescriptionResponseInfrastructure(
             updateSetGroupDescriptionService.update(
-                setGroupId, updateSetGroupDescriptionRequest.getDescription())));
+                setGroupId, updateSetGroupDescriptionRequestInfrastructure.getDescription())));
   }
 }

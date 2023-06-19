@@ -9,7 +9,7 @@ import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNot
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
 import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.mapper.UpdateSetGroupSetsServiceMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.model.UpdateSetGroupSetsResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.model.UpdateSetGroupSetsResponseApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService 
 
   @Override
   @Transactional
-  public UpdateSetGroupSetsResponse update(
+  public UpdateSetGroupSetsResponseApplication update(
       final UUID setGroupDestinationId, final UUID setGroupSourceId) {
     final List<SetGroup> setGroups =
         setGroupDao.getSetGroupFullByIds(List.of(setGroupDestinationId, setGroupSourceId));
@@ -47,7 +47,7 @@ public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService 
     setGroupDao.deleteById(setGroupSourceId); // TODO Es correcto borrar el source?
     setDao.saveAll(sets);
 
-    return new UpdateSetGroupSetsResponse(updateSetGroupSetsServiceMapper.updateResponse(sets));
+    return new UpdateSetGroupSetsResponseApplication(updateSetGroupSetsServiceMapper.updateResponse(sets));
   }
 
   private SetGroup getSetGroupByIdFromCollection(

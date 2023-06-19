@@ -8,7 +8,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
-import org.avillar.gymtracker.workoutapi.workout.application.get.summary.model.GetWorkoutSummaryResponse;
+import org.avillar.gymtracker.workoutapi.workout.application.get.summary.model.GetWorkoutSummaryResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
 import org.springframework.stereotype.Service;
@@ -21,13 +21,13 @@ public class GetWorkoutSummarySummaryServiceImpl implements GetWorkoutSummarySer
   private final AuthWorkoutsService authWorkoutsService;
 
   @Override
-  public GetWorkoutSummaryResponse getWorkoutSummary(final UUID workoutId) {
+  public GetWorkoutSummaryResponseApplication getWorkoutSummary(final UUID workoutId) {
 
     final Workout workout = getFullWorkout(workoutId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.READ);
 
-    final GetWorkoutSummaryResponse getWorkoutSummaryResponse = new GetWorkoutSummaryResponse();
+    final GetWorkoutSummaryResponseApplication getWorkoutSummaryResponseApplication = new GetWorkoutSummaryResponseApplication();
 
     final double minRir = 3;
 
@@ -71,7 +71,7 @@ public class GetWorkoutSummarySummaryServiceImpl implements GetWorkoutSummarySer
 
     if (startWo != null) {
       final long duration = endWo.getTime() - startWo.getTime();
-      getWorkoutSummaryResponse.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(duration));
+      getWorkoutSummaryResponseApplication.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(duration));
     }
     /*
     final List<MuscleGroupDto> muscleGroupDtos = new ArrayList<>(muscleGroups.values());
@@ -79,11 +79,11 @@ public class GetWorkoutSummarySummaryServiceImpl implements GetWorkoutSummarySer
     getWorkoutSummaryResponse.setMuscleGroupDtos(muscleGroupDtos);
     */
 
-    getWorkoutSummaryResponse.setExerciseNumber(exercises.size());
-    getWorkoutSummaryResponse.setSetsNumber(efectiveSets.size());
-    getWorkoutSummaryResponse.setWeightVolume((int) weight);
+    getWorkoutSummaryResponseApplication.setExerciseNumber(exercises.size());
+    getWorkoutSummaryResponseApplication.setSetsNumber(efectiveSets.size());
+    getWorkoutSummaryResponseApplication.setWeightVolume((int) weight);
 
-    return getWorkoutSummaryResponse;
+    return getWorkoutSummaryResponseApplication;
   }
 
   private Workout getFullWorkout(final UUID workoutId) {

@@ -1,10 +1,10 @@
 package org.avillar.gymtracker.workoutapi.setgroup.application.post;
 
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.setgroup.application.post.model.PostSetGroupRequest;
-import org.avillar.gymtracker.workoutapi.setgroup.application.post.model.PostSetGroupResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.application.post.model.PostSetGroupRequestApplication;
+import org.avillar.gymtracker.workoutapi.setgroup.application.post.model.PostSetGroupResponseApplication;
 
 public interface PostSetGroupService {
 
-  PostSetGroupResponse post(UUID workoutId, PostSetGroupRequest postSetGroupRequest);
+  PostSetGroupResponseApplication post(UUID workoutId, PostSetGroupRequestApplication postSetGroupRequestApplication);
 }

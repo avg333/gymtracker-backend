@@ -1,9 +1,9 @@
 package org.avillar.gymtracker.workoutapi.workout.application.get.workout;
 
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.workout.application.get.workout.model.GetWorkoutResponse;
+import org.avillar.gymtracker.workoutapi.workout.application.get.workout.model.GetWorkoutResponseApplication;
 
 public interface GetWorkoutService {
 
-  GetWorkoutResponse getWorkout(UUID workoutId, boolean full);
+  GetWorkoutResponseApplication getWorkout(UUID workoutId, boolean full);
 }

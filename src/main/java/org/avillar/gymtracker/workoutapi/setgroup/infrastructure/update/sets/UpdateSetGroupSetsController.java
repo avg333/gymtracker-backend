@@ -5,8 +5,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.UpdateSetGroupSetsService;
 import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.mapper.UpdateSetGroupSetsControllereMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.model.UpdateSetGroupSetsRequest;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.model.UpdateSetGroupSetsResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.model.UpdateSetGroupSetsRequestInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.model.UpdateSetGroupSetsResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,12 +23,13 @@ public class UpdateSetGroupSetsController {
   private final UpdateSetGroupSetsControllereMapper updateSetGroupSetsControllereMapper;
 
   @PatchMapping("/setGroups/{setGroupId}/sets")
-  public ResponseEntity<UpdateSetGroupSetsResponse> updateSetGroupSets(
+  public ResponseEntity<UpdateSetGroupSetsResponseInfrastructure> updateSetGroupSets(
       @PathVariable final UUID setGroupId,
-      @Valid @RequestBody final UpdateSetGroupSetsRequest updateSetGroupSetsRequest) {
+      @Valid @RequestBody
+          final UpdateSetGroupSetsRequestInfrastructure updateSetGroupSetsRequestInfrastructure) {
     return ResponseEntity.ok(
         updateSetGroupSetsControllereMapper.updateResponse(
             updateSetGroupSetsService.update(
-                setGroupId, updateSetGroupSetsRequest.getSetGroupId())));
+                setGroupId, updateSetGroupSetsRequestInfrastructure.getSetGroupId())));
   }
 }

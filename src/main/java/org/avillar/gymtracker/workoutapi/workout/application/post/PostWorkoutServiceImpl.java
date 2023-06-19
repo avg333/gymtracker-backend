@@ -6,8 +6,8 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.DuplicatedWorkoutDateException;
 import org.avillar.gymtracker.workoutapi.workout.application.post.mapper.PostWorkoutServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutRequest;
-import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutResponse;
+import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutRequestApplication;
+import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
 import org.springframework.stereotype.Service;
@@ -21,13 +21,14 @@ public class PostWorkoutServiceImpl implements PostWorkoutService {
   private final PostWorkoutServiceMapper postWorkoutServiceMapper;
 
   @Override
-  public PostWorkoutResponse post(final UUID userId, final PostWorkoutRequest postWorkoutRequest) {
+  public PostWorkoutResponseApplication post(
+      final UUID userId, final PostWorkoutRequestApplication postWorkoutRequestApplication) {
 
-    if (workoutDao.existsWorkoutByUserAndDate(userId, postWorkoutRequest.getDate())) {
-      throw new DuplicatedWorkoutDateException(userId, postWorkoutRequest.getDate());
+    if (workoutDao.existsWorkoutByUserAndDate(userId, postWorkoutRequestApplication.getDate())) {
+      throw new DuplicatedWorkoutDateException(userId, postWorkoutRequestApplication.getDate());
     }
 
-    final Workout workout = postWorkoutServiceMapper.postRequest(postWorkoutRequest);
+    final Workout workout = postWorkoutServiceMapper.postRequest(postWorkoutRequestApplication);
     workout.setUserId(userId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.CREATE);

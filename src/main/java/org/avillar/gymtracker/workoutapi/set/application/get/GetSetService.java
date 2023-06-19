@@ -1,11 +1,11 @@
 package org.avillar.gymtracker.workoutapi.set.application.get;
 
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.set.application.get.model.GetSetResponse;
+import org.avillar.gymtracker.workoutapi.set.application.get.model.GetSetResponseApplication;
 
 public interface GetSetService {
 
-  GetSetResponse getSet(UUID setId);
+  GetSetResponseApplication getSet(UUID setId);
 
-  GetSetResponse getSetDefaultDataForNewSet(UUID setGroupId);
+  GetSetResponseApplication getSetDefaultDataForNewSet(UUID setGroupId);
 }

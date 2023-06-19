@@ -19,8 +19,10 @@ class DeleteWorkoutControllerTest {
 
   @Test
   void deleteWorkout() {
-    final UUID userId = UUID.randomUUID();
-    Mockito.doNothing().when(deleteWorkoutService).delete(userId);
-    Assertions.assertDoesNotThrow(() -> deleteWorkoutController.deleteWorkout(userId));
+    final UUID workoutId = UUID.randomUUID();
+
+    Mockito.doNothing().when(deleteWorkoutService).delete(workoutId);
+
+    Assertions.assertDoesNotThrow(() -> deleteWorkoutController.deleteWorkout(workoutId));
   }
 }

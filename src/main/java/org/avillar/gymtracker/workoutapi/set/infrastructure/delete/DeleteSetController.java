@@ -16,7 +16,6 @@ public class DeleteSetController {
 
   private final DeleteSetService deleteSetService;
 
-  /** Elimina la set con el ID especificado. Se usa en SetModal para eliminar la set en edición. */
   @DeleteMapping("sets/{setId}")
   public ResponseEntity<Void> deleteSet(@PathVariable final UUID setId) {
     deleteSetService.delete(setId);

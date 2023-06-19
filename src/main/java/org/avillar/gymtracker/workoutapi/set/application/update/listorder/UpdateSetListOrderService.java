@@ -1,9 +1,9 @@
 package org.avillar.gymtracker.workoutapi.set.application.update.listorder;
 
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.UpdateSetListOrderResponse;
+import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.UpdateSetListOrderResponseApplication;
 
 public interface UpdateSetListOrderService {
 
-  UpdateSetListOrderResponse updateSetListOrder(UUID setId, int listOrder);
+  UpdateSetListOrderResponseApplication updateSetListOrder(UUID setId, int listOrder);
 }

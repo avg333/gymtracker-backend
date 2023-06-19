@@ -12,7 +12,7 @@ import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.workout.application.update.setgroups.mapper.UpdateWorkoutSetGroupsServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.application.update.setgroups.model.UpdateWorkoutSetGroupsResponse;
+import org.avillar.gymtracker.workoutapi.workout.application.update.setgroups.model.UpdateWorkoutSetGroupsResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class UpdateWorkoutSetGroupsServiceImpl implements UpdateWorkoutSetGroups
 
   @Override
   @Transactional
-  public UpdateWorkoutSetGroupsResponse addSetGroupsToWorkoutFromWorkout(
+  public UpdateWorkoutSetGroupsResponseApplication addSetGroupsToWorkoutFromWorkout(
       final UUID workoutDestinationId, final UUID workoutSourceId) {
 
     final java.util.Set<Workout> workouts = // TODO Es necesario devolver las sets?
@@ -40,7 +40,7 @@ public class UpdateWorkoutSetGroupsServiceImpl implements UpdateWorkoutSetGroups
     authWorkoutsService.checkAccess(workoutDestination, AuthOperations.UPDATE);
     authWorkoutsService.checkAccess(workoutSource, AuthOperations.READ);
 
-    return new UpdateWorkoutSetGroupsResponse(
+    return new UpdateWorkoutSetGroupsResponseApplication(
         updateWorkoutSetGroupsServiceMapper.updateResponse(
             copySetGroupsToWorkout(
                 workoutDestination,
@@ -48,7 +48,7 @@ public class UpdateWorkoutSetGroupsServiceImpl implements UpdateWorkoutSetGroups
   }
 
   @Override
-  public UpdateWorkoutSetGroupsResponse addSetGroupsToWorkoutFromSession(
+  public UpdateWorkoutSetGroupsResponseApplication addSetGroupsToWorkoutFromSession(
       final UUID workoutDestinationId, final UUID sessionSourceId) {
     throw new NotImplementedException();
   }

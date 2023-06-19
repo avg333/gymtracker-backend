@@ -8,7 +8,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.set.application.update.listorder.mapper.UpdateSetListOrderServiceMapper;
-import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.UpdateSetListOrderResponse;
+import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.UpdateSetListOrderResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
 import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,8 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
 
   @Override
   @Transactional
-  public UpdateSetListOrderResponse updateSetListOrder(final UUID setId, final int listOrder) {
+  public UpdateSetListOrderResponseApplication updateSetListOrder(
+      final UUID setId, final int listOrder) {
     final Set set = getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);
@@ -35,7 +36,8 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
     final int newPosition = EntitySorter.getValidListOrder(listOrder, sets.size());
 
     if (oldPosition == newPosition) {
-      return new UpdateSetListOrderResponse(updateSetListOrderServiceMapper.updateResponse(sets));
+      return new UpdateSetListOrderResponseApplication(
+          updateSetListOrderServiceMapper.updateResponse(sets));
     }
 
     sets.stream()
@@ -47,7 +49,8 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
     entitySorter.sortUpdate(sets, set, oldPosition);
     setDao.saveAll(sets);
 
-    return new UpdateSetListOrderResponse(updateSetListOrderServiceMapper.updateResponse(sets));
+    return new UpdateSetListOrderResponseApplication(
+        updateSetListOrderServiceMapper.updateResponse(sets));
   }
 
   private Set getSetFull(final UUID setId) {

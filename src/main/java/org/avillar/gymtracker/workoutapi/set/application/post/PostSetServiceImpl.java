@@ -7,8 +7,8 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.set.application.post.mapper.PostSetServiceMapper;
-import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetRequest;
-import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponse;
+import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetRequestApplication;
+import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
 import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
@@ -25,10 +25,11 @@ public class PostSetServiceImpl implements PostSetService {
   private final PostSetServiceMapper postSetServiceMapper;
 
   @Override
-  public PostSetResponse post(final UUID setGroupId, final PostSetRequest postSetRequest) {
+  public PostSetResponseApplication post(
+      final UUID setGroupId, final PostSetRequestApplication postSetRequestApplication) {
     final SetGroup setGroup = getSetGroupFull(setGroupId);
 
-    final Set set = postSetServiceMapper.postRequest(postSetRequest);
+    final Set set = postSetServiceMapper.postRequest(postSetRequestApplication);
     set.setSetGroup(setGroup);
     set.setListOrder(setGroup.getSets().size());
 

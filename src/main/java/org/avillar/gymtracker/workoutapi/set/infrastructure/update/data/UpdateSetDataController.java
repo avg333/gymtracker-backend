@@ -4,8 +4,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.set.application.update.data.UpdateSetDataService;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.update.data.mapper.UpdateSetDataControllerMapper;
-import org.avillar.gymtracker.workoutapi.set.infrastructure.update.data.model.UpdateSetDataRequest;
-import org.avillar.gymtracker.workoutapi.set.infrastructure.update.data.model.UpdateSetDataResponse;
+import org.avillar.gymtracker.workoutapi.set.infrastructure.update.data.model.UpdateSetDataRequestInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.infrastructure.update.data.model.UpdateSetDataResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,12 +28,13 @@ public class UpdateSetDataController {
    * retorno.
    */
   @PatchMapping("sets/{setId}")
-  public ResponseEntity<UpdateSetDataResponse> updateSetData(
+  public ResponseEntity<UpdateSetDataResponseInfrastructure> updateSetData(
       @PathVariable final UUID setId,
-      @RequestBody final UpdateSetDataRequest updateSetDataRequest) {
+      @RequestBody final UpdateSetDataRequestInfrastructure updateSetDataRequestInfrastructure) {
     return ResponseEntity.ok(
         updateSetDataControllerMapper.updateResponse(
             updateSetDataService.update(
-                setId, updateSetDataControllerMapper.updateRequest(updateSetDataRequest))));
+                setId,
+                updateSetDataControllerMapper.updateRequest(updateSetDataRequestInfrastructure))));
   }
 }

@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.workout.application.get.workout.GetWorkoutService;
 import org.avillar.gymtracker.workoutapi.workout.infrastructure.get.workout.mapper.GetWorkoutControllerMapper;
-import org.avillar.gymtracker.workoutapi.workout.infrastructure.get.workout.model.GetWorkoutResponse;
+import org.avillar.gymtracker.workoutapi.workout.infrastructure.get.workout.model.GetWorkoutResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +26,7 @@ public class GetWorkoutController {
    * FULL
    */
   @GetMapping("/workouts/{workoutId}")
-  public ResponseEntity<GetWorkoutResponse> getWorkoutById(
+  public ResponseEntity<GetWorkoutResponseInfrastructure> getWorkoutById(
       @PathVariable final UUID workoutId, @RequestParam(required = false) final boolean full) {
     return ResponseEntity.ok(
         getWorkoutControllerMapper.getResponse(getWorkoutService.getWorkout(workoutId, full)));

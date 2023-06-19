@@ -1,0 +1,40 @@
+package org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.exercise;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.setgroup.application.update.exercise.UpdateSetGroupExerciseService;
+import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.exercise.model.UpdateSetGroupExerciseRequestInfrastructure;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class UpdateSetGroupExerciseControllerTest {
+
+  @InjectMocks private UpdateSetGroupExerciseController updateSetGroupExerciseController;
+
+  @Mock private UpdateSetGroupExerciseService updateSetGroupExerciseService;
+
+  @Test
+  void updateSetGroupExercise() {
+    final UUID setGroupId = UUID.randomUUID();
+    final UUID exerciseId = UUID.randomUUID();
+    final UpdateSetGroupExerciseRequestInfrastructure updateSetGroupExerciseRequestInfrastructure =
+        new UpdateSetGroupExerciseRequestInfrastructure();
+    updateSetGroupExerciseRequestInfrastructure.setExerciseId(exerciseId);
+
+    when(updateSetGroupExerciseService.update(setGroupId, exerciseId)).thenReturn(exerciseId);
+
+    Assertions.assertEquals(
+        exerciseId,
+        updateSetGroupExerciseController
+            .updateSetGroupExercise(setGroupId, updateSetGroupExerciseRequestInfrastructure)
+            .getBody()
+            .getExerciseId());
+  }
+}

@@ -8,7 +8,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.setgroup.application.update.listorder.mapper.UpdateSetGroupListOrderServiceMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.application.update.listorder.model.UpdateSetGroupListOrderResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.application.update.listorder.model.UpdateSetGroupListOrderResponseApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
   private final UpdateSetGroupListOrderServiceMapper updateSetGroupListOrderServiceMapper;
 
   @Override
-  public UpdateSetGroupListOrderResponse update(final UUID setGroupId, final int listOrder) {
+  public UpdateSetGroupListOrderResponseApplication update(final UUID setGroupId, final int listOrder) {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.UPDATE);
@@ -35,7 +35,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
     final int newPosition = EntitySorter.getValidListOrder(listOrder, setGroups.size());
 
     if (oldPosition == listOrder) {
-      return new UpdateSetGroupListOrderResponse(
+      return new UpdateSetGroupListOrderResponseApplication(
           updateSetGroupListOrderServiceMapper.updateResponse(setGroups));
     }
 
@@ -48,7 +48,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
     entitySorter.sortUpdate(setGroups, setGroup, oldPosition);
     setGroupDao.saveAll(setGroups);
 
-    return new UpdateSetGroupListOrderResponse(
+    return new UpdateSetGroupListOrderResponseApplication(
         updateSetGroupListOrderServiceMapper.updateResponse(setGroups));
   }
 

@@ -2,11 +2,11 @@ package org.avillar.gymtracker.workoutapi.setgroup.application.get;
 
 import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.setgroup.application.get.model.GetSetGroupResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.application.get.model.GetSetGroupResponseApplication;
 
 public interface GetSetGroupService {
 
-  GetSetGroupResponse getSetGroup(UUID setGroupId, boolean full);
+  GetSetGroupResponseApplication getSetGroup(UUID setGroupId, boolean full);
 
-  List<GetSetGroupResponse> getAllUserAndExerciseSetGroups(UUID userId, UUID exerciseId);
+  List<GetSetGroupResponseApplication> getAllUserAndExerciseSetGroups(UUID userId, UUID exerciseId);
 }

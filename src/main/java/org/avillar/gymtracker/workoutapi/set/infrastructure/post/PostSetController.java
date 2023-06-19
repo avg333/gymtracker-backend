@@ -4,8 +4,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.set.application.post.PostSetService;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.post.mapper.PostSetControllerMapper;
-import org.avillar.gymtracker.workoutapi.set.infrastructure.post.model.PostSetRequest;
-import org.avillar.gymtracker.workoutapi.set.infrastructure.post.model.PostSetResponse;
+import org.avillar.gymtracker.workoutapi.set.infrastructure.post.model.PostSetRequestInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.infrastructure.post.model.PostSetResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,10 +26,12 @@ public class PostSetController {
    * pero no usa el retorno.
    */
   @PostMapping("setGroups/{setGroupId}/sets")
-  public ResponseEntity<PostSetResponse> postSet(
-      @PathVariable final UUID setGroupId, @RequestBody final PostSetRequest postSetRequest) {
+  public ResponseEntity<PostSetResponseInfrastructure> postSet(
+      @PathVariable final UUID setGroupId,
+      @RequestBody final PostSetRequestInfrastructure postSetRequestInfrastructure) {
     return ResponseEntity.ok(
         postSetControllerMapper.postResponse(
-            postSetService.post(setGroupId, postSetControllerMapper.postRequest(postSetRequest))));
+            postSetService.post(
+                setGroupId, postSetControllerMapper.postRequest(postSetRequestInfrastructure))));
   }
 }

@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.workout.application.get.idanddate.GetWorkoutIdAndDateService;
-import org.avillar.gymtracker.workoutapi.workout.infrastructure.get.idanddate.model.GetWorkoutIdAndDateResponse;
+import org.avillar.gymtracker.workoutapi.workout.infrastructure.get.idanddate.model.GetWorkoutIdAndDateResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +20,10 @@ public class GetWorkoutIdAndDateController {
   private final GetWorkoutIdAndDateService getWorkoutIdAndDateService;
 
   @GetMapping("/users/{userId}/workouts/dates")
-  public ResponseEntity<GetWorkoutIdAndDateResponse> getAllWorkoutDatesByUser(
+  public ResponseEntity<GetWorkoutIdAndDateResponseInfrastructure> getWorkoutsIdAndDateByUser(
       @PathVariable final UUID userId, @RequestParam(required = false) final UUID exerciseId) {
     return ResponseEntity.ok(
-        new GetWorkoutIdAndDateResponse(
+        new GetWorkoutIdAndDateResponseInfrastructure(
             Objects.nonNull(exerciseId)
                 ? getWorkoutIdAndDateService.getAllUserWorkoutsWithExercise(userId, exerciseId)
                 : getWorkoutIdAndDateService.getAllUserWorkoutDates(userId)));

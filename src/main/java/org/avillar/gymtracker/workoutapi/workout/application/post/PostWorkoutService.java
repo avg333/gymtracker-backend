@@ -1,10 +1,11 @@
 package org.avillar.gymtracker.workoutapi.workout.application.post;
 
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutRequest;
-import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutResponse;
+import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutRequestApplication;
+import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutResponseApplication;
 
 public interface PostWorkoutService {
 
-  PostWorkoutResponse post(UUID userId, PostWorkoutRequest postWorkoutRequest);
+  PostWorkoutResponseApplication post(
+      UUID userId, PostWorkoutRequestApplication postWorkoutRequestApplication);
 }

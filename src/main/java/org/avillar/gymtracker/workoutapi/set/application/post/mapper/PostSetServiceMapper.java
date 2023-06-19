@@ -1,14 +1,14 @@
 package org.avillar.gymtracker.workoutapi.set.application.post.mapper;
 
-import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetRequest;
-import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponse;
+import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetRequestApplication;
+import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface PostSetServiceMapper {
 
-  PostSetResponse postResponse(Set set);
+  PostSetResponseApplication postResponse(Set set);
 
-  Set postRequest(PostSetRequest postSetRequest);
+  Set postRequest(PostSetRequestApplication postSetRequestApplication);
 }

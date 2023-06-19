@@ -7,7 +7,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.setgroup.application.get.mapper.GetSetGroupServiceMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.application.get.model.GetSetGroupResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.application.get.model.GetSetGroupResponseApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
@@ -22,7 +22,7 @@ public class GetSetGroupServiceImpl implements GetSetGroupService {
   private final GetSetGroupServiceMapper getSetGroupServiceMapper;
 
   @Override
-  public GetSetGroupResponse getSetGroup(final UUID setGroupId, final boolean full) {
+  public GetSetGroupResponseApplication getSetGroup(final UUID setGroupId, final boolean full) {
     final List<SetGroup> setGroups =
         full
             ? setGroupDao.getSetGroupFullByIds(List.of(setGroupId))
@@ -38,7 +38,7 @@ public class GetSetGroupServiceImpl implements GetSetGroupService {
   }
 
   @Override
-  public List<GetSetGroupResponse> getAllUserAndExerciseSetGroups(
+  public List<GetSetGroupResponseApplication> getAllUserAndExerciseSetGroups(
       final UUID userId, final UUID exerciseId) {
     final Workout workout = new Workout();
     workout.setUserId(userId);

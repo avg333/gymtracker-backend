@@ -4,8 +4,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.set.application.update.listorder.UpdateSetListOrderService;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder.mapper.UpdateSetListOrderControllerMapper;
-import org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder.model.UpdateSetListOrderRequest;
-import org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder.model.UpdateSetListOrderResponse;
+import org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder.model.UpdateSetListOrderRequestInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder.model.UpdateSetListOrderResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,12 +22,13 @@ public class UpdateSetListOrderController {
   private final UpdateSetListOrderControllerMapper updateSetListOrderControllerMapper;
 
   @PatchMapping("sets/{setId}/listOrder")
-  public ResponseEntity<UpdateSetListOrderResponse> updateSetListOrder(
+  public ResponseEntity<UpdateSetListOrderResponseInfrastructure> updateSetListOrder(
       @PathVariable final UUID setId,
-      @RequestBody final UpdateSetListOrderRequest updateSetListOrderRequest) {
+      @RequestBody
+          final UpdateSetListOrderRequestInfrastructure updateSetListOrderRequestInfrastructure) {
     return ResponseEntity.ok(
         updateSetListOrderControllerMapper.updateResponse(
             updateSetListOrderService.updateSetListOrder(
-                setId, updateSetListOrderRequest.getListOrder())));
+                setId, updateSetListOrderRequestInfrastructure.getListOrder())));
   }
 }

@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.setgroup.application.update.exercise.UpdateSetGroupExerciseService;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.exercise.model.UpdateSetGroupExerciseRequest;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.exercise.model.UpdateSetGroupExerciseResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.exercise.model.UpdateSetGroupExerciseRequestInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.exercise.model.UpdateSetGroupExerciseResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +21,14 @@ public class UpdateSetGroupExerciseController {
   private final UpdateSetGroupExerciseService updateSetGroupExerciseService;
 
   @PatchMapping("/setGroups/{setGroupId}/exercise")
-  public ResponseEntity<UpdateSetGroupExerciseResponse> updateSetGroupExercise(
+  public ResponseEntity<UpdateSetGroupExerciseResponseInfrastructure> updateSetGroupExercise(
       @PathVariable final UUID setGroupId,
-      @Valid @RequestBody final UpdateSetGroupExerciseRequest updateSetGroupExerciseRequest) {
+      @Valid @RequestBody
+          final UpdateSetGroupExerciseRequestInfrastructure
+              updateSetGroupExerciseRequestInfrastructure) {
     return ResponseEntity.ok(
-        new UpdateSetGroupExerciseResponse(
+        new UpdateSetGroupExerciseResponseInfrastructure(
             updateSetGroupExerciseService.update(
-                setGroupId, updateSetGroupExerciseRequest.getExerciseId())));
+                setGroupId, updateSetGroupExerciseRequestInfrastructure.getExerciseId())));
   }
 }

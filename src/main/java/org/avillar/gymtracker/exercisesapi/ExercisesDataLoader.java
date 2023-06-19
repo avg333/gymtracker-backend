@@ -43,13 +43,13 @@ public class ExercisesDataLoader implements ApplicationRunner {
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------LOAD TYPES-------------------------------------------------
     // ---------------------------------------------------------------------------------------------
-    var BAR = new LoadType("BAR", null, new HashSet<>());
-    var DUMBBELL = new LoadType("DUMBBELL", null, new HashSet<>());
-    var CABLE = new LoadType("CABLE", null, new HashSet<>());
-    var BODYWEIGHT = new LoadType("BODYWEIGHT", null, new HashSet<>());
-    var MACHINE = new LoadType("MACHINE", null, new HashSet<>());
-    var MULTIPOWER = new LoadType("MULTIPOWER", null, new HashSet<>());
-    var loadTypes = List.of(BAR, DUMBBELL, CABLE, BODYWEIGHT, MACHINE, MULTIPOWER);
+    var bar = new LoadType("BAR", null, new HashSet<>());
+    var dumbbell = new LoadType("DUMBBELL", null, new HashSet<>());
+    var cable = new LoadType("CABLE", null, new HashSet<>());
+    var bodyweight = new LoadType("BODYWEIGHT", null, new HashSet<>());
+    var machine = new LoadType("MACHINE", null, new HashSet<>());
+    var multipower = new LoadType("MULTIPOWER", null, new HashSet<>());
+    var loadTypes = List.of(bar, dumbbell, cable, bodyweight, machine, multipower);
     log.info("\tInserting " + loadTypes.size() + " load types...");
     loadTypeDao.saveAll(loadTypes);
     log.info("\tInserting " + loadTypes.size() + " load types");
@@ -57,13 +57,13 @@ public class ExercisesDataLoader implements ApplicationRunner {
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------MUSCLE SUP GROUPS------------------------------------------
     // ---------------------------------------------------------------------------------------------
-    var CHEST_MSUPG = new MuscleSupGroup("CHEST", null, new HashSet<>());
-    var BACK = new MuscleSupGroup("BACK", null, new HashSet<>());
-    var SHOULDERS = new MuscleSupGroup("SHOULDERS", null, new HashSet<>());
-    var ARMS = new MuscleSupGroup("ARMS", null, new HashSet<>());
-    var CORE = new MuscleSupGroup("CORE", null, new HashSet<>());
-    var LEGS = new MuscleSupGroup("LEGS", null, new HashSet<>());
-    var muscleSupGroups = List.of(CHEST_MSUPG, BACK, SHOULDERS, ARMS, CORE, LEGS);
+    var chestMsupg = new MuscleSupGroup("CHEST", null, new HashSet<>());
+    var back = new MuscleSupGroup("BACK", null, new HashSet<>());
+    var shoulders = new MuscleSupGroup("SHOULDERS", null, new HashSet<>());
+    var arms = new MuscleSupGroup("ARMS", null, new HashSet<>());
+    var core = new MuscleSupGroup("CORE", null, new HashSet<>());
+    var legs = new MuscleSupGroup("LEGS", null, new HashSet<>());
+    var muscleSupGroups = List.of(chestMsupg, back, shoulders, arms, core, legs);
     log.info("\tInserting " + muscleSupGroups.size() + " muscleSupGroups...");
     muscleSupGroupDao.saveAll(muscleSupGroups);
     log.info("\tInserting " + muscleSupGroups.size() + " muscleSupGroups");
@@ -71,92 +71,92 @@ public class ExercisesDataLoader implements ApplicationRunner {
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------MUSCLE GROUPS----------------------------------------------
     // ---------------------------------------------------------------------------------------------
-    var CHEST =
+    var chest =
         new MuscleGroup(
-            "CHEST", null, new HashSet<>(List.of(CHEST_MSUPG)), new HashSet<>(), new HashSet<>());
-    var SHOULDER_ANTERIOR =
+            "CHEST", null, new HashSet<>(List.of(chestMsupg)), new HashSet<>(), new HashSet<>());
+    var shoulderAnterior =
         new MuscleGroup(
             "SHOULDER ANTERIOR",
             null,
-            new HashSet<>(List.of(SHOULDERS, CHEST_MSUPG)),
+            new HashSet<>(List.of(shoulders, chestMsupg)),
             new HashSet<>(),
             new HashSet<>());
-    var SHOULDER_LATERAL =
+    var shoulderLateral =
         new MuscleGroup(
             "SHOULDER LATERAL",
             null,
-            new HashSet<>(List.of(SHOULDERS)),
+            new HashSet<>(List.of(shoulders)),
             new HashSet<>(),
             new HashSet<>());
-    var SHOULDER_POSTERIOR =
+    var shoulderPosterior =
         new MuscleGroup(
             "SHOULDER POSTERIOR",
             null,
-            new HashSet<>(List.of(SHOULDERS, BACK)),
+            new HashSet<>(List.of(shoulders, back)),
             new HashSet<>(),
             new HashSet<>());
-    var LATS =
+    var lats =
         new MuscleGroup(
-            "LATS", null, new HashSet<>(List.of(BACK)), new HashSet<>(), new HashSet<>());
-    var TRAPS =
+            "LATS", null, new HashSet<>(List.of(back)), new HashSet<>(), new HashSet<>());
+    var traps =
         new MuscleGroup(
-            "TRAPS", null, new HashSet<>(List.of(BACK)), new HashSet<>(), new HashSet<>());
-    var LOWER_BACK =
+            "TRAPS", null, new HashSet<>(List.of(back)), new HashSet<>(), new HashSet<>());
+    var lowerBack =
         new MuscleGroup(
             "LOWER BACK",
             null,
-            new HashSet<>(List.of(BACK, CORE)),
+            new HashSet<>(List.of(back, core)),
             new HashSet<>(),
             new HashSet<>());
-    var BICEPS =
+    var biceps =
         new MuscleGroup(
-            "BICEPS", null, new HashSet<>(List.of(ARMS)), new HashSet<>(), new HashSet<>());
-    var TRICEPS =
+            "BICEPS", null, new HashSet<>(List.of(arms)), new HashSet<>(), new HashSet<>());
+    var triceps =
         new MuscleGroup(
-            "TRICEPS", null, new HashSet<>(List.of(ARMS)), new HashSet<>(), new HashSet<>());
-    var FOREARMS =
+            "TRICEPS", null, new HashSet<>(List.of(arms)), new HashSet<>(), new HashSet<>());
+    var forearms =
         new MuscleGroup(
-            "FOREARMS", null, new HashSet<>(List.of(ARMS)), new HashSet<>(), new HashSet<>());
-    var ABS =
+            "FOREARMS", null, new HashSet<>(List.of(arms)), new HashSet<>(), new HashSet<>());
+    var abs =
         new MuscleGroup(
-            "ABS", null, new HashSet<>(List.of(CORE)), new HashSet<>(), new HashSet<>());
-    var QUADS =
+            "ABS", null, new HashSet<>(List.of(core)), new HashSet<>(), new HashSet<>());
+    var quads =
         new MuscleGroup(
-            "QUADS", null, new HashSet<>(List.of(LEGS)), new HashSet<>(), new HashSet<>());
-    var HAMSTRINGS =
+            "QUADS", null, new HashSet<>(List.of(legs)), new HashSet<>(), new HashSet<>());
+    var hamstrings =
         new MuscleGroup(
-            "HAMSTRINGS", null, new HashSet<>(List.of(LEGS)), new HashSet<>(), new HashSet<>());
-    var GLUTES =
+            "HAMSTRINGS", null, new HashSet<>(List.of(legs)), new HashSet<>(), new HashSet<>());
+    var glutes =
         new MuscleGroup(
-            "GLUTES", null, new HashSet<>(List.of(LEGS)), new HashSet<>(), new HashSet<>());
-    var CALVES =
+            "GLUTES", null, new HashSet<>(List.of(legs)), new HashSet<>(), new HashSet<>());
+    var calves =
         new MuscleGroup(
-            "CALVES", null, new HashSet<>(List.of(LEGS)), new HashSet<>(), new HashSet<>());
-    var TIBIALES_ANTERIOR =
+            "CALVES", null, new HashSet<>(List.of(legs)), new HashSet<>(), new HashSet<>());
+    var tibialesAnterior =
         new MuscleGroup(
             "TIBIALES ANTERIOR",
             null,
-            new HashSet<>(List.of(LEGS)),
+            new HashSet<>(List.of(legs)),
             new HashSet<>(),
             new HashSet<>());
     var muscleGroups =
         List.of(
-            CHEST,
-            SHOULDER_ANTERIOR,
-            SHOULDER_LATERAL,
-            SHOULDER_POSTERIOR,
-            LATS,
-            TRAPS,
-            LOWER_BACK,
-            BICEPS,
-            TRICEPS,
-            FOREARMS,
-            ABS,
-            QUADS,
-            HAMSTRINGS,
-            GLUTES,
-            CALVES,
-            TIBIALES_ANTERIOR);
+            chest,
+            shoulderAnterior,
+            shoulderLateral,
+            shoulderPosterior,
+            lats,
+            traps,
+            lowerBack,
+            biceps,
+            triceps,
+            forearms,
+            abs,
+            quads,
+            hamstrings,
+            glutes,
+            calves,
+            tibialesAnterior);
     log.info("\tInserting " + muscleGroups.size() + " muscleGroups...");
     muscleGroupDao.saveAll(muscleGroups);
     log.info("\tInserting " + muscleGroups.size() + " muscleGroups");
@@ -164,32 +164,32 @@ public class ExercisesDataLoader implements ApplicationRunner {
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------MUSCLE SUB GROUPS------------------------------------------
     // ---------------------------------------------------------------------------------------------
-    var CHEST_UPPER = new MuscleSubGroup("CHEST UPPER", null, CHEST, new HashSet<>());
-    var CHEST_LOWER = new MuscleSubGroup("CHEST LOWER", null, CHEST, new HashSet<>());
-    var CHEST_MIDDLE = new MuscleSubGroup("CHEST MIDDLE", null, CHEST, new HashSet<>());
-    var LATS_UPPER = new MuscleSubGroup("LATS UPPER", null, LATS, new HashSet<>());
-    var LATS_LOWER = new MuscleSubGroup("LATS LOWER", null, LATS, new HashSet<>());
-    var TRICEPS_LONG = new MuscleSubGroup("TRICEPS LONG", null, TRICEPS, new HashSet<>());
-    var TRICEPS_SHORT = new MuscleSubGroup("TRICEPS SHORT", null, TRICEPS, new HashSet<>());
-    var TRICEPS_MIDDLE = new MuscleSubGroup("TRICEPS MIDDLE", null, TRICEPS, new HashSet<>());
-    var FOREARMS_FLEXORS = new MuscleSubGroup("FOREARMS FLEXORS", null, FOREARMS, new HashSet<>());
-    var FOREARMS_EXTENSORS =
-        new MuscleSubGroup("FOREARMS EXTENSORS", null, FOREARMS, new HashSet<>());
-    var FOREARMS_BRACHIORADIALIS =
-        new MuscleSubGroup("FOREARMS BRACHIORADIALIS", null, FOREARMS, new HashSet<>());
+    var chestUpper = new MuscleSubGroup("CHEST UPPER", null, chest, new HashSet<>());
+    var chestLower = new MuscleSubGroup("CHEST LOWER", null, chest, new HashSet<>());
+    var chestMiddle = new MuscleSubGroup("CHEST MIDDLE", null, chest, new HashSet<>());
+    var latsUpper = new MuscleSubGroup("LATS UPPER", null, lats, new HashSet<>());
+    var latsLower = new MuscleSubGroup("LATS LOWER", null, lats, new HashSet<>());
+    var tricepsLong = new MuscleSubGroup("TRICEPS LONG", null, triceps, new HashSet<>());
+    var tricepsShort = new MuscleSubGroup("TRICEPS SHORT", null, triceps, new HashSet<>());
+    var tricepsMiddle = new MuscleSubGroup("TRICEPS MIDDLE", null, triceps, new HashSet<>());
+    var forearmsFlexors = new MuscleSubGroup("FOREARMS FLEXORS", null, forearms, new HashSet<>());
+    var forearmsExtensors =
+        new MuscleSubGroup("FOREARMS EXTENSORS", null, forearms, new HashSet<>());
+    var forearmsBrachioradialis =
+        new MuscleSubGroup("FOREARMS BRACHIORADIALIS", null, forearms, new HashSet<>());
     var muscleSubGroups =
         List.of(
-            CHEST_UPPER,
-            CHEST_LOWER,
-            CHEST_MIDDLE,
-            LATS_UPPER,
-            LATS_LOWER,
-            TRICEPS_LONG,
-            TRICEPS_SHORT,
-            TRICEPS_MIDDLE,
-            FOREARMS_FLEXORS,
-            FOREARMS_EXTENSORS,
-            FOREARMS_BRACHIORADIALIS);
+            chestUpper,
+            chestLower,
+            chestMiddle,
+            latsUpper,
+            latsLower,
+            tricepsLong,
+            tricepsShort,
+            tricepsMiddle,
+            forearmsFlexors,
+            forearmsExtensors,
+            forearmsBrachioradialis);
     log.info("\tInserting " + muscleSubGroups.size() + " muscleSupGroups...");
     muscleSubGroupDao.saveAll(muscleSubGroups);
     log.info("\tInserting " + muscleSubGroups.size() + " muscleSupGroups");
@@ -197,17 +197,85 @@ public class ExercisesDataLoader implements ApplicationRunner {
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------EXERCISES--------------------------------------------------
     // ---------------------------------------------------------------------------------------------
-    var PRESS_BANCA =
-        new Exercise("PRESS BANCA", null, false, BAR, new HashSet<>(), new HashSet<>());
-    var PRESS_BANCA_INCLINADO =
+    var pressBanca =
+        new Exercise("PRESS BANCA", null, false, bar, new HashSet<>(), new HashSet<>());
+    var pressBancaInclinado =
         new Exercise(
             "PRESS BANCA INCLINADO",
             null,
             false,
-            BAR,
-            new HashSet<>(List.of(CHEST_UPPER)),
+            bar,
+            new HashSet<>(List.of(chestUpper)),
             new HashSet<>());
-    var exercises = List.of(PRESS_BANCA, PRESS_BANCA_INCLINADO);
+    var pressBancaDeclinado =
+        new Exercise(
+            "PRESS BANCA DECLINADO",
+            null,
+            false,
+            bar,
+            new HashSet<>(List.of(chestLower)),
+            new HashSet<>());
+    var pressMancuernas =
+        new Exercise("PRESS CON MANCUERNAS", null, false, bar, new HashSet<>(), new HashSet<>());
+    var pressMancuernasInclinado =
+        new Exercise(
+            "PRESS CON MANCUERNAS INCLINADO",
+            null,
+            false,
+            bar,
+            new HashSet<>(List.of(chestUpper)),
+            new HashSet<>());
+    var pressMancuernasDeclinado =
+        new Exercise(
+            "PRESS CON MANCUERNAS DECLINADO",
+            null,
+            false,
+            bar,
+            new HashSet<>(List.of(chestLower)),
+            new HashSet<>());
+    var pressMultipower =
+        new Exercise("PRESS EN MULTIPOWER", null, false, bar, new HashSet<>(), new HashSet<>());
+    var pressMultipowerInclinado =
+        new Exercise(
+            "PRESS EN MULTIPOWER INCLINADO",
+            null,
+            false,
+            bar,
+            new HashSet<>(List.of(chestUpper)),
+            new HashSet<>());
+    var pressMultipowerDeclinado =
+        new Exercise(
+            "PRESS EN MULTIPOWER DECLINADO",
+            null,
+            false,
+            bar,
+            new HashSet<>(List.of(chestLower)),
+            new HashSet<>());
+    var aperturasMancuernas =
+        new Exercise(
+            "PRESS CON MANCUERNAS",
+            null,
+            false,
+            bar,
+            new HashSet<>(List.of(chestMiddle)),
+            new HashSet<>());
+    var aperturasMancuernasInclinado =
+        new Exercise(
+            "PRESS CON MANCUERNAS INCLINADO",
+            null,
+            false,
+            bar,
+            new HashSet<>(List.of(chestUpper, chestMiddle)),
+            new HashSet<>());
+    var aperturasMancuernasDeclinado =
+        new Exercise(
+            "PRESS CON MANCUERNAS DECLINADO",
+            null,
+            false,
+            bar,
+            new HashSet<>(List.of(chestLower, chestMiddle)),
+            new HashSet<>());
+    var exercises = List.of(pressBanca, pressBancaInclinado);
     log.info("\tInserting " + exercises.size() + " exercises...");
     exerciseDao.saveAll(exercises);
     log.info("\tInserting " + exercises.size() + " exercises");
@@ -215,9 +283,33 @@ public class ExercisesDataLoader implements ApplicationRunner {
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------EXERCISES_MUSCLE_GROUPS------------------------------------
     // ---------------------------------------------------------------------------------------------
-    var PRESS_BANCA_CHEST = new MuscleGroupExercise(1.0, CHEST, PRESS_BANCA);
-    var PRESS_BANCA_INCL_CHEST = new MuscleGroupExercise(1.0, CHEST, PRESS_BANCA_INCLINADO);
-    var exercisesMuscleGroups = List.of(PRESS_BANCA_CHEST, PRESS_BANCA_INCL_CHEST);
+    var pressBancaChest = new MuscleGroupExercise(1.0, chest, pressBanca);
+    var pressBancaInclChest = new MuscleGroupExercise(1.0, chest, pressBancaInclinado);
+    var press1 = new MuscleGroupExercise(1.0, chest, pressBancaDeclinado);
+    var press2 = new MuscleGroupExercise(1.0, chest, pressMancuernas);
+    var press3 = new MuscleGroupExercise(1.0, chest, pressMancuernasInclinado);
+    var press4 = new MuscleGroupExercise(1.0, chest, pressMancuernasDeclinado);
+    var press5 = new MuscleGroupExercise(1.0, chest, pressMultipower);
+    var press6 = new MuscleGroupExercise(1.0, chest, pressMultipowerInclinado);
+    var press7 = new MuscleGroupExercise(1.0, chest, pressMultipowerDeclinado);
+    var press8 = new MuscleGroupExercise(1.0, chest, aperturasMancuernas);
+    var press9 = new MuscleGroupExercise(1.0, chest, aperturasMancuernasInclinado);
+    var press10 = new MuscleGroupExercise(1.0, chest, aperturasMancuernasDeclinado);
+
+    var exercisesMuscleGroups =
+        List.of(
+            pressBancaChest,
+            pressBancaInclChest,
+            press1,
+            press2,
+            press3,
+            press4,
+            press5,
+            press6,
+            press7,
+            press8,
+            press9,
+            press10);
     log.info("\tInserting " + exercisesMuscleGroups.size() + " exercises-muscleGroups...");
     muscleGroupExerciseDao.saveAll(exercisesMuscleGroups);
     log.info("\tInserting " + exercisesMuscleGroups.size() + " exercises-muscleGroups");

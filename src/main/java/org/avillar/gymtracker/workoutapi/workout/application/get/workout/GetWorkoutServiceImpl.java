@@ -12,7 +12,7 @@ import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRep
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponse;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.workout.application.get.workout.mapper.GetWorkoutServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.application.get.workout.model.GetWorkoutResponse;
+import org.avillar.gymtracker.workoutapi.workout.application.get.workout.model.GetWorkoutResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
 import org.springframework.stereotype.Service;
@@ -28,10 +28,14 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
   private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
-  public GetWorkoutResponse getWorkout(final UUID workoutId, final boolean full) {
+  public GetWorkoutResponseApplication getWorkout(final UUID workoutId, final boolean full) {
     final Workout workout = full ? getFullWorkout(workoutId) : getSimpleWorkout(workoutId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.READ);
+
+    if (!full) {
+      return  getWorkoutServiceMapper.getResponse(workout);
+    }
 
     // TODO Revisar logica exercise
     final List<GetExerciseResponse> getExerciseResponses =
@@ -40,9 +44,9 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
                 .map(SetGroup::getExerciseId)
                 .collect(Collectors.toSet()));
 
-    final GetWorkoutResponse getWorkoutResponse = getWorkoutServiceMapper.getResponse(workout);
+    final GetWorkoutResponseApplication getWorkoutResponseApplication = getWorkoutServiceMapper.getResponse(workout);
 
-    getWorkoutResponse
+    getWorkoutResponseApplication
         .getSetGroups()
         .forEach(
             setGroup ->
@@ -57,7 +61,7 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
                                 new EntityNotFoundException(
                                     Exercise.class, setGroup.getExerciseId()))));
 
-    return getWorkoutResponse; // FIXME Arreglar mapeo no full
+    return getWorkoutResponseApplication; // FIXME Arreglar mapeo no full
   }
 
   private Workout getFullWorkout(final UUID workoutId) {

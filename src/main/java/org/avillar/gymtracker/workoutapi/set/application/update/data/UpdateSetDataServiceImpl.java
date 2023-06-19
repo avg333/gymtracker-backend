@@ -6,8 +6,8 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.set.application.update.data.mapper.UpdateSetDataServiceMapper;
-import org.avillar.gymtracker.workoutapi.set.application.update.data.model.UpdateSetDataRequest;
-import org.avillar.gymtracker.workoutapi.set.application.update.data.model.UpdateSetDataResponse;
+import org.avillar.gymtracker.workoutapi.set.application.update.data.model.UpdateSetDataRequestApplication;
+import org.avillar.gymtracker.workoutapi.set.application.update.data.model.UpdateSetDataResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
 import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
 import org.springframework.stereotype.Service;
@@ -23,23 +23,23 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
 
   @Override
   @Transactional
-  public UpdateSetDataResponse update(
-      final UUID setId, final UpdateSetDataRequest updateSetDataRequest) {
+  public UpdateSetDataResponseApplication update(
+      final UUID setId, final UpdateSetDataRequestApplication updateSetDataRequestApplication) {
     final Set set = getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);
 
-    if (set.getDescription().equals(updateSetDataRequest.getDescription())
-        && set.getWeight().equals(updateSetDataRequest.getWeight())
-        && set.getRir().equals(updateSetDataRequest.getRir())
-        && set.getReps().equals(updateSetDataRequest.getReps())) {
+    if (set.getDescription().equals(updateSetDataRequestApplication.getDescription())
+        && set.getWeight().equals(updateSetDataRequestApplication.getWeight())
+        && set.getRir().equals(updateSetDataRequestApplication.getRir())
+        && set.getReps().equals(updateSetDataRequestApplication.getReps())) {
       return updateSetDataServiceMapper.updateResponse(set);
     }
 
-    set.setDescription(updateSetDataRequest.getDescription());
-    set.setWeight(updateSetDataRequest.getWeight());
-    set.setReps(updateSetDataRequest.getReps());
-    set.setRir(updateSetDataRequest.getRir());
+    set.setDescription(updateSetDataRequestApplication.getDescription());
+    set.setWeight(updateSetDataRequestApplication.getWeight());
+    set.setReps(updateSetDataRequestApplication.getReps());
+    set.setRir(updateSetDataRequestApplication.getRir());
 
     setDao.save(set);
 

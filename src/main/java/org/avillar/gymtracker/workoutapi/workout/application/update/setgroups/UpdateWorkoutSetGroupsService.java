@@ -1,13 +1,13 @@
 package org.avillar.gymtracker.workoutapi.workout.application.update.setgroups;
 
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.workout.application.update.setgroups.model.UpdateWorkoutSetGroupsResponse;
+import org.avillar.gymtracker.workoutapi.workout.application.update.setgroups.model.UpdateWorkoutSetGroupsResponseApplication;
 
 public interface UpdateWorkoutSetGroupsService {
 
-  UpdateWorkoutSetGroupsResponse addSetGroupsToWorkoutFromWorkout(
+  UpdateWorkoutSetGroupsResponseApplication addSetGroupsToWorkoutFromWorkout(
       UUID workoutDestinationId, UUID workoutSourceId);
 
-  UpdateWorkoutSetGroupsResponse addSetGroupsToWorkoutFromSession(
+  UpdateWorkoutSetGroupsResponseApplication addSetGroupsToWorkoutFromSession(
       UUID workoutDestinationId, UUID sessionSourceId);
 }

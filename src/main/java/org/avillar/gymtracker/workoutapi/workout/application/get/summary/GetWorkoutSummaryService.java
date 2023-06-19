@@ -1,9 +1,9 @@
 package org.avillar.gymtracker.workoutapi.workout.application.get.summary;
 
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.workout.application.get.summary.model.GetWorkoutSummaryResponse;
+import org.avillar.gymtracker.workoutapi.workout.application.get.summary.model.GetWorkoutSummaryResponseApplication;
 
 public interface GetWorkoutSummaryService {
 
-  GetWorkoutSummaryResponse getWorkoutSummary(UUID workoutId);
+  GetWorkoutSummaryResponseApplication getWorkoutSummary(UUID workoutId);
 }
