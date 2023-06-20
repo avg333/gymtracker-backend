@@ -24,7 +24,8 @@ public class MuscleGroup extends BaseEntity {
   @Column private String description;
 
   @ManyToMany
-  @JoinTable(name = "muscle_sup_group_muscle_groups",
+  @JoinTable(
+      name = "muscle_sup_group_muscle_groups",
       joinColumns = @JoinColumn(name = "muscle_sup_group_id"),
       inverseJoinColumns = @JoinColumn(name = "muscle_groups_id"))
   private Set<MuscleSupGroup> muscleSupGroups = new HashSet<>();

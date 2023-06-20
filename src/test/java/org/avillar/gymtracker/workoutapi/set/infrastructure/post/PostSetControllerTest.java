@@ -9,24 +9,30 @@ import org.avillar.gymtracker.workoutapi.set.application.post.PostSetService;
 import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetRequestApplication;
 import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponseApplication.SetGroup;
-import org.avillar.gymtracker.workoutapi.set.infrastructure.post.mapper.PostSetControllerMapper;
+import org.avillar.gymtracker.workoutapi.set.infrastructure.post.mapper.PostSetControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.post.model.PostSetRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.post.model.PostSetResponseInfrastructure;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class PostSetControllerTest {
 
-  @InjectMocks private PostSetController postSetController;
+  private PostSetController postSetController;
 
   @Mock private PostSetService postSetService;
 
-  @Mock private PostSetControllerMapper postSetControllerMapper; // TODO No mockear el mapper
+  @Spy private PostSetControllerMapperImpl postSetControllerMapper;
+
+  @BeforeEach
+  void beforeEach() {
+    postSetController = new PostSetController(postSetService, postSetControllerMapper);
+  }
 
   @Test
   void postSet() {
@@ -48,18 +54,6 @@ class PostSetControllerTest {
         .thenReturn(
             new PostSetResponseApplication(
                 setId, listOrder, description, reps, rir, weight, new SetGroup(setGroupId)));
-    when(postSetControllerMapper.postRequest(postSetRequestInfrastructure))
-        .thenReturn(new PostSetRequestApplication());
-    when(postSetControllerMapper.postResponse(any(PostSetResponseApplication.class)))
-        .thenReturn(
-            new PostSetResponseInfrastructure(
-                setId,
-                listOrder,
-                description,
-                reps,
-                rir,
-                weight,
-                new PostSetResponseInfrastructure.SetGroup(setGroupId)));
 
     final PostSetResponseInfrastructure postSetResponseInfrastructure =
         postSetController.postSet(setGroupId, postSetRequestInfrastructure).getBody();

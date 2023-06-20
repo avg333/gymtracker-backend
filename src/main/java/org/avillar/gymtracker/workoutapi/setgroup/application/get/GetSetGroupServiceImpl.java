@@ -22,13 +22,9 @@ public class GetSetGroupServiceImpl implements GetSetGroupService {
   private final GetSetGroupServiceMapper getSetGroupServiceMapper;
 
   @Override
-  public GetSetGroupResponseApplication getSetGroup(final UUID setGroupId, final boolean full) {
-    final List<SetGroup> setGroups =
-        full
-            ? setGroupDao.getSetGroupFullByIds(List.of(setGroupId))
-            : setGroupDao.getSetGroupWithWorkoutById(setGroupId);
+  public GetSetGroupResponseApplication getSetGroup(final UUID setGroupId) {
     final SetGroup setGroup =
-        setGroups.stream()
+        setGroupDao.getSetGroupWithWorkoutById(setGroupId).stream()
             .findAny()
             .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
 

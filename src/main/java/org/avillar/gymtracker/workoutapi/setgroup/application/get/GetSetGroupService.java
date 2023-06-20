@@ -6,7 +6,7 @@ import org.avillar.gymtracker.workoutapi.setgroup.application.get.model.GetSetGr
 
 public interface GetSetGroupService {
 
-  GetSetGroupResponseApplication getSetGroup(UUID setGroupId, boolean full);
+  GetSetGroupResponseApplication getSetGroup(UUID setGroupId);
 
   List<GetSetGroupResponseApplication> getAllUserAndExerciseSetGroups(UUID userId, UUID exerciseId);
 }

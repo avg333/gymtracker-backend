@@ -21,12 +21,7 @@ public class UpdateSetDataController {
   private final UpdateSetDataService updateSetDataService;
   private final UpdateSetDataControllerMapper updateSetDataControllerMapper;
 
-  /**
-   * Sustituye la set con el ID especificado por otra con los datos del SetDto enviado. No se
-   * sustituye el padre de la Set original ni el ID de la set. Devuelve el SetDto resultado de la
-   * actualización. Se usa en SetModal cuando se modifica una Set existente, pero no se usa el
-   * retorno.
-   */
+  /** Se usa en SetModal cuando se modifica una Set existente, pero no se usa el retorno. */
   @PatchMapping("sets/{setId}")
   public ResponseEntity<UpdateSetDataResponseInfrastructure> updateSetData(
       @PathVariable final UUID setId,

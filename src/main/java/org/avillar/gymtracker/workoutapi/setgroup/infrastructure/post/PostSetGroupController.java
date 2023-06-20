@@ -22,6 +22,7 @@ public class PostSetGroupController {
   private final PostSetGroupService postSetGroupService;
   private final PostSetGroupControllerMapper postSetGroupControllerMapper;
 
+  /** Se usa cuando se crea una nueva setGroup en el Workout. No usa el retorno */
   @PostMapping("/workouts/{workoutId}/setGroups")
   public ResponseEntity<PostSetGroupResponseInfrastructure> post(
       @PathVariable final UUID workoutId,

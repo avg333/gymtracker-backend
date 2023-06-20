@@ -3,12 +3,10 @@ package org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder.mo
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateSetListOrderResponseInfrastructure {
@@ -16,7 +14,6 @@ public class UpdateSetListOrderResponseInfrastructure {
   private List<Set> sets;
 
   @Data
-  @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Set {
@@ -30,7 +27,6 @@ public class UpdateSetListOrderResponseInfrastructure {
   }
 
   @Data
-  @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class SetGroup {

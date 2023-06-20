@@ -13,22 +13,27 @@ import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.post.mapper.Pos
 import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.post.model.PostSetGroupRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.post.model.PostSetGroupResponseInfrastructure;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class PostSetGroupControllerTest {
 
-  @InjectMocks private PostSetGroupController postSetGroupController;
+  private PostSetGroupController postSetGroupController;
 
   @Mock private PostSetGroupService postSetGroupService;
 
-  @Mock
-  private PostSetGroupControllerMapperImpl
-      postSetGroupControllerMapper; // TODO No mockear el mapper
+  @Spy private PostSetGroupControllerMapperImpl postSetGroupControllerMapper;
+
+  @BeforeEach
+  void beforeEach() {
+    postSetGroupController =
+        new PostSetGroupController(postSetGroupService, postSetGroupControllerMapper);
+  }
 
   @Test
   void post() {
@@ -46,16 +51,6 @@ class PostSetGroupControllerTest {
         .thenReturn(
             new PostSetGroupResponseApplication(
                 setGroupId, listOrder, description, exerciseId, new Workout(workoutId)));
-    when(postSetGroupControllerMapper.postRequest(postWorkoutRequestInfrastructure))
-        .thenReturn(new PostSetGroupRequestApplication());
-    when(postSetGroupControllerMapper.postResponse(any(PostSetGroupResponseApplication.class)))
-        .thenReturn(
-            new PostSetGroupResponseInfrastructure(
-                setGroupId,
-                listOrder,
-                description,
-                exerciseId,
-                new PostSetGroupResponseInfrastructure.Workout(workoutId)));
 
     final PostSetGroupResponseInfrastructure postSetGroupResponseInfrastructure =
         postSetGroupController.post(workoutId, postWorkoutRequestInfrastructure).getBody();

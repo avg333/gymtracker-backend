@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.errors.application.exceptions;
 
+import java.util.Objects;
 import java.util.UUID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +21,7 @@ public class IllegalAccessException extends RuntimeException {
     super(
         IllegalAccessException.generateMessage(
             entity.getClass().getSimpleName(),
-            entity.getId().toString(),
+            Objects.nonNull(entity.getId()) ? entity.getId().toString() : "",
             authOperations.toString(),
             userId.toString()));
     this.entityClassName = entity.getClass().getSimpleName();

@@ -3,7 +3,6 @@ package org.avillar.gymtracker.workoutapi.workout.application.update.setgroups.m
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +14,6 @@ public class UpdateWorkoutSetGroupsResponseApplication {
   private List<SetGroup> setGroups;
 
   @Data
-  @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class SetGroup {
@@ -27,7 +25,6 @@ public class UpdateWorkoutSetGroupsResponseApplication {
   }
 
   @Data
-  @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Set {

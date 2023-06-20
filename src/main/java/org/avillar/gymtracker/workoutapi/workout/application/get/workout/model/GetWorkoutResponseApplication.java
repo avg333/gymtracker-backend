@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponse;
@@ -21,7 +20,6 @@ public class GetWorkoutResponseApplication {
   private List<SetGroup> setGroups;
 
   @Data
-  @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class SetGroup {
@@ -35,7 +33,6 @@ public class GetWorkoutResponseApplication {
   }
 
   @Data
-  @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Set {

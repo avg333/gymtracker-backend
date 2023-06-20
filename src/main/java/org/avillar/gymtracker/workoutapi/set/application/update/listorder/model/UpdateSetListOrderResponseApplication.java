@@ -2,12 +2,10 @@ package org.avillar.gymtracker.workoutapi.set.application.update.listorder.model
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateSetListOrderResponseApplication {
@@ -15,7 +13,6 @@ public class UpdateSetListOrderResponseApplication {
   private java.util.Set<Set> sets;
 
   @Data
-  @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Set {
@@ -28,7 +25,6 @@ public class UpdateSetListOrderResponseApplication {
     private SetGroup setGroup;
 
     @Data
-    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SetGroup {

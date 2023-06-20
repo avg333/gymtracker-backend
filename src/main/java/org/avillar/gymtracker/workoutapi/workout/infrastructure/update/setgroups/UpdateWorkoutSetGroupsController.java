@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// FINALIZAR
 @RestController
 @RequestMapping(path = "${workoutsApiPrefix}/")
 @RequiredArgsConstructor
@@ -25,7 +26,9 @@ public class UpdateWorkoutSetGroupsController {
   @PatchMapping("/workouts/{workoutId}/setGroups")
   public ResponseEntity<UpdateWorkoutSetGroupsResponseInfrastructure> updateWorkoutSetGroups(
       @PathVariable final UUID workoutId,
-      @Valid @RequestBody final UpdateWorkoutSetGroupsRequestInfrastructure updateWorkoutSetGroupsRequestInfrastructure) {
+      @Valid @RequestBody
+          final UpdateWorkoutSetGroupsRequestInfrastructure
+              updateWorkoutSetGroupsRequestInfrastructure) {
     return ResponseEntity.ok(
         updateWorkoutSetGroupsControllerMapper.updateResponse(
             updateWorkoutSetGroupsRequestInfrastructure.getSource()

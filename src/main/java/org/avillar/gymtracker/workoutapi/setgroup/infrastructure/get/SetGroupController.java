@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,9 +26,9 @@ public class SetGroupController {
    */
   @GetMapping("/setGroups/{setGroupId}")
   public ResponseEntity<GetSetGroupResponseInfrastructure> getSetGroup(
-      @PathVariable final UUID setGroupId, @RequestParam(required = false) final boolean full) {
+      @PathVariable final UUID setGroupId) {
     return ResponseEntity.ok(
-        getSetGroupControllerMapper.getResponse(getSetGroupService.getSetGroup(setGroupId, full)));
+        getSetGroupControllerMapper.getResponse(getSetGroupService.getSetGroup(setGroupId)));
   }
 
   /**

@@ -2,7 +2,6 @@ package org.avillar.gymtracker.workoutapi.setgroup.infrastructure.post.model;
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +17,6 @@ public class PostSetGroupResponseInfrastructure {
   private Workout workout;
 
   @Data
-  @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Workout {
