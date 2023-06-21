@@ -1,17 +1,14 @@
 package org.avillar.gymtracker.workoutapi.exercise.application.mapper;
 
 import java.util.List;
-import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponse;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseResponse;
+import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface GetExerciseFacadeMapper {
 
-  GetExerciseResponse getResponse(
-      org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseResponse
-          getExerciseResponse);
+  GetExerciseResponseFacade getResponse(GetExerciseResponse getExerciseResponse);
 
-  List<GetExerciseResponse> getResponse(
-      List<org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseResponse>
-          getExerciseResponses);
+  List<GetExerciseResponseFacade> getResponse(List<GetExerciseResponse> getExerciseResponses);
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetExerciseResponse {
+public class GetExerciseResponseFacade {
   private UUID id;
   private String name;
   private String description;

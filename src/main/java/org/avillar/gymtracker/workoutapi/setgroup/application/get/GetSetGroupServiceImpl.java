@@ -13,6 +13,7 @@ import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.springframework.stereotype.Service;
 
+// FINALIZAR
 @Service
 @RequiredArgsConstructor
 public class GetSetGroupServiceImpl implements GetSetGroupService {
@@ -30,7 +31,7 @@ public class GetSetGroupServiceImpl implements GetSetGroupService {
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.READ);
 
-    return getSetGroupServiceMapper.getResponse(setGroup); // TODO Arreglar mapeo cuando no es full
+    return getSetGroupServiceMapper.getResponse(setGroup);
   }
 
   @Override

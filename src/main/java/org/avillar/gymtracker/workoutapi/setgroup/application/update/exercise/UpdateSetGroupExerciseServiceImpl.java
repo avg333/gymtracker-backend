@@ -2,19 +2,23 @@ package org.avillar.gymtracker.workoutapi.setgroup.application.update.exercise;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
 
+// RDY
 @Service
 @RequiredArgsConstructor
 public class UpdateSetGroupExerciseServiceImpl implements UpdateSetGroupExerciseService {
 
   private final SetGroupDao setGroupDao;
   private final AuthWorkoutsService authWorkoutsService;
+  private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
   public UUID update(final UUID setGroupId, final UUID exerciseId) {
@@ -26,7 +30,9 @@ public class UpdateSetGroupExerciseServiceImpl implements UpdateSetGroupExercise
       return setGroup.getExerciseId();
     }
 
-    // TODO Verificar si el ejercicio existe y es accesible para el usuario
+    if (!exerciseRepositoryClient.canAccessExerciseById(exerciseId)) {
+      throw new EntityNotFoundException(Exercise.class, exerciseId);
+    }
 
     setGroup.setExerciseId(exerciseId);
 

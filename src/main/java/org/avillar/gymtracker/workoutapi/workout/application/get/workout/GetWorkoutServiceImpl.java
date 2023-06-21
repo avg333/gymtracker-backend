@@ -9,7 +9,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
-import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponse;
+import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.workout.application.get.workout.mapper.GetWorkoutServiceMapper;
 import org.avillar.gymtracker.workoutapi.workout.application.get.workout.model.GetWorkoutResponseApplication;
@@ -39,7 +39,7 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
     }
 
     // TODO Revisar logica exercise
-    final List<GetExerciseResponse> getExerciseResponses =
+    final List<GetExerciseResponseFacade> getExerciseResponsFacades =
         exerciseRepositoryClient.getExerciseByIds(
             workout.getSetGroups().stream()
                 .map(SetGroup::getExerciseId)
@@ -52,7 +52,7 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
         .forEach(
             setGroup ->
                 setGroup.setExercise(
-                    getExerciseResponses.stream()
+                    getExerciseResponsFacades.stream()
                         .filter(
                             getExerciseResponse ->
                                 getExerciseResponse.getId().equals(setGroup.getExerciseId()))

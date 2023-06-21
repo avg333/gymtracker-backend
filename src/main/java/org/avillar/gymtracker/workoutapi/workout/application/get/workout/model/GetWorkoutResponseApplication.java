@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponse;
+import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 
 @Data
 @NoArgsConstructor
@@ -29,7 +29,7 @@ public class GetWorkoutResponseApplication {
     private UUID exerciseId;
     private List<Set> sets;
 
-    private GetExerciseResponse exercise;
+    private GetExerciseResponseFacade exercise;
   }
 
   @Data

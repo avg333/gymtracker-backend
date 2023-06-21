@@ -23,13 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DeleteWorkoutServiceImplTest {
 
-  private final UUID workoutId = UUID.randomUUID();
-
   @InjectMocks private DeleteWorkoutServiceImpl deleteWorkoutService;
-
   @Mock private WorkoutDao workoutDao;
-
   @Mock private AuthWorkoutsService authWorkoutsService;
+
+  private final UUID workoutId = UUID.randomUUID();
 
   @Test
   void deleteOk() {
@@ -38,7 +36,7 @@ class DeleteWorkoutServiceImplTest {
     when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.DELETE);
 
-    Assertions.assertDoesNotThrow(() -> deleteWorkoutService.delete(workoutId));
+    assertDoesNotThrow(() -> deleteWorkoutService.delete(workoutId));
   }
 
   @Test
@@ -58,11 +56,12 @@ class DeleteWorkoutServiceImplTest {
     final Workout workout = new Workout();
     workout.setId(workoutId);
     final UUID userId = UUID.randomUUID();
+    final AuthOperations deleteOperation = AuthOperations.DELETE;
 
     when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
-    doThrow(new IllegalAccessException(workout, AuthOperations.DELETE, userId))
+    doThrow(new IllegalAccessException(workout, deleteOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(workout, AuthOperations.DELETE);
+        .checkAccess(workout, deleteOperation);
 
     final IllegalAccessException exception =
         Assertions.assertThrows(
@@ -70,6 +69,6 @@ class DeleteWorkoutServiceImplTest {
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workoutId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(AuthOperations.DELETE, exception.getAuthOperations());
+    assertEquals(deleteOperation, exception.getAuthOperations());
   }
 }

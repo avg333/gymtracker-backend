@@ -14,6 +14,7 @@ import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
 
+// FINALIZAR
 @Service
 @RequiredArgsConstructor
 public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService {
@@ -47,7 +48,8 @@ public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService 
     setGroupDao.deleteById(setGroupSourceId); // TODO Es correcto borrar el source?
     setDao.saveAll(sets);
 
-    return new UpdateSetGroupSetsResponseApplication(updateSetGroupSetsServiceMapper.updateResponse(sets));
+    return new UpdateSetGroupSetsResponseApplication(
+        updateSetGroupSetsServiceMapper.updateResponse(sets));
   }
 
   private SetGroup getSetGroupByIdFromCollection(

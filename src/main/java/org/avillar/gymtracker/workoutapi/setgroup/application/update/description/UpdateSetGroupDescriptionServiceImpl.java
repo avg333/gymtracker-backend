@@ -2,6 +2,7 @@ package org.avillar.gymtracker.workoutapi.setgroup.application.update.descriptio
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
@@ -9,6 +10,7 @@ import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
 
+// RDY
 @Service
 @RequiredArgsConstructor
 public class UpdateSetGroupDescriptionServiceImpl implements UpdateSetGroupDescriptionService {
@@ -22,7 +24,7 @@ public class UpdateSetGroupDescriptionServiceImpl implements UpdateSetGroupDescr
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.UPDATE);
 
-    if (setGroup.getDescription().equals(description)) {
+    if (StringUtils.equals(setGroup.getDescription(), description)) {
       return setGroup.getDescription();
     }
 

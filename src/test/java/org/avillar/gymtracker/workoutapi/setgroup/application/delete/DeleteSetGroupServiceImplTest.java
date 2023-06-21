@@ -49,6 +49,7 @@ class DeleteSetGroupServiceImplTest {
     when(setGroupDao.getSetGroupsByWorkoutId(workoutId)).thenReturn(Set.of(setGroup));
 
     Assertions.assertDoesNotThrow(() -> deleteSetGroupService.delete(setGroupId));
+    // TODO Revisar caso de lista vacia y no vacia
   }
 
   @Test
