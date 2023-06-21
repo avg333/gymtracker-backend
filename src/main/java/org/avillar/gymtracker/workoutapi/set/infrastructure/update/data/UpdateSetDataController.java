@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// RDY
 @RestController
 @RequestMapping(path = "${workoutsApiPrefix}/")
 @RequiredArgsConstructor
@@ -22,7 +21,6 @@ public class UpdateSetDataController {
   private final UpdateSetDataService updateSetDataService;
   private final UpdateSetDataControllerMapper updateSetDataControllerMapper;
 
-  /** Se usa en SetModal cuando se modifica una Set existente, pero no se usa el retorno. */
   @PatchMapping("sets/{setId}")
   public ResponseEntity<UpdateSetDataResponseInfrastructure> updateSetData(
       @PathVariable final UUID setId,

@@ -16,7 +16,6 @@ import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
 import org.springframework.stereotype.Service;
 
-// RDY
 @Service
 @RequiredArgsConstructor
 public class PostSetGroupServiceImpl implements PostSetGroupService {

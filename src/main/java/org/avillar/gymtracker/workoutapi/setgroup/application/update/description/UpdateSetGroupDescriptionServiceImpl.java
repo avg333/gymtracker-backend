@@ -10,7 +10,6 @@ import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
 
-// RDY
 @Service
 @RequiredArgsConstructor
 public class UpdateSetGroupDescriptionServiceImpl implements UpdateSetGroupDescriptionService {

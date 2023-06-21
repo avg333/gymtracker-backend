@@ -23,11 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DeleteWorkoutServiceImplTest {
 
+  private final UUID workoutId = UUID.randomUUID();
   @InjectMocks private DeleteWorkoutServiceImpl deleteWorkoutService;
   @Mock private WorkoutDao workoutDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-
-  private final UUID workoutId = UUID.randomUUID();
 
   @Test
   void deleteOk() {

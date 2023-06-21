@@ -12,7 +12,6 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.DuplicatedWorkoutDateException;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.workout.application.post.mapper.PostWorkoutServiceMapper;
 import org.avillar.gymtracker.workoutapi.workout.application.post.mapper.PostWorkoutServiceMapperImpl;
 import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutRequestApplication;
 import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWorkoutResponseApplication;

@@ -2,6 +2,7 @@ package org.avillar.gymtracker.workoutapi.set.application.update.data;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
@@ -29,7 +30,7 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);
 
-    if (set.getDescription().equals(updateSetDataRequestApplication.getDescription())
+    if (StringUtils.equals(set.getDescription(), updateSetDataRequestApplication.getDescription())
         && set.getWeight().equals(updateSetDataRequestApplication.getWeight())
         && set.getRir().equals(updateSetDataRequestApplication.getRir())
         && set.getReps().equals(updateSetDataRequestApplication.getReps())) {

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
@@ -16,7 +15,6 @@ import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNot
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
