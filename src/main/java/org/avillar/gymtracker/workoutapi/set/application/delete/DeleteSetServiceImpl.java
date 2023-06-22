@@ -21,7 +21,7 @@ public class DeleteSetServiceImpl implements DeleteSetService {
 
   @Override
   @Transactional
-  public void delete(final UUID setId) {
+  public void execute(final UUID setId) {
     final Set set = getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.DELETE);

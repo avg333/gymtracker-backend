@@ -50,13 +50,13 @@ class PostSetControllerTest {
 
     final UUID setId = UUID.randomUUID();
     final int listOrder = 0;
-    when(postSetService.post(eq(setGroupId), any(PostSetRequestApplication.class)))
+    when(postSetService.execute(eq(setGroupId), any(PostSetRequestApplication.class)))
         .thenReturn(
             new PostSetResponseApplication(
                 setId, listOrder, description, reps, rir, weight, new SetGroup(setGroupId)));
 
     final PostSetResponseInfrastructure postSetResponseInfrastructure =
-        postSetController.postSet(setGroupId, postSetRequestInfrastructure).getBody();
+        postSetController.post(setGroupId, postSetRequestInfrastructure).getBody();
     Assertions.assertEquals(setId, postSetResponseInfrastructure.getId());
     Assertions.assertEquals(listOrder, postSetResponseInfrastructure.getListOrder());
     Assertions.assertEquals(description, postSetResponseInfrastructure.getDescription());

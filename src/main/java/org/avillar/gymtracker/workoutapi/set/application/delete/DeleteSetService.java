@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface DeleteSetService {
 
-  void delete(UUID setId);
+  void execute(UUID setId);
 }

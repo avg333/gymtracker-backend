@@ -5,5 +5,5 @@ import org.avillar.gymtracker.workoutapi.set.application.get.set.model.GetSetRes
 
 public interface GetSetService {
 
-  GetSetResponseApplication getSet(UUID setId);
+  GetSetResponseApplication execute(UUID setId);
 }

@@ -21,7 +21,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class PostSetGroupControllerTest {
+class PostGetSetExerciseSetGroupsControllerTest {
 
   private PostSetGroupController postSetGroupController;
 
@@ -47,7 +47,7 @@ class PostSetGroupControllerTest {
 
     final UUID setGroupId = UUID.randomUUID();
     final int listOrder = 0;
-    when(postSetGroupService.post(eq(workoutId), any(PostSetGroupRequestApplication.class)))
+    when(postSetGroupService.execute(eq(workoutId), any(PostSetGroupRequestApplication.class)))
         .thenReturn(
             new PostSetGroupResponseApplication(
                 setGroupId, listOrder, description, exerciseId, new Workout(workoutId)));

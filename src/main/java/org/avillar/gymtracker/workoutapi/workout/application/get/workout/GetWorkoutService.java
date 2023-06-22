@@ -5,5 +5,5 @@ import org.avillar.gymtracker.workoutapi.workout.application.get.workout.model.G
 
 public interface GetWorkoutService {
 
-  GetWorkoutResponseApplication getWorkout(UUID workoutId, boolean full);
+  GetWorkoutResponseApplication execute(UUID workoutId, boolean full);
 }

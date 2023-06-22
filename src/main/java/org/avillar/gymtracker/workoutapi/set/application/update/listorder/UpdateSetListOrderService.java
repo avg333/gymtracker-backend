@@ -5,5 +5,5 @@ import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.
 
 public interface UpdateSetListOrderService {
 
-  UpdateSetListOrderResponseApplication updateSetListOrder(UUID setId, int listOrder);
+  UpdateSetListOrderResponseApplication execute(UUID setId, int listOrder);
 }

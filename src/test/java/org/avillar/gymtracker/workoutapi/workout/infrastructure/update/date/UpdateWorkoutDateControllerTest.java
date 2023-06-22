@@ -28,12 +28,12 @@ class UpdateWorkoutDateControllerTest {
         new UpdateWorkoutDateRequestInfrastructure();
     updateWorkoutDateRequestInfrastructure.setDate(date);
 
-    when(updateWorkoutDateService.update(workoutId, date)).thenReturn(date);
+    when(updateWorkoutDateService.execute(workoutId, date)).thenReturn(date);
 
     Assertions.assertEquals(
         date,
         updateWorkoutDateController
-            .updateWorkoutDate(workoutId, updateWorkoutDateRequestInfrastructure)
+            .patch(workoutId, updateWorkoutDateRequestInfrastructure)
             .getBody()
             .getDate());
   }

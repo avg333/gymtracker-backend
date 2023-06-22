@@ -27,9 +27,9 @@ public class GetWorkoutController {
    * FULL
    */
   @GetMapping("/workouts/{workoutId}")
-  public ResponseEntity<GetWorkoutResponseInfrastructure> getWorkoutById(
+  public ResponseEntity<GetWorkoutResponseInfrastructure> get(
       @PathVariable final UUID workoutId, @RequestParam(required = false) final boolean full) {
     return ResponseEntity.ok(
-        getWorkoutControllerMapper.getResponse(getWorkoutService.getWorkout(workoutId, full)));
+        getWorkoutControllerMapper.map(getWorkoutService.execute(workoutId, full)));
   }
 }

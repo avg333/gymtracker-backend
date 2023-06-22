@@ -21,8 +21,10 @@ public class WebSecurityConfigBase {
 
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtRequestFilter jwtRequestFilter;
+
   @Value("${authApiPrefix}")
   private String authApiPrefix;
+
   @Value("${authApiEndpoint}")
   private String authEndpoint;
 
@@ -40,13 +42,14 @@ public class WebSecurityConfigBase {
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests( // FIXME Autorizar solo API
             authorize -> authorize.requestMatchers("/**").permitAll().anyRequest().authenticated())
-//        .authorizeHttpRequests(
-//            requests ->
-//                requests
-//                    .requestMatchers(new AntPathRequestMatcher(authApiPrefix + authEndpoint))
-//                    .permitAll()
-//                    .anyRequest()
-//                    .authenticated())
+        //        .authorizeHttpRequests(
+        //            requests ->
+        //                requests
+        //                    .requestMatchers(new AntPathRequestMatcher(authApiPrefix +
+        // authEndpoint))
+        //                    .permitAll()
+        //                    .anyRequest()
+        //                    .authenticated())
         .exceptionHandling()
         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
         .and()

@@ -38,7 +38,7 @@ class GetWorkoutIdAndDateControllerTest {
     when(getWorkoutIdAndDateService.getAllUserWorkoutDates(userId)).thenReturn(serviceResponse);
 
     final GetWorkoutIdAndDateResponseInfrastructure getWorkoutIdAndDateResponseInfrastructure =
-        getWorkoutIdAndDateController.getWorkoutsIdAndDateByUser(userId, null).getBody();
+        getWorkoutIdAndDateController.get(userId, null).getBody();
 
     assertEquals(serviceResponse, getWorkoutIdAndDateResponseInfrastructure.getWorkoutsIdAndDate());
   }
@@ -51,7 +51,7 @@ class GetWorkoutIdAndDateControllerTest {
         .thenReturn(serviceResponse);
 
     final GetWorkoutIdAndDateResponseInfrastructure getWorkoutIdAndDateResponseInfrastructure =
-        getWorkoutIdAndDateController.getWorkoutsIdAndDateByUser(userId, exerciseId).getBody();
+        getWorkoutIdAndDateController.get(userId, exerciseId).getBody();
 
     assertEquals(serviceResponse, getWorkoutIdAndDateResponseInfrastructure.getWorkoutsIdAndDate());
   }

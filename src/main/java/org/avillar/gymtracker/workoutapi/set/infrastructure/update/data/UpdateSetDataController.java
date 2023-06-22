@@ -22,13 +22,12 @@ public class UpdateSetDataController {
   private final UpdateSetDataControllerMapper updateSetDataControllerMapper;
 
   @PatchMapping("sets/{setId}")
-  public ResponseEntity<UpdateSetDataResponseInfrastructure> updateSetData(
+  public ResponseEntity<UpdateSetDataResponseInfrastructure> patch(
       @PathVariable final UUID setId,
       @RequestBody final UpdateSetDataRequestInfrastructure updateSetDataRequestInfrastructure) {
     return ResponseEntity.ok(
-        updateSetDataControllerMapper.updateResponse(
-            updateSetDataService.update(
-                setId,
-                updateSetDataControllerMapper.updateRequest(updateSetDataRequestInfrastructure))));
+        updateSetDataControllerMapper.map(
+            updateSetDataService.execute(
+                setId, updateSetDataControllerMapper.map(updateSetDataRequestInfrastructure))));
   }
 }

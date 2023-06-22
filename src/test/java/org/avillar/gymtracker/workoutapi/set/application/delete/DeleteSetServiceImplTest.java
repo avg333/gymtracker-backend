@@ -47,7 +47,7 @@ class DeleteSetServiceImplTest {
     Mockito.doNothing().when(authWorkoutsService).checkAccess(set, AuthOperations.DELETE);
     when(setDao.getSetsBySetGroupId(setGroupId)).thenReturn(java.util.Set.of(set));
 
-    Assertions.assertDoesNotThrow(() -> deleteSetService.delete(setId));
+    Assertions.assertDoesNotThrow(() -> deleteSetService.execute(setId));
     // TODO Revisar caso de lista vacia y no vacia
   }
 
@@ -57,7 +57,7 @@ class DeleteSetServiceImplTest {
 
     final EntityNotFoundException exception =
         Assertions.assertThrows(
-            EntityNotFoundException.class, () -> deleteSetService.delete(setId));
+            EntityNotFoundException.class, () -> deleteSetService.execute(setId));
     assertEquals(Set.class.getSimpleName(), exception.getClassName());
     assertEquals(setId, exception.getId());
   }
@@ -74,7 +74,7 @@ class DeleteSetServiceImplTest {
         .checkAccess(set, AuthOperations.DELETE);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(IllegalAccessException.class, () -> deleteSetService.delete(setId));
+        Assertions.assertThrows(IllegalAccessException.class, () -> deleteSetService.execute(setId));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

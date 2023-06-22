@@ -51,7 +51,7 @@ class UpdateWorkoutDateServiceImplTest {
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
     when(workoutDao.save(Mockito.any(Workout.class))).thenAnswer(i -> i.getArguments()[0]);
 
-    assertEquals(date, updateWorkoutDateService.update(workoutId, date));
+    assertEquals(date, updateWorkoutDateService.execute(workoutId, date));
   }
 
   @Test
@@ -66,7 +66,7 @@ class UpdateWorkoutDateServiceImplTest {
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
 
     verify(workoutDao, never()).save(Mockito.any(Workout.class));
-    assertEquals(date, updateWorkoutDateService.update(workoutId, date));
+    assertEquals(date, updateWorkoutDateService.execute(workoutId, date));
   }
 
   @Test
@@ -79,7 +79,7 @@ class UpdateWorkoutDateServiceImplTest {
 
     final EntityNotFoundException exception =
         Assertions.assertThrows(
-            EntityNotFoundException.class, () -> updateWorkoutDateService.update(workoutId, date));
+            EntityNotFoundException.class, () -> updateWorkoutDateService.execute(workoutId, date));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
   }
@@ -100,7 +100,7 @@ class UpdateWorkoutDateServiceImplTest {
 
     final IllegalAccessException exception =
         Assertions.assertThrows(
-            IllegalAccessException.class, () -> updateWorkoutDateService.update(workoutId, date));
+            IllegalAccessException.class, () -> updateWorkoutDateService.execute(workoutId, date));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workoutId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
@@ -125,7 +125,7 @@ class UpdateWorkoutDateServiceImplTest {
     final DuplicatedWorkoutDateException exception =
         Assertions.assertThrows(
             DuplicatedWorkoutDateException.class,
-            () -> updateWorkoutDateService.update(workoutId, date));
+            () -> updateWorkoutDateService.execute(workoutId, date));
     assertEquals(date, exception.getWorkoutDate());
     assertEquals(userId, exception.getUserId());
   }

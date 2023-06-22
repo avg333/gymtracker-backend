@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PostWorkoutServiceMapper {
 
-  PostWorkoutResponseApplication postResponse(Workout workout);
+  PostWorkoutResponseApplication map(Workout workout);
 
-  Workout postRequest(PostWorkoutRequestApplication postWorkoutRequestApplication);
+  Workout map(PostWorkoutRequestApplication postWorkoutRequestApplication);
 }

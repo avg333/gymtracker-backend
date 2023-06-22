@@ -6,6 +6,6 @@ import org.avillar.gymtracker.workoutapi.workout.application.post.model.PostWork
 
 public interface PostWorkoutService {
 
-  PostWorkoutResponseApplication post(
+  PostWorkoutResponseApplication execute(
       UUID userId, PostWorkoutRequestApplication postWorkoutRequestApplication);
 }

@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.description;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
@@ -29,12 +28,12 @@ class UpdateSetGroupDescriptionControllerTest {
             new UpdateSetGroupDescriptionRequestInfrastructure();
     updateWorkoutDescriptionRequestInfrastructure.setDescription(description);
 
-    when(updateSetGroupDescriptionService.update(workoutId, description)).thenReturn(description);
+    when(updateSetGroupDescriptionService.execute(workoutId, description)).thenReturn(description);
 
     Assertions.assertEquals(
         description,
         updateSetGroupDescriptionController
-            .updateSetGroupDescription(workoutId, updateWorkoutDescriptionRequestInfrastructure)
+            .patch(workoutId, updateWorkoutDescriptionRequestInfrastructure)
             .getBody()
             .getDescription());
   }

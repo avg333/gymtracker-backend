@@ -18,7 +18,7 @@ public class UpdateWorkoutDescriptionServiceImpl implements UpdateWorkoutDescrip
   private final AuthWorkoutsService authWorkoutsService;
 
   @Override
-  public String update(final UUID workoutId, final String description) {
+  public String execute(final UUID workoutId, final String description) {
 
     final Workout workout =
         workoutDao

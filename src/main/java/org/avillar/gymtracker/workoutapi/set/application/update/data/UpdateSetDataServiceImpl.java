@@ -24,7 +24,7 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
 
   @Override
   @Transactional
-  public UpdateSetDataResponseApplication update(
+  public UpdateSetDataResponseApplication execute(
       final UUID setId, final UpdateSetDataRequestApplication updateSetDataRequestApplication) {
     final Set set = getSetFull(setId);
 
@@ -34,7 +34,7 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
         && set.getWeight().equals(updateSetDataRequestApplication.getWeight())
         && set.getRir().equals(updateSetDataRequestApplication.getRir())
         && set.getReps().equals(updateSetDataRequestApplication.getReps())) {
-      return updateSetDataServiceMapper.updateResponse(set);
+      return updateSetDataServiceMapper.map(set);
     }
 
     set.setDescription(updateSetDataRequestApplication.getDescription());
@@ -44,7 +44,7 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
 
     setDao.save(set);
 
-    return updateSetDataServiceMapper.updateResponse(set);
+    return updateSetDataServiceMapper.map(set);
   }
 
   private Set getSetFull(final UUID setId) {

@@ -17,8 +17,8 @@ public class DeleteSetGroupController {
   private final DeleteSetGroupService deleteSetGroupService;
 
   @DeleteMapping("/setGroups/{setGroupId}")
-  public ResponseEntity<Void> deleteSetGroup(@PathVariable final UUID setGroupId) {
-    deleteSetGroupService.delete(setGroupId);
+  public ResponseEntity<Void> delete(@PathVariable final UUID setGroupId) {
+    deleteSetGroupService.execute(setGroupId);
     return ResponseEntity.noContent().build();
   }
 }

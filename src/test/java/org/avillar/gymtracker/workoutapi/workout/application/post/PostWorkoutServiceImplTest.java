@@ -59,7 +59,7 @@ class PostWorkoutServiceImplTest {
     when(workoutDao.save(Mockito.any(Workout.class))).thenAnswer(i -> i.getArguments()[0]);
 
     final PostWorkoutResponseApplication postWorkoutResponseApplication =
-        postWorkoutService.post(userId, postWorkoutRequestApplication);
+        postWorkoutService.execute(userId, postWorkoutRequestApplication);
     Assertions.assertEquals(userId, postWorkoutResponseApplication.getUserId());
     Assertions.assertEquals(date, postWorkoutResponseApplication.getDate());
     Assertions.assertEquals(description, postWorkoutResponseApplication.getDescription());
@@ -81,7 +81,7 @@ class PostWorkoutServiceImplTest {
     final DuplicatedWorkoutDateException exception =
         Assertions.assertThrows(
             DuplicatedWorkoutDateException.class,
-            () -> postWorkoutService.post(userId, postWorkoutRequestApplication));
+            () -> postWorkoutService.execute(userId, postWorkoutRequestApplication));
     assertEquals(date, exception.getWorkoutDate());
     assertEquals(userId, exception.getUserId());
   }
@@ -105,7 +105,7 @@ class PostWorkoutServiceImplTest {
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> postWorkoutService.post(userId, postWorkoutRequestApplication));
+            () -> postWorkoutService.execute(userId, postWorkoutRequestApplication));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

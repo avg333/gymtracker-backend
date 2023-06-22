@@ -46,11 +46,11 @@ class PostWorkoutControllerTest {
     postWorkoutRequestInfrastructure.setDescription(description);
 
     final UUID workoutId = UUID.randomUUID();
-    when(postWorkoutService.post(eq(userId), any(PostWorkoutRequestApplication.class)))
+    when(postWorkoutService.execute(eq(userId), any(PostWorkoutRequestApplication.class)))
         .thenReturn(new PostWorkoutResponseApplication(workoutId, date, description, userId));
 
     final PostWorkoutResponseInfrastructure postWorkoutResponseInfrastructure =
-        postWorkoutController.postWorkout(userId, postWorkoutRequestInfrastructure).getBody();
+        postWorkoutController.post(userId, postWorkoutRequestInfrastructure).getBody();
     Assertions.assertEquals(workoutId, postWorkoutResponseInfrastructure.getId());
     Assertions.assertEquals(date, postWorkoutResponseInfrastructure.getDate());
     Assertions.assertEquals(description, postWorkoutResponseInfrastructure.getDescription());

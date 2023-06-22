@@ -27,11 +27,11 @@ public class PostSetGroupServiceImpl implements PostSetGroupService {
   private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
-  public PostSetGroupResponseApplication post(
+  public PostSetGroupResponseApplication execute(
       final UUID workoutId, final PostSetGroupRequestApplication postSetGroupRequestApplication) {
     final Workout workout = getWorkoutWithSetGroups(workoutId);
 
-    final SetGroup setGroup = postSetGroupServiceMapper.postRequest(postSetGroupRequestApplication);
+    final SetGroup setGroup = postSetGroupServiceMapper.map(postSetGroupRequestApplication);
     setGroup.setWorkout(workout);
     setGroup.setListOrder(workout.getSetGroups().size());
 
@@ -43,7 +43,7 @@ public class PostSetGroupServiceImpl implements PostSetGroupService {
 
     setGroupDao.save(setGroup);
 
-    return postSetGroupServiceMapper.postResponse(setGroup);
+    return postSetGroupServiceMapper.map(setGroup);
   }
 
   private Workout getWorkoutWithSetGroups(final UUID workoutId) {

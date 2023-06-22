@@ -23,13 +23,12 @@ public class PostWorkoutController {
   private final PostWorkoutControllerMapper postWorkoutControllerMapper;
 
   @PostMapping("/users/{userId}/workouts")
-  public ResponseEntity<PostWorkoutResponseInfrastructure> postWorkout(
+  public ResponseEntity<PostWorkoutResponseInfrastructure> post(
       @PathVariable final UUID userId,
       @Valid @RequestBody final PostWorkoutRequestInfrastructure postWorkoutRequestInfrastructure) {
     return ResponseEntity.ok(
-        postWorkoutControllerMapper.postResponse(
-            postWorkoutService.post(
-                userId,
-                postWorkoutControllerMapper.postRequest(postWorkoutRequestInfrastructure))));
+        postWorkoutControllerMapper.map(
+            postWorkoutService.execute(
+                userId, postWorkoutControllerMapper.map(postWorkoutRequestInfrastructure))));
   }
 }

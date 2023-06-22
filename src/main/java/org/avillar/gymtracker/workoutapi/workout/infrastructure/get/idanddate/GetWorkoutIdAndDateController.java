@@ -20,7 +20,7 @@ public class GetWorkoutIdAndDateController {
   private final GetWorkoutIdAndDateService getWorkoutIdAndDateService;
 
   @GetMapping("/users/{userId}/workouts/dates")
-  public ResponseEntity<GetWorkoutIdAndDateResponseInfrastructure> getWorkoutsIdAndDateByUser(
+  public ResponseEntity<GetWorkoutIdAndDateResponseInfrastructure> get(
       @PathVariable final UUID userId, @RequestParam(required = false) final UUID exerciseId) {
     return ResponseEntity.ok(
         new GetWorkoutIdAndDateResponseInfrastructure(

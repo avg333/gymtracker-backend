@@ -72,7 +72,7 @@ class PostSetServiceImplTest {
     when(setDao.save(Mockito.any(Set.class))).thenAnswer(i -> i.getArguments()[0]);
 
     final PostSetResponseApplication postSetResponseApplication =
-        postSetService.post(setGroupId, postSetRequestApplication);
+        postSetService.execute(setGroupId, postSetRequestApplication);
     Assertions.assertEquals(setGroupId, postSetResponseApplication.getSetGroup().getId());
     Assertions.assertEquals(description, postSetResponseApplication.getDescription());
     Assertions.assertEquals(rir, postSetResponseApplication.getRir());
@@ -106,7 +106,7 @@ class PostSetServiceImplTest {
     final EntityNotFoundException exception =
         Assertions.assertThrows(
             EntityNotFoundException.class,
-            () -> postSetService.post(setGroupId, postSetRequestApplication));
+            () -> postSetService.execute(setGroupId, postSetRequestApplication));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
   }
@@ -139,7 +139,7 @@ class PostSetServiceImplTest {
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> postSetService.post(setGroupId, postSetRequestApplication));
+            () -> postSetService.execute(setGroupId, postSetRequestApplication));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

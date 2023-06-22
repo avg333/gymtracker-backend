@@ -9,9 +9,9 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PostSetGroupControllerMapper {
 
-  PostSetGroupResponseInfrastructure postResponse(
+  PostSetGroupResponseInfrastructure map(
       PostSetGroupResponseApplication postSetGroupResponseApplication);
 
-  PostSetGroupRequestApplication postRequest(
+  PostSetGroupRequestApplication map(
       PostSetGroupRequestInfrastructure postSetGroupRequestInfrastructure);
 }

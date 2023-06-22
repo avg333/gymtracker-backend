@@ -59,7 +59,7 @@ class GetSetServiceImplTest {
         .when(authWorkoutsService)
         .checkAccess(Mockito.any(Set.class), eq(AuthOperations.READ));
 
-    final GetSetResponseApplication getSetResponseApplication = getSetService.getSet(setId);
+    final GetSetResponseApplication getSetResponseApplication = getSetService.execute(setId);
     Assertions.assertEquals(setId, getSetResponseApplication.getId());
     Assertions.assertEquals(listOrder, getSetResponseApplication.getListOrder());
     assertNull(getSetResponseApplication.getDescription());
@@ -77,7 +77,7 @@ class GetSetServiceImplTest {
     when(setDao.getSetFullById(setId)).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(EntityNotFoundException.class, () -> getSetService.getSet(setId));
+        Assertions.assertThrows(EntityNotFoundException.class, () -> getSetService.execute(setId));
     assertEquals(Set.class.getSimpleName(), exception.getClassName());
     assertEquals(setId, exception.getId());
   }
@@ -95,7 +95,7 @@ class GetSetServiceImplTest {
         .checkAccess(Mockito.any(Set.class), eq(AuthOperations.READ));
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(IllegalAccessException.class, () -> getSetService.getSet(setId));
+        Assertions.assertThrows(IllegalAccessException.class, () -> getSetService.execute(setId));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

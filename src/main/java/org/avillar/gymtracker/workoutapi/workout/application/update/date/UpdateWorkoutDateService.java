@@ -5,5 +5,5 @@ import java.util.UUID;
 
 public interface UpdateWorkoutDateService {
 
-  Date update(final UUID workoutId, final Date date);
+  Date execute(final UUID workoutId, final Date date);
 }

@@ -21,13 +21,13 @@ public class UpdateWorkoutDateController {
   private final UpdateWorkoutDateService updateWorkoutDateService;
 
   @PatchMapping("/workouts/{workoutId}/date")
-  public ResponseEntity<UpdateWorkoutDateResponseInfrastructure> updateWorkoutDate(
+  public ResponseEntity<UpdateWorkoutDateResponseInfrastructure> patch(
       @PathVariable final UUID workoutId,
       @Valid @RequestBody
           final UpdateWorkoutDateRequestInfrastructure updateWorkoutDateRequestInfrastructure) {
     return ResponseEntity.ok(
         new UpdateWorkoutDateResponseInfrastructure(
-            updateWorkoutDateService.update(
+            updateWorkoutDateService.execute(
                 workoutId, updateWorkoutDateRequestInfrastructure.getDate())));
   }
 }

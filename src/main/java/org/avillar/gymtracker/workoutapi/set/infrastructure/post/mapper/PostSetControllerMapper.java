@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PostSetControllerMapper {
 
-  PostSetResponseInfrastructure postResponse(PostSetResponseApplication postSetResponseApplication);
+  PostSetResponseInfrastructure map(PostSetResponseApplication postSetResponseApplication);
 
-  PostSetRequestApplication postRequest(PostSetRequestInfrastructure postSetRequestInfrastructure);
+  PostSetRequestApplication map(PostSetRequestInfrastructure postSetRequestInfrastructure);
 }

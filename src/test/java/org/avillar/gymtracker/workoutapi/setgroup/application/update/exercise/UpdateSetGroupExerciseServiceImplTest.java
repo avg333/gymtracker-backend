@@ -48,7 +48,7 @@ class UpdateSetGroupExerciseServiceImplTest {
     when(setGroupDao.save(Mockito.any(SetGroup.class))).thenAnswer(i -> i.getArguments()[0]);
 
     Assertions.assertEquals(
-        exerciseId, updateSetGroupExerciseService.update(setGroupId, exerciseId));
+        exerciseId, updateSetGroupExerciseService.execute(setGroupId, exerciseId));
   }
 
   @Test
@@ -65,7 +65,7 @@ class UpdateSetGroupExerciseServiceImplTest {
 
     verify(setGroupDao, never()).save(Mockito.any(SetGroup.class));
     Assertions.assertEquals(
-        exerciseId, updateSetGroupExerciseService.update(setGroupId, exerciseId));
+        exerciseId, updateSetGroupExerciseService.execute(setGroupId, exerciseId));
   }
 
   @Test
@@ -83,7 +83,7 @@ class UpdateSetGroupExerciseServiceImplTest {
     final EntityNotFoundException exception =
         Assertions.assertThrows(
             EntityNotFoundException.class,
-            () -> updateSetGroupExerciseService.update(setGroupId, exerciseId));
+            () -> updateSetGroupExerciseService.execute(setGroupId, exerciseId));
     assertEquals(Exercise.class.getSimpleName(), exception.getClassName());
     assertEquals(exerciseId, exception.getId());
   }
@@ -101,7 +101,7 @@ class UpdateSetGroupExerciseServiceImplTest {
     final EntityNotFoundException exception =
         Assertions.assertThrows(
             EntityNotFoundException.class,
-            () -> updateSetGroupExerciseService.update(setGroupId, exerciseId));
+            () -> updateSetGroupExerciseService.execute(setGroupId, exerciseId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
   }
@@ -124,7 +124,7 @@ class UpdateSetGroupExerciseServiceImplTest {
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> updateSetGroupExerciseService.update(setGroupId, exerciseId));
+            () -> updateSetGroupExerciseService.execute(setGroupId, exerciseId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setGroupId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

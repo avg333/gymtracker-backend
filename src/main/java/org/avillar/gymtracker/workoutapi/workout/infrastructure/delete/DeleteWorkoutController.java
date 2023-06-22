@@ -17,8 +17,8 @@ public class DeleteWorkoutController {
   private final DeleteWorkoutService deleteWorkoutService;
 
   @DeleteMapping("/workouts/{workoutId}")
-  public ResponseEntity<Void> deleteWorkout(@PathVariable final UUID workoutId) {
-    deleteWorkoutService.delete(workoutId);
+  public ResponseEntity<Void> delete(@PathVariable final UUID workoutId) {
+    deleteWorkoutService.execute(workoutId);
     return ResponseEntity.noContent().build();
   }
 }

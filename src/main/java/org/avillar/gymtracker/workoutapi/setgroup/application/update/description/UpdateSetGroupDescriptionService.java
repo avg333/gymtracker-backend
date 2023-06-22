@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface UpdateSetGroupDescriptionService {
 
-  String update(UUID setGroupId, String description);
+  String execute(UUID setGroupId, String description);
 }

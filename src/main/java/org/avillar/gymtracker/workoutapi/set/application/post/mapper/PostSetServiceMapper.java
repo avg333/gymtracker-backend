@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PostSetServiceMapper {
 
-  PostSetResponseApplication postResponse(Set set);
+  PostSetResponseApplication map(Set set);
 
-  Set postRequest(PostSetRequestApplication postSetRequestApplication);
+  Set map(PostSetRequestApplication postSetRequestApplication);
 }

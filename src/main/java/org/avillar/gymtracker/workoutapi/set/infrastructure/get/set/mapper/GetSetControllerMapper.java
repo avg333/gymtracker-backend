@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface GetSetControllerMapper {
 
-  GetSetResponseInfrastructure getResponse(GetSetResponseApplication getSetResponseApplication);
+  GetSetResponseInfrastructure map(GetSetResponseApplication getSetResponseApplication);
 }

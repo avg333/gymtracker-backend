@@ -1,7 +1,5 @@
 package org.avillar.gymtracker.workoutapi.setgroup.infrastructure.delete;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.setgroup.application.delete.DeleteSetGroupService;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteSetGroupControllerTest {
+class DeleteGetSetExerciseSetGroupsControllerTest {
 
   @InjectMocks private DeleteSetGroupController deleteSetGroupController;
 
@@ -23,8 +21,8 @@ class DeleteSetGroupControllerTest {
   void deleteSetGroup() {
     final UUID setGroupId = UUID.randomUUID();
 
-    Mockito.doNothing().when(deleteSetGroupService).delete(setGroupId);
+    Mockito.doNothing().when(deleteSetGroupService).execute(setGroupId);
 
-    Assertions.assertDoesNotThrow(() -> deleteSetGroupController.deleteSetGroup(setGroupId));
+    Assertions.assertDoesNotThrow(() -> deleteSetGroupController.delete(setGroupId));
   }
 }

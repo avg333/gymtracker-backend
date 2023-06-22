@@ -23,14 +23,14 @@ public class UpdateSetGroupListOrderController {
   private final UpdateSetGroupListOrderControllerMapper updateSetGroupListOrderControllerMapper;
 
   @PatchMapping("/setGroups/{setGroupId}/listOrder")
-  public ResponseEntity<UpdateSetGroupListOrderResponseInfrastructure> updateSetGroupListOrder(
+  public ResponseEntity<UpdateSetGroupListOrderResponseInfrastructure> patch(
       @PathVariable final UUID setGroupId,
       @Valid @RequestBody
           final UpdateSetGroupListOrderRequestInfrastructure
               updateSetGroupListOrderRequestInfrastructure) {
     return ResponseEntity.ok(
-        updateSetGroupListOrderControllerMapper.updateResponse(
-            updateSetGroupListOrderService.update(
+        updateSetGroupListOrderControllerMapper.map(
+            updateSetGroupListOrderService.execute(
                 setGroupId, updateSetGroupListOrderRequestInfrastructure.getListOrder())));
   }
 }

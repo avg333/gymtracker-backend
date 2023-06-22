@@ -26,7 +26,7 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
   private final GetNewSetDataServiceMapper getNewSetDataServiceMapper;
 
   @Override
-  public GetNewSetDataResponseApplication getNewSetData(final UUID setGroupId) {
+  public GetNewSetDataResponseApplication execute(final UUID setGroupId) {
     final SetGroup setGroup = getSetGroupFull(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.READ);
@@ -34,10 +34,10 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
     final Optional<Set> set =
         setGroup.getSets().stream().max(Comparator.comparingInt(Set::getListOrder));
     if (set.isPresent()) {
-      return getNewSetDataServiceMapper.getResponse(set.get());
+      return getNewSetDataServiceMapper.map(set.get());
     }
 
-    return getNewSetDataServiceMapper.getResponse(
+    return getNewSetDataServiceMapper.map(
         setDao.findLastSetForExerciseAndUserAux(setGroup.getId()).stream()
             .findAny()
             .orElseThrow(

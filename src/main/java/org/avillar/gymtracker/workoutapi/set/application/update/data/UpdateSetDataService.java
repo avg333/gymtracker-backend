@@ -6,6 +6,6 @@ import org.avillar.gymtracker.workoutapi.set.application.update.data.model.Updat
 
 public interface UpdateSetDataService {
 
-  UpdateSetDataResponseApplication update(
+  UpdateSetDataResponseApplication execute(
       UUID setId, UpdateSetDataRequestApplication updateSetDataRequestApplication);
 }

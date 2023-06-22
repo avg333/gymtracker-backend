@@ -21,14 +21,14 @@ public class UpdateWorkoutDescriptionController {
   private final UpdateWorkoutDescriptionService updateWorkoutDescriptionService;
 
   @PatchMapping("/workouts/{workoutId}/description")
-  public ResponseEntity<UpdateWorkoutDescriptionResponseInfrastructure> updateWorkoutDescription(
+  public ResponseEntity<UpdateWorkoutDescriptionResponseInfrastructure> patch(
       @PathVariable final UUID workoutId,
       @Valid @RequestBody
           final UpdateWorkoutDescriptionRequestInfrastructure
               updateWorkoutDescriptionRequestInfrastructure) {
     return ResponseEntity.ok(
         new UpdateWorkoutDescriptionResponseInfrastructure(
-            updateWorkoutDescriptionService.update(
+            updateWorkoutDescriptionService.execute(
                 workoutId, updateWorkoutDescriptionRequestInfrastructure.getDescription())));
   }
 }

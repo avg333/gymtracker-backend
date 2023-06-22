@@ -21,14 +21,14 @@ public class UpdateSetGroupDescriptionController {
   private final UpdateSetGroupDescriptionService updateSetGroupDescriptionService;
 
   @PatchMapping("/setGroups/{setGroupId}/description")
-  public ResponseEntity<UpdateSetGroupDescriptionResponseInfrastructure> updateSetGroupDescription(
+  public ResponseEntity<UpdateSetGroupDescriptionResponseInfrastructure> patch(
       @PathVariable final UUID setGroupId,
       @Valid @RequestBody
           final UpdateSetGroupDescriptionRequestInfrastructure
               updateSetGroupDescriptionRequestInfrastructure) {
     return ResponseEntity.ok(
         new UpdateSetGroupDescriptionResponseInfrastructure(
-            updateSetGroupDescriptionService.update(
+            updateSetGroupDescriptionService.execute(
                 setGroupId, updateSetGroupDescriptionRequestInfrastructure.getDescription())));
   }
 }

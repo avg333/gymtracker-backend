@@ -35,7 +35,7 @@ class DeleteWorkoutServiceImplTest {
     when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.DELETE);
 
-    assertDoesNotThrow(() -> deleteWorkoutService.delete(workoutId));
+    assertDoesNotThrow(() -> deleteWorkoutService.execute(workoutId));
   }
 
   @Test
@@ -45,7 +45,7 @@ class DeleteWorkoutServiceImplTest {
 
     final EntityNotFoundException exception =
         Assertions.assertThrows(
-            EntityNotFoundException.class, () -> deleteWorkoutService.delete(workoutId));
+            EntityNotFoundException.class, () -> deleteWorkoutService.execute(workoutId));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
   }
@@ -64,7 +64,7 @@ class DeleteWorkoutServiceImplTest {
 
     final IllegalAccessException exception =
         Assertions.assertThrows(
-            IllegalAccessException.class, () -> deleteWorkoutService.delete(workoutId));
+            IllegalAccessException.class, () -> deleteWorkoutService.execute(workoutId));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workoutId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

@@ -5,5 +5,5 @@ import org.avillar.gymtracker.workoutapi.set.application.get.newsetdata.model.Ge
 
 public interface GetNewSetDataService {
 
-  GetNewSetDataResponseApplication getNewSetData(UUID setGroupId);
+  GetNewSetDataResponseApplication execute(UUID setGroupId);
 }

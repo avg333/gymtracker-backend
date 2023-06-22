@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.setgroup.application.get.model;
+package org.avillar.gymtracker.workoutapi.setgroup.application.get.setgroup.model;
 
 import java.util.List;
 import java.util.UUID;

@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UpdateSetListOrderServiceMapper {
 
-  java.util.Set<UpdateSetListOrderResponseApplication.Set> updateResponse(java.util.Set<Set> sets);
+  java.util.Set<UpdateSetListOrderResponseApplication.Set> map(java.util.Set<Set> sets);
 }

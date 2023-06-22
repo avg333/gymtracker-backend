@@ -42,7 +42,7 @@ class UpdateSetGroupDescriptionServiceImplTest {
     when(setGroupDao.save(Mockito.any(SetGroup.class))).thenAnswer(i -> i.getArguments()[0]);
 
     Assertions.assertEquals(
-        description, updateSetGroupDescriptionService.update(setGroupId, description));
+        description, updateSetGroupDescriptionService.execute(setGroupId, description));
   }
 
   @Test
@@ -59,7 +59,7 @@ class UpdateSetGroupDescriptionServiceImplTest {
 
     verify(setGroupDao, never()).save(Mockito.any(SetGroup.class));
     Assertions.assertEquals(
-        description, updateSetGroupDescriptionService.update(setGroupId, description));
+        description, updateSetGroupDescriptionService.execute(setGroupId, description));
   }
 
   @Test
@@ -74,7 +74,7 @@ class UpdateSetGroupDescriptionServiceImplTest {
     final EntityNotFoundException exception =
         Assertions.assertThrows(
             EntityNotFoundException.class,
-            () ->  updateSetGroupDescriptionService.update(setGroupId, description));
+            () ->  updateSetGroupDescriptionService.execute(setGroupId, description));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
   }
@@ -96,7 +96,7 @@ class UpdateSetGroupDescriptionServiceImplTest {
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> updateSetGroupDescriptionService.update(setGroupId, description));
+            () -> updateSetGroupDescriptionService.execute(setGroupId, description));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setGroupId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

@@ -65,7 +65,7 @@ class UpdateSetDataServiceImplTest {
     when(setDao.save(Mockito.any(Set.class))).thenAnswer(i -> i.getArguments()[0]);
 
     final UpdateSetDataResponseApplication updateSetDataResponseApplication =
-        updateSetDataService.update(setId, updateSetDataRequestApplication);
+        updateSetDataService.execute(setId, updateSetDataRequestApplication);
     Assertions.assertEquals(description, updateSetDataResponseApplication.getDescription());
     Assertions.assertEquals(weight, updateSetDataResponseApplication.getWeight());
     Assertions.assertEquals(rir, updateSetDataResponseApplication.getRir());
@@ -97,7 +97,7 @@ class UpdateSetDataServiceImplTest {
     verify(setDao, never()).save(Mockito.any(Set.class));
 
     final UpdateSetDataResponseApplication updateSetDataResponseApplication =
-        updateSetDataService.update(setId, updateSetDataRequestApplication);
+        updateSetDataService.execute(setId, updateSetDataRequestApplication);
     Assertions.assertEquals(description, updateSetDataResponseApplication.getDescription());
     Assertions.assertEquals(weight, updateSetDataResponseApplication.getWeight());
     Assertions.assertEquals(rir, updateSetDataResponseApplication.getRir());
@@ -113,7 +113,7 @@ class UpdateSetDataServiceImplTest {
     final EntityNotFoundException exception =
         Assertions.assertThrows(
             EntityNotFoundException.class,
-            () -> updateSetDataService.update(setId, updateSetDataRequestApplication));
+            () -> updateSetDataService.execute(setId, updateSetDataRequestApplication));
     assertEquals(Set.class.getSimpleName(), exception.getClassName());
     assertEquals(setId, exception.getId());
   }
@@ -146,7 +146,7 @@ class UpdateSetDataServiceImplTest {
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> updateSetDataService.update(setId, updateSetDataRequestApplication));
+            () -> updateSetDataService.execute(setId, updateSetDataRequestApplication));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

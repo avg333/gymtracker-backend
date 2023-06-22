@@ -29,13 +29,13 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
   private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
-  public GetWorkoutResponseApplication getWorkout(final UUID workoutId, final boolean full) {
+  public GetWorkoutResponseApplication execute(final UUID workoutId, final boolean full) {
     final Workout workout = full ? getFullWorkout(workoutId) : getSimpleWorkout(workoutId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.READ);
 
     if (!full) {
-      return  getWorkoutServiceMapper.getResponse(workout);
+      return getWorkoutServiceMapper.map(workout);
     }
 
     // TODO Revisar logica exercise
@@ -45,7 +45,8 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
                 .map(SetGroup::getExerciseId)
                 .collect(Collectors.toSet()));
 
-    final GetWorkoutResponseApplication getWorkoutResponseApplication = getWorkoutServiceMapper.getResponse(workout);
+    final GetWorkoutResponseApplication getWorkoutResponseApplication =
+        getWorkoutServiceMapper.map(workout);
 
     getWorkoutResponseApplication
         .getSetGroups()

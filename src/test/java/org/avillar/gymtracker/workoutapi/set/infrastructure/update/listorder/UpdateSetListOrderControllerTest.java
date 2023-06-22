@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -40,12 +39,12 @@ class UpdateSetListOrderControllerTest {
         new UpdateSetListOrderRequestInfrastructure();
     updateSetListOrderRequestInfrastructure.setListOrder(listOrder);
 
-    when(updateSetListOrderService.updateSetListOrder(setId, listOrder))
+    when(updateSetListOrderService.execute(setId, listOrder))
         .thenReturn(new UpdateSetListOrderResponseApplication(Collections.emptySet()));
 
     Assertions.assertNotNull(
         updateSetListOrderController
-            .updateSetListOrder(setId, updateSetListOrderRequestInfrastructure)
+            .patch(setId, updateSetListOrderRequestInfrastructure)
             .getBody()
             .getSets());
   }

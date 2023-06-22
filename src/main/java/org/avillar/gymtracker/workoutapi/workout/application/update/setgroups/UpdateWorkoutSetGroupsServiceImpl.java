@@ -42,7 +42,7 @@ public class UpdateWorkoutSetGroupsServiceImpl implements UpdateWorkoutSetGroups
     authWorkoutsService.checkAccess(workoutSource, AuthOperations.READ);
 
     return new UpdateWorkoutSetGroupsResponseApplication(
-        updateWorkoutSetGroupsServiceMapper.updateResponse(
+        updateWorkoutSetGroupsServiceMapper.map(
             copySetGroupsToWorkout(
                 workoutDestination,
                 workoutSource.getSetGroups()))); // TODO Es correcta esta respuesta a devolver?

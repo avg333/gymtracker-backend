@@ -28,12 +28,12 @@ class UpdateWorkoutDescriptionControllerTest {
             new UpdateWorkoutDescriptionRequestInfrastructure();
     updateWorkoutDescriptionRequestInfrastructure.setDescription(description);
 
-    when(updateWorkoutDescriptionService.update(workoutId, description)).thenReturn(description);
+    when(updateWorkoutDescriptionService.execute(workoutId, description)).thenReturn(description);
 
     Assertions.assertEquals(
         description,
         updateWorkoutDescriptionController
-            .updateWorkoutDescription(workoutId, updateWorkoutDescriptionRequestInfrastructure)
+            .patch(workoutId, updateWorkoutDescriptionRequestInfrastructure)
             .getBody()
             .getDescription());
   }

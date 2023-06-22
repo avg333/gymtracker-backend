@@ -8,5 +8,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UpdateWorkoutSetGroupsServiceMapper {
 
-  List<UpdateWorkoutSetGroupsResponseApplication.SetGroup> updateResponse(List<SetGroup> setGroups);
+  List<UpdateWorkoutSetGroupsResponseApplication.SetGroup> map(List<SetGroup> setGroups);
 }

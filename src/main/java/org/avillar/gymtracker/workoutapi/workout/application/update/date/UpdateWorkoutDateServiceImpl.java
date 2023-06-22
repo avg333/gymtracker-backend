@@ -19,7 +19,7 @@ public class UpdateWorkoutDateServiceImpl implements UpdateWorkoutDateService {
   private final AuthWorkoutsService authWorkoutsService;
 
   @Override
-  public Date update(final UUID workoutId, final Date date) {
+  public Date execute(final UUID workoutId, final Date date) {
 
     final Workout workout =
         workoutDao

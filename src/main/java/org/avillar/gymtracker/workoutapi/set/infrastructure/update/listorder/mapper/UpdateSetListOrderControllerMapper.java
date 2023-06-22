@@ -7,6 +7,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UpdateSetListOrderControllerMapper {
 
-  UpdateSetListOrderResponseInfrastructure updateResponse(
+  UpdateSetListOrderResponseInfrastructure map(
       UpdateSetListOrderResponseApplication updateSetListOrderResponseApplication);
 }

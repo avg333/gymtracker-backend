@@ -20,12 +20,12 @@ public class GetSetServiceImpl implements GetSetService {
   private final GetSetServiceMapper getSetServiceMapper;
 
   @Override
-  public GetSetResponseApplication getSet(final UUID setId) {
+  public GetSetResponseApplication execute(final UUID setId) {
     final Set set = getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.READ);
 
-    return getSetServiceMapper.getResponse(set);
+    return getSetServiceMapper.map(set);
   }
 
   private Set getSetFull(final UUID setId) {

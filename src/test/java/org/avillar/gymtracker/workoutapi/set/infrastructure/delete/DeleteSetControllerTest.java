@@ -1,7 +1,5 @@
 package org.avillar.gymtracker.workoutapi.set.infrastructure.delete;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.set.application.delete.DeleteSetService;
 import org.junit.jupiter.api.Assertions;
@@ -23,8 +21,8 @@ class DeleteSetControllerTest {
   void deleteSet() {
     final UUID setId = UUID.randomUUID();
 
-    Mockito.doNothing().when(deleteSetService).delete(setId);
+    Mockito.doNothing().when(deleteSetService).execute(setId);
 
-    Assertions.assertDoesNotThrow(() -> deleteSetController.deleteSet(setId));
+    Assertions.assertDoesNotThrow(() -> deleteSetController.delete(setId));
   }
 }

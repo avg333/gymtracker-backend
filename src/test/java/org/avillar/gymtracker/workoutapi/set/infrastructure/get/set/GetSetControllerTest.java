@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.workoutapi.set.infrastructure.get.set;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
@@ -37,13 +36,13 @@ class GetSetControllerTest {
     final double rir = 7.6;
     final double weight = 75.0;
 
-    when(getSetService.getSet(setId))
+    when(getSetService.execute(setId))
         .thenReturn(
             new GetSetResponseApplication(
                 setId, listOrder, null, reps, rir, weight, new SetGroup()));
 
     final GetSetResponseInfrastructure getSetResponseInfrastructure =
-        getSetController.getSet(setId).getBody();
+        getSetController.get(setId).getBody();
     Assertions.assertEquals(setId, getSetResponseInfrastructure.getId());
     Assertions.assertEquals(listOrder, getSetResponseInfrastructure.getListOrder());
     Assertions.assertEquals(reps, getSetResponseInfrastructure.getReps());

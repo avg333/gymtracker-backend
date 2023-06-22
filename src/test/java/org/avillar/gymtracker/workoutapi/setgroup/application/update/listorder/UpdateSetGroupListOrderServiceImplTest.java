@@ -72,7 +72,7 @@ class UpdateSetGroupListOrderServiceImplTest {
         .saveAll(Mockito.anyCollection()); // FIXME cambiar a 1
 
     final UpdateSetGroupListOrderResponseApplication updateSetGroupListOrderResponseApplication =
-        updateSetGroupListOrderService.update(setGroupId, listOrder);
+        updateSetGroupListOrderService.execute(setGroupId, listOrder);
   }
 
   @Test
@@ -83,7 +83,7 @@ class UpdateSetGroupListOrderServiceImplTest {
     final EntityNotFoundException exception =
         Assertions.assertThrows(
             EntityNotFoundException.class,
-            () -> updateSetGroupListOrderService.update(setGroupId, listOrder));
+            () -> updateSetGroupListOrderService.execute(setGroupId, listOrder));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
   }
@@ -106,7 +106,7 @@ class UpdateSetGroupListOrderServiceImplTest {
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> updateSetGroupListOrderService.update(setGroupId, listOrder));
+            () -> updateSetGroupListOrderService.execute(setGroupId, listOrder));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setGroupId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
@@ -139,6 +139,6 @@ class UpdateSetGroupListOrderServiceImplTest {
     verify(entitySorter, never()).sortUpdate(setGroups, setGroup, setGroup.getListOrder());
 
     final UpdateSetGroupListOrderResponseApplication updateSetGroupListOrderResponseApplication =
-        updateSetGroupListOrderService.update(setGroupId, listOrder);
+        updateSetGroupListOrderService.execute(setGroupId, listOrder);
   }
 }

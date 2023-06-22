@@ -17,7 +17,7 @@ public class DeleteWorkoutServiceImpl implements DeleteWorkoutService {
   private final AuthWorkoutsService authWorkoutsService;
 
   @Override
-  public void delete(final UUID workoutId) {
+  public void execute(final UUID workoutId) {
     final Workout workout =
         workoutDao
             .findById(workoutId)

@@ -7,6 +7,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UpdateSetGroupSetsControllereMapper {
 
-  UpdateSetGroupSetsResponseInfrastructure updateResponse(
+  UpdateSetGroupSetsResponseInfrastructure map(
       UpdateSetGroupSetsResponseApplication updateSetGroupSetsResponseApplication);
 }

@@ -5,5 +5,5 @@ import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.model.
 
 public interface UpdateSetGroupSetsService {
 
-  UpdateSetGroupSetsResponseApplication update(UUID setGroupDestinationId, UUID setGroupSourceId);
+  UpdateSetGroupSetsResponseApplication execute(UUID setGroupDestinationId, UUID setGroupSourceId);
 }

@@ -22,7 +22,7 @@ public class DeleteSetGroupServiceImpl implements DeleteSetGroupService {
 
   @Override
   @Transactional
-  public void delete(final UUID setGroupId) {
+  public void execute(final UUID setGroupId) {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.DELETE);

@@ -22,12 +22,12 @@ public class PostSetController {
   private final PostSetControllerMapper postSetControllerMapper;
 
   @PostMapping("setGroups/{setGroupId}/sets")
-  public ResponseEntity<PostSetResponseInfrastructure> postSet(
+  public ResponseEntity<PostSetResponseInfrastructure> post(
       @PathVariable final UUID setGroupId,
       @RequestBody final PostSetRequestInfrastructure postSetRequestInfrastructure) {
     return ResponseEntity.ok(
-        postSetControllerMapper.postResponse(
-            postSetService.post(
-                setGroupId, postSetControllerMapper.postRequest(postSetRequestInfrastructure))));
+        postSetControllerMapper.map(
+            postSetService.execute(
+                setGroupId, postSetControllerMapper.map(postSetRequestInfrastructure))));
   }
 }

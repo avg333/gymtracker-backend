@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface UpdateSetGroupExerciseService {
 
-  UUID update(UUID setGroupId, UUID exerciseId);
+  UUID execute(UUID setGroupId, UUID exerciseId);
 }

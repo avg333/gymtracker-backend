@@ -6,5 +6,6 @@ import org.avillar.gymtracker.workoutapi.setgroup.application.post.model.PostSet
 
 public interface PostSetGroupService {
 
-  PostSetGroupResponseApplication post(UUID workoutId, PostSetGroupRequestApplication postSetGroupRequestApplication);
+  PostSetGroupResponseApplication execute(
+      UUID workoutId, PostSetGroupRequestApplication postSetGroupRequestApplication);
 }

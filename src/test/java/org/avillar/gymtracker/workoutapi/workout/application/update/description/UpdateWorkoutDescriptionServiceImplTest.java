@@ -48,7 +48,7 @@ class UpdateWorkoutDescriptionServiceImplTest {
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
     when(workoutDao.save(Mockito.any(Workout.class))).thenAnswer(i -> i.getArguments()[0]);
 
-    assertEquals(description, updateWorkoutDescriptionService.update(workoutId, description));
+    assertEquals(description, updateWorkoutDescriptionService.execute(workoutId, description));
   }
 
   @Test
@@ -63,7 +63,7 @@ class UpdateWorkoutDescriptionServiceImplTest {
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
 
     verify(workoutDao, never()).save(Mockito.any(Workout.class));
-    assertEquals(description, updateWorkoutDescriptionService.update(workoutId, description));
+    assertEquals(description, updateWorkoutDescriptionService.execute(workoutId, description));
   }
 
   @Test
@@ -80,7 +80,7 @@ class UpdateWorkoutDescriptionServiceImplTest {
     final EntityNotFoundException exception =
         Assertions.assertThrows(
             EntityNotFoundException.class,
-            () -> updateWorkoutDescriptionService.update(workoutId, description));
+            () -> updateWorkoutDescriptionService.execute(workoutId, description));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
   }
@@ -102,7 +102,7 @@ class UpdateWorkoutDescriptionServiceImplTest {
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> updateWorkoutDescriptionService.update(workoutId, description));
+            () -> updateWorkoutDescriptionService.execute(workoutId, description));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workoutId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

@@ -28,9 +28,8 @@ public class PostSetGroupController {
       @Valid @RequestBody
           final PostSetGroupRequestInfrastructure postSetGroupRequestInfrastructure) {
     return ResponseEntity.ok(
-        postSetGroupControllerMapper.postResponse(
-            postSetGroupService.post(
-                workoutId,
-                postSetGroupControllerMapper.postRequest(postSetGroupRequestInfrastructure))));
+        postSetGroupControllerMapper.map(
+            postSetGroupService.execute(
+                workoutId, postSetGroupControllerMapper.map(postSetGroupRequestInfrastructure))));
   }
 }

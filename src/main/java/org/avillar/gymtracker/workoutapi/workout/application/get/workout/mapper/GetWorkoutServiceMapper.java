@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface GetWorkoutServiceMapper {
 
-  GetWorkoutResponseApplication getResponse(Workout workout);
+  GetWorkoutResponseApplication map(Workout workout);
 }

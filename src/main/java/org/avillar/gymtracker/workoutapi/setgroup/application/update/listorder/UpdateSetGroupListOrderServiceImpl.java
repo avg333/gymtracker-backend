@@ -23,7 +23,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
   private final UpdateSetGroupListOrderServiceMapper updateSetGroupListOrderServiceMapper;
 
   @Override
-  public UpdateSetGroupListOrderResponseApplication update(
+  public UpdateSetGroupListOrderResponseApplication execute(
       final UUID setGroupId, final int listOrder) {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
@@ -37,7 +37,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
 
     if (oldPosition == newPosition) {
       return new UpdateSetGroupListOrderResponseApplication(
-          updateSetGroupListOrderServiceMapper.updateResponse(setGroups));
+          updateSetGroupListOrderServiceMapper.map(setGroups));
     }
 
     setGroups.stream()
@@ -50,7 +50,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
     setGroupDao.saveAll(setGroups);
 
     return new UpdateSetGroupListOrderResponseApplication(
-        updateSetGroupListOrderServiceMapper.updateResponse(setGroups));
+        updateSetGroupListOrderServiceMapper.map(setGroups));
   }
 
   private SetGroup getSetGroupWithWorkout(final UUID setGroupId) {

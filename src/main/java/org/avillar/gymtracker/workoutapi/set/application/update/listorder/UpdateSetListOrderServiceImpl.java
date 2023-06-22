@@ -24,8 +24,7 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
 
   @Override
   @Transactional
-  public UpdateSetListOrderResponseApplication updateSetListOrder(
-      final UUID setId, final int listOrder) {
+  public UpdateSetListOrderResponseApplication execute(final UUID setId, final int listOrder) {
     final Set set = getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);
@@ -36,8 +35,7 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
     final int newPosition = EntitySorter.getValidListOrder(listOrder, sets.size());
 
     if (oldPosition == newPosition) {
-      return new UpdateSetListOrderResponseApplication(
-          updateSetListOrderServiceMapper.updateResponse(sets));
+      return new UpdateSetListOrderResponseApplication(updateSetListOrderServiceMapper.map(sets));
     }
 
     sets.stream()
@@ -49,8 +47,7 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
     entitySorter.sortUpdate(sets, set, oldPosition);
     setDao.saveAll(sets);
 
-    return new UpdateSetListOrderResponseApplication(
-        updateSetListOrderServiceMapper.updateResponse(sets));
+    return new UpdateSetListOrderResponseApplication(updateSetListOrderServiceMapper.map(sets));
   }
 
   private Set getSetFull(final UUID setId) {

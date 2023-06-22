@@ -20,7 +20,7 @@ public class GetSetController {
   private final GetSetControllerMapper getSetControllerMapper;
 
   @GetMapping("sets/{setId}")
-  public ResponseEntity<GetSetResponseInfrastructure> getSet(@PathVariable final UUID setId) {
-    return ResponseEntity.ok(getSetControllerMapper.getResponse(getSetService.getSet(setId)));
+  public ResponseEntity<GetSetResponseInfrastructure> get(@PathVariable final UUID setId) {
+    return ResponseEntity.ok(getSetControllerMapper.map(getSetService.execute(setId)));
   }
 }

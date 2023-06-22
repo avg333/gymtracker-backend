@@ -26,7 +26,7 @@ public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService 
 
   @Override
   @Transactional
-  public UpdateSetGroupSetsResponseApplication update(
+  public UpdateSetGroupSetsResponseApplication execute(
       final UUID setGroupDestinationId, final UUID setGroupSourceId) {
     final List<SetGroup> setGroups =
         setGroupDao.getSetGroupFullByIds(List.of(setGroupDestinationId, setGroupSourceId));
@@ -48,8 +48,7 @@ public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService 
     setGroupDao.deleteById(setGroupSourceId); // TODO Es correcto borrar el source?
     setDao.saveAll(sets);
 
-    return new UpdateSetGroupSetsResponseApplication(
-        updateSetGroupSetsServiceMapper.updateResponse(sets));
+    return new UpdateSetGroupSetsResponseApplication(updateSetGroupSetsServiceMapper.map(sets));
   }
 
   private SetGroup getSetGroupByIdFromCollection(

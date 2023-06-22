@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.workoutapi.set.infrastructure.update.data;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -47,11 +46,11 @@ class UpdateSetDataControllerTest {
     updateSetDataRequestInfrastructure.setRir(rir);
     updateSetDataRequestInfrastructure.setReps(reps);
 
-    when(updateSetDataService.update(eq(setId), any(UpdateSetDataRequestApplication.class)))
+    when(updateSetDataService.execute(eq(setId), any(UpdateSetDataRequestApplication.class)))
         .thenReturn(new UpdateSetDataResponseApplication(description, reps, rir, weight));
 
     final UpdateSetDataResponseInfrastructure updateSetDataResponseInfrastructure =
-        updateSetDataController.updateSetData(setId, updateSetDataRequestInfrastructure).getBody();
+        updateSetDataController.patch(setId, updateSetDataRequestInfrastructure).getBody();
     Assertions.assertEquals(description, updateSetDataResponseInfrastructure.getDescription());
     Assertions.assertEquals(weight, updateSetDataResponseInfrastructure.getWeight());
     Assertions.assertEquals(rir, updateSetDataResponseInfrastructure.getRir());

@@ -17,8 +17,8 @@ public class DeleteSetController {
   private final DeleteSetService deleteSetService;
 
   @DeleteMapping("sets/{setId}")
-  public ResponseEntity<Void> deleteSet(@PathVariable final UUID setId) {
-    deleteSetService.delete(setId);
+  public ResponseEntity<Void> delete(@PathVariable final UUID setId) {
+    deleteSetService.execute(setId);
     return ResponseEntity.noContent().build();
   }
 }

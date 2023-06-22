@@ -54,7 +54,7 @@ class GetNewSetDataServiceImplTest {
 
     final EntityNotFoundException exception =
         Assertions.assertThrows(
-            EntityNotFoundException.class, () -> getNewSetDataService.getNewSetData(setGroupId));
+            EntityNotFoundException.class, () -> getNewSetDataService.execute(setGroupId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
   }
@@ -73,7 +73,7 @@ class GetNewSetDataServiceImplTest {
 
     final IllegalAccessException exception =
         Assertions.assertThrows(
-            IllegalAccessException.class, () -> getNewSetDataService.getNewSetData(setGroupId));
+            IllegalAccessException.class, () -> getNewSetDataService.execute(setGroupId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setGroupId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

@@ -20,9 +20,9 @@ public class GetNewSetDataController {
   private final GetNewSetDataControllerMapper getNewSetDataControllerMapper;
 
   @GetMapping("setGroups/{setGroupId}/sets/newSet")
-  public ResponseEntity<GetNewSetDataResponseInfrastructure> getSetDefaultDataForNewSet(
+  public ResponseEntity<GetNewSetDataResponseInfrastructure> get(
       @PathVariable final UUID setGroupId) {
     return ResponseEntity.ok(
-        getNewSetDataControllerMapper.getResponse(getNewSetDataService.getNewSetData(setGroupId)));
+        getNewSetDataControllerMapper.map(getNewSetDataService.execute(setGroupId)));
   }
 }

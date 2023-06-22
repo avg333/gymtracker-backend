@@ -25,13 +25,13 @@ public class UpdateSetGroupSetsController {
 
   // TODO Debe devolver el setGroup solo (con la sets dentro si se considera)
   @PatchMapping("/setGroups/{setGroupId}/sets")
-  public ResponseEntity<UpdateSetGroupSetsResponseInfrastructure> updateSetGroupSets(
+  public ResponseEntity<UpdateSetGroupSetsResponseInfrastructure> patch(
       @PathVariable final UUID setGroupId,
       @Valid @RequestBody
           final UpdateSetGroupSetsRequestInfrastructure updateSetGroupSetsRequestInfrastructure) {
     return ResponseEntity.ok(
-        updateSetGroupSetsControllereMapper.updateResponse(
-            updateSetGroupSetsService.update(
+        updateSetGroupSetsControllereMapper.map(
+            updateSetGroupSetsService.execute(
                 setGroupId, updateSetGroupSetsRequestInfrastructure.getSetGroupId())));
   }
 }

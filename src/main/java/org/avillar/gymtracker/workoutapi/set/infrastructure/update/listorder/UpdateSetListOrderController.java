@@ -22,13 +22,13 @@ public class UpdateSetListOrderController {
   private final UpdateSetListOrderControllerMapper updateSetListOrderControllerMapper;
 
   @PatchMapping("sets/{setId}/listOrder")
-  public ResponseEntity<UpdateSetListOrderResponseInfrastructure> updateSetListOrder(
+  public ResponseEntity<UpdateSetListOrderResponseInfrastructure> patch(
       @PathVariable final UUID setId,
       @RequestBody
           final UpdateSetListOrderRequestInfrastructure updateSetListOrderRequestInfrastructure) {
     return ResponseEntity.ok(
-        updateSetListOrderControllerMapper.updateResponse(
-            updateSetListOrderService.updateSetListOrder(
+        updateSetListOrderControllerMapper.map(
+            updateSetListOrderService.execute(
                 setId, updateSetListOrderRequestInfrastructure.getListOrder())));
   }
 }

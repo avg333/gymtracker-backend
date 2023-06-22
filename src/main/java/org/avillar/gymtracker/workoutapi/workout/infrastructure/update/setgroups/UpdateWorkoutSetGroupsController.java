@@ -24,13 +24,13 @@ public class UpdateWorkoutSetGroupsController {
   private final UpdateWorkoutSetGroupsControllerMapper updateWorkoutSetGroupsControllerMapper;
 
   @PatchMapping("/workouts/{workoutId}/setGroups")
-  public ResponseEntity<UpdateWorkoutSetGroupsResponseInfrastructure> updateWorkoutSetGroups(
+  public ResponseEntity<UpdateWorkoutSetGroupsResponseInfrastructure> patch(
       @PathVariable final UUID workoutId,
       @Valid @RequestBody
           final UpdateWorkoutSetGroupsRequestInfrastructure
               updateWorkoutSetGroupsRequestInfrastructure) {
     return ResponseEntity.ok(
-        updateWorkoutSetGroupsControllerMapper.updateResponse(
+        updateWorkoutSetGroupsControllerMapper.map(
             updateWorkoutSetGroupsRequestInfrastructure.getSource()
                     == UpdateWorkoutSetGroupsRequestInfrastructure.Source.WORKOUT
                 ? updateWorkoutSetGroupsService.addSetGroupsToWorkoutFromWorkout(

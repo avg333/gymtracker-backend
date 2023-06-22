@@ -24,12 +24,12 @@ public class UpdateSetListOrderResponseInfrastructure {
     private Double rir;
     private Double weight;
     private SetGroup setGroup;
-  }
 
-  @Data
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class SetGroup {
-    private UUID id;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SetGroup {
+      private UUID id;
+    }
   }
 }

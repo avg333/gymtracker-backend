@@ -18,7 +18,7 @@ public class UpdateSetGroupDescriptionServiceImpl implements UpdateSetGroupDescr
   private final AuthWorkoutsService authWorkoutsService;
 
   @Override
-  public String update(final UUID setGroupId, final String description) {
+  public String execute(final UUID setGroupId, final String description) {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.UPDATE);

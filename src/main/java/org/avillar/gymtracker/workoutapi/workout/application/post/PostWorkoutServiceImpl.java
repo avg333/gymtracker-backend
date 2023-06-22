@@ -21,20 +21,20 @@ public class PostWorkoutServiceImpl implements PostWorkoutService {
   private final PostWorkoutServiceMapper postWorkoutServiceMapper;
 
   @Override
-  public PostWorkoutResponseApplication post(
+  public PostWorkoutResponseApplication execute(
       final UUID userId, final PostWorkoutRequestApplication postWorkoutRequestApplication) {
 
     if (workoutDao.existsWorkoutByUserAndDate(userId, postWorkoutRequestApplication.getDate())) {
       throw new DuplicatedWorkoutDateException(userId, postWorkoutRequestApplication.getDate());
     }
 
-    final Workout workout = postWorkoutServiceMapper.postRequest(postWorkoutRequestApplication);
+    final Workout workout = postWorkoutServiceMapper.map(postWorkoutRequestApplication);
     workout.setUserId(userId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.CREATE);
 
     workoutDao.save(workout);
 
-    return postWorkoutServiceMapper.postResponse(workout);
+    return postWorkoutServiceMapper.map(workout);
   }
 }

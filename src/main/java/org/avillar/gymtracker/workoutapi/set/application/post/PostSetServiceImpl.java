@@ -25,11 +25,11 @@ public class PostSetServiceImpl implements PostSetService {
   private final PostSetServiceMapper postSetServiceMapper;
 
   @Override
-  public PostSetResponseApplication post(
+  public PostSetResponseApplication execute(
       final UUID setGroupId, final PostSetRequestApplication postSetRequestApplication) {
     final SetGroup setGroup = getSetGroupFull(setGroupId);
 
-    final Set set = postSetServiceMapper.postRequest(postSetRequestApplication);
+    final Set set = postSetServiceMapper.map(postSetRequestApplication);
     set.setSetGroup(setGroup);
     set.setListOrder(setGroup.getSets().size());
 
@@ -37,7 +37,7 @@ public class PostSetServiceImpl implements PostSetService {
 
     setDao.save(set);
 
-    return postSetServiceMapper.postResponse(set);
+    return postSetServiceMapper.map(set);
   }
 
   private SetGroup getSetGroupFull(final UUID setGroupId) {

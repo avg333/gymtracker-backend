@@ -20,7 +20,7 @@ public class UpdateSetGroupExerciseServiceImpl implements UpdateSetGroupExercise
   private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
-  public UUID update(final UUID setGroupId, final UUID exerciseId) {
+  public UUID execute(final UUID setGroupId, final UUID exerciseId) {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.UPDATE);

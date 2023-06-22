@@ -9,9 +9,9 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UpdateSetDataControllerMapper {
 
-  UpdateSetDataResponseInfrastructure updateResponse(
+  UpdateSetDataResponseInfrastructure map(
       UpdateSetDataResponseApplication updateSetDataResponseApplication);
 
-  UpdateSetDataRequestApplication updateRequest(
+  UpdateSetDataRequestApplication map(
       UpdateSetDataRequestInfrastructure updateSetDataRequestInfrastructure);
 }

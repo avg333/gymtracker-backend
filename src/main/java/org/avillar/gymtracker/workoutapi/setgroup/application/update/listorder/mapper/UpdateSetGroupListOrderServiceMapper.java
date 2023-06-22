@@ -8,5 +8,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UpdateSetGroupListOrderServiceMapper {
 
-  Set<UpdateSetGroupListOrderResponseApplication.SetGroup> updateResponse(Set<SetGroup> setGroups);
+  Set<UpdateSetGroupListOrderResponseApplication.SetGroup> map(Set<SetGroup> setGroups);
 }

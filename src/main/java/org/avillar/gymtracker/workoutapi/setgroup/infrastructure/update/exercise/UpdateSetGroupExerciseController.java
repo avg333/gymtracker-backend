@@ -21,14 +21,14 @@ public class UpdateSetGroupExerciseController {
   private final UpdateSetGroupExerciseService updateSetGroupExerciseService;
 
   @PatchMapping("/setGroups/{setGroupId}/exercise")
-  public ResponseEntity<UpdateSetGroupExerciseResponseInfrastructure> updateSetGroupExercise(
+  public ResponseEntity<UpdateSetGroupExerciseResponseInfrastructure> patch(
       @PathVariable final UUID setGroupId,
       @Valid @RequestBody
           final UpdateSetGroupExerciseRequestInfrastructure
               updateSetGroupExerciseRequestInfrastructure) {
     return ResponseEntity.ok(
         new UpdateSetGroupExerciseResponseInfrastructure(
-            updateSetGroupExerciseService.update(
+            updateSetGroupExerciseService.execute(
                 setGroupId, updateSetGroupExerciseRequestInfrastructure.getExerciseId())));
   }
 }

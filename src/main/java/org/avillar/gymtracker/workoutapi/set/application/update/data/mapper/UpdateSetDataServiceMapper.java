@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UpdateSetDataServiceMapper {
 
-  UpdateSetDataResponseApplication updateResponse(Set set);
+  UpdateSetDataResponseApplication map(Set set);
 }
