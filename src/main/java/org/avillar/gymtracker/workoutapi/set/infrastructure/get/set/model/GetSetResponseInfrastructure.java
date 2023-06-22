@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.set.application.get.model;
+package org.avillar.gymtracker.workoutapi.set.infrastructure.get.set.model;
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetSetResponseApplication {
+public class GetSetResponseInfrastructure {
 
   private UUID id;
   private Integer listOrder;
