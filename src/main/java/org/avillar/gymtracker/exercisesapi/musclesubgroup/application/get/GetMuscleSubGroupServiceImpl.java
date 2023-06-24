@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GetMuscleSubGroupServiceImpl implements GetMuscleSubGroupService {
 
-  private MuscleSubGroupDao muscleSubGroupDao;
+  private final MuscleSubGroupDao muscleSubGroupDao;
 
-  private GetMuscleSubGroupServiceMapper getMuscleSubGroupServiceMapper;
+  private final GetMuscleSubGroupServiceMapper getMuscleSubGroupServiceMapper;
 
   @Override
   public GetMuscleSubGroupResponse getById(final UUID muscleSubGroupId) {

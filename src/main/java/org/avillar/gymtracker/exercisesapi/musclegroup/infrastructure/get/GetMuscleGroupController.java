@@ -20,6 +20,14 @@ public class GetMuscleGroupController {
   private final GetMuscleGroupService getMuscleGroupService;
   private final GetMuscleGroupControllerMapper getMuscleGroupControllerMapper;
 
+  @GetMapping("muscleSupGroups/{muscleSupGroupId}/muscleGroups")
+  public ResponseEntity<List<GetMuscleGroupResponse>> getAllMuscleGroups(
+      @PathVariable final UUID muscleSupGroupId) {
+    return ResponseEntity.ok(
+        getMuscleGroupControllerMapper.getResponse(
+            getMuscleGroupService.getAllByMuscleSupGroupId(muscleSupGroupId)));
+  }
+
   @GetMapping("muscleGroups/{muscleGroupId}")
   public ResponseEntity<GetMuscleGroupResponse> getMuscleGroupById(
       @PathVariable final UUID muscleGroupId) {

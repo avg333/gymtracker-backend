@@ -18,6 +18,12 @@ public class GetMuscleGroupServiceImpl implements GetMuscleGroupService {
   private final GetMuscleGroupServiceMapper getMuscleGroupServiceMapper;
 
   @Override
+  public List<GetMuscleGroupResponse> getAllByMuscleSupGroupId(UUID muscleSupGroupId) {
+    return getMuscleGroupServiceMapper.getResponse(
+        muscleGroupDao.getALlMuscleGroupsByMuscleSupGroupId(muscleSupGroupId));
+  }
+
+  @Override
   public GetMuscleGroupResponse getById(final UUID muscleGroupId) {
     return getMuscleGroupServiceMapper.getResponse(
         muscleGroupDao
