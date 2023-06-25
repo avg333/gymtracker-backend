@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class GetSetResponseInfrastructure {
 
   private UUID id;
@@ -20,7 +19,6 @@ public class GetSetResponseInfrastructure {
 
   @Data
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class SetGroup {
     private UUID id;
   }

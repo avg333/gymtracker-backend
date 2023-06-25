@@ -11,6 +11,7 @@ import org.avillar.gymtracker.workoutapi.set.application.update.data.model.Updat
 import org.avillar.gymtracker.workoutapi.set.infrastructure.update.data.mapper.UpdateSetDataControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.update.data.model.UpdateSetDataRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.update.data.model.UpdateSetDataResponseInfrastructure;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateSetDataControllerTest {
+
+  private final EasyRandom easyRandom = new EasyRandom();
 
   private UpdateSetDataController updateSetDataController;
   @Mock private UpdateSetDataService updateSetDataService;
@@ -34,26 +37,31 @@ class UpdateSetDataControllerTest {
 
   @Test
   void updateSetData() {
+    final UpdateSetDataResponseApplication updateSetDataResponseApplication =
+        easyRandom.nextObject(UpdateSetDataResponseApplication.class);
     final UUID setId = UUID.randomUUID();
-    final String description = "Description example 54.";
-    final double weight = 115.2;
-    final double rir = 8.0;
-    final int reps = 6;
     final UpdateSetDataRequestInfrastructure updateSetDataRequestInfrastructure =
         new UpdateSetDataRequestInfrastructure();
-    updateSetDataRequestInfrastructure.setDescription(description);
-    updateSetDataRequestInfrastructure.setWeight(weight);
-    updateSetDataRequestInfrastructure.setRir(rir);
-    updateSetDataRequestInfrastructure.setReps(reps);
+    updateSetDataRequestInfrastructure.setDescription(
+        updateSetDataResponseApplication.getDescription());
+    updateSetDataRequestInfrastructure.setWeight(updateSetDataResponseApplication.getWeight());
+    updateSetDataRequestInfrastructure.setRir(updateSetDataResponseApplication.getRir());
+    updateSetDataRequestInfrastructure.setReps(updateSetDataResponseApplication.getReps());
 
     when(updateSetDataService.execute(eq(setId), any(UpdateSetDataRequestApplication.class)))
-        .thenReturn(new UpdateSetDataResponseApplication(description, reps, rir, weight));
+        .thenReturn(updateSetDataResponseApplication);
 
     final UpdateSetDataResponseInfrastructure updateSetDataResponseInfrastructure =
         updateSetDataController.patch(setId, updateSetDataRequestInfrastructure).getBody();
-    Assertions.assertEquals(description, updateSetDataResponseInfrastructure.getDescription());
-    Assertions.assertEquals(weight, updateSetDataResponseInfrastructure.getWeight());
-    Assertions.assertEquals(rir, updateSetDataResponseInfrastructure.getRir());
-    Assertions.assertEquals(reps, updateSetDataResponseInfrastructure.getReps());
+    Assertions.assertEquals(
+        updateSetDataResponseApplication.getDescription(),
+        updateSetDataResponseInfrastructure.getDescription());
+    Assertions.assertEquals(
+        updateSetDataResponseApplication.getWeight(),
+        updateSetDataResponseInfrastructure.getWeight());
+    Assertions.assertEquals(
+        updateSetDataResponseApplication.getRir(), updateSetDataResponseInfrastructure.getRir());
+    Assertions.assertEquals(
+        updateSetDataResponseApplication.getReps(), updateSetDataResponseInfrastructure.getReps());
   }
 }

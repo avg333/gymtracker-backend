@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.exercise.application.get.mapper.GetExerciseServiceMapper;
-import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseRequest;
-import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseResponse;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseApplicationRequest;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseApplicationResponse;
 import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.exercise.domain.ExerciseDao;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
@@ -20,20 +20,21 @@ public class GetExerciseServiceImpl implements GetExerciseService {
   private final GetExerciseServiceMapper getExerciseServiceMapper;
 
   @Override
-  public GetExerciseResponse getById(final UUID exerciseId) {
-    return getExerciseServiceMapper.getResponse(
+  public GetExerciseApplicationResponse getById(final UUID exerciseId) {
+    return getExerciseServiceMapper.map(
         exerciseDao.getFullExerciseByIds(Set.of(exerciseId)).stream()
             .findAny()
             .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId)));
   }
 
   @Override
-  public List<GetExerciseResponse> getByIds(Set<UUID> exerciseIds) {
-    return getExerciseServiceMapper.getResponse(exerciseDao.getFullExerciseByIds(exerciseIds));
+  public List<GetExerciseApplicationResponse> getByIds(Set<UUID> exerciseIds) {
+    return getExerciseServiceMapper.map(exerciseDao.getFullExerciseByIds(exerciseIds));
   }
 
   @Override
-  public List<GetExerciseResponse> getAllExercises(GetExerciseRequest getExerciseRequest) {
-    return getExerciseServiceMapper.getResponse(exerciseDao.getAllFullExercises());
+  public List<GetExerciseApplicationResponse> getAllExercises(
+      GetExerciseApplicationRequest getExerciseApplicationRequest) {
+    return getExerciseServiceMapper.map(exerciseDao.getAllFullExercises());
   }
 }

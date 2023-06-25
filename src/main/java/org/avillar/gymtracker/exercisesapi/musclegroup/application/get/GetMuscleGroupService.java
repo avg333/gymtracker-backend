@@ -2,13 +2,9 @@ package org.avillar.gymtracker.exercisesapi.musclegroup.application.get;
 
 import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.exercisesapi.musclegroup.application.get.model.GetMuscleGroupResponse;
+import org.avillar.gymtracker.exercisesapi.musclegroup.application.get.model.GetMuscleGroupsApplicationResponse;
 
 public interface GetMuscleGroupService {
 
-  List<GetMuscleGroupResponse> getAllByMuscleSupGroupId(UUID muscleGroupId);
-
-  GetMuscleGroupResponse getById(UUID muscleGroupId);
-
-  List<GetMuscleGroupResponse> getAll();
+  List<GetMuscleGroupsApplicationResponse> execute(UUID muscleGroupId);
 }

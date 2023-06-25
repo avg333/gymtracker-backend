@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.application.get.GetMuscleSubGroupService;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.infrastructure.get.mapper.GetMuscleSubGroupControllerMapper;
-import org.avillar.gymtracker.exercisesapi.musclesubgroup.infrastructure.get.model.GetMuscleSubGroupResponse;
+import org.avillar.gymtracker.exercisesapi.musclesubgroup.infrastructure.get.model.GetMuscleSubGroupsInfrastructureResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +17,10 @@ public class GetMuscleSubGroupController {
   private final GetMuscleSubGroupService getMuscleSubGroupService;
   private final GetMuscleSubGroupControllerMapper getMuscleSubGroupControllerMapper;
 
-  @GetMapping("muscleSubGroups/{muscleSubGroupId}")
-  public ResponseEntity<GetMuscleSubGroupResponse> getById(
-      @PathVariable final UUID muscleSubGroupId) {
-    return ResponseEntity.ok(
-        getMuscleSubGroupControllerMapper.getResponse(
-            getMuscleSubGroupService.getById(muscleSubGroupId)));
-  }
-
   @GetMapping("muscleGroups/{muscleGroupId}/muscleSubGroups")
-  public ResponseEntity<List<GetMuscleSubGroupResponse>> getAllByMuscleGroup(
+  public ResponseEntity<List<GetMuscleSubGroupsInfrastructureResponse>> get(
       @PathVariable final UUID muscleGroupId) {
     return ResponseEntity.ok(
-        getMuscleSubGroupControllerMapper.getResponse(
-            getMuscleSubGroupService.getAllByMuscleGroupId(muscleGroupId)));
+        getMuscleSubGroupControllerMapper.map(getMuscleSubGroupService.execute(muscleGroupId)));
   }
 }

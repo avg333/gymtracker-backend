@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.application.get.mapper.GetMuscleSubGroupServiceMapper;
-import org.avillar.gymtracker.exercisesapi.musclesubgroup.application.get.model.GetMuscleSubGroupResponse;
-import org.avillar.gymtracker.exercisesapi.musclesubgroup.domain.MuscleSubGroup;
+import org.avillar.gymtracker.exercisesapi.musclesubgroup.application.get.model.GetMuscleSubGroupsApplicationResponse;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.domain.MuscleSubGroupDao;
-import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,19 +17,10 @@ public class GetMuscleSubGroupServiceImpl implements GetMuscleSubGroupService {
   private final GetMuscleSubGroupServiceMapper getMuscleSubGroupServiceMapper;
 
   @Override
-  public GetMuscleSubGroupResponse getById(final UUID muscleSubGroupId) {
-    return getMuscleSubGroupServiceMapper.getResponse(
-        muscleSubGroupDao
-            .findById(muscleSubGroupId)
-            .orElseThrow(
-                () -> new EntityNotFoundException(MuscleSubGroup.class, muscleSubGroupId)));
-  }
-
-  @Override
-  public List<GetMuscleSubGroupResponse> getAllByMuscleGroupId(final UUID muscleGroupId) {
+  public List<GetMuscleSubGroupsApplicationResponse> execute(final UUID muscleGroupId) {
     // TODO Deberia comprobarse si existe el muscleGroup?
 
-    return getMuscleSubGroupServiceMapper.getResponse(
+    return getMuscleSubGroupServiceMapper.map(
         this.muscleSubGroupDao.getAllByMuscleGroupId(muscleGroupId));
   }
 }

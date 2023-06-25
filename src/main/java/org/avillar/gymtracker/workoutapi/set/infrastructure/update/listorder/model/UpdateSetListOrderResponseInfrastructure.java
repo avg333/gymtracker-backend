@@ -8,14 +8,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class UpdateSetListOrderResponseInfrastructure {
 
   private List<Set> sets;
 
   @Data
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class Set {
     private UUID id;
     private Integer listOrder;
@@ -27,7 +25,6 @@ public class UpdateSetListOrderResponseInfrastructure {
 
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class SetGroup {
       private UUID id;
     }

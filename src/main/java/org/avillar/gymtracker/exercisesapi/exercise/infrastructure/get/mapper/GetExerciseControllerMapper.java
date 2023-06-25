@@ -1,21 +1,20 @@
 package org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.mapper;
 
 import java.util.List;
-import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.model.GetExerciseRequest;
-import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.model.GetExerciseResponse;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseApplicationRequest;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseApplicationResponse;
+import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.model.GetExerciseInfrastructureRequest;
+import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.model.GetExerciseInfrastructureResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface GetExerciseControllerMapper {
 
-  GetExerciseResponse getResponse(
-      org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseResponse
-          getExerciseResponse);
+  GetExerciseInfrastructureResponse map(GetExerciseApplicationResponse getExerciseApplicationResponse);
 
-  List<GetExerciseResponse> getResponse(
-      List<org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseResponse>
-          getExerciseResponses);
+  List<GetExerciseInfrastructureResponse> map(
+      List<GetExerciseApplicationResponse> getExerciseApplicationResponses);
 
-  org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseRequest getRequest(
-      GetExerciseRequest getExerciseRequest);
+  GetExerciseApplicationRequest map(
+      GetExerciseInfrastructureRequest getExerciseInfrastructureRequest);
 }

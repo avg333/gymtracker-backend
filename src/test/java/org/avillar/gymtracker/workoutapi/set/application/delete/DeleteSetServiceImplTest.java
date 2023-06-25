@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import org.avillar.gymtracker.common.sort.application.EntitySorter;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
@@ -34,6 +35,8 @@ class DeleteSetServiceImplTest {
 
   @Mock private AuthWorkoutsService authWorkoutsService;
 
+  @Mock private EntitySorter entitySorter;
+
   @Test
   void deleteOk() {
     final Set set = new Set();
@@ -50,6 +53,21 @@ class DeleteSetServiceImplTest {
     Assertions.assertDoesNotThrow(() -> deleteSetService.execute(setId));
     // TODO Revisar caso de lista vacia y no vacia
   }
+
+  //  @Test
+  //  void updateSameValue() {
+  //    final Set set = new Set();
+  //    set.setId(setId);
+  //    set.setListOrder(0);
+  //    final SetGroup setGroup = new SetGroup();
+  //    setGroup.setId(setGroupId);
+  //    set.setSetGroup(setGroup);
+  //
+  //    when(setDao.getSetFullById(setId)).thenReturn(List.of(set));
+  //    Mockito.doNothing().when(authWorkoutsService).checkAccess(set, AuthOperations.DELETE);
+  //    when(setDao.getSetsBySetGroupId(setGroupId)).thenReturn(java.util.Set.of(set));
+  //    verify(entitySorter, never()).sortUpdate(java.util.Set.of(set), set, set.getListOrder());
+  //  } FIXME
 
   @Test
   void deleteNotFound() {
@@ -74,7 +92,8 @@ class DeleteSetServiceImplTest {
         .checkAccess(set, AuthOperations.DELETE);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(IllegalAccessException.class, () -> deleteSetService.execute(setId));
+        Assertions.assertThrows(
+            IllegalAccessException.class, () -> deleteSetService.execute(setId));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

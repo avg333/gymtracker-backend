@@ -17,5 +17,5 @@ public interface MuscleGroupDao extends JpaRepository<MuscleGroup, UUID> {
   WHERE msg.id = :muscleSupGroupId
 """
   )
-  public List<MuscleGroup> getALlMuscleGroupsByMuscleSupGroupId(@Param("muscleSupGroupId") UUID muscleSupGroupId);
+  List<MuscleGroup> getALlMuscleGroupsByMuscleSupGroupId(@Param("muscleSupGroupId") UUID muscleSupGroupId);
 }

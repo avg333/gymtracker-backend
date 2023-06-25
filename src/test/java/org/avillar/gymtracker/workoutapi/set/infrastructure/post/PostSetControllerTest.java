@@ -4,14 +4,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.set.application.post.PostSetService;
 import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetRequestApplication;
 import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponseApplication;
-import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponseApplication.SetGroup;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.post.mapper.PostSetControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.post.model.PostSetRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.post.model.PostSetResponseInfrastructure;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class PostSetControllerTest {
+
+  private final EasyRandom easyRandom = new EasyRandom();
 
   private PostSetController postSetController;
 
@@ -36,33 +37,39 @@ class PostSetControllerTest {
 
   @Test
   void postSet() {
-    final UUID setGroupId = UUID.randomUUID();
-    final String description = "Description example 54.";
-    final double weight = 115.2;
-    final double rir = 8.0;
-    final int reps = 6;
+    final PostSetResponseApplication postSetResponseApplication =
+        easyRandom.nextObject(PostSetResponseApplication.class);
     final PostSetRequestInfrastructure postSetRequestInfrastructure =
         new PostSetRequestInfrastructure();
-    postSetRequestInfrastructure.setReps(reps);
-    postSetRequestInfrastructure.setRir(rir);
-    postSetRequestInfrastructure.setWeight(weight);
-    postSetRequestInfrastructure.setDescription(description);
+    postSetRequestInfrastructure.setReps(postSetResponseApplication.getReps());
+    postSetRequestInfrastructure.setRir(postSetResponseApplication.getRir());
+    postSetRequestInfrastructure.setWeight(postSetResponseApplication.getWeight());
+    postSetRequestInfrastructure.setDescription(postSetResponseApplication.getDescription());
 
-    final UUID setId = UUID.randomUUID();
-    final int listOrder = 0;
-    when(postSetService.execute(eq(setGroupId), any(PostSetRequestApplication.class)))
-        .thenReturn(
-            new PostSetResponseApplication(
-                setId, listOrder, description, reps, rir, weight, new SetGroup(setGroupId)));
+    when(postSetService.execute(
+            eq(postSetResponseApplication.getSetGroup().getId()),
+            any(PostSetRequestApplication.class)))
+        .thenReturn(postSetResponseApplication);
 
     final PostSetResponseInfrastructure postSetResponseInfrastructure =
-        postSetController.post(setGroupId, postSetRequestInfrastructure).getBody();
-    Assertions.assertEquals(setId, postSetResponseInfrastructure.getId());
-    Assertions.assertEquals(listOrder, postSetResponseInfrastructure.getListOrder());
-    Assertions.assertEquals(description, postSetResponseInfrastructure.getDescription());
-    Assertions.assertEquals(rir, postSetResponseInfrastructure.getRir());
-    Assertions.assertEquals(reps, postSetResponseInfrastructure.getReps());
-    Assertions.assertEquals(weight, postSetResponseInfrastructure.getWeight());
-    Assertions.assertEquals(setGroupId, postSetResponseInfrastructure.getSetGroup().getId());
+        postSetController
+            .post(postSetResponseApplication.getSetGroup().getId(), postSetRequestInfrastructure)
+            .getBody();
+    Assertions.assertEquals(
+        postSetResponseApplication.getId(), postSetResponseInfrastructure.getId());
+    Assertions.assertEquals(
+        postSetResponseApplication.getListOrder(), postSetResponseInfrastructure.getListOrder());
+    Assertions.assertEquals(
+        postSetResponseApplication.getDescription(),
+        postSetResponseInfrastructure.getDescription());
+    Assertions.assertEquals(
+        postSetResponseApplication.getRir(), postSetResponseInfrastructure.getRir());
+    Assertions.assertEquals(
+        postSetResponseApplication.getReps(), postSetResponseInfrastructure.getReps());
+    Assertions.assertEquals(
+        postSetResponseApplication.getWeight(), postSetResponseInfrastructure.getWeight());
+    Assertions.assertEquals(
+        postSetResponseApplication.getSetGroup().getId(),
+        postSetResponseInfrastructure.getSetGroup().getId());
   }
 }

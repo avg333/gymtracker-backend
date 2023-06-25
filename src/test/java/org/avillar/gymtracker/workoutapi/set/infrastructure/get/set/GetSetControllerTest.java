@@ -2,12 +2,11 @@ package org.avillar.gymtracker.workoutapi.set.infrastructure.get.set;
 
 import static org.mockito.Mockito.when;
 
-import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.set.application.get.set.GetSetService;
 import org.avillar.gymtracker.workoutapi.set.application.get.set.model.GetSetResponseApplication;
-import org.avillar.gymtracker.workoutapi.set.application.get.set.model.GetSetResponseApplication.SetGroup;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.get.set.mapper.GetSetControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.get.set.model.GetSetResponseInfrastructure;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class GetSetControllerTest {
+
+  private final EasyRandom easyRandom = new EasyRandom();
 
   private GetSetController getSetController;
   @Mock private GetSetService getSetService;
@@ -30,23 +31,28 @@ class GetSetControllerTest {
 
   @Test
   void getOk() {
-    final UUID setId = UUID.randomUUID();
-    final int listOrder = 3;
-    final int reps = 6;
-    final double rir = 7.6;
-    final double weight = 75.0;
+    final GetSetResponseApplication getSetResponseApplication =
+        easyRandom.nextObject(GetSetResponseApplication.class);
 
-    when(getSetService.execute(setId))
-        .thenReturn(
-            new GetSetResponseApplication(
-                setId, listOrder, null, reps, rir, weight, new SetGroup()));
+    when(getSetService.execute(getSetResponseApplication.getId()))
+        .thenReturn(getSetResponseApplication);
 
     final GetSetResponseInfrastructure getSetResponseInfrastructure =
-        getSetController.get(setId).getBody();
-    Assertions.assertEquals(setId, getSetResponseInfrastructure.getId());
-    Assertions.assertEquals(listOrder, getSetResponseInfrastructure.getListOrder());
-    Assertions.assertEquals(reps, getSetResponseInfrastructure.getReps());
-    Assertions.assertEquals(rir, getSetResponseInfrastructure.getRir());
-    Assertions.assertEquals(weight, getSetResponseInfrastructure.getWeight());
+        getSetController.get(getSetResponseApplication.getId()).getBody();
+    Assertions.assertEquals(
+        getSetResponseApplication.getId(), getSetResponseInfrastructure.getId());
+    Assertions.assertEquals(
+        getSetResponseApplication.getListOrder(), getSetResponseInfrastructure.getListOrder());
+    Assertions.assertEquals(
+        getSetResponseApplication.getReps(), getSetResponseInfrastructure.getReps());
+    Assertions.assertEquals(
+        getSetResponseApplication.getRir(), getSetResponseInfrastructure.getRir());
+    Assertions.assertEquals(
+        getSetResponseApplication.getWeight(), getSetResponseInfrastructure.getWeight());
+    Assertions.assertEquals(
+        getSetResponseApplication.getDescription(), getSetResponseInfrastructure.getDescription());
+    Assertions.assertEquals(
+        getSetResponseApplication.getSetGroup().getId(),
+        getSetResponseInfrastructure.getSetGroup().getId());
   }
 }

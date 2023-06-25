@@ -1,14 +1,12 @@
-package org.avillar.gymtracker.exercisesapi.musclesupgroup.application.get.model;
+package org.avillar.gymtracker.exercisesapi.loadtype.infrastrucuture.get.model;
 
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class GetMuscleSupGroupResponse {
+public class GetLoadTypesResponseInfrastructure {
 
   private UUID id;
   private String name;

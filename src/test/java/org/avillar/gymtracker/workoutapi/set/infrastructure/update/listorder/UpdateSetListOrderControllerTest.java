@@ -2,12 +2,12 @@ package org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder;
 
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.set.application.update.listorder.UpdateSetListOrderService;
 import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.UpdateSetListOrderResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder.mapper.UpdateSetListOrderControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.set.infrastructure.update.listorder.model.UpdateSetListOrderRequestInfrastructure;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateSetListOrderControllerTest {
+
+  private final EasyRandom easyRandom = new EasyRandom();
 
   private UpdateSetListOrderController updateSetListOrderController;
 
@@ -40,7 +42,7 @@ class UpdateSetListOrderControllerTest {
     updateSetListOrderRequestInfrastructure.setListOrder(listOrder);
 
     when(updateSetListOrderService.execute(setId, listOrder))
-        .thenReturn(new UpdateSetListOrderResponseApplication(Collections.emptySet()));
+        .thenReturn(easyRandom.nextObject(UpdateSetListOrderResponseApplication.class));
 
     Assertions.assertNotNull(
         updateSetListOrderController

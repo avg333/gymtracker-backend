@@ -5,8 +5,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.exercise.application.get.GetExerciseService;
 import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.mapper.GetExerciseControllerMapper;
-import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.model.GetExerciseRequest;
-import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.model.GetExerciseResponse;
+import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.model.GetExerciseInfrastructureRequest;
+import org.avillar.gymtracker.exercisesapi.exercise.infrastructure.get.model.GetExerciseInfrastructureResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +19,14 @@ public class GetExerciseController {
   private final GetExerciseControllerMapper getExerciseControllerMapper;
 
   @GetMapping("exercises/{exerciseId}")
-  public ResponseEntity<GetExerciseResponse> getExerciseById(@PathVariable final UUID exerciseId) {
+  public ResponseEntity<GetExerciseInfrastructureResponse> getExerciseById(
+      @PathVariable final UUID exerciseId) {
     return ResponseEntity.ok(
-        getExerciseControllerMapper.getResponse(getExerciseService.getById(exerciseId)));
+        getExerciseControllerMapper.map(getExerciseService.getById(exerciseId)));
   }
 
   @GetMapping("exercises")
-  public ResponseEntity<List<GetExerciseResponse>> getAllExercises(
+  public ResponseEntity<List<GetExerciseInfrastructureResponse>> getAllExercises(
       @RequestParam(required = false) final String name,
       @RequestParam(required = false) final String description,
       @RequestParam(required = false) final Boolean unilateral,
@@ -34,10 +35,10 @@ public class GetExerciseController {
       @RequestParam(required = false) final UUID muscleGroupId,
       @RequestParam(required = false) final List<UUID> muscleSubGroupIds) {
     return ResponseEntity.ok(
-        getExerciseControllerMapper.getResponse(
+        getExerciseControllerMapper.map(
             getExerciseService.getAllExercises(
-                getExerciseControllerMapper.getRequest(
-                    GetExerciseRequest.builder()
+                getExerciseControllerMapper.map(
+                    GetExerciseInfrastructureRequest.builder()
                         .name(name)
                         .description(description)
                         .unilateral(unilateral)

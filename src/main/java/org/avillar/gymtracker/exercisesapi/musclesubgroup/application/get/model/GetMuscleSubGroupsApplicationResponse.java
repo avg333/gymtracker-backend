@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetMuscleSubGroupResponse {
+public class GetMuscleSubGroupsApplicationResponse {
 
   private UUID id;
   private String name;
