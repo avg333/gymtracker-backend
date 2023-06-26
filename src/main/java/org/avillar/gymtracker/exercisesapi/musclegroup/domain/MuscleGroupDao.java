@@ -8,14 +8,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface MuscleGroupDao extends JpaRepository<MuscleGroup, UUID> {
 
-
   @Query(
       """
   SELECT mg
   FROM MuscleGroup mg
   JOIN mg.muscleSupGroups msg
   WHERE msg.id = :muscleSupGroupId
-"""
-  )
-  List<MuscleGroup> getALlMuscleGroupsByMuscleSupGroupId(@Param("muscleSupGroupId") UUID muscleSupGroupId);
+""")
+  List<MuscleGroup> getALlMuscleGroupsByMuscleSupGroupId(
+      @Param("muscleSupGroupId") UUID muscleSupGroupId);
 }

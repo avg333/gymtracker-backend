@@ -7,6 +7,7 @@ import org.avillar.gymtracker.workoutapi.errors.application.exceptions.IllegalAc
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -40,9 +41,14 @@ public class AuthWorkoutsServiceImpl implements AuthWorkoutsService {
     }
   }
 
-  private UUID getLoggedUserId() { // TODO Controlar cuando esto falla!!
-    final UserDetailsImpl userDetails =
-        (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  private UUID getLoggedUserId() {
+    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new RuntimeException("No user logged in!!");
+    }
+
+    final UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     return userDetails.getId();
   }
 }

@@ -9,6 +9,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.set.domain.Set;
 import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
+import org.avillar.gymtracker.workoutapi.setgroup.application.get.setgroup.mapper.GetSetGroupServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.workout.application.update.setgroups.mapper.UpdateWorkoutSetGroupsServiceMapper;
@@ -27,6 +28,7 @@ public class UpdateWorkoutSetGroupsServiceImpl implements UpdateWorkoutSetGroups
   private final SetDao setDao;
   private final AuthWorkoutsService authWorkoutsService;
   private final UpdateWorkoutSetGroupsServiceMapper updateWorkoutSetGroupsServiceMapper;
+  private final GetSetGroupServiceMapper getSetGroupServiceMapper;
 
   @Override
   @Transactional
@@ -58,7 +60,6 @@ public class UpdateWorkoutSetGroupsServiceImpl implements UpdateWorkoutSetGroups
       final Workout workout, final java.util.Set<SetGroup> setGroupsSource) {
     final int listOrderOffset = workout.getSetGroups().size();
 
-    // TODO Cambiar esto a lambda
     final List<SetGroup> setGroups = new ArrayList<>(setGroupsSource.size());
     final List<Set> sets = new ArrayList<>();
     for (final SetGroup setGroupDb : setGroupsSource) {

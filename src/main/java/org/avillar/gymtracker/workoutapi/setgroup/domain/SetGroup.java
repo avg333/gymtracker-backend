@@ -44,9 +44,9 @@ public class SetGroup extends SortableEntity {
 
   public static SetGroup clone(final SetGroup setGroup) {
     final SetGroup newSetGroup = new SetGroup();
-    setGroup.setListOrder(setGroup.getListOrder());
-    setGroup.setDescription(setGroup.getDescription());
-    setGroup.setExerciseId(setGroup.getExerciseId());
+    newSetGroup.setListOrder(setGroup.getListOrder());
+    newSetGroup.setDescription(setGroup.getDescription());
+    newSetGroup.setExerciseId(setGroup.getExerciseId());
     return newSetGroup;
   }
 }

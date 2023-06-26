@@ -25,18 +25,13 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
   private final WorkoutDao workoutDao;
   private final AuthWorkoutsService authWorkoutsService;
   private final GetWorkoutServiceMapper getWorkoutServiceMapper;
-
   private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
-  public GetWorkoutResponseApplication execute(final UUID workoutId, final boolean full) {
-    final Workout workout = full ? getFullWorkout(workoutId) : getSimpleWorkout(workoutId);
+  public GetWorkoutResponseApplication execute(final UUID workoutId) {
+    final Workout workout = getFullWorkout(workoutId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.READ);
-
-    if (!full) {
-      return getWorkoutServiceMapper.map(workout);
-    }
 
     // TODO Revisar logica exercise
     final List<GetExerciseResponseFacade> getExerciseResponsFacades =
@@ -69,12 +64,6 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
   private Workout getFullWorkout(final UUID workoutId) {
     return workoutDao.getFullWorkoutByIds(List.of(workoutId)).stream()
         .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
-  }
-
-  private Workout getSimpleWorkout(final UUID workoutId) {
-    return workoutDao
-        .findById(workoutId)
         .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
   }
 }

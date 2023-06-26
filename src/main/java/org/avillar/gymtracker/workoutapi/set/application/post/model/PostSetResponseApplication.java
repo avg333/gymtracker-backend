@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.workoutapi.set.application.post.model;
 
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

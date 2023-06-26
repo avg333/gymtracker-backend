@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.workoutapi.set.application.get.newsetdata.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
