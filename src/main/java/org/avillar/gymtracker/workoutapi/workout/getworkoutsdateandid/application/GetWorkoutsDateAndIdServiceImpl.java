@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
-import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDateAndId;
+import org.avillar.gymtracker.workoutapi.domain.Workout;
+import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.avillar.gymtracker.workoutapi.domain.WorkoutDateAndId;
 import org.springframework.stereotype.Service;
 
 @Service

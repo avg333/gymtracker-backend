@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.set.domain;
+package org.avillar.gymtracker.workoutapi.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.common.sort.domain.SortableEntity;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
 
 @Getter
 @Setter

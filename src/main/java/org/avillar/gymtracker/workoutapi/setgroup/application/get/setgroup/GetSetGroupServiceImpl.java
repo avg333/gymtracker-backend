@@ -7,8 +7,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.setgroup.application.get.setgroup.mapper.GetSetGroupServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.application.get.setgroup.model.GetSetGroupResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
+import org.avillar.gymtracker.workoutapi.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
 
 @Service

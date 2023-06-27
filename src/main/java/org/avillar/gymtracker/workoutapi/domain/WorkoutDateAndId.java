@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.workout.domain;
+package org.avillar.gymtracker.workoutapi.domain;
 
 import java.util.Date;
 import java.util.UUID;

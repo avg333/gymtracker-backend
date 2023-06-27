@@ -8,8 +8,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.DuplicatedWor
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
-import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
+import org.avillar.gymtracker.workoutapi.domain.Workout;
+import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.springframework.stereotype.Service;
 
 @Service

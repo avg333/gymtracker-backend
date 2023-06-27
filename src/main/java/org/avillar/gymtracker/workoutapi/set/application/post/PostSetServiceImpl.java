@@ -9,10 +9,10 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.set.application.post.mapper.PostSetServiceMapper;
 import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetRequestApplication;
 import org.avillar.gymtracker.workoutapi.set.application.post.model.PostSetResponseApplication;
-import org.avillar.gymtracker.workoutapi.set.domain.Set;
-import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
+import org.avillar.gymtracker.workoutapi.domain.Set;
+import org.avillar.gymtracker.workoutapi.domain.SetDao;
+import org.avillar.gymtracker.workoutapi.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
 
 @Service

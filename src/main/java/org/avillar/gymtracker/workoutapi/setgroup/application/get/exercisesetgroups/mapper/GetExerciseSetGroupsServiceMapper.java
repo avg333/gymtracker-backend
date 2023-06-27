@@ -2,7 +2,7 @@ package org.avillar.gymtracker.workoutapi.setgroup.application.get.exercisesetgr
 
 import java.util.List;
 import org.avillar.gymtracker.workoutapi.setgroup.application.get.exercisesetgroups.model.GetExerciseSetGroupsResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

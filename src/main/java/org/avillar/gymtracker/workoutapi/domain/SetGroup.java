@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.setgroup.domain;
+package org.avillar.gymtracker.workoutapi.domain;
 
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.common.sort.domain.SortableEntity;
-import org.avillar.gymtracker.workoutapi.set.domain.Set;
-import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.hibernate.annotations.BatchSize;
 
 @Getter

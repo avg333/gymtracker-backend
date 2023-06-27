@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.set.domain.Set;
-import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
+import org.avillar.gymtracker.workoutapi.domain.Set;
+import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.mapper.UpdateSetGroupSetsServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.model.UpdateSetGroupSetsResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroupDao;
+import org.avillar.gymtracker.workoutapi.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.springframework.stereotype.Service;
 
 // FINALIZAR
@@ -38,9 +38,9 @@ public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService 
     authWorkoutsService.checkAccess(setGroupDestination, AuthOperations.UPDATE);
 
     final List<Set> sets = new ArrayList<>(setGroupSource.getSets().size());
-    for (final org.avillar.gymtracker.workoutapi.set.domain.Set setDb : setGroupSource.getSets()) {
-      final org.avillar.gymtracker.workoutapi.set.domain.Set set =
-          org.avillar.gymtracker.workoutapi.set.domain.Set.clone(setDb);
+    for (final Set setDb : setGroupSource.getSets()) {
+      final Set set =
+          Set.clone(setDb);
       set.setSetGroup(setGroupDestination);
       sets.add(set);
     }

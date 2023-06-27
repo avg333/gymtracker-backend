@@ -9,8 +9,8 @@ import org.avillar.gymtracker.common.sort.application.EntitySorter;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.set.application.update.listorder.mapper.UpdateSetListOrderServiceMapper;
 import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.UpdateSetListOrderResponseApplication;
-import org.avillar.gymtracker.workoutapi.set.domain.Set;
-import org.avillar.gymtracker.workoutapi.set.domain.SetDao;
+import org.avillar.gymtracker.workoutapi.domain.Set;
+import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkout.application.mapper;
 
-import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
+import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.getworkout.application.model.GetWorkoutSimpleResponseApplication;
 import org.mapstruct.Mapper;
 

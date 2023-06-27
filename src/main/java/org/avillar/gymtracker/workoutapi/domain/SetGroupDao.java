@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.setgroup.domain;
+package org.avillar.gymtracker.workoutapi.domain;
 
 import java.util.List;
 import java.util.Set;

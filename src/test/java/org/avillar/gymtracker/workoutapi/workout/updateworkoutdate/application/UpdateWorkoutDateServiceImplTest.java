@@ -16,8 +16,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.DuplicatedWor
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
-import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
+import org.avillar.gymtracker.workoutapi.domain.Workout;
+import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

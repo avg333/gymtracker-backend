@@ -10,25 +10,25 @@ import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
-import org.avillar.gymtracker.workoutapi.setgroup.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
-import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.mapper.GetWorkoutServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.model.GetWorkoutResponseApplication;
+import org.avillar.gymtracker.workoutapi.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.domain.Workout;
+import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.mapper.GetWorkoutDetailsServiceMapper;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.model.GetWorkoutDetailsResponseApplication;
 import org.springframework.stereotype.Service;
 
 // FINALIZAR
 @Service
 @RequiredArgsConstructor
-public class GetWorkoutServiceImpl implements GetWorkoutService {
+public class GetWorkoutDetailsServiceImpl implements GetWorkoutDetailsService {
 
   private final WorkoutDao workoutDao;
   private final AuthWorkoutsService authWorkoutsService;
-  private final GetWorkoutServiceMapper getWorkoutServiceMapper;
+  private final GetWorkoutDetailsServiceMapper getWorkoutDetailsServiceMapper;
   private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
-  public GetWorkoutResponseApplication execute(final UUID workoutId) {
+  public GetWorkoutDetailsResponseApplication execute(final UUID workoutId) {
     final Workout workout = getFullWorkout(workoutId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.READ);
@@ -40,10 +40,10 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
                 .map(SetGroup::getExerciseId)
                 .collect(Collectors.toSet()));
 
-    final GetWorkoutResponseApplication getWorkoutResponseApplication =
-        getWorkoutServiceMapper.map(workout);
+    final GetWorkoutDetailsResponseApplication getWorkoutDetailsResponseApplication =
+        getWorkoutDetailsServiceMapper.map(workout);
 
-    getWorkoutResponseApplication
+    getWorkoutDetailsResponseApplication
         .getSetGroups()
         .forEach(
             setGroup ->
@@ -58,7 +58,7 @@ public class GetWorkoutServiceImpl implements GetWorkoutService {
                                 new EntityNotFoundException(
                                     Exercise.class, setGroup.getExerciseId()))));
 
-    return getWorkoutResponseApplication; // FIXME Arreglar mapeo no full
+    return getWorkoutDetailsResponseApplication;
   }
 
   private Workout getFullWorkout(final UUID workoutId) {

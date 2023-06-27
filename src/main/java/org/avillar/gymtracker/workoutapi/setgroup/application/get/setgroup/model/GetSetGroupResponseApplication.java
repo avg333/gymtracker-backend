@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponseInfrastructure;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +15,7 @@ public class GetSetGroupResponseApplication {
   private Integer listOrder;
   private String description;
   private UUID exerciseId;
-  private List<GetWorkoutResponseInfrastructure.Set> sets;
+  private List<GetWorkoutDetailsResponseInfrastructure.Set> sets;
   private Workout workout;
 
   @Data

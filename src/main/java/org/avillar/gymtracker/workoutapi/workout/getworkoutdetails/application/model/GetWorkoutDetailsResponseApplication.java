@@ -11,7 +11,7 @@ import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseR
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetWorkoutResponseApplication {
+public class GetWorkoutDetailsResponseApplication {
 
   private UUID id;
   private Date date;
