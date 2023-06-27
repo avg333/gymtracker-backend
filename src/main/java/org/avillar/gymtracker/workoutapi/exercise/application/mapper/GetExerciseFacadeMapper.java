@@ -1,7 +1,8 @@
 package org.avillar.gymtracker.workoutapi.exercise.application.mapper;
 
 import java.util.List;
-import org.avillar.gymtracker.exercisesapi.exercise.application.get.model.GetExerciseApplicationResponse;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.getexercisebyid.model.GetExerciseByIdApplicationResponse;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.getexercisesbyfilter.model.GetExercisesByFilterApplicationResponse;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.mapstruct.Mapper;
 
@@ -9,7 +10,7 @@ import org.mapstruct.Mapper;
 public interface GetExerciseFacadeMapper {
 
   GetExerciseResponseFacade getResponse(
-      GetExerciseApplicationResponse getExerciseApplicationResponse);
+      GetExerciseByIdApplicationResponse getExercisesByFilterApplicationResponse);
 
-  List<GetExerciseResponseFacade> getResponse(List<GetExerciseApplicationResponse> getExerciseApplicationRespons);
+  List<GetExerciseResponseFacade> getResponse(List<GetExerciseByIdApplicationResponse> getExerciseApplicationRespons);
 }

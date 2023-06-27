@@ -2,9 +2,9 @@ package org.avillar.gymtracker.workoutapi.workout.application.get.workoutsimple;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
+import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.application.get.workoutsimple.mapper.GetWorkoutSimpleServiceMapper;
 import org.avillar.gymtracker.workoutapi.workout.application.get.workoutsimple.model.GetWorkoutSimpleResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;

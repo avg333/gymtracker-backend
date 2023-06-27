@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
+import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;

@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.exercisesapi.exercise.application.get.GetExerciseService;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.getexercisebyid.GetExerciseByIdService;
+import org.avillar.gymtracker.exercisesapi.exercise.application.get.getexercisesbyfilter.GetExercisesByFilterService;
 import org.avillar.gymtracker.workoutapi.exercise.application.mapper.GetExerciseFacadeMapper;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.springframework.stereotype.Service;
@@ -13,21 +14,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ExerciseRepositoryClientImpl implements ExerciseRepositoryClient {
 
-  private final GetExerciseService getExerciseService;
+  private final GetExerciseByIdService getExerciseByIdService;
   private final GetExerciseFacadeMapper getExerciseFacadeMapper;
 
   @Override
   public boolean canAccessExerciseById(UUID exerciseId) {
-    return getExerciseFacadeMapper.getResponse(getExerciseService.getById(exerciseId)) != null;
+    return getExerciseFacadeMapper.getResponse(getExerciseByIdService.execute(exerciseId)) != null;
   }
 
   @Override
   public GetExerciseResponseFacade getExerciseById(UUID exerciseId) {
-    return getExerciseFacadeMapper.getResponse(getExerciseService.getById(exerciseId));
+    return getExerciseFacadeMapper.getResponse(getExerciseByIdService.execute(exerciseId));
   }
 
   @Override
   public List<GetExerciseResponseFacade> getExerciseByIds(Set<UUID> exerciseIds) {
-    return getExerciseFacadeMapper.getResponse(getExerciseService.getByIds(exerciseIds));
+    return getExerciseFacadeMapper.getResponse(getExerciseByIdService.execute(exerciseIds));
   }
 }

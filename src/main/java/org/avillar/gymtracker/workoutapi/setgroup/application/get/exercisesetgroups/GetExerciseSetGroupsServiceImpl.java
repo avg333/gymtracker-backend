@@ -2,7 +2,7 @@ package org.avillar.gymtracker.workoutapi.setgroup.application.get.exercisesetgr
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthOperations;
+import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.setgroup.application.get.exercisesetgroups.mapper.GetExerciseSetGroupsServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.application.get.exercisesetgroups.model.GetExerciseSetGroupsResponseApplication;
