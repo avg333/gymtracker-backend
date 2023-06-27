@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.avillar.gymtracker.workoutapi.workout.infrastructure.get.workout.model.GetWorkoutResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutResponseInfrastructure;
 
 @Data
 @NoArgsConstructor

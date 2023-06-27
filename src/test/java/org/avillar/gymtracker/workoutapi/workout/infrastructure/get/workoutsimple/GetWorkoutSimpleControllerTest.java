@@ -3,10 +3,11 @@ package org.avillar.gymtracker.workoutapi.workout.infrastructure.get.workoutsimp
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-import org.avillar.gymtracker.workoutapi.workout.application.get.workoutsimple.GetWorkoutSimpleService;
-import org.avillar.gymtracker.workoutapi.workout.application.get.workoutsimple.model.GetWorkoutSimpleResponseApplication;
-import org.avillar.gymtracker.workoutapi.workout.infrastructure.get.workoutsimple.mapper.GetWorkoutSimpleControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.workout.infrastructure.get.workoutsimple.model.GetWorkoutSimpleResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.application.GetWorkoutSimpleService;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.application.model.GetWorkoutSimpleResponseApplication;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.GetWorkoutSimpleController;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.mapper.GetWorkoutSimpleControllerMapperImpl;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutSimpleResponseInfrastructure;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -22,6 +22,6 @@ public interface DeleteWorkoutController {
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @DeleteMapping("/workouts/{workoutId}")
-  ResponseEntity<Void> delete(@PathVariable UUID workoutId)
+  ResponseEntity<Void> execute(@PathVariable UUID workoutId)
       throws EntityNotFoundException, IllegalArgumentException;
 }

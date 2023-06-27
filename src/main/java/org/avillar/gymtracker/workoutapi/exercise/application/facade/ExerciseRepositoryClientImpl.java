@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.exercise.application.get.getexercisebyid.GetExerciseByIdService;
-import org.avillar.gymtracker.exercisesapi.exercise.application.get.getexercisesbyfilter.GetExercisesByFilterService;
 import org.avillar.gymtracker.workoutapi.exercise.application.mapper.GetExerciseFacadeMapper;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.springframework.stereotype.Service;

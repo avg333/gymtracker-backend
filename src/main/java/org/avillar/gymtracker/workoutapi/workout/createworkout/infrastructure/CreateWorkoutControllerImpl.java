@@ -19,7 +19,7 @@ public class CreateWorkoutControllerImpl implements CreateWorkoutController {
   private final CreateWorkoutControllerMapper createWorkoutControllerMapper;
 
   @Override
-  public ResponseEntity<CreateWorkoutResponseInfrastructure> post(
+  public ResponseEntity<CreateWorkoutResponseInfrastructure> execute(
       final UUID userId,
       final CreateWorkoutRequestInfrastructure createWorkoutRequestInfrastructure)
       throws IllegalAccessException, DuplicatedWorkoutDateException {

@@ -13,7 +13,7 @@ public class DeleteWorkoutControllerImpl implements DeleteWorkoutController {
 
   private final DeleteWorkoutService deleteWorkoutService;
 
-  public ResponseEntity<Void> delete(final UUID workoutId)
+  public ResponseEntity<Void> execute(final UUID workoutId)
       throws EntityNotFoundException, IllegalArgumentException {
     deleteWorkoutService.execute(workoutId);
     return ResponseEntity.noContent().build();

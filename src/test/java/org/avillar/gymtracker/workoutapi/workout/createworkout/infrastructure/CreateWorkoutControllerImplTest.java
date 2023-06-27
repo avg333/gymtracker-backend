@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class CreateWorkoutControllerImplTest {
-  private EasyRandom easyRandom = new EasyRandom();
+  private final EasyRandom easyRandom = new EasyRandom();
 
   private CreateWorkoutControllerImpl postWorkoutControllerImpl;
 
@@ -52,7 +52,7 @@ class CreateWorkoutControllerImplTest {
     final ResponseEntity<CreateWorkoutResponseInfrastructure> response =
         assertDoesNotThrow(
             () ->
-                postWorkoutControllerImpl.post(
+                postWorkoutControllerImpl.execute(
                     createWorkoutResponseApplication.getUserId(),
                     createWorkoutRequestInfrastructure));
     Assertions.assertNotNull(response.getBody());

@@ -2,6 +2,7 @@ package org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -22,7 +23,14 @@ public interface CreateWorkoutController {
   @Operation(summary = "Create a workout on the user with that id")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Created the workout"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Created the workout",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = CreateWorkoutResponseInfrastructure.class))
+            }),
         @ApiResponse(
             responseCode = "400",
             description = "Workout already exists for that user on that date.",
@@ -30,7 +38,7 @@ public interface CreateWorkoutController {
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content)
       })
   @PostMapping("/users/{userId}/workouts")
-  ResponseEntity<CreateWorkoutResponseInfrastructure> post(
+  ResponseEntity<CreateWorkoutResponseInfrastructure> execute(
       @PathVariable UUID userId,
       @Valid @RequestBody CreateWorkoutRequestInfrastructure createWorkoutRequestInfrastructure)
       throws IllegalAccessException, DuplicatedWorkoutDateException;

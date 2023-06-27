@@ -29,7 +29,7 @@ class DeleteWorkoutControllerImplTest {
     doNothing().when(deleteWorkoutService).execute(workoutId);
 
     final ResponseEntity<Void> response =
-        assertDoesNotThrow(() -> deleteWorkoutController.delete(workoutId));
+        assertDoesNotThrow(() -> deleteWorkoutController.execute(workoutId));
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     assertNull(response.getBody());
   }

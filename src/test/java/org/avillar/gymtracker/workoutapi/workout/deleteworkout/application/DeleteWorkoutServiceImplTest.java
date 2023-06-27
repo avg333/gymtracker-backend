@@ -30,7 +30,7 @@ class DeleteWorkoutServiceImplTest {
   @Mock private AuthWorkoutsService authWorkoutsService;
 
   @Test
-  void deleteOk() {
+  void executeOk() {
     final Workout workout = easyRandom.nextObject(Workout.class);
 
     when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
@@ -40,7 +40,7 @@ class DeleteWorkoutServiceImplTest {
   }
 
   @Test
-  void deleteNotFound() {
+  void executeNotFound() {
     final UUID workoutId = UUID.randomUUID();
 
     when(workoutDao.findById(workoutId))
@@ -54,7 +54,7 @@ class DeleteWorkoutServiceImplTest {
   }
 
   @Test
-  void deleteNotPermission() {
+  void executeNotPermission() {
     final Workout workout = easyRandom.nextObject(Workout.class);
     final UUID userId = UUID.randomUUID();
     final AuthOperations deleteOperation = AuthOperations.DELETE;

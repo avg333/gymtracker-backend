@@ -15,11 +15,16 @@ import org.avillar.gymtracker.workoutapi.workout.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.domain.WorkoutDao;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@Component
+@RestController
 @RequiredArgsConstructor
+@RequestMapping(path = "${workoutsApiPrefix}/")
 public class WorkoutsDataLoader implements ApplicationRunner {
 
   private static final int TOTAL_USERS = 5;
@@ -41,6 +46,12 @@ public class WorkoutsDataLoader implements ApplicationRunner {
   private final List<Workout> workouts = new ArrayList<>();
   private final List<SetGroup> setGroups = new ArrayList<>();
   private final List<Set> sets = new ArrayList<>();
+
+  @PostMapping("/users/{userId}/create")
+  public ResponseEntity<Void> postWorkout(@PathVariable final UUID userId) {
+    this.createAll(userId);
+    return ResponseEntity.noContent().build();
+  }
 
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();
