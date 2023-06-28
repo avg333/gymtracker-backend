@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.workoutapi.set.application.get.set.mapper;
 
-import org.avillar.gymtracker.workoutapi.set.application.get.set.model.GetSetResponseApplication;
 import org.avillar.gymtracker.workoutapi.domain.Set;
+import org.avillar.gymtracker.workoutapi.set.application.get.set.model.GetSetResponseApplication;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

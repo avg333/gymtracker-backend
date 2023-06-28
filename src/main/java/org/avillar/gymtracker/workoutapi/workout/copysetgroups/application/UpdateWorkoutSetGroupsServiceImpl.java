@@ -9,13 +9,13 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.setgroup.application.get.setgroup.mapper.GetSetGroupServiceMapper;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.mapper.UpdateWorkoutSetGroupsServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.UpdateWorkoutSetGroupsResponseApplication;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.mapper.GetSetGroupServiceMapper;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.mapper.UpdateWorkoutSetGroupsServiceMapper;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.UpdateWorkoutSetGroupsResponseApplication;
 import org.springframework.stereotype.Service;
 
 // FINALIZAR

@@ -29,7 +29,7 @@ public interface GetWorkoutDetailsController {
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
-  @GetMapping("/workouts/{workoutId}")
+  @GetMapping("/workouts/{workoutId}/details")
   ResponseEntity<GetWorkoutDetailsResponseInfrastructure> execute(
       @PathVariable final UUID workoutId);
 }

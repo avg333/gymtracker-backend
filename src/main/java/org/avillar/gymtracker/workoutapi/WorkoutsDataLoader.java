@@ -55,7 +55,7 @@ public class WorkoutsDataLoader implements ApplicationRunner {
 
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();
-    if (!workoutDao.findAll().isEmpty()) {
+    if (workoutDao.findAll().isEmpty()) {
       log.info("Micro workouts is already populated");
       return;
     }

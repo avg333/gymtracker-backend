@@ -8,11 +8,11 @@ import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
-import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
+import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.mapper.GetWorkoutDetailsServiceMapper;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.model.GetWorkoutDetailsResponseApplication;
 import org.springframework.stereotype.Service;
@@ -56,7 +56,8 @@ public class GetWorkoutDetailsServiceImpl implements GetWorkoutDetailsService {
                         .orElseThrow( // Esto nunca deberia saltar
                             () ->
                                 new EntityNotFoundException(
-                                    Exercise.class, setGroup.getExerciseId()))));
+                                    Exercise.class,
+                                    setGroup.getExerciseId())))); // TODO decidir que hacer
 
     return getWorkoutDetailsResponseApplication;
   }

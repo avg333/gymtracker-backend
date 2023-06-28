@@ -1,0 +1,40 @@
+package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure;
+
+import static org.mockito.Mockito.when;
+
+import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.application.UpdateSetGroupDescriptionService;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequestInfrastructure;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class UpdateSetGroupDescriptionControllerTest {
+
+  @InjectMocks private UpdateSetGroupDescriptionController updateSetGroupDescriptionController;
+
+  @Mock private UpdateSetGroupDescriptionService updateSetGroupDescriptionService;
+
+  @Test
+  void putSetGroup() {
+    final String description = "Description example 54.";
+    final UUID workoutId = UUID.randomUUID();
+    final UpdateSetGroupDescriptionRequestInfrastructure
+        updateWorkoutDescriptionRequestInfrastructure =
+            new UpdateSetGroupDescriptionRequestInfrastructure();
+    updateWorkoutDescriptionRequestInfrastructure.setDescription(description);
+
+    when(updateSetGroupDescriptionService.execute(workoutId, description)).thenReturn(description);
+
+    Assertions.assertEquals(
+        description,
+        updateSetGroupDescriptionController
+            .patch(workoutId, updateWorkoutDescriptionRequestInfrastructure)
+            .getBody()
+            .getDescription());
+  }
+}

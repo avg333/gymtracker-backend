@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.common.auth;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.auth.jwt.JwtRequestFilter;
@@ -15,6 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
 public class WebSecurityConfigBase {
@@ -36,23 +37,11 @@ public class WebSecurityConfigBase {
 
   @Bean
   public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
-    return http.cors()
-        .configurationSource(this::corsConfiguration)
-        .and()
+    return http.cors(cors -> cors.configurationSource(corsConfiguration()))
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests( // FIXME Autorizar solo API
             authorize -> authorize.requestMatchers("/**").permitAll().anyRequest().authenticated())
-        //        .authorizeHttpRequests(
-        //            requests ->
-        //                requests
-        //                    .requestMatchers(new AntPathRequestMatcher(authApiPrefix +
-        // authEndpoint))
-        //                    .permitAll()
-        //                    .anyRequest()
-        //                    .authenticated())
-        .exceptionHandling()
-        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-        .and()
+        .exceptionHandling(eh -> eh.authenticationEntryPoint(jwtAuthenticationEntryPoint))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .httpBasic(Customizer.withDefaults())
@@ -60,11 +49,21 @@ public class WebSecurityConfigBase {
         .build();
   }
 
-  private CorsConfiguration corsConfiguration(final HttpServletRequest request) {
+  //        .authorizeHttpRequests(
+  //            requests ->
+  //                requests
+  //                    .requestMatchers(new AntPathRequestMatcher(authApiPrefix +
+  // authEndpoint))
+  //                    .permitAll()
+  //                    .anyRequest()
+  //                    .authenticated())
+  private CorsConfigurationSource corsConfiguration() {
     final CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(List.of("*"));
     configuration.setAllowedMethods(List.of("*"));
     configuration.setAllowedHeaders(List.of("*"));
-    return configuration;
+    final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
   }
 }

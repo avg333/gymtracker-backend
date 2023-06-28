@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.workoutapi.set.application.update.listorder.mapper;
 
-import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.UpdateSetListOrderResponseApplication;
 import org.avillar.gymtracker.workoutapi.domain.Set;
+import org.avillar.gymtracker.workoutapi.set.application.update.listorder.model.UpdateSetListOrderResponseApplication;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

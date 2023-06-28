@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.common.base.domain.BaseEntity;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.hibernate.annotations.BatchSize;
 
 @Getter

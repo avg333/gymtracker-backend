@@ -4,11 +4,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.setgroup.application.get.exercisesetgroups.GetExerciseSetGroupsService;
-import org.avillar.gymtracker.workoutapi.setgroup.application.get.exercisesetgroups.model.GetExerciseSetGroupsResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.application.get.exercisesetgroups.model.GetExerciseSetGroupsResponseApplication.SetGroup;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.get.exercisesetgroups.mapper.GetExerciseSetGroupsControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.get.exercisesetgroups.model.GetExerciseSetGroupsResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.GetExerciseSetGroupsService;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.model.GetExerciseSetGroupsResponseApplication;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.model.GetExerciseSetGroupsResponseApplication.SetGroup;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.infrastructure.GetSetExerciseSetGroupsController;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.infrastructure.mapper.GetExerciseSetGroupsControllerMapperImpl;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.infrastructure.model.GetExerciseSetGroupsResponseInfrastructure;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
