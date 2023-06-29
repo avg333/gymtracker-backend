@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
@@ -18,7 +19,8 @@ public class UpdateSetGroupDescriptionServiceImpl implements UpdateSetGroupDescr
   private final AuthWorkoutsService authWorkoutsService;
 
   @Override
-  public String execute(final UUID setGroupId, final String description) {
+  public String execute(final UUID setGroupId, final String description)
+      throws EntityNotFoundException, IllegalAccessException {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.UPDATE);

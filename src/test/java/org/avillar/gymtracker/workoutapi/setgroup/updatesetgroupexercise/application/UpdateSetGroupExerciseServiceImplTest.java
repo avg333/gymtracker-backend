@@ -17,6 +17,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,8 +29,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupExerciseServiceImplTest {
 
-  @InjectMocks
-  UpdateSetGroupExerciseServiceImpl updateSetGroupExerciseService;
+  private final EasyRandom easyRandom = new EasyRandom();
+
+  @InjectMocks private UpdateSetGroupExerciseServiceImpl updateSetGroupExerciseService;
 
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
@@ -37,56 +39,47 @@ class UpdateSetGroupExerciseServiceImplTest {
 
   @Test
   void updateOk() {
-    final UUID setGroupId = UUID.randomUUID();
+    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     final UUID exerciseId = UUID.randomUUID();
 
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
-    setGroup.setExerciseId(UUID.randomUUID());
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(List.of(setGroup));
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
     when(exerciseRepositoryClient.canAccessExerciseById(exerciseId)).thenReturn(true);
     Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.UPDATE);
     when(setGroupDao.save(Mockito.any(SetGroup.class))).thenAnswer(i -> i.getArguments()[0]);
 
     Assertions.assertEquals(
-        exerciseId, updateSetGroupExerciseService.execute(setGroupId, exerciseId));
+        exerciseId, updateSetGroupExerciseService.execute(setGroup.getId(), exerciseId));
+    verify(setGroupDao).save(setGroup);
   }
 
   @Test
   void updateSameExerciseId() {
-    final UUID setGroupId = UUID.randomUUID();
-    final UUID exerciseId = UUID.randomUUID();
+    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
 
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
-    setGroup.setExerciseId(exerciseId);
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(List.of(setGroup));
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.UPDATE);
 
-    verify(setGroupDao, never()).save(Mockito.any(SetGroup.class));
     Assertions.assertEquals(
-        exerciseId, updateSetGroupExerciseService.execute(setGroupId, exerciseId));
+        setGroup.getExerciseId(),
+        updateSetGroupExerciseService.execute(setGroup.getId(), setGroup.getExerciseId()));
+    verify(setGroupDao, never()).save(Mockito.any(SetGroup.class));
   }
 
   @Test
   void exerciseNotFound() {
-    final UUID setGroupId = UUID.randomUUID();
+    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     final UUID exerciseId = UUID.randomUUID();
 
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
-    setGroup.setExerciseId(UUID.randomUUID());
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(List.of(setGroup));
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
     when(exerciseRepositoryClient.canAccessExerciseById(exerciseId)).thenReturn(false);
 
     final EntityNotFoundException exception =
         Assertions.assertThrows(
             EntityNotFoundException.class,
-            () -> updateSetGroupExerciseService.execute(setGroupId, exerciseId));
+            () -> updateSetGroupExerciseService.execute(setGroup.getId(), exerciseId));
     assertEquals(Exercise.class.getSimpleName(), exception.getClassName());
     assertEquals(exerciseId, exception.getId());
+    verify(setGroupDao, never()).save(Mockito.any(SetGroup.class));
   }
 
   @Test
@@ -94,9 +87,6 @@ class UpdateSetGroupExerciseServiceImplTest {
     final UUID setGroupId = UUID.randomUUID();
     final UUID exerciseId = UUID.randomUUID();
 
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
-    setGroup.setExerciseId(UUID.randomUUID());
     when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
@@ -105,30 +95,29 @@ class UpdateSetGroupExerciseServiceImplTest {
             () -> updateSetGroupExerciseService.execute(setGroupId, exerciseId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
+    verify(setGroupDao, never()).save(Mockito.any(SetGroup.class));
   }
 
   @Test
   void updateNotPermission() {
     final UUID userId = UUID.randomUUID();
-    final UUID setGroupId = UUID.randomUUID();
+    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     final UUID exerciseId = UUID.randomUUID();
+    final AuthOperations authOperation = AuthOperations.UPDATE;
 
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
-    setGroup.setExerciseId(UUID.randomUUID());
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(List.of(setGroup));
-    doThrow(new IllegalAccessException(setGroup, AuthOperations.UPDATE, userId))
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    doThrow(new IllegalAccessException(setGroup, authOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(setGroup, AuthOperations.UPDATE);
+        .checkAccess(setGroup, authOperation);
 
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> updateSetGroupExerciseService.execute(setGroupId, exerciseId));
+            () -> updateSetGroupExerciseService.execute(setGroup.getId(), exerciseId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(setGroupId, exception.getEntityId());
+    assertEquals(setGroup.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(AuthOperations.UPDATE, exception.getAuthOperations());
+    assertEquals(authOperation, exception.getAuthOperations());
+    verify(setGroupDao, never()).save(Mockito.any(SetGroup.class));
   }
 }

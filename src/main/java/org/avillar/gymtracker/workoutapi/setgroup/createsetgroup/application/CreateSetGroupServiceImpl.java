@@ -4,6 +4,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
@@ -28,8 +29,8 @@ public class CreateSetGroupServiceImpl implements CreateSetGroupService {
 
   @Override
   public CreateSetGroupResponseApplication execute(
-      final UUID workoutId,
-      final CreateSetGroupRequestApplication createSetGroupRequestApplication) {
+      final UUID workoutId, final CreateSetGroupRequestApplication createSetGroupRequestApplication)
+      throws EntityNotFoundException, IllegalAccessException {
     final Workout workout = getWorkoutWithSetGroups(workoutId);
 
     final SetGroup setGroup = createSetGroupServiceMapper.map(createSetGroupRequestApplication);
@@ -38,7 +39,7 @@ public class CreateSetGroupServiceImpl implements CreateSetGroupService {
 
     if (!exerciseRepositoryClient.canAccessExerciseById(setGroup.getExerciseId())) {
       throw new EntityNotFoundException(Exercise.class, setGroup.getExerciseId());
-    }
+    } // TODO Cambiar excepcion
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.CREATE);
 

@@ -23,6 +23,6 @@ public interface DeleteSetGroupController {
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @DeleteMapping("/setGroups/{setGroupId}")
-  ResponseEntity<Void> delete(@PathVariable UUID setGroupId)
+  ResponseEntity<Void> execute(@PathVariable UUID setGroupId)
       throws EntityNotFoundException, IllegalAccessException;
 }

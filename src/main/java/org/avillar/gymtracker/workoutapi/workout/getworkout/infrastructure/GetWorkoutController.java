@@ -32,6 +32,6 @@ public interface GetWorkoutController {
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @GetMapping("/workouts/{workoutId}")
-  ResponseEntity<GetWorkoutResponseInfrastructure> get(@PathVariable UUID workoutId)
+  ResponseEntity<GetWorkoutResponseInfrastructure> execute(@PathVariable UUID workoutId)
       throws EntityNotFoundException, IllegalAccessException;
 }

@@ -17,7 +17,7 @@ public class GetWorkoutControllerImpl implements GetWorkoutController {
   private final GetWorkoutService getWorkoutServiceService;
   private final GetWorkoutControllerMapper getWorkoutControllerMapper;
 
-  public ResponseEntity<GetWorkoutResponseInfrastructure> get(final UUID workoutId)
+  public ResponseEntity<GetWorkoutResponseInfrastructure> execute(final UUID workoutId)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
         getWorkoutControllerMapper.map(getWorkoutServiceService.execute(workoutId)));

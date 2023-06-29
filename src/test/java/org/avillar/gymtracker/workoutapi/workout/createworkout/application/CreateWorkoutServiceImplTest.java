@@ -57,6 +57,7 @@ class CreateWorkoutServiceImplTest {
 
     final CreateWorkoutResponseApplication createWorkoutResponseApplication =
         createWorkoutService.execute(workout.getUserId(), createWorkoutRequestApplication);
+    assertNotNull(workout.getId());
     assertEquals(workout.getUserId(), createWorkoutResponseApplication.getUserId());
     assertEquals(workout.getDate(), createWorkoutResponseApplication.getDate());
     assertEquals(workout.getDescription(), createWorkoutResponseApplication.getDescription());

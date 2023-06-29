@@ -1,60 +1,50 @@
 package org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.GetSetGroupService;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.model.GetSetGroupResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.model.GetSetGroupResponseApplication.Workout;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.mapper.GetSetGroupControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.model.GetSetGroupResponseInfrastructure;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class SetGroupControllerImplTest {
 
-  private SetGroupControllerImpl setGroupControllerImpl;
+  private final EasyRandom easyRandom = new EasyRandom();
+
+  @InjectMocks private SetGroupControllerImpl setGroupControllerImpl;
 
   @Mock private GetSetGroupService getSetGroupService;
   @Spy private GetSetGroupControllerMapperImpl getSetGroupControllerMapper;
 
-  @BeforeEach
-  void beforeEach() {
-    setGroupControllerImpl = new SetGroupControllerImpl(getSetGroupService, getSetGroupControllerMapper);
-  }
-
   @Test
   void getOk() {
-    final UUID setGroupId = UUID.randomUUID();
-    final int listOrder = 3;
-    final String description = "Description example 54.";
-    final UUID exerciseId = UUID.randomUUID();
+    final GetSetGroupResponseApplication expected =
+        easyRandom.nextObject(GetSetGroupResponseApplication.class);
 
-    when(getSetGroupService.execute(setGroupId))
-        .thenReturn(
-            new GetSetGroupResponseApplication(
-                setGroupId,
-                listOrder,
-                description,
-                exerciseId,
-                Collections.emptyList(),
-                new Workout()));
+    when(getSetGroupService.execute(expected.getId())).thenReturn(expected);
 
-    final GetSetGroupResponseInfrastructure getSetGroupResponseInfrastructure =
-        setGroupControllerImpl.get(setGroupId).getBody();
-    Assertions.assertEquals(setGroupId, getSetGroupResponseInfrastructure.getId());
-    Assertions.assertEquals(listOrder, getSetGroupResponseInfrastructure.getListOrder());
-    Assertions.assertEquals(exerciseId, getSetGroupResponseInfrastructure.getExerciseId());
-    Assertions.assertEquals(description, getSetGroupResponseInfrastructure.getDescription());
-    Assertions.assertInstanceOf(
-        GetSetGroupResponseInfrastructure.Workout.class,
-        getSetGroupResponseInfrastructure.getWorkout());
+    final ResponseEntity<GetSetGroupResponseInfrastructure> result =
+        setGroupControllerImpl.get(expected.getId());
+    assertEquals(HttpStatus.OK, result.getStatusCode());
+    assertNotNull(result.getBody());
+    assertEquals(expected.getId(), result.getBody().getId());
+    assertEquals(expected.getListOrder(), result.getBody().getListOrder());
+    assertEquals(expected.getExerciseId(), result.getBody().getExerciseId());
+    assertEquals(expected.getDescription(), result.getBody().getDescription());
+    assertEquals(expected.getWorkout().getId(), result.getBody().getWorkout().getId());
+    verify(getSetGroupService).execute(expected.getId());
   }
 }

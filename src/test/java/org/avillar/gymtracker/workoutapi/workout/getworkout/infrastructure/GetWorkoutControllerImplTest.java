@@ -38,7 +38,7 @@ class GetWorkoutControllerImplTest {
 
     final ResponseEntity<GetWorkoutResponseInfrastructure>
         getWorkoutResponseInfrastructureResponseEntity =
-            getWorkoutControllerImpl.get(getWorkoutResponseApplication.getId());
+            getWorkoutControllerImpl.execute(getWorkoutResponseApplication.getId());
     assertEquals(HttpStatus.OK, getWorkoutResponseInfrastructureResponseEntity.getStatusCode());
     assertNotNull(getWorkoutResponseInfrastructureResponseEntity.getBody());
     assertEquals(

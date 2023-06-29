@@ -1,13 +1,11 @@
 package org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.model;
 
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class GetSetGroupResponseInfrastructure {
 
   private UUID id;
@@ -18,7 +16,6 @@ public class GetSetGroupResponseInfrastructure {
 
   @Data
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class Workout {
     private UUID id;
   }

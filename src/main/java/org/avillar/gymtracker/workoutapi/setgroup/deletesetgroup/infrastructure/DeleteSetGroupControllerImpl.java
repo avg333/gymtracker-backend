@@ -14,7 +14,7 @@ public class DeleteSetGroupControllerImpl implements DeleteSetGroupController {
 
   private final DeleteSetGroupService deleteSetGroupService;
 
-  public ResponseEntity<Void> delete(final UUID setGroupId)
+  public ResponseEntity<Void> execute(final UUID setGroupId)
       throws EntityNotFoundException, IllegalAccessException {
     deleteSetGroupService.execute(setGroupId);
     return ResponseEntity.noContent().build();

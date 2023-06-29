@@ -2,6 +2,8 @@ package org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure
 
 import jakarta.validation.Valid;
 import java.util.UUID;
+import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
@@ -16,5 +18,6 @@ public interface CreteSetGroupController {
   @PostMapping("/workouts/{workoutId}/setGroups")
   ResponseEntity<CreateSetGroupResponseInfrastructure> execute(
       @PathVariable UUID workoutId,
-      @Valid @RequestBody CreateSetGroupRequestInfrastructure createSetGroupRequestInfrastructure);
+      @Valid @RequestBody CreateSetGroupRequestInfrastructure createSetGroupRequestInfrastructure)
+      throws EntityNotFoundException, IllegalAccessException;
 }
