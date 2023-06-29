@@ -31,10 +31,10 @@ class CreateWorkoutTest {
   @Autowired private WorkoutDao workoutDao;
   @Autowired private UserDao userDao;
 
-
   @AfterEach
-  void afterEach(){
-    workoutDao.deleteById(workoutDao.findAll().get(0).getId());
+  void afterEach() {
+    var works = workoutDao.findAll();
+    if (!works.isEmpty()) workoutDao.deleteById(works.get(0).getId());
     workouts.clear();
   }
 
@@ -59,8 +59,8 @@ class CreateWorkoutTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.date").value("2023-06-28"));
 
-    //final Optional<Workout> workoutDb = workoutDao.findById(workoutId);
-    //Assertions.assertTrue(workoutDb.isPresent());
+    // final Optional<Workout> workoutDb = workoutDao.findById(workoutId);
+    // Assertions.assertTrue(workoutDb.isPresent());
     // Assertions.assertEquals("newDescription", workoutDb.get().getDescription());
   }
 

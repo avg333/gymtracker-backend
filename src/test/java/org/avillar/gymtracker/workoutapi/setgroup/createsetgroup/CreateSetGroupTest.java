@@ -34,7 +34,8 @@ class CreateSetGroupTest {
 
   @AfterEach
   void afterEach(){
-    workoutDao.deleteById(workoutDao.findAll().get(0).getId());
+    var works = workoutDao.findAll();
+    if (!works.isEmpty()) workoutDao.deleteById(works.get(0).getId());
     workouts.clear();
   }
 
