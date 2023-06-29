@@ -31,6 +31,9 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 class DeleteWorkoutTest {
 
+  private static final String USER_NAME_OK = "adrian";
+  private static final String USER_NAME_KO = "chema";
+
   final List<Workout> workouts = new ArrayList<>();
   @Autowired private MockMvc mockMvc;
   @Autowired private WorkoutDao workoutDao;
@@ -40,30 +43,31 @@ class DeleteWorkoutTest {
 
   @BeforeEach
   void beforeEach() {
-    final UserApp userApp = userDao.findByUsername("adrian");
+    final UserApp userApp = userDao.findByUsername(USER_NAME_OK);
 
     final Workout workout = new Workout(new Date(), null, userApp.getId(), new HashSet<>());
-    workoutDao.save(workout);
-    final SetGroup setGroup = new SetGroup(null,UUID.randomUUID(),workout, new HashSet<>());
+    final SetGroup setGroup = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
     setGroup.setListOrder(0);
-    setGroupDao.save(setGroup);
+    workoutDao.save(workout);
     workout.getSetGroups().add(setGroup);
     final Set set = new Set(null, 1, 1.0, 1.0, setGroup);
     set.setListOrder(0);
-    setDao.save(set);
+    setGroupDao.save(setGroup);
     setGroup.getSets().add(set);
-    workouts.clear();
+    setDao.save(set);
     workouts.add(workout);
   }
 
   @AfterEach
-  void afterEach(){
-    workoutDao.deleteById(workouts.get(0).getId());
+  void afterEach() {
+    workoutDao.deleteAll();
+    setGroupDao.deleteAll();
+    setDao.deleteAll();
     workouts.clear();
   }
 
   @Test
-  @WithUserDetails("adrian")
+  @WithUserDetails(USER_NAME_OK)
   void deleteOneWorkout() throws Exception {
     final Workout workout = workouts.get(0);
     final SetGroup setGroup = workout.getSetGroups().stream().findAny().get();
@@ -100,13 +104,18 @@ class DeleteWorkoutTest {
   }
 
   @Test
-  @WithUserDetails("chema")
-  void deleteNotFoundAndNotPermission() throws Exception {
-    final Workout workout = workouts.get(0);
+  @WithUserDetails(USER_NAME_OK)
+  void deleteNotFound() throws Exception {
     mockMvc
-        .perform(get("/workout-api/workouts/" +UUID.randomUUID()))
+        .perform(get("/workout-api/workouts/" + UUID.randomUUID()))
         .andDo(print())
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithUserDetails(USER_NAME_KO)
+  void NotPermission() throws Exception {
+    final Workout workout = workoutDao.findAll().get(0);
     mockMvc
         .perform(get("/workout-api/workouts/" + workout.getId()))
         .andDo(print())

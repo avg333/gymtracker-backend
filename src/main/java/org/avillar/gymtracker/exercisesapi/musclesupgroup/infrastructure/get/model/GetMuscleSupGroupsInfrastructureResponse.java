@@ -3,10 +3,8 @@ package org.avillar.gymtracker.exercisesapi.musclesupgroup.infrastructure.get.mo
 import java.util.List;
 import java.util.UUID;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 public class GetMuscleSupGroupsInfrastructureResponse {
 
   private UUID id;
@@ -15,7 +13,6 @@ public class GetMuscleSupGroupsInfrastructureResponse {
   private List<MuscleGroup> muscleGroups;
 
   @Data
-  @NoArgsConstructor
   public static class MuscleGroup {
     private UUID id;
     private String name;
@@ -23,7 +20,6 @@ public class GetMuscleSupGroupsInfrastructureResponse {
     private List<MuscleSubGroup> muscleSubGroups;
 
     @Data
-    @NoArgsConstructor
     public static class MuscleSubGroup {
       private UUID id;
       private String name;

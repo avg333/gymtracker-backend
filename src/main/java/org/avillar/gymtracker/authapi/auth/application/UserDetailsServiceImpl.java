@@ -15,19 +15,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserDao userDao;
+  private final UserDao userDao;
 
-    @Override
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        final UserApp userApp = userDao.findByUsername(username);
-        if (null == userApp) {
-            throw new UsernameNotFoundException(username);
-        }
-
-        return new UserDetailsImpl(
-                userApp.getId(),
-                userApp.getUsername(),
-                userApp.getPassword(),
-                List.of(new SimpleGrantedAuthority("USER_ROLE")));
+  @Override
+  public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+    final UserApp userApp = userDao.findByUsername(username);
+    if (null == userApp) {
+      throw new UsernameNotFoundException(username);
     }
+
+    return new UserDetailsImpl(
+        userApp.getId(),
+        userApp.getUsername(),
+        userApp.getPassword(),
+        List.of(new SimpleGrantedAuthority("USER_ROLE")));
+  }
 }

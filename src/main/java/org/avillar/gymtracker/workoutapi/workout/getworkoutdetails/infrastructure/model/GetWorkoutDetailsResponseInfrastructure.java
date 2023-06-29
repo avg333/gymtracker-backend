@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class GetWorkoutDetailsResponseInfrastructure {
 
@@ -19,7 +17,6 @@ public class GetWorkoutDetailsResponseInfrastructure {
   private List<SetGroup> setGroups;
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class SetGroup {
     private UUID id;
@@ -32,7 +29,6 @@ public class GetWorkoutDetailsResponseInfrastructure {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class Set {
     private UUID id;
@@ -44,7 +40,6 @@ public class GetWorkoutDetailsResponseInfrastructure {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class Exercise {
     private UUID id;
@@ -56,7 +51,6 @@ public class GetWorkoutDetailsResponseInfrastructure {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class LoadType {
     private UUID id;
@@ -65,7 +59,6 @@ public class GetWorkoutDetailsResponseInfrastructure {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class MuscleSubGroup {
     private UUID id;
@@ -74,7 +67,6 @@ public class GetWorkoutDetailsResponseInfrastructure {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class MuscleGroupExercise {
     private UUID id;
@@ -83,7 +75,6 @@ public class GetWorkoutDetailsResponseInfrastructure {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class MuscleGroup {
     private UUID id;
@@ -93,7 +84,6 @@ public class GetWorkoutDetailsResponseInfrastructure {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class MuscleSupGroup {
     private UUID id;

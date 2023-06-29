@@ -42,7 +42,7 @@ class GetWorkoutsDateAndIdTest {
   }
 
   @AfterEach
-  void afterEach(){
+  void afterEach() {
     workoutDao.deleteById(workouts.get(0).getId());
     workouts.clear();
   }
@@ -54,8 +54,7 @@ class GetWorkoutsDateAndIdTest {
     final UUID workoutId = workouts.get(0).getId();
 
     mockMvc
-        .perform(
-            get("/workout-api/workouts/" + workout.getId()))
+        .perform(get("/workout-api/workouts/" + workout.getId()))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(workoutId.toString()));
@@ -67,13 +66,11 @@ class GetWorkoutsDateAndIdTest {
     final Workout workout = workouts.get(0);
     final UUID workoutId = workouts.get(0).getId();
     mockMvc
-        .perform(
-            get("/workout-api/workouts/" + UUID.randomUUID()))
+        .perform(get("/workout-api/workouts/" + UUID.randomUUID()))
         .andDo(print())
         .andExpect(status().isNotFound());
     mockMvc
-        .perform(
-            get("/workout-api/workouts/" + workoutId))
+        .perform(get("/workout-api/workouts/" + workoutId))
         .andDo(print())
         .andExpect(status().isForbidden());
   }

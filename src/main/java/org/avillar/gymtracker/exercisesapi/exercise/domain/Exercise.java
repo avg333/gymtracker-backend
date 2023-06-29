@@ -15,8 +15,8 @@ import org.avillar.gymtracker.exercisesapi.musclesubgroup.domain.MuscleSubGroup;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Exercise extends BaseEntity {
 
   @Column(nullable = false)

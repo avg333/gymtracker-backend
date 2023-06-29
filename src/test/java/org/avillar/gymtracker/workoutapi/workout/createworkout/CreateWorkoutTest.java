@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import org.avillar.gymtracker.authapi.auth.domain.UserApp;
 import org.avillar.gymtracker.authapi.auth.domain.UserDao;
+import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
@@ -35,6 +36,7 @@ class CreateWorkoutTest {
   @Autowired private MockMvc mockMvc;
   @Autowired private WorkoutDao workoutDao;
   @Autowired private SetGroupDao setGroupDao;
+  @Autowired private SetDao setDao;
   @Autowired private UserDao userDao;
 
   @AfterEach
@@ -71,11 +73,12 @@ class CreateWorkoutTest {
 
     final Optional<Workout> workoutDb = workoutDao.findById(result.getId());
     assertTrue(workoutDb.isPresent());
-    assertEquals(updateWorkoutDateRequest.get("description"), result.getDescription());
-    // assertEquals(updateWorkoutDateRequest.get("date"), result.getDate());
-    // TODO Verificar como comprobar este date
     assertEquals(userApp.getId(), result.getUserId());
-    assertTrue(setGroupDao.getSetGroupsByWorkoutId(result.getId()).isEmpty());
+    assertEquals(updateWorkoutDateRequest.get("description"), result.getDescription());
+    // assertEquals(updateWorkoutDateRequest.get("date"), result.getDate());TODO Verificar date
+    assertEquals(1, workoutDao.findAll().size());
+    assertTrue(setGroupDao.findAll().isEmpty());
+    assertTrue(setDao.findAll().isEmpty());
   }
 
   @Test
@@ -104,6 +107,10 @@ class CreateWorkoutTest {
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
         .andExpect(status().isBadRequest());
+
+    assertEquals(1, workoutDao.findAll().size());
+    assertTrue(setGroupDao.findAll().isEmpty());
+    assertTrue(setDao.findAll().isEmpty());
   }
 
   @Test
@@ -121,6 +128,10 @@ class CreateWorkoutTest {
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
         .andExpect(status().isForbidden());
+
+    assertTrue(workoutDao.findAll().isEmpty());
+    assertTrue(setGroupDao.findAll().isEmpty());
+    assertTrue(setDao.findAll().isEmpty());
   }
 
   @Test
@@ -148,5 +159,9 @@ class CreateWorkoutTest {
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
         .andExpect(status().isBadRequest());
+
+    assertTrue(workoutDao.findAll().isEmpty());
+    assertTrue(setGroupDao.findAll().isEmpty());
+    assertTrue(setDao.findAll().isEmpty());
   }
 }

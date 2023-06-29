@@ -5,13 +5,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.authapi.auth.domain.UserApp;
 import org.avillar.gymtracker.authapi.auth.domain.UserDao;
+import org.avillar.gymtracker.workoutapi.IntegrationTestDataGenerator;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.junit.jupiter.api.AfterEach;
@@ -27,53 +24,58 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 class GetWorkoutTest {
 
-  final List<Workout> workouts = new ArrayList<>();
+  private static final String USER_NAME_OK = "adrian";
+  private static final String USER_NAME_KO = "chema";
+
+  private IntegrationTestDataGenerator integrationTestDataGenerator;
+
   @Autowired private MockMvc mockMvc;
   @Autowired private WorkoutDao workoutDao;
   @Autowired private UserDao userDao;
 
   @BeforeEach
   void beforeEach() {
-    final UserApp userApp = userDao.findByUsername("adrian");
+    final UserApp userApp = userDao.findByUsername(USER_NAME_OK);
 
-    final Workout workout = new Workout(new Date(), null, userApp.getId(), new HashSet<>());
-    workoutDao.save(workout);
-    workouts.add(workout);
+    integrationTestDataGenerator = new IntegrationTestDataGenerator(userApp.getId(), 1, 0, 0);
+    workoutDao.save(integrationTestDataGenerator.getWorkouts().get(0));
   }
 
   @AfterEach
-  void afterEach(){
-    workoutDao.deleteById(workouts.get(0).getId());
-    workouts.clear();
+  void afterEach() {
+    workoutDao.deleteAll();
   }
 
   @Test
-  @WithUserDetails("adrian")
+  @WithUserDetails(USER_NAME_OK)
   void getOneWorkout() throws Exception {
-    final Workout workout = workouts.get(0);
-    final UUID workoutId = workouts.get(0).getId();
+    final Workout workout = integrationTestDataGenerator.getWorkouts().get(0);
 
     mockMvc
-        .perform(
-            get("/workout-api/workouts/" + workout.getId()))
+        .perform(get("/workout-api/workouts/" + workout.getId()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(workoutId.toString()));
+        .andExpect(jsonPath("$.id").value(workout.getId().toString()))
+        // .andExpect(jsonPath("$.date").value(workout.getId().toString()))FIXME
+        .andExpect(jsonPath("$.description").value(workout.getDescription()))
+        .andExpect(jsonPath("$.userId").value(workout.getUserId().toString()));
   }
 
   @Test
-  @WithUserDetails("chema")
-  void getNotFoundAndNotPermission() throws Exception {
-    final Workout workout = workouts.get(0);
-    final UUID workoutId = workouts.get(0).getId();
+  @WithUserDetails(USER_NAME_OK)
+  void getNotFound() throws Exception {
     mockMvc
-        .perform(
-            get("/workout-api/workouts/" + UUID.randomUUID()))
+        .perform(get("/workout-api/workouts/" + UUID.randomUUID()))
         .andDo(print())
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithUserDetails(USER_NAME_KO)
+  void getNotPermission() throws Exception {
+    final Workout workout = integrationTestDataGenerator.getWorkouts().get(0);
     mockMvc
-        .perform(
-            get("/workout-api/workouts/" + workoutId))
+        .perform(get("/workout-api/workouts/" + workout.getId()))
         .andDo(print())
         .andExpect(status().isForbidden());
   }

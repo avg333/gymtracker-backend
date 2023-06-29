@@ -4,17 +4,14 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class UpdateWorkoutSetGroupsResponseInfrastructure {
 
   private List<SetGroup> setGroups;
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class SetGroup {
     private UUID id;
@@ -25,7 +22,6 @@ public class UpdateWorkoutSetGroupsResponseInfrastructure {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class Set {
     private UUID id;

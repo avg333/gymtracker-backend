@@ -11,5 +11,6 @@ public interface GetExerciseFacadeMapper {
   GetExerciseResponseFacade getResponse(
       GetExerciseByIdApplicationResponse getExercisesByFilterApplicationResponse);
 
-  List<GetExerciseResponseFacade> getResponse(List<GetExerciseByIdApplicationResponse> getExerciseApplicationRespons);
+  List<GetExerciseResponseFacade> getResponse(
+      List<GetExerciseByIdApplicationResponse> getExerciseApplicationRespons);
 }

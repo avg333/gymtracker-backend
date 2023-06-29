@@ -4,10 +4,8 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class GetExerciseResponseFacade {
   private UUID id;
@@ -18,7 +16,6 @@ public class GetExerciseResponseFacade {
   private Set<MuscleGroupExercise> muscleGroupExercises;
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class LoadType {
     private UUID id;
@@ -27,7 +24,6 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class MuscleSubGroup {
     private UUID id;
@@ -36,7 +32,6 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class MuscleGroupExercise {
     private UUID id;
@@ -45,7 +40,6 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class MuscleGroup {
     private UUID id;
@@ -55,7 +49,6 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   public static class MuscleSupGroup {
     private UUID id;
