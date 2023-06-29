@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.workout.getworkout.application.GetWorkoutService;
@@ -8,28 +9,24 @@ import org.avillar.gymtracker.workoutapi.workout.getworkout.application.model.Ge
 import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.mapper.GetWorkoutControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutResponseInfrastructure;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutControllerImplTest {
 
   private final EasyRandom easyRandom = new EasyRandom();
 
-  private GetWorkoutControllerImpl getWorkoutControllerImpl;
+  @InjectMocks private GetWorkoutControllerImpl getWorkoutControllerImpl;
 
   @Mock private GetWorkoutService getWorkoutServiceService;
   @Spy private GetWorkoutControllerMapperImpl getWorkoutSimpleControllerMapper;
-
-  @BeforeEach
-  void beforeAll() {
-    getWorkoutControllerImpl =
-        new GetWorkoutControllerImpl(getWorkoutServiceService, getWorkoutSimpleControllerMapper);
-  }
 
   @Test
   void get() {
@@ -39,15 +36,23 @@ class GetWorkoutControllerImplTest {
     when(getWorkoutServiceService.execute(getWorkoutResponseApplication.getId()))
         .thenReturn(getWorkoutResponseApplication);
 
-    final GetWorkoutResponseInfrastructure getWorkoutResponseInfrastructure =
-        getWorkoutControllerImpl.get(getWorkoutResponseApplication.getId()).getBody();
-    assertEquals(getWorkoutResponseApplication.getId(), getWorkoutResponseInfrastructure.getId());
+    final ResponseEntity<GetWorkoutResponseInfrastructure>
+        getWorkoutResponseInfrastructureResponseEntity =
+            getWorkoutControllerImpl.get(getWorkoutResponseApplication.getId());
+    assertEquals(HttpStatus.OK, getWorkoutResponseInfrastructureResponseEntity.getStatusCode());
+    assertNotNull(getWorkoutResponseInfrastructureResponseEntity.getBody());
     assertEquals(
-        getWorkoutResponseApplication.getUserId(), getWorkoutResponseInfrastructure.getUserId());
+        getWorkoutResponseApplication.getId(),
+        getWorkoutResponseInfrastructureResponseEntity.getBody().getId());
+    assertEquals(
+        getWorkoutResponseApplication.getUserId(),
+        getWorkoutResponseInfrastructureResponseEntity.getBody().getUserId());
     assertEquals(
         getWorkoutResponseApplication.getDescription(),
-        getWorkoutResponseInfrastructure.getDescription());
+        getWorkoutResponseInfrastructureResponseEntity.getBody().getDescription());
     assertEquals(
-        getWorkoutResponseApplication.getDate(), getWorkoutResponseInfrastructure.getDate());
+        getWorkoutResponseApplication.getDate(),
+        getWorkoutResponseInfrastructureResponseEntity.getBody().getDate());
+    verify(getWorkoutServiceService).execute(getWorkoutResponseApplication.getId());
   }
 }

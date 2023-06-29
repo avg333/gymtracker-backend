@@ -1,6 +1,9 @@
 package org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.CreateWorkoutService;
@@ -9,10 +12,9 @@ import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.ma
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponseInfrastructure;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,18 +23,13 @@ import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class CreateWorkoutControllerImplTest {
+
   private final EasyRandom easyRandom = new EasyRandom();
 
-  private CreateWorkoutControllerImpl postWorkoutControllerImpl;
+  @InjectMocks private CreateWorkoutControllerImpl postWorkoutControllerImpl;
 
   @Mock private CreateWorkoutService createWorkoutService;
   @Spy private CreateWorkoutControllerMapperImpl createWorkoutControllerMapper;
-
-  @BeforeEach
-  void beforeEach() {
-    postWorkoutControllerImpl =
-        new CreateWorkoutControllerImpl(createWorkoutService, createWorkoutControllerMapper);
-  }
 
   @Test
   void createWorkout() {
@@ -55,14 +52,16 @@ class CreateWorkoutControllerImplTest {
                 postWorkoutControllerImpl.execute(
                     createWorkoutResponseApplication.getUserId(),
                     createWorkoutRequestInfrastructure));
-    Assertions.assertNotNull(response.getBody());
-    Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    Assertions.assertEquals(
-        createWorkoutRequestInfrastructure.getDate(), response.getBody().getDate());
-    Assertions.assertEquals(
+    assertNotNull(response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(createWorkoutRequestInfrastructure.getDate(), response.getBody().getDate());
+    assertEquals(
         createWorkoutRequestInfrastructure.getDescription(), response.getBody().getDescription());
-    Assertions.assertEquals(createWorkoutResponseApplication.getId(), response.getBody().getId());
-    Assertions.assertEquals(
-        createWorkoutResponseApplication.getUserId(), response.getBody().getUserId());
+    assertEquals(createWorkoutResponseApplication.getId(), response.getBody().getId());
+    assertEquals(createWorkoutResponseApplication.getUserId(), response.getBody().getUserId());
+    verify(createWorkoutService)
+        .execute(
+            createWorkoutResponseApplication.getUserId(),
+            createWorkoutControllerMapper.map(createWorkoutRequestInfrastructure));
   }
 }

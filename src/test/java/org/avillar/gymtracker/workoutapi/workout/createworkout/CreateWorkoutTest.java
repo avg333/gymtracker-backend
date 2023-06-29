@@ -26,6 +26,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 class CreateWorkoutTest {
 
+  private static final String USER_NAME_OK = "adrian";
+  private static final String USER_NAME_KO = "chema";
   final List<Workout> workouts = new ArrayList<>();
   @Autowired private MockMvc mockMvc;
   @Autowired private WorkoutDao workoutDao;
@@ -34,14 +36,15 @@ class CreateWorkoutTest {
   @AfterEach
   void afterEach() {
     var works = workoutDao.findAll();
+    workoutDao.deleteAll();
     if (!works.isEmpty()) workoutDao.deleteById(works.get(0).getId());
     workouts.clear();
   }
 
   @Test
-  @WithUserDetails("adrian")
-  void deleteOneWorkout() throws Exception {
-    final UserApp userApp = userDao.findByUsername("adrian");
+  @WithUserDetails(USER_NAME_OK)
+  void createOneWorkoutOk() throws Exception {
+    final UserApp userApp = userDao.findByUsername(USER_NAME_OK);
     final String updateWorkoutDateRequest =
         """
 {
@@ -65,7 +68,7 @@ class CreateWorkoutTest {
   }
 
   @Test
-  @WithUserDetails("adrian")
+  @WithUserDetails(USER_NAME_OK)
   void deleteOneWorkout2() throws Exception {
     final Workout workout = workouts.get(0);
     final String updateWorkoutDateRequest = """
@@ -82,7 +85,7 @@ class CreateWorkoutTest {
   }
 
   @Test
-  @WithUserDetails("chema")
+  @WithUserDetails(USER_NAME_KO)
   void deleteNotFoundAndNotPermission() throws Exception {
     final Workout workout = workouts.get(0);
     final String updateWorkoutDateRequest = """

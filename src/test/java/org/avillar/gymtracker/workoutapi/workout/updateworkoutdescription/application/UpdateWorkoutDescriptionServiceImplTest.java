@@ -14,10 +14,11 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,54 +26,44 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateWorkoutDescriptionServiceImplTest {
 
-  private UpdateWorkoutDescriptionServiceImpl updateWorkoutDescriptionService;
+  private final EasyRandom easyRandom = new EasyRandom();
+
+  @InjectMocks private UpdateWorkoutDescriptionServiceImpl updateWorkoutDescriptionService;
 
   @Mock private WorkoutDao workoutDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
-  @BeforeEach
-  void beforeEach() {
-    updateWorkoutDescriptionService =
-        new UpdateWorkoutDescriptionServiceImpl(workoutDao, authWorkoutsService);
-  }
-
   @Test
   void postOk() {
-    final UUID workoutId = UUID.randomUUID();
+    final Workout workout = easyRandom.nextObject(Workout.class);
     final String description = "Description example 54.";
-    final Workout workout = new Workout();
-    workout.setDescription("Description example 52.");
-    workout.setId(workoutId);
 
-    when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
+    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
-    when(workoutDao.save(Mockito.any(Workout.class))).thenAnswer(i -> i.getArguments()[0]);
+    when(workoutDao.save(workout)).thenAnswer(i -> i.getArguments()[0]);
 
-    assertEquals(description, updateWorkoutDescriptionService.execute(workoutId, description));
+    assertEquals(
+        description, updateWorkoutDescriptionService.execute(workout.getId(), description));
+    verify(workoutDao).save(workout);
   }
 
   @Test
   void postSameDescription() {
-    final UUID workoutId = UUID.randomUUID();
-    final String description = "Description example 54.";
-    final Workout workout = new Workout();
-    workout.setDescription(description);
-    workout.setId(workoutId);
+    final Workout workout = easyRandom.nextObject(Workout.class);
 
-    when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
+    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
 
+    assertEquals(
+        workout.getDescription(),
+        updateWorkoutDescriptionService.execute(workout.getId(), workout.getDescription()));
     verify(workoutDao, never()).save(Mockito.any(Workout.class));
-    assertEquals(description, updateWorkoutDescriptionService.execute(workoutId, description));
   }
 
   @Test
   void updateNotFound() {
     final UUID workoutId = UUID.randomUUID();
     final String description = "Description example 54.";
-    final Workout workout = new Workout();
-    workout.setDescription("Description example 52.");
-    workout.setId(workoutId);
 
     when(workoutDao.findById(workoutId))
         .thenThrow(new EntityNotFoundException(Workout.class, workoutId));
@@ -83,18 +74,16 @@ class UpdateWorkoutDescriptionServiceImplTest {
             () -> updateWorkoutDescriptionService.execute(workoutId, description));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
+    verify(workoutDao, never()).save(Mockito.any(Workout.class));
   }
 
   @Test
   void updateNotPermission() {
+    final Workout workout = easyRandom.nextObject(Workout.class);
     final UUID userId = UUID.randomUUID();
-    final UUID workoutId = UUID.randomUUID();
     final String description = "Description example 54.";
-    final Workout workout = new Workout();
-    workout.setDescription("Description example 52.");
-    workout.setId(workoutId);
 
-    when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
+    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
     doThrow(new IllegalAccessException(workout, AuthOperations.UPDATE, userId))
         .when(authWorkoutsService)
         .checkAccess(workout, AuthOperations.UPDATE);
@@ -102,10 +91,11 @@ class UpdateWorkoutDescriptionServiceImplTest {
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> updateWorkoutDescriptionService.execute(workoutId, description));
+            () -> updateWorkoutDescriptionService.execute(workout.getId(), description));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(workoutId, exception.getEntityId());
+    assertEquals(workout.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(AuthOperations.UPDATE, exception.getAuthOperations());
+    verify(workoutDao, never()).save(Mockito.any(Workout.class));
   }
 }

@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupListOrderControllerTest {
 
-  private EasyRandom easyRandom = new EasyRandom();
+  private final EasyRandom easyRandom = new EasyRandom();
 
   private UpdateSetGroupListOrderController updateSetGroupListOrderController;
 

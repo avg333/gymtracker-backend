@@ -1,29 +1,39 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.GetWorkoutSetGroupsService;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.mapper.GetWorkoutSetGroupsControllerMapper;
+import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.model.GetWorkoutSetGroupsResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
 @RequestMapping(path = "${workoutsApiPrefix}/")
-@RequiredArgsConstructor
-public class GetWorkoutSetGroupsController {
-
-  private final GetWorkoutSetGroupsService getWorkoutSetGroupsService;
-  private final GetWorkoutSetGroupsControllerMapper getWorkoutSetGroupsControllerMapper;
+public interface GetWorkoutSetGroupsController {
 
   /** GetSGFromWorkout. 1 Retorno simple + 1 retorno con SG (depth = 1) */
-  @GetMapping("/workouts/{workoutId}/sgs")
-  public ResponseEntity<GetWorkoutSetGroupsResponseInfrastructure> get(
-      @PathVariable final UUID workoutId) {
-    return ResponseEntity.ok(
-        getWorkoutSetGroupsControllerMapper.map(getWorkoutSetGroupsService.execute(workoutId)));
-  }
+  @Operation(summary = "Get workout by its id with its setGroups")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Workout",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema =
+                      @Schema(implementation = GetWorkoutSetGroupsResponseInfrastructure.class))
+            }),
+        @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
+      })
+  @GetMapping("/workouts/{workoutId}/sgs") // TODO Definir este endpoint
+  ResponseEntity<GetWorkoutSetGroupsResponseInfrastructure> get(@PathVariable UUID workoutId)
+      throws EntityNotFoundException, IllegalAccessException;
 }

@@ -26,16 +26,16 @@ public class CreateWorkoutServiceImpl implements CreateWorkoutService {
       final UUID userId, final CreateWorkoutRequestApplication createWorkoutRequestApplication)
       throws IllegalAccessException, DuplicatedWorkoutDateException {
 
-    // TODO Verificar si el usuario existe
-
-    if (workoutDao.existsWorkoutByUserAndDate(userId, createWorkoutRequestApplication.getDate())) {
-      throw new DuplicatedWorkoutDateException(userId, createWorkoutRequestApplication.getDate());
-    }
+    // TODO Verificar si el usuario existe?
 
     final Workout workout = createWorkoutServiceMapper.map(createWorkoutRequestApplication);
     workout.setUserId(userId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.CREATE);
+
+    if (workoutDao.existsWorkoutByUserAndDate(userId, createWorkoutRequestApplication.getDate())) {
+      throw new DuplicatedWorkoutDateException(userId, createWorkoutRequestApplication.getDate());
+    }
 
     workoutDao.save(workout);
 

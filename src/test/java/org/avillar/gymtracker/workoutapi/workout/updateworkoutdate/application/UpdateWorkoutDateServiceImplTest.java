@@ -18,10 +18,11 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,50 +30,43 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateWorkoutDateServiceImplTest {
 
-  private UpdateWorkoutDateServiceImpl updateWorkoutDateService;
+  private final EasyRandom easyRandom = new EasyRandom();
+
+  @InjectMocks private UpdateWorkoutDateServiceImpl updateWorkoutDateService;
 
   @Mock private WorkoutDao workoutDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
-  @BeforeEach
-  void beforeEach() {
-    updateWorkoutDateService = new UpdateWorkoutDateServiceImpl(workoutDao, authWorkoutsService);
-  }
-
   @Test
   void postOk() {
-    final UUID workoutId = UUID.randomUUID();
+    final Workout workout = easyRandom.nextObject(Workout.class);
+    workout.setDate(new GregorianCalendar(2014, Calendar.FEBRUARY, 12).getTime());
     final Date date = new GregorianCalendar(2014, Calendar.FEBRUARY, 11).getTime();
 
-    final Workout workout = new Workout();
-    workout.setDate(new GregorianCalendar(2014, Calendar.FEBRUARY, 12).getTime());
-
-    when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
+    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
-    when(workoutDao.save(Mockito.any(Workout.class))).thenAnswer(i -> i.getArguments()[0]);
+    when(workoutDao.save(workout)).thenAnswer(i -> i.getArguments()[0]);
 
-    assertEquals(date, updateWorkoutDateService.execute(workoutId, date));
+    assertEquals(date, updateWorkoutDateService.execute(workout.getId(), date));
+    verify(workoutDao).save(workout);
   }
 
   @Test
   void postSameDate() {
-    final UUID workoutId = UUID.randomUUID();
-    final Date date = new GregorianCalendar(2014, Calendar.FEBRUARY, 11).getTime();
+    final Workout workout = easyRandom.nextObject(Workout.class);
 
-    final Workout workout = new Workout();
-    workout.setDate(date);
-
-    when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
+    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
 
+    assertEquals(
+        workout.getDate(), updateWorkoutDateService.execute(workout.getId(), workout.getDate()));
     verify(workoutDao, never()).save(Mockito.any(Workout.class));
-    assertEquals(date, updateWorkoutDateService.execute(workoutId, date));
   }
 
   @Test
   void updateNotFound() {
     final UUID workoutId = UUID.randomUUID();
-    final Date date = new GregorianCalendar(2014, Calendar.FEBRUARY, 11).getTime();
+    final Date date = new Date();
 
     when(workoutDao.findById(workoutId))
         .thenThrow(new EntityNotFoundException(Workout.class, workoutId));
@@ -82,51 +76,48 @@ class UpdateWorkoutDateServiceImplTest {
             EntityNotFoundException.class, () -> updateWorkoutDateService.execute(workoutId, date));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
+    verify(workoutDao, never()).save(Mockito.any(Workout.class));
   }
 
   @Test
   void updateNotPermission() {
-    final UUID workoutId = UUID.randomUUID();
+    final Workout workout = easyRandom.nextObject(Workout.class);
+    workout.setDate(new GregorianCalendar(2014, Calendar.FEBRUARY, 12).getTime());
     final Date date = new GregorianCalendar(2014, Calendar.FEBRUARY, 11).getTime();
-    final Workout workout = new Workout();
     final UUID userId = UUID.randomUUID();
-    workout.setId(workoutId);
-    workout.setUserId(userId);
 
-    when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
+    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
     doThrow(new IllegalAccessException(workout, AuthOperations.UPDATE, userId))
         .when(authWorkoutsService)
         .checkAccess(workout, AuthOperations.UPDATE);
 
     final IllegalAccessException exception =
         Assertions.assertThrows(
-            IllegalAccessException.class, () -> updateWorkoutDateService.execute(workoutId, date));
+            IllegalAccessException.class,
+            () -> updateWorkoutDateService.execute(workout.getId(), date));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(workoutId, exception.getEntityId());
+    assertEquals(workout.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(AuthOperations.UPDATE, exception.getAuthOperations());
+    verify(workoutDao, never()).save(Mockito.any(Workout.class));
   }
 
   @Test
   void postExistsWorkout() {
-    final UUID workoutId = UUID.randomUUID();
-    final Date date = new GregorianCalendar(2014, Calendar.FEBRUARY, 11).getTime();
-    final Workout workout = new Workout();
-    final UUID userId = UUID.randomUUID();
+    final Workout workout = easyRandom.nextObject(Workout.class);
     workout.setDate(new GregorianCalendar(2014, Calendar.FEBRUARY, 12).getTime());
-    workout.setId(workoutId);
-    workout.setUserId(userId);
+    final Date date = new GregorianCalendar(2014, Calendar.FEBRUARY, 11).getTime();
 
-    when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
+    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
-    when(workoutDao.existsWorkoutByUserAndDate(userId, date))
-        .thenReturn(true);
+    when(workoutDao.existsWorkoutByUserAndDate(workout.getUserId(), date)).thenReturn(true);
 
     final DuplicatedWorkoutDateException exception =
         Assertions.assertThrows(
             DuplicatedWorkoutDateException.class,
-            () -> updateWorkoutDateService.execute(workoutId, date));
+            () -> updateWorkoutDateService.execute(workout.getId(), date));
     assertEquals(date, exception.getWorkoutDate());
-    assertEquals(userId, exception.getUserId());
+    assertEquals(workout.getUserId(), exception.getUserId());
+    verify(workoutDao, never()).save(Mockito.any(Workout.class));
   }
 }

@@ -1,5 +1,8 @@
 package org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -7,7 +10,6 @@ import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.application.UpdateWorkoutDateService;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateResponseInfrastructure;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,8 +37,9 @@ class UpdateWorkoutDateControllerImplTest {
 
     final ResponseEntity<UpdateWorkoutDateResponseInfrastructure> response =
         updateWorkoutDateControllerImpl.execute(workoutId, updateWorkoutDateRequestInfrastructure);
-    Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    Assertions.assertNotNull(response.getBody());
-    Assertions.assertEquals(date, response.getBody().getDate());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(date, response.getBody().getDate());
+    verify(updateWorkoutDateService).execute(workoutId, date);
   }
 }
