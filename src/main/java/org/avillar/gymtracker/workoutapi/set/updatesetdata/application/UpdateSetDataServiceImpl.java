@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
@@ -25,7 +26,8 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
   @Override
   @Transactional
   public UpdateSetDataResponseApplication execute(
-      final UUID setId, final UpdateSetDataRequestApplication updateSetDataRequestApplication) {
+      final UUID setId, final UpdateSetDataRequestApplication updateSetDataRequestApplication)
+      throws EntityNotFoundException, IllegalAccessException {
     final Set set = getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);

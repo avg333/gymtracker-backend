@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.workoutapi.set.getset.application;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -14,13 +13,13 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.set.getset.application.mapper.GetSetServiceMapperImpl;
 import org.avillar.gymtracker.workoutapi.set.getset.application.model.GetSetResponseApplication;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -28,46 +27,29 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class GetSetServiceImplTest {
-  private GetSetService getSetService;
+
+  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private GetSetServiceImpl getSetService;
 
   @Mock private SetDao setDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Spy private GetSetServiceMapperImpl getSetServiceMapper;
 
-  @BeforeEach
-  void beforeEach() {
-    getSetService = new GetSetServiceImpl(setDao, authWorkoutsService, getSetServiceMapper);
-  }
-
   @Test
   void getOk() {
-    final UUID setId = UUID.randomUUID();
-    final Set set = new Set();
-    final int listOrder = 3;
-    final int reps = 6;
-    final double rir = 7.6;
-    final double weight = 75.0;
-    set.setId(setId);
-    set.setListOrder(listOrder);
-    set.setRir(rir);
-    set.setReps(reps);
-    set.setWeight(weight);
-    set.setSetGroup(new SetGroup());
+    final Set set = easyRandom.nextObject(Set.class);
 
-    when(setDao.getSetFullById(setId)).thenReturn(List.of(set));
-    Mockito.doNothing()
-        .when(authWorkoutsService)
-        .checkAccess(Mockito.any(Set.class), eq(AuthOperations.READ));
+    when(setDao.getSetFullById(set.getId())).thenReturn(List.of(set));
+    Mockito.doNothing().when(authWorkoutsService).checkAccess(set, AuthOperations.READ);
 
-    final GetSetResponseApplication getSetResponseApplication = getSetService.execute(setId);
-    Assertions.assertEquals(setId, getSetResponseApplication.getId());
-    Assertions.assertEquals(listOrder, getSetResponseApplication.getListOrder());
-    assertNull(getSetResponseApplication.getDescription());
-    Assertions.assertEquals(rir, getSetResponseApplication.getRir());
-    Assertions.assertEquals(reps, getSetResponseApplication.getReps());
-    Assertions.assertEquals(weight, getSetResponseApplication.getWeight());
-    Assertions.assertInstanceOf(
-        GetSetResponseApplication.SetGroup.class, getSetResponseApplication.getSetGroup());
+    final GetSetResponseApplication result = getSetService.execute(set.getId());
+    Assertions.assertEquals(set.getId(), result.getId());
+    Assertions.assertEquals(set.getListOrder(), result.getListOrder());
+    Assertions.assertEquals(set.getRir(), result.getRir());
+    Assertions.assertEquals(set.getRir(), result.getRir());
+    Assertions.assertEquals(set.getReps(), result.getReps());
+    Assertions.assertEquals(set.getWeight(), result.getWeight());
+    Assertions.assertEquals(set.getSetGroup().getId(), result.getSetGroup().getId());
   }
 
   @Test
@@ -85,20 +67,20 @@ class GetSetServiceImplTest {
   @Test
   void getNotPermission() {
     final UUID userId = UUID.randomUUID();
-    final UUID setId = UUID.randomUUID();
-    final Set set = new Set();
-    set.setId(setId);
+    final Set set = easyRandom.nextObject(Set.class);
+    final AuthOperations authOperation = AuthOperations.READ;
 
-    when(setDao.getSetFullById(setId)).thenReturn(List.of(set));
-    doThrow(new IllegalAccessException(set, AuthOperations.READ, userId))
+    when(setDao.getSetFullById(set.getId())).thenReturn(List.of(set));
+    doThrow(new IllegalAccessException(set, authOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(Mockito.any(Set.class), eq(AuthOperations.READ));
+        .checkAccess(set, authOperation);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(IllegalAccessException.class, () -> getSetService.execute(setId));
+        Assertions.assertThrows(
+            IllegalAccessException.class, () -> getSetService.execute(set.getId()));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(setId, exception.getEntityId());
+    assertEquals(set.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(AuthOperations.READ, exception.getAuthOperations());
+    assertEquals(authOperation, exception.getAuthOperations());
   }
 }

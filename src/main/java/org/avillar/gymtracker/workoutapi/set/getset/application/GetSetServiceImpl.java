@@ -4,6 +4,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
@@ -20,7 +21,8 @@ public class GetSetServiceImpl implements GetSetService {
   private final GetSetServiceMapper getSetServiceMapper;
 
   @Override
-  public GetSetResponseApplication execute(final UUID setId) {
+  public GetSetResponseApplication execute(final UUID setId)
+      throws EntityNotFoundException, IllegalAccessException {
     final Set set = getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.READ);

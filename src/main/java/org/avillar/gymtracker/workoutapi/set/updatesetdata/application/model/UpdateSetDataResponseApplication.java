@@ -1,10 +1,8 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 public class UpdateSetDataResponseApplication {
 
   private String description;
