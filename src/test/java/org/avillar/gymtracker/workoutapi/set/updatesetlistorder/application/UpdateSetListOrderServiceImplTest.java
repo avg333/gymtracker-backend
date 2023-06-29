@@ -1,0 +1,34 @@
+package org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application;
+
+import org.avillar.gymtracker.common.sort.application.EntitySorter;
+import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.domain.SetDao;
+import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.mapper.UpdateSetListOrderServiceMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class UpdateSetListOrderServiceImplTest {
+  private UpdateSetListOrderService updateSetListOrderService;
+
+  @Mock private SetDao setDao;
+  @Mock private EntitySorter entitySorter;
+  @Mock private AuthWorkoutsService authWorkoutsService;
+  @Spy private UpdateSetListOrderServiceMapper updateSetListOrderServiceMapper;
+
+  @BeforeEach
+  void beforeEach() {
+    updateSetListOrderService =
+        new UpdateSetListOrderServiceImpl(
+            setDao, entitySorter, authWorkoutsService, updateSetListOrderServiceMapper);
+  }
+
+  @Test
+  void updateOk() {
+    // TODO Completar esto
+  }
+}

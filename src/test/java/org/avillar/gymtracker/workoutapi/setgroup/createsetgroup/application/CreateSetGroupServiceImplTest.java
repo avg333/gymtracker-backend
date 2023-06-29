@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -91,6 +92,8 @@ class CreateSetGroupServiceImplTest {
             () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
     assertEquals(Exercise.class.getSimpleName(), exception.getClassName());
     assertEquals(createSetGroupRequestApplication.getExerciseId(), exception.getId());
+    verify(setGroupDao, never()).save(any(SetGroup.class));
+
   }
 
   @Test
@@ -107,6 +110,7 @@ class CreateSetGroupServiceImplTest {
             () -> createSetGroupService.execute(workoutId, createSetGroupRequestApplication));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
+    verify(setGroupDao, never()).save(any(SetGroup.class));
   }
 
   @Test
@@ -133,5 +137,6 @@ class CreateSetGroupServiceImplTest {
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(authOperation, exception.getAuthOperations());
+    verify(setGroupDao, never()).save(any(SetGroup.class));
   }
 }
