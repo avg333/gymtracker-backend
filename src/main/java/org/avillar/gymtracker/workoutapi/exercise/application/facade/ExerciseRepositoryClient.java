@@ -9,7 +9,5 @@ public interface ExerciseRepositoryClient {
 
   boolean canAccessExerciseById(UUID exerciseId);
 
-  GetExerciseResponseFacade getExerciseById(UUID exerciseId);
-
   List<GetExerciseResponseFacade> getExerciseByIds(Set<UUID> exerciseIds);
 }
