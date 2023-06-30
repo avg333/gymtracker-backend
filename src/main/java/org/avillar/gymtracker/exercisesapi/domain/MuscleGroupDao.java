@@ -10,11 +10,12 @@ public interface MuscleGroupDao extends JpaRepository<MuscleGroup, UUID> {
 
   @Query(
       """
-  SELECT mg
-  FROM MuscleGroup mg
-  JOIN mg.muscleSupGroups msg
-  WHERE msg.id = :muscleSupGroupId
-""")
+            SELECT mg
+            FROM MuscleGroup mg
+            JOIN mg.muscleSupGroups msg
+            LEFT JOIN FETCH mg.muscleSubGroups mSubg
+            WHERE msg.id = :muscleSupGroupId
+          """)
   List<MuscleGroup> getALlMuscleGroupsByMuscleSupGroupId(
       @Param("muscleSupGroupId") UUID muscleSupGroupId);
 }

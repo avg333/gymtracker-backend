@@ -31,8 +31,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetSetGroupsByExerciseServiceImplTest {
 
-  @InjectMocks GetSetGroupsByExerciseServiceImpl getSetGroupsByExerciseService;
   private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks GetSetGroupsByExerciseServiceImpl getSetGroupsByExerciseService;
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Spy private GetSetGroupsByExerciseServiceMapperImpl getSetGroupsByExerciseServiceMapper;

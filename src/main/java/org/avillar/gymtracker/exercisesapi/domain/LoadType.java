@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.common.base.domain.BaseEntity;
-import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
 
 @Getter
 @Setter

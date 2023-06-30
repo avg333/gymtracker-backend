@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService;
+import org.avillar.gymtracker.exercisesapi.domain.Exercise;
+import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
 import org.avillar.gymtracker.exercisesapi.exercise.application.get.getexercisebyid.mapper.GetExerciseServiceMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.application.get.getexercisebyid.model.GetExerciseByIdApplicationResponse;
-import org.avillar.gymtracker.exercisesapi.exercise.domain.Exercise;
-import org.avillar.gymtracker.exercisesapi.exercise.domain.ExerciseDao;
 import org.springframework.stereotype.Service;
 
 @Service
