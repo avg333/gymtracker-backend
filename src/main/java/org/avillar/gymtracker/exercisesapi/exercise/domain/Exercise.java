@@ -8,9 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.common.base.domain.BaseEntity;
-import org.avillar.gymtracker.exercisesapi.loadtype.domain.LoadType;
-import org.avillar.gymtracker.exercisesapi.musclegroup.domain.MuscleGroupExercise;
-import org.avillar.gymtracker.exercisesapi.musclesubgroup.domain.MuscleSubGroup;
+import org.avillar.gymtracker.exercisesapi.domain.LoadType;
+import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupExercise;
+import org.avillar.gymtracker.exercisesapi.domain.MuscleSubGroup;
 
 @Entity
 @Getter

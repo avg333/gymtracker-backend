@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 @ExtendWith(MockitoExtension.class)
 class GetSetGroupsByExerciseControllerImplTest {
 
-  private EasyRandom easyRandom = new EasyRandom();
+  private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetSetGroupsByExerciseControllerImpl getSetGroupsByExerciseControllerImpl;
 

@@ -17,7 +17,6 @@ import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.mapper.GetNewSetDataServiceMapper;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

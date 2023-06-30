@@ -3,9 +3,9 @@ package org.avillar.gymtracker.exercisesapi.musclegroup.application.get;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupDao;
 import org.avillar.gymtracker.exercisesapi.musclegroup.application.get.mapper.GetMuscleGroupServiceMapper;
 import org.avillar.gymtracker.exercisesapi.musclegroup.application.get.model.GetMuscleGroupsApplicationResponse;
-import org.avillar.gymtracker.exercisesapi.musclegroup.domain.MuscleGroupDao;
 import org.springframework.stereotype.Service;
 
 @Service
