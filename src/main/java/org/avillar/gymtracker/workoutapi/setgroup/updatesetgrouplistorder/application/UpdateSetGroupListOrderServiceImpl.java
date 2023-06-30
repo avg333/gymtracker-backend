@@ -1,10 +1,12 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.common.sort.application.EntitySorter;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
@@ -23,8 +25,9 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
   private final UpdateSetGroupListOrderServiceMapper updateSetGroupListOrderServiceMapper;
 
   @Override
-  public UpdateSetGroupListOrderResponseApplication execute(
-      final UUID setGroupId, final int listOrder) {
+  public List<UpdateSetGroupListOrderResponseApplication> execute(
+      final UUID setGroupId, final int listOrder)
+      throws EntityNotFoundException, IllegalAccessException {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.UPDATE);
@@ -36,8 +39,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
     final int newPosition = EntitySorter.getValidListOrder(listOrder, setGroups.size());
 
     if (oldPosition == newPosition) {
-      return new UpdateSetGroupListOrderResponseApplication(
-          updateSetGroupListOrderServiceMapper.map(setGroups));
+      return updateSetGroupListOrderServiceMapper.map(setGroups);
     }
 
     setGroups.stream()
@@ -49,8 +51,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
     entitySorter.sortUpdate(setGroups, setGroup, oldPosition);
     setGroupDao.saveAll(setGroups);
 
-    return new UpdateSetGroupListOrderResponseApplication(
-        updateSetGroupListOrderServiceMapper.map(setGroups));
+    return updateSetGroupListOrderServiceMapper.map(setGroups);
   }
 
   private SetGroup getSetGroupWithWorkout(final UUID setGroupId) {

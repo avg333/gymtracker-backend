@@ -1,10 +1,12 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.common.sort.application.EntitySorter;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Set;
@@ -24,18 +26,19 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
 
   @Override
   @Transactional
-  public UpdateSetListOrderResponseApplication execute(final UUID setId, final int listOrder) {
+  public List<UpdateSetListOrderResponseApplication> execute(final UUID setId, final int listOrder)
+      throws EntityNotFoundException, IllegalAccessException {
     final Set set = getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);
 
-    final java.util.Set<Set> sets = setDao.getSetsBySetGroupId(set.getSetGroup().getId());
+    final List<Set> sets = setDao.getSetsBySetGroupId(set.getSetGroup().getId());
 
     final int oldPosition = set.getListOrder();
     final int newPosition = EntitySorter.getValidListOrder(listOrder, sets.size());
 
     if (oldPosition == newPosition) {
-      return new UpdateSetListOrderResponseApplication(updateSetListOrderServiceMapper.map(sets));
+      return updateSetListOrderServiceMapper.map(sets);
     }
 
     sets.stream()
@@ -47,7 +50,7 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
     entitySorter.sortUpdate(sets, set, oldPosition);
     setDao.saveAll(sets);
 
-    return new UpdateSetListOrderResponseApplication(updateSetListOrderServiceMapper.map(sets));
+    return updateSetListOrderServiceMapper.map(sets);
   }
 
   private Set getSetFull(final UUID setId) {

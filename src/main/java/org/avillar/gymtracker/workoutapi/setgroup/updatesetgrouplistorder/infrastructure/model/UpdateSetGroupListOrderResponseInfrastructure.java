@@ -1,21 +1,19 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model;
 
-import java.util.Set;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class UpdateSetGroupListOrderResponseInfrastructure {
 
-  private Set<SetGroup> setGroups;
+  private UUID id;
+  private Integer listOrder;
+  private String description;
+  private UUID exerciseId;
+  private Workout workout;
 
   @Data
-  public static class SetGroup {
+  public static class Workout {
     private UUID id;
-    private Integer listOrder;
-    private String description;
-    private UUID exerciseId;
   }
 }

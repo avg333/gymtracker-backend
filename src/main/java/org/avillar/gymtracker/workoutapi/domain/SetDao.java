@@ -24,7 +24,7 @@ public interface SetDao extends JpaRepository<Set, UUID> {
             FROM Set s
             WHERE s.setGroup.id = :setGroupId
             """)
-  java.util.Set<Set> getSetsBySetGroupId(@Param("setGroupId") UUID setGroupId);
+  List<Set> getSetsBySetGroupId(@Param("setGroupId") UUID setGroupId);
 
   @Query(
       """

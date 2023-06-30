@@ -50,15 +50,17 @@ class DeleteSetServiceImplTest {
     setSecond.setListOrder(1);
     setSecond.setId(UUID.randomUUID());
     setGroup.setSets(java.util.Set.of(setFirst, setSecond));
+    final List<Set> sets = setGroup.getSets().stream().toList();
 
     when(setDao.getSetFullById(setFirst.getId())).thenReturn(List.of(setFirst));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(setFirst, AuthOperations.DELETE);
-    when(setDao.getSetsBySetGroupId(setGroup.getId())).thenReturn(setGroup.getSets());
+    when(setDao.getSetsBySetGroupId(setGroup.getId())).thenReturn(sets);
+    Mockito.doNothing().when(entitySorter).sortDelete(sets, setFirst);
 
     Assertions.assertDoesNotThrow(() -> deleteSetService.execute(setFirst.getId()));
     verify(setDao).deleteById(setFirst.getId());
-    verify(entitySorter).sortDelete(setGroup.getSets(), setFirst);
-    verify(setDao).saveAll(setGroup.getSets());
+    verify(entitySorter).sortDelete(sets, setFirst);
+    verify(setDao).saveAll(sets);
   }
 
   @Test
@@ -71,15 +73,16 @@ class DeleteSetServiceImplTest {
     setSecond.setListOrder(1);
     setSecond.setId(UUID.randomUUID());
     setGroup.setSets(java.util.Set.of(setFirst, setSecond));
+    final List<Set> sets = setGroup.getSets().stream().toList();
 
     when(setDao.getSetFullById(setSecond.getId())).thenReturn(List.of(setSecond));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(setSecond, AuthOperations.DELETE);
-    when(setDao.getSetsBySetGroupId(setGroup.getId())).thenReturn(setGroup.getSets());
+    when(setDao.getSetsBySetGroupId(setGroup.getId())).thenReturn(sets);
 
     Assertions.assertDoesNotThrow(() -> deleteSetService.execute(setSecond.getId()));
     verify(setDao).deleteById(setSecond.getId());
-    verify(entitySorter, never()).sortDelete(setGroup.getSets(), setSecond);
-    verify(setDao, never()).saveAll(setGroup.getSets());
+    verify(entitySorter, never()).sortDelete(sets, setSecond);
+    verify(setDao, never()).saveAll(sets);
   }
 
   @Test

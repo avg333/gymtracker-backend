@@ -1,8 +1,8 @@
 package org.avillar.gymtracker.common.sort.application;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.Set;
 import org.avillar.gymtracker.common.sort.domain.SortableEntity;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ public class EntitySorter {
   }
 
   public <T extends SortableEntity> void sortDelete(
-      final Set<? extends SortableEntity> entities, final T entity) {
+      final Collection<? extends SortableEntity> entities, final T entity) {
     entities.removeIf(e -> e.getId().equals(entity.getId()));
 
     final Iterator<? extends SortableEntity> iterator = entities.iterator();
@@ -29,7 +29,7 @@ public class EntitySorter {
   }
 
   public <T extends SortableEntity> void sortUpdate(
-      final Set<? extends SortableEntity> entities, final T entity, final int oldPosition) {
+      final Collection<? extends SortableEntity> entities, final T entity, final int oldPosition) {
     final int newPosition = entity.getListOrder();
     if (newPosition == oldPosition) {
       entities.clear();
@@ -58,7 +58,7 @@ public class EntitySorter {
 
   @Deprecated(forRemoval = true)
   public <T extends SortableEntity> void sortPost(
-      final Set<? extends SortableEntity> entities, final T entity) {
+      final Collection<? extends SortableEntity> entities, final T entity) {
     entities.removeIf(e -> e.getId().equals(entity.getId()));
 
     final Iterator<? extends SortableEntity> iterator = entities.iterator();

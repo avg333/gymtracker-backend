@@ -71,8 +71,9 @@ class UpdateSetGroupListOrderServiceImplTest {
     Mockito.verify(setGroupDao, Mockito.times(0))
         .saveAll(Mockito.anyCollection()); // FIXME cambiar a 1
 
-    final UpdateSetGroupListOrderResponseApplication updateSetGroupListOrderResponseApplication =
-        updateSetGroupListOrderService.execute(setGroupId, listOrder);
+    final List<UpdateSetGroupListOrderResponseApplication>
+        updateSetGroupListOrderResponseApplication =
+            updateSetGroupListOrderService.execute(setGroupId, listOrder);
   }
 
   @Test
@@ -138,7 +139,8 @@ class UpdateSetGroupListOrderServiceImplTest {
     Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.UPDATE);
     verify(entitySorter, never()).sortUpdate(setGroups, setGroup, setGroup.getListOrder());
 
-    final UpdateSetGroupListOrderResponseApplication updateSetGroupListOrderResponseApplication =
-        updateSetGroupListOrderService.execute(setGroupId, listOrder);
+    final List<UpdateSetGroupListOrderResponseApplication>
+        updateSetGroupListOrderResponseApplication =
+            updateSetGroupListOrderService.execute(setGroupId, listOrder);
   }
 }

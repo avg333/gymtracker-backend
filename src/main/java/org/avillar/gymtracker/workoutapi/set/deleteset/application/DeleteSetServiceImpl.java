@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.set.deleteset.application;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
@@ -29,14 +30,14 @@ public class DeleteSetServiceImpl implements DeleteSetService {
 
     setDao.deleteById(setId);
 
-    final java.util.Set<Set> sets = setDao.getSetsBySetGroupId(set.getSetGroup().getId());
+    final List<Set> sets = setDao.getSetsBySetGroupId(set.getSetGroup().getId());
 
     if (set.getListOrder() != sets.size() - 1) {
       reorderSets(sets, set);
     }
   }
 
-  private void reorderSets(final java.util.Set<Set> sets, final Set set) {
+  private void reorderSets(final List<Set> sets, final Set set) {
     entitySorter.sortDelete(sets, set);
     setDao.saveAll(sets);
   }
