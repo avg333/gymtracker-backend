@@ -14,17 +14,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
 
-    @Override
-    public void commence(final HttpServletRequest request,
-                         final HttpServletResponse response,
-                         final AuthenticationException authException) throws IOException {
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("error", true);
-        responseMap.put("message", "Unauthorized");
-        String responseMsg = new ObjectMapper().writeValueAsString(responseMap);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setHeader("content-type", "application/json");
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-        response.getWriter().write(responseMsg);
-    }
+  @Override
+  public void commence(
+      final HttpServletRequest request,
+      final HttpServletResponse response,
+      final AuthenticationException authException)
+      throws IOException {
+    Map<String, Object> responseMap = new HashMap<>();
+    responseMap.put("error", true);
+    responseMap.put("message", "Unauthorized");
+    String responseMsg = new ObjectMapper().writeValueAsString(responseMap);
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setHeader("content-type", "application/json");
+    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+    response.getWriter().write(responseMsg);
+  }
 }

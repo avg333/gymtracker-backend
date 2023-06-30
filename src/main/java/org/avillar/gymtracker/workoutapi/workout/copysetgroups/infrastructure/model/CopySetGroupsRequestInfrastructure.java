@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class UpdateWorkoutSetGroupsRequestInfrastructure {
+public class CopySetGroupsRequestInfrastructure {
 
   @NotNull private UUID id;
 

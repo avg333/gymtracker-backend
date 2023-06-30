@@ -7,10 +7,12 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.mapper.GetWorkoutSetGroupsServiceMapperImpl;
@@ -39,6 +41,7 @@ class GetWorkoutSetGroupsServiceImplTest {
   @Test
   void getOk() {
     final Workout workout = easyRandom.nextObject(Workout.class);
+    workout.setSetGroups(easyRandom.objects(SetGroup.class, 5).collect(Collectors.toSet()));
 
     when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.READ);

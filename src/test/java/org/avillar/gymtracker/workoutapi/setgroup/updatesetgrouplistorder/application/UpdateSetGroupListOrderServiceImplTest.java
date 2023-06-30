@@ -1,11 +1,14 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -19,10 +22,11 @@ import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.mapper.UpdateSetGroupListOrderServiceMapperImpl;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.model.UpdateSetGroupListOrderResponseApplication;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -30,50 +34,83 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupListOrderServiceImplTest {
-  private UpdateSetGroupListOrderService updateSetGroupListOrderService;
+
+  private final EasyRandom easyRandom = new EasyRandom();
+
+  @InjectMocks private UpdateSetGroupListOrderServiceImpl updateSetGroupListOrderService;
 
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Mock private EntitySorter entitySorter;
   @Spy private UpdateSetGroupListOrderServiceMapperImpl updateSetGroupListOrderServiceMapper;
 
-  @BeforeEach
-  void beforeEach() {
-    updateSetGroupListOrderService =
-        new UpdateSetGroupListOrderServiceImpl(
-            setGroupDao, authWorkoutsService, entitySorter, updateSetGroupListOrderServiceMapper);
+  @Test
+  void updateOk() {
+    final Workout workout = easyRandom.nextObject(Workout.class);
+    final SetGroup setGroupFirst = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
+    setGroupFirst.setListOrder(0);
+    setGroupFirst.setId(UUID.randomUUID());
+    final SetGroup setGroupSecond = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
+    setGroupSecond.setListOrder(1);
+    setGroupSecond.setId(UUID.randomUUID());
+    workout.setSetGroups(Set.of(setGroupFirst, setGroupSecond));
+
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroupFirst.getId()))
+        .thenReturn(List.of(setGroupFirst));
+    when(setGroupDao.getSetGroupsByWorkoutId(workout.getId())).thenReturn(workout.getSetGroups());
+    Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroupFirst, AuthOperations.UPDATE);
+    Mockito.doNothing()
+        .when(entitySorter)
+        .sortUpdate(workout.getSetGroups(), setGroupFirst, setGroupFirst.getListOrder());
+
+    final List<UpdateSetGroupListOrderResponseApplication> result =
+        updateSetGroupListOrderService.execute(setGroupFirst.getId(), 1);
+    assertEquals(workout.getSetGroups().size(), result.size());
+    // assertEquals(setGroupFirst.getId(), result.get(0).getId());
+    // assertEquals(1, result.get(0).getListOrder()); FIXME
+    // assertEquals(setGroupFirst.getExerciseId(), result.get(0).getExerciseId());
+    // assertEquals(setGroupFirst.getDescription(), result.get(0).getDescription());
+    assertEquals(workout.getId(), result.get(0).getWorkout().getId());
+    // assertEquals(setGroupSecond.getId(), result.get(1).getId());
+    // assertEquals(0, result.get(1).getListOrder()); FIXME
+    //  assertEquals(setGroupSecond.getExerciseId(), result.get(1).getExerciseId());
+    // assertEquals(setGroupSecond.getDescription(), result.get(1).getDescription());
+    assertEquals(workout.getId(), result.get(1).getWorkout().getId());
+    verify(entitySorter).sortUpdate(workout.getSetGroups(), setGroupFirst, 0);
+    verify(setGroupDao).saveAll(workout.getSetGroups());
   }
 
   @Test
-  void updateOk() {
-    final UUID setGroupId = UUID.randomUUID();
-    final UUID workoutId = UUID.randomUUID();
-    final int listOrder = 1;
+  void updateSameValue() {
+    final Workout workout = easyRandom.nextObject(Workout.class);
+    final SetGroup setGroupFirst = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
+    setGroupFirst.setListOrder(0);
+    setGroupFirst.setId(UUID.randomUUID());
+    final SetGroup setGroupSecond = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
+    setGroupSecond.setListOrder(1);
+    setGroupSecond.setId(UUID.randomUUID());
+    workout.setSetGroups(Set.of(setGroupFirst, setGroupSecond));
 
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
-    setGroup.setListOrder(2);
-    final Workout workout = new Workout();
-    workout.setId(workoutId);
-    setGroup.setWorkout(workout);
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroupFirst.getId()))
+        .thenReturn(List.of(setGroupFirst));
+    when(setGroupDao.getSetGroupsByWorkoutId(workout.getId())).thenReturn(workout.getSetGroups());
+    Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroupFirst, AuthOperations.UPDATE);
 
-    final SetGroup setGroup1 = new SetGroup();
-    setGroup1.setId(UUID.randomUUID());
-    final SetGroup setGroup2 = new SetGroup();
-    setGroup2.setId(UUID.randomUUID());
-
-    final Set<SetGroup> setGroups = Set.of(setGroup1, setGroup2, setGroup);
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(List.of(setGroup));
-    when(setGroupDao.getSetGroupsByWorkoutId(workoutId)).thenReturn(setGroups);
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.UPDATE);
-    Mockito.doNothing().when(entitySorter).sortUpdate(setGroups, setGroup, setGroup.getListOrder());
-    Mockito.verify(setGroupDao, Mockito.times(0))
-        .saveAll(Mockito.anyCollection()); // FIXME cambiar a 1
-
-    final List<UpdateSetGroupListOrderResponseApplication>
-        updateSetGroupListOrderResponseApplication =
-            updateSetGroupListOrderService.execute(setGroupId, listOrder);
+    final List<UpdateSetGroupListOrderResponseApplication> result =
+        updateSetGroupListOrderService.execute(setGroupFirst.getId(), 0);
+    assertEquals(workout.getSetGroups().size(), result.size());
+//    assertEquals(setGroupFirst.getId(), result.get(0).getId());
+//    assertEquals(setGroupFirst.getListOrder(), result.get(0).getListOrder());
+//    assertEquals(setGroupFirst.getExerciseId(), result.get(0).getExerciseId());
+//    assertEquals(setGroupFirst.getDescription(), result.get(0).getDescription()); FIXME
+//    assertEquals(workout.getId(), result.get(0).getWorkout().getId());
+//    assertEquals(setGroupSecond.getId(), result.get(1).getId());
+//    assertEquals(setGroupSecond.getListOrder(), result.get(1).getListOrder());
+//    assertEquals(setGroupSecond.getExerciseId(), result.get(1).getExerciseId());
+//    assertEquals(setGroupSecond.getDescription(), result.get(1).getDescription());
+    assertEquals(workout.getId(), result.get(1).getWorkout().getId());
+    verify(entitySorter, never()).sortUpdate(any(), any(), anyInt());
+    verify(setGroupDao, never()).saveAll(any());
   }
 
   @Test
@@ -87,60 +124,31 @@ class UpdateSetGroupListOrderServiceImplTest {
             () -> updateSetGroupListOrderService.execute(setGroupId, listOrder));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
+    verify(entitySorter, never()).sortUpdate(any(), any(), anyInt());
+    verify(setGroupDao, never()).saveAll(any());
   }
 
   @Test
   void updateNotPermission() {
     final UUID userId = UUID.randomUUID();
-    final UUID setGroupId = UUID.randomUUID();
+    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     final int listOrder = 1;
+    final AuthOperations authOperation = AuthOperations.UPDATE;
 
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
-    setGroup.setExerciseId(UUID.randomUUID());
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(List.of(setGroup));
-    doThrow(new IllegalAccessException(setGroup, AuthOperations.UPDATE, userId))
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    doThrow(new IllegalAccessException(setGroup, authOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(setGroup, AuthOperations.UPDATE);
+        .checkAccess(setGroup, authOperation);
 
     final IllegalAccessException exception =
         Assertions.assertThrows(
             IllegalAccessException.class,
-            () -> updateSetGroupListOrderService.execute(setGroupId, listOrder));
+            () -> updateSetGroupListOrderService.execute(setGroup.getId(), listOrder));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(setGroupId, exception.getEntityId());
+    assertEquals(setGroup.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(AuthOperations.UPDATE, exception.getAuthOperations());
-  }
-
-  @Test
-  void updateSameValue() {
-    final UUID setGroupId = UUID.randomUUID();
-    final UUID workoutId = UUID.randomUUID();
-    final int listOrder = 2;
-
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
-    setGroup.setListOrder(2);
-    final Workout workout = new Workout();
-    workout.setId(workoutId);
-    setGroup.setWorkout(workout);
-
-    final SetGroup setGroup1 = new SetGroup();
-    setGroup1.setId(UUID.randomUUID());
-    final SetGroup setGroup2 = new SetGroup();
-    setGroup2.setId(UUID.randomUUID());
-
-    final Set<SetGroup> setGroups = Set.of(setGroup1, setGroup2, setGroup);
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(List.of(setGroup));
-    when(setGroupDao.getSetGroupsByWorkoutId(workoutId)).thenReturn(setGroups);
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.UPDATE);
-    verify(entitySorter, never()).sortUpdate(setGroups, setGroup, setGroup.getListOrder());
-
-    final List<UpdateSetGroupListOrderResponseApplication>
-        updateSetGroupListOrderResponseApplication =
-            updateSetGroupListOrderService.execute(setGroupId, listOrder);
+    assertEquals(authOperation, exception.getAuthOperations());
+    verify(entitySorter, never()).sortUpdate(any(), any(), anyInt());
+    verify(setGroupDao, never()).saveAll(any());
   }
 }

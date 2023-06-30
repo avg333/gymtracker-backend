@@ -1,5 +1,7 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -10,7 +12,6 @@ import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infras
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderResponseInfrastructure;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,8 +49,14 @@ class UpdateSetGroupListOrderControllerImplTest {
     final ResponseEntity<List<UpdateSetGroupListOrderResponseInfrastructure>> response =
         updateSetGroupListOrderControllerImpl.execute(
             setGroupId, updateSetGroupListOrderRequestInfrastructure);
-    Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-    Assertions.assertNotNull(response.getBody());
-    Assertions.assertEquals(expected.size(), response.getBody().size());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(expected.size(), response.getBody().size());
+    assertEquals(expected.get(0).getId(), response.getBody().get(0).getId());
+    assertEquals(expected.get(0).getExerciseId(), response.getBody().get(0).getExerciseId());
+    assertEquals(expected.get(0).getListOrder(), response.getBody().get(0).getListOrder());
+    assertEquals(expected.get(0).getDescription(), response.getBody().get(0).getDescription());
+    assertEquals(
+        expected.get(0).getWorkout().getId(), response.getBody().get(0).getWorkout().getId());
   }
 }
