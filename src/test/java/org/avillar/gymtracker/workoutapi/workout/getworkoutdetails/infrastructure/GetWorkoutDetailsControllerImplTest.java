@@ -8,9 +8,9 @@ import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.m
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.mapper.GetWorkoutDetailsControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponseInfrastructure;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,15 +20,10 @@ class GetWorkoutDetailsControllerImplTest {
 
   private final EasyRandom easyRandom = new EasyRandom();
 
-  private GetWorkoutDetailsControllerImpl getWorkoutDetailsControllerImpl;
+  @InjectMocks private GetWorkoutDetailsControllerImpl getWorkoutDetailsControllerImpl;
 
   @Mock private GetWorkoutDetailsService getWorkoutDetailsService;
   @Spy private GetWorkoutDetailsControllerMapperImpl getWorkoutControllerMapper;
-
-  @BeforeEach
-  void beforeAll() {
-    getWorkoutDetailsControllerImpl = new GetWorkoutDetailsControllerImpl(getWorkoutDetailsService, getWorkoutControllerMapper);
-  }
 
   @Test
   void get() {
@@ -39,17 +34,24 @@ class GetWorkoutDetailsControllerImplTest {
         .thenReturn(getWorkoutDetailsResponseApplication);
 
     final GetWorkoutDetailsResponseInfrastructure getWorkoutDetailsResponseInfrastructure =
-        getWorkoutDetailsControllerImpl.execute(getWorkoutDetailsResponseApplication.getId()).getBody();
-    assertEquals(getWorkoutDetailsResponseApplication.getId(), getWorkoutDetailsResponseInfrastructure.getId());
+        getWorkoutDetailsControllerImpl
+            .execute(getWorkoutDetailsResponseApplication.getId())
+            .getBody();
     assertEquals(
-        getWorkoutDetailsResponseApplication.getUserId(), getWorkoutDetailsResponseInfrastructure.getUserId());
+        getWorkoutDetailsResponseApplication.getId(),
+        getWorkoutDetailsResponseInfrastructure.getId());
+    assertEquals(
+        getWorkoutDetailsResponseApplication.getUserId(),
+        getWorkoutDetailsResponseInfrastructure.getUserId());
     assertEquals(
         getWorkoutDetailsResponseApplication.getDescription(),
         getWorkoutDetailsResponseInfrastructure.getDescription());
     assertEquals(
-        getWorkoutDetailsResponseApplication.getDate(), getWorkoutDetailsResponseInfrastructure.getDate());
+        getWorkoutDetailsResponseApplication.getDate(),
+        getWorkoutDetailsResponseInfrastructure.getDate());
     assertEquals(
-        getWorkoutDetailsResponseApplication.getDate(), getWorkoutDetailsResponseInfrastructure.getDate());
+        getWorkoutDetailsResponseApplication.getDate(),
+        getWorkoutDetailsResponseInfrastructure.getDate());
     assertEquals(
         getWorkoutDetailsResponseApplication.getSetGroups().size(),
         getWorkoutDetailsResponseInfrastructure.getSetGroups().size());

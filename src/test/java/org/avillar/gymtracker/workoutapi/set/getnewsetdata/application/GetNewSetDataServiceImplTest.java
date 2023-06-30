@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -28,18 +29,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetNewSetDataServiceImplTest {
 
-  private GetNewSetDataService getNewSetDataService;
+  @InjectMocks private GetNewSetDataServiceImpl getNewSetDataService;
   @Mock private SetDao setDao;
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Spy private GetNewSetDataServiceMapper getNewSetDataServiceMapper;
-
-  @BeforeEach
-  void beforeEach() {
-    getNewSetDataService =
-        new GetNewSetDataServiceImpl(
-            setDao, setGroupDao, authWorkoutsService, getNewSetDataServiceMapper);
-  }
 
   @Test
   void getOk() {

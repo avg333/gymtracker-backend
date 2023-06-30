@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
@@ -26,7 +27,8 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
   private final GetNewSetDataServiceMapper getNewSetDataServiceMapper;
 
   @Override
-  public GetNewSetDataResponseApplication execute(final UUID setGroupId) {
+  public GetNewSetDataResponseApplication execute(final UUID setGroupId)
+      throws EntityNotFoundException, IllegalAccessException {
     final SetGroup setGroup = getSetGroupFull(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.READ);
@@ -37,18 +39,19 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
       return getNewSetDataServiceMapper.map(set.get());
     }
 
-    return getNewSetDataServiceMapper.map(
-        setDao.findLastSetForExerciseAndUserAux(setGroup.getId()).stream()
-            .findAny()
-            .orElseThrow(
-                () ->
-                    new EntityNotFoundException(
-                        Set.class, "setGroupId", setGroupId))); // TODO Arreglar esta excepcion
+    return getNewSetDataServiceMapper.map(getSetGroupExerciseHistory(setGroupId, setGroup));
   }
 
   private SetGroup getSetGroupFull(final UUID setGroupId) {
     return setGroupDao.getSetGroupWithWorkoutById(setGroupId).stream()
         .findAny()
         .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
+  }
+
+  private Set getSetGroupExerciseHistory(UUID setGroupId, SetGroup setGroup) {
+    return setDao.findLastSetForExerciseAndUserAux(setGroup.getId()).stream()
+        .findAny()
+        .orElseThrow(() -> new EntityNotFoundException(Set.class, "setGroupId", setGroupId));
+    // TODO Arreglar esta excepcion Necesaria?
   }
 }
