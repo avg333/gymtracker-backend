@@ -18,23 +18,37 @@
     <dependency>
       <groupId>org.avillar</groupId>
       <artifactId>common</artifactId>
-      <version>${project.version}</version>
+      <version>0.8.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.avillar</groupId>
       <artifactId>exercisesapi</artifactId>
-      <version>${project.version}</version>
+      <version>0.8.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.avillar</groupId>
       <artifactId>authapi</artifactId>
-      <version>${project.version}</version>
+      <version>0.8.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.avillar</groupId>
       <artifactId>workoutsapi</artifactId>
-      <version>${project.version}</version>
+      <version>0.8.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <layout>JAR</layout>
+          <mainClass>org.avillar.gymtracker.GymTrackerApplication</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

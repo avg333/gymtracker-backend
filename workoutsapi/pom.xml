@@ -18,17 +18,17 @@
     <dependency>
       <groupId>org.avillar</groupId>
       <artifactId>common</artifactId>
-      <version>${project.version}</version>
+      <version>0.8.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.avillar</groupId>
       <artifactId>exercisesapi</artifactId>
-      <version>${project.version}</version>
+      <version>0.8.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.avillar</groupId>
       <artifactId>authapi</artifactId>
-      <version>${project.version}</version>
+      <version>0.8.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
