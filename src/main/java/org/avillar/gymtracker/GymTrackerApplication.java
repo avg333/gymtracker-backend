@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "org.avillar.gymtracker")
 public class GymTrackerApplication {
 
   @Value("${spring.jpa.properties.hibernate.jdbc.time_zone}")

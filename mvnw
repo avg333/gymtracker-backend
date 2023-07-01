@@ -30,7 +30,7 @@
 #   M2_HOME - location of maven2's installed home dir
 #   MAVEN_OPTS - parameters passed to the Java VM when running Maven
 #     e.g. to debug Maven itself, use
-#       set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
+#       org.avillar.gymtracker.workoutapi.set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
 #   MAVEN_SKIP_RC - flag to disable loading of mavenrc files
 # ----------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ if [ -z "$MAVEN_SKIP_RC" ] ; then
 
 fi
 
-# OS specific support.  $var _must_ be set to either true or false.
+# OS specific support.  $var _must_ be org.avillar.gymtracker.workoutapi.set to either true or false.
 cygwin=false;
 darwin=false;
 mingw=false

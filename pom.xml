@@ -2,8 +2,12 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <version>3.1.1</version>
+  </parent>
 
   <groupId>org.avillar</groupId>
   <artifactId>gymtracker-backend</artifactId>
@@ -13,13 +17,15 @@
   <name>GymTracker backend</name>
   <description>GymTracker backend</description>
 
-  <parent>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <groupId>org.springframework.boot</groupId>
-    <version>3.1.1</version>
-  </parent>
+  <modules>
+    <module>authapi</module>
+    <module>common</module>
+    <module>workoutsapi</module>
+    <module>exercisesapi</module>
+  </modules>
 
   <properties>
+    <revision>${project.version}</revision>
     <java.version>17</java.version>
     <maven.compiler.version>3.11.0</maven.compiler.version>
     <org.postgresql.version>42.6.0</org.postgresql.version>
