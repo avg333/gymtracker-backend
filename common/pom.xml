@@ -11,10 +11,7 @@
 
   <artifactId>common</artifactId>
   <packaging>jar</packaging>
-
-  <properties>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
-  </properties>
+  <version>${parent.version}</version>
+  <name>${project.groupId}:${project.artifactId}</name>
 
 </project>
