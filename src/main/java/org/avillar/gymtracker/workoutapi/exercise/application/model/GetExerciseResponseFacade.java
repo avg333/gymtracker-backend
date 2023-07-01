@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class GetExerciseResponseFacade {
   private UUID id;
   private String name;
@@ -16,7 +15,6 @@ public class GetExerciseResponseFacade {
   private Set<MuscleGroupExercise> muscleGroupExercises;
 
   @Data
-  @AllArgsConstructor
   public static class LoadType {
     private UUID id;
     private String name;
@@ -24,7 +22,6 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  @AllArgsConstructor
   public static class MuscleSubGroup {
     private UUID id;
     private String name;
@@ -32,7 +29,6 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  @AllArgsConstructor
   public static class MuscleGroupExercise {
     private UUID id;
     private Double weight;
@@ -40,7 +36,6 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  @AllArgsConstructor
   public static class MuscleGroup {
     private UUID id;
     private String name;
@@ -49,7 +44,6 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  @AllArgsConstructor
   public static class MuscleSupGroup {
     private UUID id;
     private String name;

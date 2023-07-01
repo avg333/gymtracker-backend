@@ -52,7 +52,8 @@ class DeleteSetGroupServiceImplTest {
     setGroupSecond.setId(UUID.randomUUID());
     workout.setSetGroups(Set.of(setGroupFirst, setGroupSecond));
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupFirst.getId())).thenReturn(List.of(setGroupFirst));
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroupFirst.getId()))
+        .thenReturn(List.of(setGroupFirst));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroupFirst, AuthOperations.DELETE);
     when(setGroupDao.getSetGroupsByWorkoutId(workout.getId())).thenReturn(workout.getSetGroups());
 
@@ -73,8 +74,11 @@ class DeleteSetGroupServiceImplTest {
     setGroupSecond.setId(UUID.randomUUID());
     workout.setSetGroups(Set.of(setGroupFirst, setGroupSecond));
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupSecond.getId())).thenReturn(List.of(setGroupSecond));
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroupSecond, AuthOperations.DELETE);
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroupSecond.getId()))
+        .thenReturn(List.of(setGroupSecond));
+    Mockito.doNothing()
+        .when(authWorkoutsService)
+        .checkAccess(setGroupSecond, AuthOperations.DELETE);
     when(setGroupDao.getSetGroupsByWorkoutId(workout.getId())).thenReturn(workout.getSetGroups());
 
     Assertions.assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupSecond.getId()));

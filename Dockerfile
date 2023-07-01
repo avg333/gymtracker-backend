@@ -11,5 +11,5 @@ RUN mvn clean package
 #
 FROM openjdk:18
 WORKDIR /app
-COPY --from=MAVEN_BUILD /build/target/docker-gymtracker.jar /app/
-ENTRYPOINT ["java","-jar","docker-gymtracker.jar"]
+COPY --from=MAVEN_BUILD /build/target/gymtracker-backend.jar /app/
+ENTRYPOINT ["java","-jar","gymtracker-backend.jar"]

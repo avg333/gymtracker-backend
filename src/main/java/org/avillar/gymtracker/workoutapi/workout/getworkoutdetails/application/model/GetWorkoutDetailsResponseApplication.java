@@ -3,12 +3,10 @@ package org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 
 @Data
-@AllArgsConstructor
 public class GetWorkoutDetailsResponseApplication {
 
   private UUID id;
@@ -18,7 +16,6 @@ public class GetWorkoutDetailsResponseApplication {
   private List<SetGroup> setGroups;
 
   @Data
-  @AllArgsConstructor
   public static class SetGroup {
     private UUID id;
     private Integer listOrder;
@@ -30,7 +27,6 @@ public class GetWorkoutDetailsResponseApplication {
   }
 
   @Data
-  @AllArgsConstructor
   public static class Set {
     private UUID id;
     private Integer listOrder;

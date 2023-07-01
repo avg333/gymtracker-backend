@@ -12,7 +12,6 @@ public class UpdateSetGroupSetsResponseApplication {
   private List<Set> sets;
 
   @Data
-  @AllArgsConstructor
   public static class Set {
     private UUID id;
     private Integer listOrder;

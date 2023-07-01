@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class CreateSetGroupResponseApplication {
 
   private UUID id;
@@ -15,7 +14,6 @@ public class CreateSetGroupResponseApplication {
   private Workout workout;
 
   @Data
-  @AllArgsConstructor
   public static class Workout {
     private UUID id;
   }
