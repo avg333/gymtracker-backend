@@ -2,8 +2,8 @@ package org.avillar.gymtracker.authapi.auth.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.authapi.auth.domain.UserApp;
-import org.avillar.gymtracker.authapi.auth.domain.UserDao;
+import org.avillar.gymtracker.authapi.domain.UserApp;
+import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.avillar.gymtracker.common.auth.jwt.UserDetailsImpl;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

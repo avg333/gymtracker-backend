@@ -12,18 +12,16 @@
 
   <groupId>org.avillar</groupId>
   <artifactId>gymtracker-backend</artifactId>
-  <version>0.8.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-
-  <name>GymTracker backend</name>
-  <description>GymTracker backend</description>
+  <version>0.8.1-SNAPSHOT</version>
+  <name>${project.groupId}:${project.artifactId}</name>
 
   <modules>
     <module>authapi</module>
     <module>common</module>
-    <module>workoutsapi</module>
     <module>exercisesapi</module>
     <module>springboot</module>
+    <module>workoutsapi</module>
   </modules>
 
   <properties>
@@ -39,102 +37,6 @@
     <org.json.version>20230618</org.json.version>
     <org.jeasy.version>5.0.0</org.jeasy.version>
   </properties>
-
-  <dependencies>
-    <!-- SPRINGBOOT -->
-    <dependency>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-      <groupId>org.springframework.boot</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>spring-boot-starter-web</artifactId>
-      <groupId>org.springframework.boot</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>spring-boot-starter-security</artifactId>
-      <groupId>org.springframework.boot</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>spring-boot-starter-validation</artifactId>
-      <groupId>org.springframework.boot</groupId>
-    </dependency>
-
-    <!-- DB -->
-    <dependency>
-      <artifactId>postgresql</artifactId>
-      <groupId>org.postgresql</groupId>
-    </dependency>
-
-    <!-- JWT -->
-    <dependency>
-      <artifactId>jjwt-api</artifactId>
-      <groupId>io.jsonwebtoken</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>jjwt-impl</artifactId>
-      <groupId>io.jsonwebtoken</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>jjwt-jackson</artifactId>
-      <groupId>io.jsonwebtoken</groupId>
-    </dependency>
-
-    <!-- LOMBOK -->
-    <dependency>
-      <artifactId>lombok</artifactId>
-      <groupId>org.projectlombok</groupId>
-    </dependency>
-
-    <!-- MAPSTRUCT -->
-    <dependency>
-      <artifactId>mapstruct</artifactId>
-      <groupId>org.mapstruct</groupId>
-    </dependency>
-
-    <!-- APACHE COMMONS -->
-    <dependency>
-      <artifactId>commons-lang3</artifactId>
-      <groupId>org.apache.commons</groupId>
-    </dependency>
-
-    <!-- SWAGGER -->
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-    </dependency>
-
-    <!-- TEST -->
-    <dependency>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <groupId>org.springframework.boot</groupId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <artifactId>junit</artifactId>
-      <groupId>junit</groupId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jeasy</groupId>
-      <artifactId>easy-random-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
   <dependencyManagement>
     <dependencies>
@@ -205,7 +107,7 @@
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>20230618</version>
+        <version>${org.json.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -216,6 +118,57 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <!-- SPRINGBOOT -->
+    <dependency> <!-- TODO Move to the sprinboot module -->
+      <artifactId>spring-boot-starter-web</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+
+    <!-- LOMBOK -->
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+    </dependency>
+    <!-- APACHE COMMONS -->
+    <dependency>
+      <artifactId>commons-lang3</artifactId>
+      <groupId>org.apache.commons</groupId>
+    </dependency>
+
+    <!-- TEST -->
+    <dependency>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jeasy</groupId>
+      <artifactId>easy-random-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <pluginManagement>
