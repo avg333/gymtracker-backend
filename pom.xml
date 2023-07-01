@@ -4,11 +4,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <name>GymTracker backend</name>
-  <description>GymTracker backend</description>
+
   <groupId>org.avillar</groupId>
   <artifactId>gymtracker-backend</artifactId>
   <version>0.8.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>GymTracker backend</name>
+  <description>GymTracker backend</description>
 
   <parent>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -208,7 +211,7 @@
   </dependencyManagement>
 
   <build>
-    <finalName>${artifactId}</finalName>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
