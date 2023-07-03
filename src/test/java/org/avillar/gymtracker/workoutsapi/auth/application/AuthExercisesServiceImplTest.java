@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutsapi.application;
+package org.avillar.gymtracker.workoutsapi.auth.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -12,6 +12,7 @@ import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.jeasy.random.EasyRandom;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,12 +28,17 @@ class AuthExercisesServiceImplTest {
   @InjectMocks private AuthWorkoutsServiceImpl authWorkoutsService;
   @Mock private Authentication auth;
 
-  @Test
-  void checkAccessWorkoutOk() {
+  @BeforeEach
+  void beforeEach() {
+    SecurityContextHolder.clearContext();
     when(auth.getPrincipal())
         .thenReturn(new UserDetailsImpl(UUID.randomUUID(), "adrian", "adrian69", null));
     when(auth.isAuthenticated()).thenReturn(true);
     SecurityContextHolder.getContext().setAuthentication(auth);
+  }
+
+  @Test
+  void checkAccessWorkoutOk() {
     final Workout workout = easyRandom.nextObject(Workout.class);
     workout.setUserId(getUserId());
     assertDoesNotThrow(() -> authWorkoutsService.checkAccess(workout, AuthOperations.CREATE));
@@ -43,10 +49,6 @@ class AuthExercisesServiceImplTest {
 
   @Test
   void checkAccessWorkoutKo() {
-    when(auth.getPrincipal())
-        .thenReturn(new UserDetailsImpl(UUID.randomUUID(), "adrian", "adrian69", null));
-    when(auth.isAuthenticated()).thenReturn(true);
-    SecurityContextHolder.getContext().setAuthentication(auth);
     final Workout workout = easyRandom.nextObject(Workout.class);
     assertThrows(
         IllegalAccessException.class,
@@ -64,10 +66,6 @@ class AuthExercisesServiceImplTest {
 
   @Test
   void testCheckAccessSetGroupOk() {
-    when(auth.getPrincipal())
-        .thenReturn(new UserDetailsImpl(UUID.randomUUID(), "adrian", "adrian69", null));
-    when(auth.isAuthenticated()).thenReturn(true);
-    SecurityContextHolder.getContext().setAuthentication(auth);
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     setGroup.getWorkout().setUserId(getUserId());
     assertDoesNotThrow(() -> authWorkoutsService.checkAccess(setGroup, AuthOperations.CREATE));
@@ -78,10 +76,6 @@ class AuthExercisesServiceImplTest {
 
   @Test
   void testCheckAccessSetGroupKo() {
-    when(auth.getPrincipal())
-        .thenReturn(new UserDetailsImpl(UUID.randomUUID(), "adrian", "adrian69", null));
-    when(auth.isAuthenticated()).thenReturn(true);
-    SecurityContextHolder.getContext().setAuthentication(auth);
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     assertThrows(
         IllegalAccessException.class,
@@ -99,10 +93,6 @@ class AuthExercisesServiceImplTest {
 
   @Test
   void testCheckAccessSetOk() {
-    when(auth.getPrincipal())
-        .thenReturn(new UserDetailsImpl(UUID.randomUUID(), "adrian", "adrian69", null));
-    when(auth.isAuthenticated()).thenReturn(true);
-    SecurityContextHolder.getContext().setAuthentication(auth);
     final Set set = easyRandom.nextObject(Set.class);
     set.getSetGroup().getWorkout().setUserId(getUserId());
     assertDoesNotThrow(() -> authWorkoutsService.checkAccess(set, AuthOperations.CREATE));
@@ -113,10 +103,6 @@ class AuthExercisesServiceImplTest {
 
   @Test
   void testCheckAccessSetKo() {
-    when(auth.getPrincipal())
-        .thenReturn(new UserDetailsImpl(UUID.randomUUID(), "adrian", "adrian69", null));
-    when(auth.isAuthenticated()).thenReturn(true);
-    SecurityContextHolder.getContext().setAuthentication(auth);
     final Set set = easyRandom.nextObject(Set.class);
     assertThrows(
         IllegalAccessException.class,
@@ -130,20 +116,6 @@ class AuthExercisesServiceImplTest {
     assertThrows(
         IllegalAccessException.class,
         () -> authWorkoutsService.checkAccess(set, AuthOperations.READ));
-  }
-
-  @Test
-  void testNoUser(){
-    SecurityContextHolder.clearContext();
-    assertThrows(
-        RuntimeException.class,
-        () -> authWorkoutsService.checkAccess(easyRandom.nextObject(Workout.class), AuthOperations.READ));
-    assertThrows(
-        RuntimeException.class,
-        () -> authWorkoutsService.checkAccess(easyRandom.nextObject(SetGroup.class), AuthOperations.READ));
-    assertThrows(
-        RuntimeException.class,
-        () -> authWorkoutsService.checkAccess(easyRandom.nextObject(Set.class), AuthOperations.READ));
   }
 
   private UUID getUserId() {

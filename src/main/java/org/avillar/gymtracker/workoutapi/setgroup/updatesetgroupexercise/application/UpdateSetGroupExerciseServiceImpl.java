@@ -4,8 +4,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
@@ -32,8 +33,8 @@ public class UpdateSetGroupExerciseServiceImpl implements UpdateSetGroupExercise
     }
 
     if (!exerciseRepositoryClient.canAccessExerciseById(exerciseId)) {
-      throw new EntityNotFoundException(Exercise.class, exerciseId);
-    } // TODO Cambiar excepcion
+      throw new ExerciseNotFoundException(exerciseId, AccessError.UNKNOWN);
+    }
 
     setGroup.setExerciseId(exerciseId);
 

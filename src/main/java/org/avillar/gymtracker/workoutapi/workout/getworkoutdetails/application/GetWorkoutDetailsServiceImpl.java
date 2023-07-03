@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.exercisesapi.domain.Exercise;
+import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
@@ -55,9 +56,9 @@ public class GetWorkoutDetailsServiceImpl implements GetWorkoutDetailsService {
                         .findAny()
                         .orElseThrow( // Esto nunca deberia saltar
                             () ->
-                                new EntityNotFoundException(
-                                    Exercise.class,
-                                    setGroup.getExerciseId())))); // TODO decidir que hacer
+                                new ExerciseNotFoundException(
+                                    setGroup.getExerciseId(),
+                                    AccessError.NOT_FOUND)))); // TODO decidir que hacer
 
     return getWorkoutDetailsResponseApplication;
   }

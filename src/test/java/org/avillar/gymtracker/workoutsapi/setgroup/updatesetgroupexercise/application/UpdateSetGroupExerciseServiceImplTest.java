@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
@@ -74,11 +74,10 @@ class UpdateSetGroupExerciseServiceImplTest {
     when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
     when(exerciseRepositoryClient.canAccessExerciseById(exerciseId)).thenReturn(false);
 
-    final EntityNotFoundException exception =
+    final ExerciseNotFoundException exception =
         Assertions.assertThrows(
-            EntityNotFoundException.class,
+            ExerciseNotFoundException.class,
             () -> updateSetGroupExerciseService.execute(setGroup.getId(), exerciseId));
-    assertEquals(Exercise.class.getSimpleName(), exception.getClassName());
     assertEquals(exerciseId, exception.getId());
     verify(setGroupDao, never()).save(Mockito.any(SetGroup.class));
   }

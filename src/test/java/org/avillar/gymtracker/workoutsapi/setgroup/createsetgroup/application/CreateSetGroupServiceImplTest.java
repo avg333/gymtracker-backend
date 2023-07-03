@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
@@ -87,11 +87,10 @@ class CreateSetGroupServiceImplTest {
             createSetGroupRequestApplication.getExerciseId()))
         .thenReturn(false);
 
-    final EntityNotFoundException exception =
+    final ExerciseNotFoundException exception =
         Assertions.assertThrows(
-            EntityNotFoundException.class,
+            ExerciseNotFoundException.class,
             () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
-    assertEquals(Exercise.class.getSimpleName(), exception.getClassName());
     assertEquals(createSetGroupRequestApplication.getExerciseId(), exception.getId());
     verify(setGroupDao, never()).save(any(SetGroup.class));
 

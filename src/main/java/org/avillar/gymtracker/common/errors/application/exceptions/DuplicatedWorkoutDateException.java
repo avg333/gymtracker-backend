@@ -20,9 +20,6 @@ public class DuplicatedWorkoutDateException extends RuntimeException {
   }
 
   private static String generateMessage(String userId, String workoutDate) {
-    return "Already exists a org.avillar.gymtracker.workoutapi.workout with the date: "
-        + workoutDate
-        + " for the user: "
-        + userId;
+    return "Already exists a workout with the date: " + workoutDate + " for the user: " + userId;
   }
 }
