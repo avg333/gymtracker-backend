@@ -12,17 +12,9 @@
 
   <groupId>org.avillar</groupId>
   <artifactId>gymtracker-backend</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <version>0.8.1-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
-
-  <modules>
-    <module>authapi</module>
-    <module>common</module>
-    <module>exercisesapi</module>
-    <module>springboot</module>
-    <module>workoutsapi</module>
-  </modules>
 
   <properties>
     <java.version>17</java.version>
@@ -38,105 +30,86 @@
     <org.jeasy.version>5.0.0</org.jeasy.version>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- DB -->
-      <dependency>
-        <artifactId>postgresql</artifactId>
-        <groupId>org.postgresql</groupId>
-        <scope>runtime</scope>
-        <version>${org.postgresql.version}</version>
-      </dependency>
-
-      <!-- JWT -->
-      <dependency>
-        <artifactId>jjwt-api</artifactId>
-        <groupId>io.jsonwebtoken</groupId>
-        <version>${org.jjwt.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>jjwt-impl</artifactId>
-        <groupId>io.jsonwebtoken</groupId>
-        <scope>runtime</scope>
-        <version>${org.jjwt.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>jjwt-jackson</artifactId>
-        <groupId>io.jsonwebtoken</groupId>
-        <scope>runtime</scope>
-        <version>${org.jjwt.version}</version>
-      </dependency>
-
-      <!-- LOMBOK -->
-      <dependency>
-        <artifactId>lombok</artifactId>
-        <groupId>org.projectlombok</groupId>
-        <optional>true</optional>
-        <scope>provided</scope>
-        <version>${org.lombok.version}</version>
-      </dependency>
-
-      <!-- MAPSTRUCT -->
-      <dependency>
-        <artifactId>mapstruct</artifactId>
-        <groupId>org.mapstruct</groupId>
-        <version>${org.mapstruct.version}</version>
-      </dependency>
-
-      <!-- APACHE COMMONS -->
-      <dependency>
-        <artifactId>commons-lang3</artifactId>
-        <groupId>org.apache.commons</groupId>
-        <version>${org.commons-lang3.version}</version>
-      </dependency>
-
-      <!-- SWAGGER -->
-      <dependency>
-        <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-        <version>${org.springdoc.version}</version>
-      </dependency>
-
-      <!-- TEST -->
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-test</artifactId>
-        <version>${org.springframework.security.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.json</groupId>
-        <artifactId>json</artifactId>
-        <version>${org.json.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jeasy</groupId>
-        <artifactId>easy-random-core</artifactId>
-        <version>${org.jeasy.version}</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <!-- SPRINGBOOT -->
-    <dependency> <!-- TODO Move to the sprinboot module -->
+    <dependency>
       <artifactId>spring-boot-starter-web</artifactId>
       <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-security</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-validation</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-validation</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>postgresql</artifactId>
+      <groupId>org.postgresql</groupId>
+      <scope>runtime</scope>
+      <version>${org.postgresql.version}</version>
+    </dependency>
+
+    <!-- JWT -->
+    <dependency>
+      <artifactId>jjwt-api</artifactId>
+      <groupId>io.jsonwebtoken</groupId>
+      <version>${org.jjwt.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>jjwt-impl</artifactId>
+      <groupId>io.jsonwebtoken</groupId>
+      <scope>runtime</scope>
+      <version>${org.jjwt.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>jjwt-jackson</artifactId>
+      <groupId>io.jsonwebtoken</groupId>
+      <scope>runtime</scope>
+      <version>${org.jjwt.version}</version>
     </dependency>
 
     <!-- LOMBOK -->
     <dependency>
       <artifactId>lombok</artifactId>
       <groupId>org.projectlombok</groupId>
+      <optional>true</optional>
+      <scope>provided</scope>
+      <version>${org.lombok.version}</version>
     </dependency>
+
+    <!-- MAPSTRUCT -->
+    <dependency>
+      <artifactId>mapstruct</artifactId>
+      <groupId>org.mapstruct</groupId>
+      <version>${org.mapstruct.version}</version>
+    </dependency>
+
     <!-- APACHE COMMONS -->
     <dependency>
       <artifactId>commons-lang3</artifactId>
       <groupId>org.apache.commons</groupId>
+      <version>${org.commons-lang3.version}</version>
     </dependency>
 
+    <!-- SWAGGER -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${org.springdoc.version}</version>
+    </dependency>
+
+    <!-- TEST -->
     <!-- TEST -->
     <dependency>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -156,46 +129,56 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
+      <version>${org.springframework.security.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
+      <version>${org.json.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jeasy</groupId>
       <artifactId>easy-random-core</artifactId>
+      <version>${org.jeasy.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${maven.compiler.version}</version>
-          <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
-            <annotationProcessorPaths>
-              <path>
-                <artifactId>lombok</artifactId>
-                <groupId>org.projectlombok</groupId>
-                <version>${org.lombok.version}</version>
-              </path>
-              <path>
-                <artifactId>mapstruct-processor</artifactId>
-                <groupId>org.mapstruct</groupId>
-                <version>${org.mapstruct.version}</version>
-              </path>
-            </annotationProcessorPaths>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>${maven.compiler.version}</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <annotationProcessorPaths>
+            <path>
+              <artifactId>lombok</artifactId>
+              <groupId>org.projectlombok</groupId>
+              <version>${org.lombok.version}</version>
+            </path>
+            <path>
+              <artifactId>mapstruct-processor</artifactId>
+              <groupId>org.mapstruct</groupId>
+              <version>${org.mapstruct.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <layout>JAR</layout>
+          <mainClass>org.avillar.gymtracker.GymTrackerApplication</mainClass>
+        </configuration>
+        <groupId>org.springframework.boot</groupId>
+      </plugin>
+    </plugins>
   </build>
 
 </project>
