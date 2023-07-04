@@ -5,12 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
+import org.avillar.gymtracker.workoutsapi.exercise.application.facade.ExerciseRepositoryClient;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,7 +22,7 @@ public class UpdateSetGroupExerciseServiceImpl implements UpdateSetGroupExercise
 
   @Override
   public UUID execute(final UUID setGroupId, final UUID exerciseId)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws EntityNotFoundException, IllegalAccessException, ExerciseNotFoundException {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.UPDATE);
@@ -32,9 +31,7 @@ public class UpdateSetGroupExerciseServiceImpl implements UpdateSetGroupExercise
       return setGroup.getExerciseId();
     }
 
-    if (!exerciseRepositoryClient.canAccessExerciseById(exerciseId)) {
-      throw new ExerciseNotFoundException(exerciseId, AccessError.UNKNOWN);
-    }
+    exerciseRepositoryClient.checkExerciseAccessById(exerciseId);
 
     setGroup.setExerciseId(exerciseId);
 

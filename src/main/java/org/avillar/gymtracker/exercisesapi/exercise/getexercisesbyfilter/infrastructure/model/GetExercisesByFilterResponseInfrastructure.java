@@ -9,4 +9,5 @@ public class GetExercisesByFilterResponseInfrastructure {
   private UUID id;
   private String name;
   private String description;
+  private boolean unilateral;
 }

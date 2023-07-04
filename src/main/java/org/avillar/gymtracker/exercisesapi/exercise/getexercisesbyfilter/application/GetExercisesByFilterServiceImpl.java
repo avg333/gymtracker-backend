@@ -1,9 +1,10 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService;
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
@@ -11,6 +12,7 @@ import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.applica
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterRequestApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterResponseApplication;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +24,31 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
 
   @Override
   public List<GetExercisesByFilterResponseApplication> execute(
-      final GetExercisesByFilterRequestApplication getExercisesByFilterRequestApplication)
-      throws IllegalAccessException {
-    final List<Exercise> exercises = exerciseDao.getAllFullExercises(); // TODO Usar filtro
+      final GetExercisesByFilterRequestApplication getExercisesByFilterRequestApplication) {
+    final UUID loggedUserId = authExercisesService.getLoggedUserId();
 
-    authExercisesService.checkAccess(exercises, AuthOperations.READ);
+    final List<Exercise> exercises =
+        exerciseDao.getAllFullExercises(
+            loggedUserId,
+            AccessTypeEnum.PRIVATE,
+            AccessTypeEnum.PUBLIC,
+            getExercisesByFilterRequestApplication.getName(),
+            getExercisesByFilterRequestApplication.getDescription(),
+            getExercisesByFilterRequestApplication.getUnilateral(),
+            CollectionUtils.isEmpty(getExercisesByFilterRequestApplication.getLoadTypeIds())
+                ? null
+                : getExercisesByFilterRequestApplication.getLoadTypeIds(),
+            CollectionUtils.isEmpty(getExercisesByFilterRequestApplication.getMuscleSupGroupIds())
+                ? null
+                : getExercisesByFilterRequestApplication.getMuscleSupGroupIds(),
+            CollectionUtils.isEmpty(getExercisesByFilterRequestApplication.getMuscleGroupIds())
+                ? null
+                : getExercisesByFilterRequestApplication.getMuscleGroupIds(),
+            CollectionUtils.isEmpty(getExercisesByFilterRequestApplication.getMuscleSubGroupIds())
+                ? null
+                : getExercisesByFilterRequestApplication.getMuscleSubGroupIds());
+
+    authExercisesService.checkAccess(exercises, AuthOperations.READ); // TODO Necesario esto?
 
     return getExercisesByFilterServiceMapper.map(exercises);
   }

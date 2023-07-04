@@ -19,6 +19,7 @@ import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponseInfrastructure;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +40,11 @@ class CreateSetGroupTest {
   @Autowired private SetDao setDao;
   @Autowired private UserDao userDao;
 
+  @BeforeEach
+  void beforeEach() {
+    workoutDao.deleteAll();
+  }
+
   @AfterEach
   void afterEach() {
     workoutDao.deleteAll();
@@ -55,7 +61,9 @@ class CreateSetGroupTest {
     final ResultActions resultActions =
         mockMvc
             .perform(
-                post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+                post("/org.avillar.gymtracker.workoutapi.workout-api/users/"
+                        + userApp.getId()
+                        + "/workouts")
                     .contentType(APPLICATION_JSON)
                     .content(updateWorkoutDateRequest.toString()))
             .andDo(print())
@@ -91,7 +99,9 @@ class CreateSetGroupTest {
 
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/org.avillar.gymtracker.workoutapi.workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
@@ -102,7 +112,9 @@ class CreateSetGroupTest {
 
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/org.avillar.gymtracker.workoutapi.workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
@@ -123,7 +135,9 @@ class CreateSetGroupTest {
 
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/org.avillar.gymtracker.workoutapi.workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
@@ -144,7 +158,9 @@ class CreateSetGroupTest {
     updateWorkoutDateRequest.put("description", "Description TEST");
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/org.avillar.gymtracker.workoutapi.workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
@@ -154,7 +170,9 @@ class CreateSetGroupTest {
     updateWorkoutDateRequest.put("description", new String(new char[300]).replace('\0', ' '));
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/org.avillar.gymtracker.workoutapi.workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())

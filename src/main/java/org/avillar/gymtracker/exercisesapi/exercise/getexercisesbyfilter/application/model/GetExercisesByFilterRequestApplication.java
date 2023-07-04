@@ -10,8 +10,8 @@ public class GetExercisesByFilterRequestApplication {
   private String name;
   private String description;
   private Boolean unilateral;
-  private UUID loadTypeId;
+  private List<UUID> loadTypeIds;
   private List<UUID> muscleSupGroupIds;
-  private UUID muscleGroupId;
+  private List<UUID> muscleGroupIds;
   private List<UUID> muscleSubGroupIds;
 }

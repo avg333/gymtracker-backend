@@ -55,7 +55,7 @@ public class WorkoutsDataLoader implements ApplicationRunner {
 
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();
-    if (workoutDao.findAll().isEmpty()) {
+    if (!workoutDao.findAll().isEmpty()) {
       log.info("Micro workouts is already populated");
       return;
     }
@@ -186,7 +186,7 @@ public class WorkoutsDataLoader implements ApplicationRunner {
         final SetGroup setGroup =
             new SetGroup(
                 random.nextDouble() < 0.2 ? "WorkoutSetGroup" + rnd : null,
-                UUID.randomUUID(),
+                exerciseIds.get(random.nextInt(exerciseIds.size())),
                 workout,
                 null);
         setGroup.setListOrder(i);

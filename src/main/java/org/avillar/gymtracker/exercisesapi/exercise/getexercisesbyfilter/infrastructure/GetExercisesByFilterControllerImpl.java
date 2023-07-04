@@ -22,9 +22,9 @@ public class GetExercisesByFilterControllerImpl implements GetExercisesByFilterC
       final String name,
       final String description,
       final Boolean unilateral,
-      final UUID loadTypeId,
+      final List<UUID> loadTypeIds,
       final List<UUID> muscleSupGroupIds,
-      final UUID muscleGroupId,
+      final List<UUID> muscleGroupIds,
       final List<UUID> muscleSubGroupIds) {
     return ResponseEntity.ok(
         getExercisesByFilterControllerMapper.map(
@@ -34,9 +34,9 @@ public class GetExercisesByFilterControllerImpl implements GetExercisesByFilterC
                         .name(name)
                         .description(description)
                         .unilateral(unilateral)
-                        .loadTypeId(loadTypeId)
+                        .loadTypeIds(loadTypeIds)
                         .muscleSupGroupIds(muscleSupGroupIds)
-                        .muscleGroupId(muscleGroupId)
+                        .muscleGroupIds(muscleGroupIds)
                         .muscleSubGroupIds(muscleSubGroupIds)
                         .build()))));
   }

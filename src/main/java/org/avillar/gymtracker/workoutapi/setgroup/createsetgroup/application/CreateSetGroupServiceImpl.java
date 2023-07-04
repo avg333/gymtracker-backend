@@ -5,17 +5,16 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.mapper.CreateSetGroupServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupRequestApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupResponseApplication;
+import org.avillar.gymtracker.workoutsapi.exercise.application.facade.ExerciseRepositoryClient;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,18 +30,16 @@ public class CreateSetGroupServiceImpl implements CreateSetGroupService {
   @Override
   public CreateSetGroupResponseApplication execute(
       final UUID workoutId, final CreateSetGroupRequestApplication createSetGroupRequestApplication)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws EntityNotFoundException, IllegalAccessException, ExerciseNotFoundException {
     final Workout workout = getWorkoutWithSetGroups(workoutId);
 
     final SetGroup setGroup = createSetGroupServiceMapper.map(createSetGroupRequestApplication);
     setGroup.setWorkout(workout);
     setGroup.setListOrder(workout.getSetGroups().size());
 
-    if (!exerciseRepositoryClient.canAccessExerciseById(setGroup.getExerciseId())) {
-      throw new ExerciseNotFoundException(setGroup.getExerciseId(), AccessError.UNKNOWN);
-    }
-
     authWorkoutsService.checkAccess(setGroup, AuthOperations.CREATE);
+
+    exerciseRepositoryClient.checkExerciseAccessById(setGroup.getExerciseId());
 
     setGroupDao.save(setGroup);
 

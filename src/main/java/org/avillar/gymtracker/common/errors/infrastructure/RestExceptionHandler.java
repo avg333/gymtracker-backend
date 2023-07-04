@@ -60,7 +60,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
       apiError.setDebugMessage(ex.getLocalizedMessage());
     }
 
-    log.info("Error accessing the exercise with ID {}", ex.getId());
+    log.info("Error accessing the exercise with ID {}: {}", ex.getId(), ex.getLocalizedMessage());
     return new ResponseEntity<>(apiError, responseCode);
   }
 

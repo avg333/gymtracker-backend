@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.GetExercisesByIdsService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.mapper.GetExercisesByIdsControllerMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.model.GetExercisesByIdsResponseInfrastructure;
@@ -19,7 +20,7 @@ public class GetExercisesByIdsControllerImpl implements GetExercisesByIdsControl
 
   @Override
   public ResponseEntity<List<GetExercisesByIdsResponseInfrastructure>> execute(
-      final Set<UUID> exerciseIds) {
+      final Set<UUID> exerciseIds) throws IllegalAccessException {
     return ResponseEntity.ok(
         getExercisesByIdsControllerMapper.map(getExercisesByIdsService.execute(exerciseIds)));
   }

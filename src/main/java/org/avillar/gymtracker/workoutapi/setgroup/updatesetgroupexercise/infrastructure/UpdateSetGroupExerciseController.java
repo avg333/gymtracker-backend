@@ -3,6 +3,7 @@ package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infras
 import jakarta.validation.Valid;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseResponseInfrastructure;
@@ -18,6 +19,6 @@ public interface UpdateSetGroupExerciseController {
   ResponseEntity<UpdateSetGroupExerciseResponseInfrastructure> execute(
       @PathVariable UUID setGroupId,
       @Valid @RequestBody
-      UpdateSetGroupExerciseRequestInfrastructure updateSetGroupExerciseRequestInfrastructure)
-      throws EntityNotFoundException, IllegalAccessException;
+          UpdateSetGroupExerciseRequestInfrastructure updateSetGroupExerciseRequestInfrastructure)
+      throws EntityNotFoundException, IllegalAccessException, ExerciseNotFoundException;
 }

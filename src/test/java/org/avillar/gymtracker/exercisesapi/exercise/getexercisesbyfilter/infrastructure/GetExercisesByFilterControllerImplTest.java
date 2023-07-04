@@ -44,9 +44,9 @@ class GetExercisesByFilterControllerImplTest {
             request.getName(),
             request.getDescription(),
             request.getUnilateral(),
-            request.getLoadTypeId(),
+            request.getLoadTypeIds(),
             request.getMuscleSupGroupIds(),
-            request.getMuscleGroupId(),
+            request.getMuscleGroupIds(),
             request.getMuscleSubGroupIds());
     assertEquals(HttpStatus.OK, result.getStatusCode());
     assertNotNull(result.getBody());

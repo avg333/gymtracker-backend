@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.avillar.gymtracker.common.base.domain.BaseEntity;
-import org.avillar.gymtracker.common.errors.application.AccessType;
+import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 
 @Entity
 @Getter
@@ -29,7 +29,7 @@ public class Exercise extends BaseEntity {
   @Column private String description;
 
   @Column(nullable = false)
-  private AccessType accessType = AccessType.PUBLIC;
+  private AccessTypeEnum accessType = AccessTypeEnum.PUBLIC;
 
   @Column(nullable = false)
   private UUID owner;

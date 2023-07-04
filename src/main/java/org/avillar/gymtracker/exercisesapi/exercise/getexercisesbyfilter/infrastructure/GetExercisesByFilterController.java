@@ -16,8 +16,8 @@ public interface GetExercisesByFilterController {
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String description,
       @RequestParam(required = false) Boolean unilateral,
-      @RequestParam(required = false) UUID loadTypeId,
+      @RequestParam(required = false) List<UUID> loadTypeIds,
       @RequestParam(required = false) List<UUID> muscleSupGroupIds,
-      @RequestParam(required = false) UUID muscleGroupId,
+      @RequestParam(required = false) List<UUID> muscleGroupId,
       @RequestParam(required = false) List<UUID> muscleSubGroupIds);
 }

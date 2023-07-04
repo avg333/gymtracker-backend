@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.avillar.gymtracker.common.errors.application.AccessType;
+import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
 import org.avillar.gymtracker.exercisesapi.domain.LoadType;
@@ -204,7 +204,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS BANCA",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -214,7 +214,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS BANCA INCLINADO",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PRIVATE,
             adminId,
             false,
             bar,
@@ -224,7 +224,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS BANCA DECLINADO",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -234,7 +234,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS CON MANCUERNAS",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -244,7 +244,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS CON MANCUERNAS INCLINADO",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -254,7 +254,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS CON MANCUERNAS DECLINADO",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -264,7 +264,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS EN MULTIPOWER",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -274,7 +274,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS EN MULTIPOWER INCLINADO",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -284,7 +284,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS EN MULTIPOWER DECLINADO",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -294,7 +294,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS CON MANCUERNAS",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -304,7 +304,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS CON MANCUERNAS INCLINADO",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
@@ -314,7 +314,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS CON MANCUERNAS DECLINADO",
             null,
-            AccessType.PUBLIC,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,

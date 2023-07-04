@@ -3,6 +3,7 @@ package org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.CreateSetGroupService;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.mapper.CreateSetGroupControllerMapper;
@@ -22,7 +23,7 @@ public class CreteSetGroupControllerImpl implements CreteSetGroupController {
   public ResponseEntity<CreateSetGroupResponseInfrastructure> execute(
       final UUID workoutId,
       final CreateSetGroupRequestInfrastructure createSetGroupRequestInfrastructure)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws EntityNotFoundException, IllegalAccessException, ExerciseNotFoundException {
     return ResponseEntity.ok(
         createSetGroupControllerMapper.map(
             createSetGroupService.execute(

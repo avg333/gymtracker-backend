@@ -3,6 +3,7 @@ package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastru
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.model.GetExercisesByIdsResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,5 +15,5 @@ public interface GetExercisesByIdsController {
 
   @GetMapping("exercises")
   ResponseEntity<List<GetExercisesByIdsResponseInfrastructure>> execute(
-      @RequestParam Set<UUID> exerciseIds);
+      @RequestParam Set<UUID> exerciseIds) throws IllegalAccessException;
 }

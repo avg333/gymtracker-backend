@@ -3,7 +3,7 @@ package org.avillar.gymtracker.exercisesapi.auth.application;
 import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.auth.AuthServiceBase;
-import org.avillar.gymtracker.common.errors.application.AccessType;
+import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
@@ -18,7 +18,7 @@ public class AuthExercisesServiceImpl extends AuthServiceBase implements AuthExe
     checkParameters(exercise, authOperations);
 
     final UUID userId = getLoggedUserId();
-    if (exercise.getAccessType() == AccessType.PRIVATE && !exercise.getOwner().equals(userId)) {
+    if (exercise.getAccessType() == AccessTypeEnum.PRIVATE && !exercise.getOwner().equals(userId)) {
       throw new IllegalAccessException(exercise, authOperations, userId);
     }
   }
@@ -26,5 +26,10 @@ public class AuthExercisesServiceImpl extends AuthServiceBase implements AuthExe
   @Override
   public void checkAccess(final List<Exercise> exercises, final AuthOperations authOperations) {
     exercises.forEach(exercise -> this.checkAccess(exercise, authOperations));
+  }
+
+  @Override
+  public UUID getLoggedUserId() {
+    return super.getLoggedUserId();
   }
 }
