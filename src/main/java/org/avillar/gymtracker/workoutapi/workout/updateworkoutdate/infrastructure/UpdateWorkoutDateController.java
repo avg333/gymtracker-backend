@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface UpdateWorkoutDateController {
 
-  @Operation(summary = "Modify the org.avillar.gymtracker.workoutapi.workout's date with that id")
+  @Operation(summary = "Modify the workout's date with that id")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -34,7 +34,7 @@ public interface UpdateWorkoutDateController {
             }),
         @ApiResponse(
             responseCode = "400",
-            description = "A org.avillar.gymtracker.workoutapi.workout already exists for that user on that date.",
+            description = "A workout already exists for that user on that date.",
             content = @Content),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
@@ -43,6 +43,6 @@ public interface UpdateWorkoutDateController {
   ResponseEntity<UpdateWorkoutDateResponseInfrastructure> execute(
       @PathVariable UUID workoutId,
       @Valid @RequestBody
-      UpdateWorkoutDateRequestInfrastructure updateWorkoutDateRequestInfrastructure)
+          UpdateWorkoutDateRequestInfrastructure updateWorkoutDateRequestInfrastructure)
       throws EntityNotFoundException, DuplicatedWorkoutDateException, IllegalAccessException;
 }

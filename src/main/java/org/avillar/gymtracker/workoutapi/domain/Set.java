@@ -17,7 +17,9 @@ import org.avillar.gymtracker.common.sort.domain.SortableEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(indexes = {@Index(name = "setGroupId", columnList = "set_group_id")}, name = "set_table")
+@Table(
+    indexes = {@Index(name = "setGroupId", columnList = "set_group_id")},
+    name = "set_table")
 public class Set extends SortableEntity {
 
   private String description;

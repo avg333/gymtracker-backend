@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface DeleteWorkoutController {
 
-  @Operation(summary = "Delete a org.avillar.gymtracker.workoutapi.workout by its id")
+  @Operation(summary = "Delete a workout by its id")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "204", description = "Deleted the org.avillar.gymtracker.workoutapi.workout"),
+        @ApiResponse(responseCode = "204", description = "Deleted the workout"),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })

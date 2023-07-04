@@ -38,8 +38,7 @@ public class Workout extends BaseEntity {
   @Temporal(DATE)
   private Date date;
 
-  @Column
-  private String description;
+  @Column private String description;
 
   @Column(name = "user_id", nullable = false)
   private UUID userId;

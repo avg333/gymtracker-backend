@@ -1,7 +1,13 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.infrastructure;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutResponseInfrastructure;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.infrastructure.model.GetWorkoutsDateAndIdResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +18,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface GetWorkoutsDateAndIdController {
 
+  @Operation(summary = "Get all the date and id of the user workouts")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Map {date: id} of the user workouts",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = GetWorkoutResponseInfrastructure.class))
+            }),
+        @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
+      })
   @GetMapping("/users/{userId}/workouts/dates")
   ResponseEntity<GetWorkoutsDateAndIdResponseInfrastructure> execute(
       @PathVariable UUID userId, @RequestParam(required = false) UUID exerciseId)

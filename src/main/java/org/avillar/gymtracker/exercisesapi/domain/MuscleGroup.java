@@ -2,6 +2,7 @@ package org.avillar.gymtracker.exercisesapi.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -26,16 +27,16 @@ public class MuscleGroup extends BaseEntity {
 
   @Column private String description;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
       name = "muscle_sup_group_muscle_groups",
       joinColumns = @JoinColumn(name = "muscle_sup_group_id"),
       inverseJoinColumns = @JoinColumn(name = "muscle_groups_id"))
   private Set<MuscleSupGroup> muscleSupGroups = new HashSet<>();
 
-  @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true)
+  @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true, fetch = FetchType.LAZY)
   private Set<MuscleSubGroup> muscleSubGroups = new HashSet<>();
 
-  @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true)
+  @OneToMany(mappedBy = "muscleGroup", orphanRemoval = true, fetch = FetchType.LAZY)
   private Set<MuscleGroupExercise> muscleGroupExercises = new HashSet<>();
 }

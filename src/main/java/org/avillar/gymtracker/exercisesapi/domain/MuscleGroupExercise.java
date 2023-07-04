@@ -21,11 +21,11 @@ public class MuscleGroupExercise extends BaseEntity {
   @Column(nullable = false)
   private Double weight;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "muscle_group_id", nullable = false)
   private MuscleGroup muscleGroup;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "exercise_id", nullable = false)
   private Exercise exercise;
 }

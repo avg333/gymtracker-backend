@@ -1,8 +1,11 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.model;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import lombok.Data;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication.MuscleGroupExercise;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication.MuscleGroupExercise.MuscleGroup;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication.MuscleGroupExercise.MuscleGroup.MuscleSupGroup;
 
 @Data
 public class GetExercisesByIdsResponseInfrastructure {
@@ -10,9 +13,10 @@ public class GetExercisesByIdsResponseInfrastructure {
   private UUID id;
   private String name;
   private String description;
+  private boolean unilateral;
   private LoadType loadType;
-  private Set<MuscleSubGroup> muscleSubGroups;
-  private Set<MuscleGroupExercise> muscleGroupExercises;
+  private List<MuscleSubGroup> muscleSubGroups;
+  private List<MuscleGroupExercise> muscleGroupExercises;
 
   @Data
   public static class LoadType {
@@ -39,7 +43,7 @@ public class GetExercisesByIdsResponseInfrastructure {
       private UUID id;
       private String name;
       private String description;
-      private Set<MuscleSupGroup> muscleSupGroups;
+      private List<MuscleSupGroup> muscleSupGroups;
 
       @Data
       public static class MuscleSupGroup {

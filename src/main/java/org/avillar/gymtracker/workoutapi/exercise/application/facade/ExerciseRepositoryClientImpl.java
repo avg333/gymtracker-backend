@@ -37,7 +37,7 @@ public class ExerciseRepositoryClientImpl implements ExerciseRepositoryClient {
   public List<GetExerciseResponseFacade> getExerciseByIds(Set<UUID> exerciseIds)
       throws IllegalAccessException {
     try {
-      return getExerciseFacadeMapper.getResponse(getExercisesByIdsService.execute(exerciseIds));
+      return getExerciseFacadeMapper.map(getExercisesByIdsService.execute(exerciseIds));
     } catch (IllegalAccessException ex) {
       throw new ExerciseNotFoundException(ex.getEntityId(), AccessError.NOT_ACCESS);
     }

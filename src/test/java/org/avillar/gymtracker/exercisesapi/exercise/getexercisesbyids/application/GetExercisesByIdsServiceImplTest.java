@@ -46,9 +46,9 @@ class GetExercisesByIdsServiceImplTest {
     expected.stream()
         .filter(exercise -> exercise.getAccessType() == AccessTypeEnum.PRIVATE)
         .forEach(exercise -> exercise.setOwner(userId));
-    int k = 0;
+    int x = 0;
     for (final UUID exerciseId : exercisesIds) {
-      expected.get(k++).setId(exerciseId);
+      expected.get(x++).setId(exerciseId);
     }
 
     when(exerciseDao.getFullExerciseByIds(exercisesIds)).thenReturn(expected);
@@ -58,10 +58,58 @@ class GetExercisesByIdsServiceImplTest {
         getExercisesByIdsService.execute(exercisesIds);
     assertEquals(expected.size(), result.size());
     for (int i = 0; i < expected.size(); i++) {
-      assertEquals(expected.get(i).getId(), result.get(i).getId());
-      assertEquals(expected.get(i).getName(), result.get(i).getName());
-      assertEquals(expected.get(i).getDescription(), result.get(i).getDescription());
-    } // TODO Comprobar el resto de valores
+      final var exerciseExpected = expected.get(i);
+      final var exerciseResult = result.get(i);
+      assertEquals(exerciseExpected.getId(), exerciseResult.getId());
+      assertEquals(exerciseExpected.getName(), exerciseResult.getName());
+      assertEquals(exerciseExpected.getDescription(), exerciseResult.getDescription());
+      assertEquals(exerciseExpected.getUnilateral(), exerciseResult.isUnilateral());
+
+      assertEquals(exerciseExpected.getLoadType().getId(), exerciseResult.getLoadType().getId());
+      assertEquals(
+          exerciseExpected.getLoadType().getName(), exerciseResult.getLoadType().getName());
+      assertEquals(
+          exerciseExpected.getLoadType().getDescription(),
+          exerciseResult.getLoadType().getDescription());
+
+      assertEquals(
+          exerciseExpected.getMuscleSubGroups().size(), exerciseResult.getMuscleSubGroups().size());
+      for (int j = 0; j < exerciseExpected.getMuscleSubGroups().size(); j++) {
+        final var msubgExpected = exerciseExpected.getMuscleSubGroups().stream().toList().get(j);
+        final var musbgResult = exerciseResult.getMuscleSubGroups().get(j);
+        assertEquals(msubgExpected.getId(), musbgResult.getId());
+        assertEquals(msubgExpected.getName(), musbgResult.getName());
+        assertEquals(msubgExpected.getDescription(), musbgResult.getDescription());
+      }
+
+      assertEquals(
+          exerciseExpected.getMuscleGroupExercises().size(),
+          exerciseResult.getMuscleGroupExercises().size());
+      for (int j = 0; j < exerciseExpected.getMuscleGroupExercises().size(); j++) {
+        final var mgExExpected =
+            exerciseExpected.getMuscleGroupExercises().stream().toList().get(j);
+        final var mgExesult = exerciseResult.getMuscleGroupExercises().get(j);
+        assertEquals(mgExExpected.getWeight(), mgExesult.getWeight());
+        assertEquals(mgExExpected.getId(), mgExesult.getId());
+        assertEquals(mgExExpected.getMuscleGroup().getId(), mgExesult.getMuscleGroup().getId());
+        assertEquals(mgExExpected.getMuscleGroup().getName(), mgExesult.getMuscleGroup().getName());
+        assertEquals(
+            mgExExpected.getMuscleGroup().getDescription(),
+            mgExesult.getMuscleGroup().getDescription());
+
+        assertEquals(
+            mgExExpected.getMuscleGroup().getMuscleSupGroups().size(),
+            mgExesult.getMuscleGroup().getMuscleSupGroups().size());
+        for (int k = 0; k < mgExExpected.getMuscleGroup().getMuscleSupGroups().size(); k++) {
+          final var msupgExpected =
+              mgExExpected.getMuscleGroup().getMuscleSupGroups().stream().toList().get(k);
+          final var msupgResult = mgExesult.getMuscleGroup().getMuscleSupGroups().get(k);
+          assertEquals(msupgExpected.getId(), msupgResult.getId());
+          assertEquals(msupgExpected.getName(), msupgResult.getName());
+          assertEquals(msupgExpected.getDescription(), msupgResult.getDescription());
+        }
+      }
+    }
   }
 
   @Test

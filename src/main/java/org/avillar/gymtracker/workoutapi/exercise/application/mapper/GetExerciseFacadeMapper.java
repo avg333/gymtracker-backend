@@ -8,9 +8,9 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface GetExerciseFacadeMapper {
 
-  GetExerciseResponseFacade getResponse(
-      GetExercisesByIdsResponseApplication getExercisesByFilterApplicationResponse);
+  GetExerciseResponseFacade map(
+      GetExercisesByIdsResponseApplication getExercisesByFilterApplicationResponseApplication);
 
-  List<GetExerciseResponseFacade> getResponse(
-      List<GetExercisesByIdsResponseApplication> getExerciseApplicationRespons);
+  List<GetExerciseResponseFacade> map(
+      List<GetExercisesByIdsResponseApplication> getExerciseApplicationResponseApplications);
 }

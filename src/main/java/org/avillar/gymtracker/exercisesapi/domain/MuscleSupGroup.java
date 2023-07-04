@@ -1,6 +1,8 @@
 package org.avillar.gymtracker.exercisesapi.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,9 +18,12 @@ import org.avillar.gymtracker.common.base.domain.BaseEntity;
 @AllArgsConstructor
 @Entity
 public class MuscleSupGroup extends BaseEntity {
-  private String name;
-  private String description;
 
-  @ManyToMany(mappedBy = "muscleSupGroups")
+  @Column(nullable = false)
+  private String name;
+
+  @Column private String description;
+
+  @ManyToMany(mappedBy = "muscleSupGroups", fetch = FetchType.LAZY)
   private Set<MuscleGroup> muscleGroups = new HashSet<>();
 }

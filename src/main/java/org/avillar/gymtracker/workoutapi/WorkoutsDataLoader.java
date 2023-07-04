@@ -2,6 +2,7 @@ package org.avillar.gymtracker.workoutapi;
 
 import java.util.*;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.authapi.domain.UserApp;
 import org.avillar.gymtracker.authapi.domain.UserDao;
@@ -13,6 +14,7 @@ import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.http.ResponseEntity;
@@ -32,20 +34,20 @@ public class WorkoutsDataLoader implements ApplicationRunner {
   private static final double PROB_GO_TO_THE_GIM = 0.7;
   private static final int MIN_EXERCISES = 3;
   private static final int MAX_EXERCISES = 6;
-
   private static final int MAX_INSERTS = 250000;
   private final Random random = new Random();
-
   private final UserDao userDao;
   private final ExerciseDao exerciseDao;
   private final List<UUID> exerciseIds = new ArrayList<>();
-
   private final SetGroupDao setGroupDao;
   private final SetDao setDao;
   private final WorkoutDao workoutDao;
   private final List<Workout> workouts = new ArrayList<>();
   private final List<SetGroup> setGroups = new ArrayList<>();
   private final List<Set> sets = new ArrayList<>();
+  @Value("${preload_data}")
+  @Setter
+  private boolean preload;
 
   @PostMapping("/users/{userId}/create")
   public ResponseEntity<Void> postWorkout(@PathVariable final UUID userId) {
@@ -55,12 +57,15 @@ public class WorkoutsDataLoader implements ApplicationRunner {
 
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();
-    if (!workoutDao.findAll().isEmpty()) {
+    if (!preload || !workoutDao.findAll().isEmpty()) {
       log.info("Micro workouts is already populated");
       return;
     }
     log.info("Populating workouts micro...");
 
+    setDao.deleteAll();
+    setGroupDao.deleteAll();
+    workoutDao.deleteAll();
     createHeavyData();
     saveHeavyData();
     int totalInserts = workouts.size() + setGroups.size() + sets.size();

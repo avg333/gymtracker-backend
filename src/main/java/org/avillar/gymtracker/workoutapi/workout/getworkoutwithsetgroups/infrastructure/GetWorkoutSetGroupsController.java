@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface GetWorkoutSetGroupsController {
 
   /** GetSGFromWorkout. 1 Retorno simple + 1 retorno con SG (depth = 1) */
-  @Operation(summary = "Get org.avillar.gymtracker.workoutapi.workout by its id with its setGroups")
+  @Operation(summary = "Get workout by its id with its setGroups")
   @ApiResponses(
       value = {
         @ApiResponse(

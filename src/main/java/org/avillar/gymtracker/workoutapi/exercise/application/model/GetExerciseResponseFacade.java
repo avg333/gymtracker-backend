@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.workoutapi.exercise.application.model;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import lombok.Data;
 
@@ -9,9 +9,10 @@ public class GetExerciseResponseFacade {
   private UUID id;
   private String name;
   private String description;
+  private boolean unilateral;
   private LoadType loadType;
-  private Set<MuscleSubGroup> muscleSubGroups;
-  private Set<MuscleGroupExercise> muscleGroupExercises;
+  private List<MuscleSubGroup> muscleSubGroups;
+  private List<MuscleGroupExercise> muscleGroupExercises;
 
   @Data
   public static class LoadType {
@@ -32,20 +33,20 @@ public class GetExerciseResponseFacade {
     private UUID id;
     private Double weight;
     private MuscleGroup muscleGroup;
-  }
 
-  @Data
-  public static class MuscleGroup {
-    private UUID id;
-    private String name;
-    private String description;
-    private Set<MuscleSupGroup> muscleSupGroups;
-  }
+    @Data
+    public static class MuscleGroup {
+      private UUID id;
+      private String name;
+      private String description;
+      private List<MuscleSupGroup> muscleSupGroups;
 
-  @Data
-  public static class MuscleSupGroup {
-    private UUID id;
-    private String name;
-    private String description;
+      @Data
+      public static class MuscleSupGroup {
+        private UUID id;
+        private String name;
+        private String description;
+      }
+    }
   }
 }

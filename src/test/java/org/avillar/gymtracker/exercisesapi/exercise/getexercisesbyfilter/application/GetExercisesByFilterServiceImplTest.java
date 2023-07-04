@@ -49,11 +49,7 @@ class GetExercisesByFilterServiceImplTest {
             AccessTypeEnum.PUBLIC,
             request.getName(),
             request.getDescription(),
-            request.getUnilateral(),
-            request.getLoadTypeIds(),
-            request.getMuscleSupGroupIds(),
-            request.getMuscleGroupIds(),
-            request.getMuscleSubGroupIds()))
+            request.getUnilateral()))
         .thenReturn(expected);
     when(authExercisesService.getLoggedUserId()).thenReturn(userId);
     doNothing().when(authExercisesService).checkAccess(expected, AuthOperations.READ);

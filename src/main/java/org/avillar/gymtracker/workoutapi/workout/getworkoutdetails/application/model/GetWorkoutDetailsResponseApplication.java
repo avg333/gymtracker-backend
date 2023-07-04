@@ -24,15 +24,15 @@ public class GetWorkoutDetailsResponseApplication {
     private List<Set> sets;
 
     private GetExerciseResponseFacade exercise;
-  }
 
-  @Data
-  public static class Set {
-    private UUID id;
-    private Integer listOrder;
-    private String description;
-    private Integer reps;
-    private Double rir;
-    private Double weight;
+    @Data
+    public static class Set {
+      private UUID id;
+      private Integer listOrder;
+      private String description;
+      private Integer reps;
+      private Double rir;
+      private Double weight;
+    }
   }
 }

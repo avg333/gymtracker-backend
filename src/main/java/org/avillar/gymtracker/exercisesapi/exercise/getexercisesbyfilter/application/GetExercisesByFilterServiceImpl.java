@@ -12,7 +12,6 @@ import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.applica
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterRequestApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterResponseApplication;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -34,19 +33,7 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
             AccessTypeEnum.PUBLIC,
             getExercisesByFilterRequestApplication.getName(),
             getExercisesByFilterRequestApplication.getDescription(),
-            getExercisesByFilterRequestApplication.getUnilateral(),
-            CollectionUtils.isEmpty(getExercisesByFilterRequestApplication.getLoadTypeIds())
-                ? null
-                : getExercisesByFilterRequestApplication.getLoadTypeIds(),
-            CollectionUtils.isEmpty(getExercisesByFilterRequestApplication.getMuscleSupGroupIds())
-                ? null
-                : getExercisesByFilterRequestApplication.getMuscleSupGroupIds(),
-            CollectionUtils.isEmpty(getExercisesByFilterRequestApplication.getMuscleGroupIds())
-                ? null
-                : getExercisesByFilterRequestApplication.getMuscleGroupIds(),
-            CollectionUtils.isEmpty(getExercisesByFilterRequestApplication.getMuscleSubGroupIds())
-                ? null
-                : getExercisesByFilterRequestApplication.getMuscleSubGroupIds());
+            getExercisesByFilterRequestApplication.getUnilateral());
 
     authExercisesService.checkAccess(exercises, AuthOperations.READ); // TODO Necesario esto?
 

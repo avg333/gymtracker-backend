@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface UpdateWorkoutDescriptionController {
 
-  @Operation(summary = "Modify the org.avillar.gymtracker.workoutapi.workout's description with that id")
+  @Operation(summary = "Modify workout's description with that id")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -40,7 +40,7 @@ public interface UpdateWorkoutDescriptionController {
   ResponseEntity<UpdateWorkoutDescriptionResponseInfrastructure> execute(
       @PathVariable UUID workoutId,
       @Valid @RequestBody
-      UpdateWorkoutDescriptionRequestInfrastructure
-          updateWorkoutDescriptionRequestInfrastructure)
+          UpdateWorkoutDescriptionRequestInfrastructure
+              updateWorkoutDescriptionRequestInfrastructure)
       throws EntityNotFoundException, IllegalAccessException;
 }
