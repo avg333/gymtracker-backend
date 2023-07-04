@@ -55,6 +55,7 @@ class GetExercisesByFilterControllerImplTest {
       assertEquals(expected.get(i).getId(), result.getBody().get(i).getId());
       assertEquals(expected.get(i).getName(), result.getBody().get(i).getName());
       assertEquals(expected.get(i).getDescription(), result.getBody().get(i).getDescription());
+      assertEquals(expected.get(i).isUnilateral(), result.getBody().get(i).isUnilateral());
     }
   }
 }

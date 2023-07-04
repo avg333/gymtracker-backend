@@ -20,7 +20,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<ApiError> handleDuplicatedWorkoutDate(
       final DuplicatedWorkoutDateException ex) {
     final ApiError apiError = new ApiError();
-    apiError.setMessage("There is already a workout on that date for that user.");
+    apiError.setMessage("There is already a workout on that date for that user");
 
     if (log.isDebugEnabled()) {
       apiError.setDebugMessage(ex.getLocalizedMessage());
@@ -32,7 +32,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(ExerciseNotFoundException.class)
-  protected ResponseEntity<ApiError> handleDuplicatedWorkoutDate(
+  protected ResponseEntity<ApiError> handleExerciseNotFoundException(
       final ExerciseNotFoundException ex) {
     final ApiError apiError = new ApiError();
     final HttpStatus responseCode;
@@ -67,7 +67,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(EntityNotFoundException.class)
   protected ResponseEntity<ApiError> handleEntityNotFound(final EntityNotFoundException ex) {
     final ApiError apiError = new ApiError();
-    apiError.setMessage("Objeto no encotrado");
+    apiError.setMessage("Entity not found");
 
     if (log.isDebugEnabled()) {
       apiError.setDebugMessage(ex.getLocalizedMessage());

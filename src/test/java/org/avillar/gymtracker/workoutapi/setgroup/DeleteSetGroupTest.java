@@ -44,7 +44,7 @@ class DeleteSetGroupTest {
 
     final Workout workout = new Workout(new Date(), null, userApp.getId(), new HashSet<>());
     workoutDao.save(workout);
-    final SetGroup setGroup = new SetGroup(null,UUID.randomUUID(),workout, new HashSet<>());
+    final SetGroup setGroup = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
     setGroup.setListOrder(0);
     setGroupDao.save(setGroup);
     workout.getSetGroups().add(setGroup);
@@ -57,7 +57,7 @@ class DeleteSetGroupTest {
   }
 
   @AfterEach
-  void afterEach(){
+  void afterEach() {
     workoutDao.deleteById(workouts.get(0).getId());
     workouts.clear();
   }
@@ -74,7 +74,8 @@ class DeleteSetGroupTest {
         .andDo(print())
         .andExpect(status().isOk());
     mockMvc
-        .perform(get("/org.avillar.gymtracker.workoutapi.workout-api/setGroups/" + setGroup.getId()))
+        .perform(
+            get("/org.avillar.gymtracker.workoutapi.workout-api/setGroups/" + setGroup.getId()))
         .andDo(print())
         .andExpect(status().isOk());
     mockMvc
@@ -90,7 +91,8 @@ class DeleteSetGroupTest {
         .andDo(print())
         .andExpect(status().isNotFound());
     mockMvc
-        .perform(get("/org.avillar.gymtracker.workoutapi.workout-api/setGroups/" + setGroup.getId()))
+        .perform(
+            get("/org.avillar.gymtracker.workoutapi.workout-api/setGroups/" + setGroup.getId()))
         .andDo(print())
         .andExpect(status().isNotFound());
     mockMvc
@@ -104,7 +106,8 @@ class DeleteSetGroupTest {
   void deleteNotFoundAndNotPermission() throws Exception {
     final Workout workout = workouts.get(0);
     mockMvc
-        .perform(get("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" +UUID.randomUUID()))
+        .perform(
+            get("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + UUID.randomUUID()))
         .andDo(print())
         .andExpect(status().isNotFound());
     mockMvc
