@@ -20,6 +20,6 @@ public interface UpdateSetGroupListOrderController {
   ResponseEntity<List<UpdateSetGroupListOrderResponseInfrastructure>> execute(
       @PathVariable UUID setGroupId,
       @Valid @RequestBody
-      UpdateSetGroupListOrderRequestInfrastructure updateSetGroupListOrderRequestInfrastructure)
+          UpdateSetGroupListOrderRequestInfrastructure updateSetGroupListOrderRequestInfrastructure)
       throws EntityNotFoundException, IllegalAccessException;
 }

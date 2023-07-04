@@ -1,12 +1,12 @@
-package org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets;
+package org.avillar.gymtracker.workoutapi.setgroup.movesets.infrastrucure;
 
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.UpdateSetGroupSetsService;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.mapper.UpdateSetGroupSetsControllereMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.model.UpdateSetGroupSetsRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.model.UpdateSetGroupSetsResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.UpdateSetGroupSetsService;
+import org.avillar.gymtracker.workoutapi.setgroup.movesets.infrastrucure.mapper.UpdateSetGroupSetsControllereMapper;
+import org.avillar.gymtracker.workoutapi.setgroup.movesets.infrastrucure.model.UpdateSetGroupSetsRequestInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.movesets.infrastrucure.model.UpdateSetGroupSetsResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;

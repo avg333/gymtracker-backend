@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.domain;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,11 +29,17 @@ public interface SetDao extends JpaRepository<Set, UUID> {
 
   @Query(
       """
-            SELECT s
-            FROM Set s
-            JOIN FETCH s.setGroup sg
-            WHERE sg.id = :setGroupId
-            ORDER BY s.listOrder DESC
-            """)
-  List<Set> findLastSetForExerciseAndUserAux(@Param("setGroupId") UUID setGroupId);
+          SELECT s
+          FROM Set s
+          JOIN FETCH s.setGroup sg
+          JOIN sg.workout w
+          WHERE sg.exerciseId = :exerciseId
+          AND w.userId = :userId
+          AND w.date < :workoutDate
+          ORDER BY w.date DESC, sg.listOrder DESC, s.listOrder DESC
+          """)
+  List<Set> findLastSetForExerciseAndUserAux(
+      @Param("userId") UUID userId,
+      @Param("exerciseId") UUID exerciseId,
+      @Param("workoutDate") Date workoutDate);
 }

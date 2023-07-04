@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface CreateWorkoutController {
 
-  @Operation(summary = "Create a org.avillar.gymtracker.workoutapi.workout on the user with that id")
+  @Operation(
+      summary = "Create a org.avillar.gymtracker.workoutapi.workout on the user with that id")
   @ApiResponses(
       value = {
         @ApiResponse(

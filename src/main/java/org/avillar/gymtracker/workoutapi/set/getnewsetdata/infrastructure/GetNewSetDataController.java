@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface GetNewSetDataController {
 
   @GetMapping("setGroups/{setGroupId}/sets/newSet")
-  ResponseEntity<GetNewSetDataResponseInfrastructure> get(@PathVariable UUID setGroupId)
+  ResponseEntity<GetNewSetDataResponseInfrastructure> execute(@PathVariable UUID setGroupId)
       throws EntityNotFoundException, IllegalAccessException;
 }

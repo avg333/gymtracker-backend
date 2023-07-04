@@ -37,7 +37,7 @@ class GetNewSetDataControllerImplTest {
     when(getNewSetDataService.execute(setId)).thenReturn(expected);
 
     final ResponseEntity<GetNewSetDataResponseInfrastructure> result =
-        getNewSetDataControllerImpl.get(setId);
+        getNewSetDataControllerImpl.execute(setId);
     Assertions.assertEquals(HttpStatus.OK, result.getStatusCode());
     Assertions.assertNotNull(result.getBody());
     Assertions.assertEquals(expected.getDescription(), result.getBody().getDescription());

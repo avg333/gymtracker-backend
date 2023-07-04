@@ -18,7 +18,7 @@ public class GetNewSetDataControllerImpl implements GetNewSetDataController {
   private final GetNewSetDataControllerMapper getNewSetDataControllerMapper;
 
   @Override
-  public ResponseEntity<GetNewSetDataResponseInfrastructure> get(final UUID setGroupId)
+  public ResponseEntity<GetNewSetDataResponseInfrastructure> execute(final UUID setGroupId)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
         getNewSetDataControllerMapper.map(getNewSetDataService.execute(setGroupId)));

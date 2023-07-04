@@ -11,9 +11,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
@@ -33,8 +35,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class GetSetGroupsByExerciseServiceImplTest {
 
   private final EasyRandom easyRandom = new EasyRandom();
-  @InjectMocks
-  GetSetGroupsByExerciseServiceImpl getSetGroupsByExerciseService;
+
+  @InjectMocks private GetSetGroupsByExerciseServiceImpl getSetGroupsByExerciseService;
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Spy private GetSetGroupsByExerciseServiceMapperImpl getSetGroupsByExerciseServiceMapper;
@@ -44,6 +46,8 @@ class GetSetGroupsByExerciseServiceImplTest {
     final UUID userId = UUID.randomUUID();
     final UUID exerciseId = UUID.randomUUID();
     final List<SetGroup> expected = easyRandom.objects(SetGroup.class, 5).toList();
+    expected.forEach(
+        setGroup -> setGroup.setSets(easyRandom.objects(Set.class, 5).collect(Collectors.toSet())));
 
     when(setGroupDao.getSetGroupsFullByUserIdAndExerciseId(userId, exerciseId))
         .thenReturn(expected);
@@ -52,12 +56,27 @@ class GetSetGroupsByExerciseServiceImplTest {
     final List<GetSetGroupsByExerciseResponseApplication> result =
         getSetGroupsByExerciseService.execute(userId, exerciseId);
     assertEquals(expected.size(), result.size());
-    assertEquals(expected.get(0).getId(), result.get(0).getId());
-    assertEquals(expected.get(0).getExerciseId(), result.get(0).getExerciseId());
-    assertEquals(expected.get(0).getDescription(), result.get(0).getDescription());
-    assertEquals(expected.get(0).getListOrder(), result.get(0).getListOrder());
-    assertEquals(expected.get(0).getWorkout().getId(), result.get(0).getWorkout().getId());
-    assertEquals(expected.get(0).getId(), result.get(0).getId());
+
+    for (int i = 0; i < expected.size(); i++) {
+      final var setGroupExpected = expected.get(i);
+      final var setGroupResult = result.get(i);
+      assertEquals(setGroupExpected.getId(), setGroupResult.getId());
+      assertEquals(setGroupExpected.getDescription(), setGroupResult.getDescription());
+      assertEquals(setGroupExpected.getListOrder(), setGroupResult.getListOrder());
+      assertEquals(setGroupExpected.getExerciseId(), setGroupResult.getExerciseId());
+      assertEquals(setGroupExpected.getWorkout().getId(), setGroupResult.getWorkout().getId());
+      assertEquals(setGroupExpected.getSets().size(), setGroupResult.getSets().size());
+      for (int k = 0; k < expected.size(); k++) {
+        final var setExpected = setGroupExpected.getSets().stream().toList().get(k);
+        final var setResult = setGroupResult.getSets().get(k);
+        assertEquals(setExpected.getId(), setResult.getId());
+        assertEquals(setExpected.getDescription(), setResult.getDescription());
+        assertEquals(setExpected.getListOrder(), setResult.getListOrder());
+        assertEquals(setExpected.getRir(), setResult.getRir());
+        assertEquals(setExpected.getReps(), setResult.getReps());
+        assertEquals(setExpected.getWeight(), setResult.getWeight());
+      }
+    }
   }
 
   @Test

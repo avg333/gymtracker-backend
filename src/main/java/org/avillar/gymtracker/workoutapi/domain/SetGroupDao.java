@@ -51,13 +51,13 @@ public interface SetGroupDao extends JpaRepository<SetGroup, UUID> {
 
   @Query(
       """
-            SELECT sg
-            FROM SetGroup sg
-            JOIN sg.workout w
-            LEFT JOIN FETCH sg.sets s
-            WHERE w.userId = :userId AND sg.exerciseId = :exerciseId
-            ORDER BY w.date DESC, sg.listOrder DESC
-            """)
+          SELECT sg
+          FROM SetGroup sg
+          JOIN sg.workout w
+          LEFT JOIN FETCH sg.sets s
+          WHERE w.userId = :userId AND sg.exerciseId = :exerciseId
+          ORDER BY w.date DESC, sg.listOrder DESC
+          """)
   List<SetGroup> getSetGroupsFullByUserIdAndExerciseId(
       @Param("userId") UUID userId, @Param("exerciseId") UUID exerciseId);
 }

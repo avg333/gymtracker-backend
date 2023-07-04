@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.setgroup.application.update.sets;
+package org.avillar.gymtracker.workoutapi.setgroup.movesets.application;
 
 import jakarta.transaction.Transactional;
 import java.util.*;
@@ -10,8 +10,8 @@ import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.mapper.UpdateSetGroupSetsServiceMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.application.update.sets.model.UpdateSetGroupSetsResponseApplication;
+import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.mapper.UpdateSetGroupSetsServiceMapper;
+import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.model.UpdateSetGroupSetsResponseApplication;
 import org.springframework.stereotype.Service;
 
 // FINALIZAR

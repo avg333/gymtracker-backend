@@ -16,7 +16,6 @@ import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.mapper.Ge
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.model.GetNewSetDataResponseApplication;
 import org.springframework.stereotype.Service;
 
-// FINALIZAR
 @Service
 @RequiredArgsConstructor
 public class GetNewSetDataServiceImpl implements GetNewSetDataService {
@@ -39,7 +38,8 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
       return getNewSetDataServiceMapper.map(set.get());
     }
 
-    return getNewSetDataServiceMapper.map(getSetGroupExerciseHistory(setGroupId, setGroup));
+    // TODO Definir bien la logica de negocio
+    return getNewSetDataServiceMapper.map(getSetGroupExerciseHistory(setGroup));
   }
 
   private SetGroup getSetGroupFull(final UUID setGroupId) {
@@ -48,10 +48,15 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
         .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
   }
 
-  private Set getSetGroupExerciseHistory(UUID setGroupId, SetGroup setGroup) {
-    return setDao.findLastSetForExerciseAndUserAux(setGroup.getId()).stream()
+  private Set getSetGroupExerciseHistory(final SetGroup setGroup) {
+    return setDao
+        .findLastSetForExerciseAndUserAux(
+            setGroup.getWorkout().getUserId(),
+            setGroup.getExerciseId(),
+            setGroup.getWorkout().getDate())
+        .stream()
         .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Set.class, "setGroupId", setGroupId));
-    // TODO Arreglar esta excepcion Necesaria?
+        .orElseThrow(
+            () -> new EntityNotFoundException(Set.class, "exerciseId", setGroup.getExerciseId()));
   }
 }

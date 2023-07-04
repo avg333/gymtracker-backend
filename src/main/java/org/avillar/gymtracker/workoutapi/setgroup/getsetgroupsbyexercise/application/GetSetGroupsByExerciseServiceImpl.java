@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
@@ -24,8 +23,7 @@ public class GetSetGroupsByExerciseServiceImpl implements GetSetGroupsByExercise
 
   @Override
   public List<GetSetGroupsByExerciseResponseApplication> execute(
-      final UUID userId, final UUID exerciseId)
-      throws EntityNotFoundException, IllegalAccessException {
+      final UUID userId, final UUID exerciseId) throws IllegalAccessException {
 
     checkAccess(userId);
 

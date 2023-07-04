@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.setgroup.infrastructure.update.sets.model;
+package org.avillar.gymtracker.workoutapi.setgroup.movesets.infrastrucure.model;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
