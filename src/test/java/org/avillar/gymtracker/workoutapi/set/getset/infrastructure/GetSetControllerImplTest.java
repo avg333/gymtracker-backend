@@ -9,7 +9,6 @@ import org.avillar.gymtracker.workoutapi.set.getset.application.model.GetSetResp
 import org.avillar.gymtracker.workoutapi.set.getset.infrastructure.mapper.GetSetControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.set.getset.infrastructure.model.GetSetResponseInfrastructure;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +24,7 @@ class GetSetControllerImplTest {
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetSetControllerImpl getSetControllerImpl;
+
   @Mock private GetSetService getSetService;
   @Spy private GetSetControllerMapperImpl getSetControllerMapper;
 
@@ -39,12 +39,13 @@ class GetSetControllerImplTest {
         getSetControllerImpl.execute(expected.getId());
     assertEquals(HttpStatus.OK, result.getStatusCode());
     assertNotNull(result.getBody());
-    Assertions.assertEquals(expected.getId(), result.getBody().getId());
-    Assertions.assertEquals(expected.getListOrder(), result.getBody().getListOrder());
-    Assertions.assertEquals(expected.getReps(), result.getBody().getReps());
-    Assertions.assertEquals(expected.getRir(), result.getBody().getRir());
-    Assertions.assertEquals(expected.getWeight(), result.getBody().getWeight());
-    Assertions.assertEquals(expected.getDescription(), result.getBody().getDescription());
-    Assertions.assertEquals(expected.getSetGroup().getId(), result.getBody().getSetGroup().getId());
+    assertEquals(expected.getId(), result.getBody().getId());
+    assertEquals(expected.getListOrder(), result.getBody().getListOrder());
+    assertEquals(expected.getReps(), result.getBody().getReps());
+    assertEquals(expected.getRir(), result.getBody().getRir());
+    assertEquals(expected.getWeight(), result.getBody().getWeight());
+    assertEquals(expected.getDescription(), result.getBody().getDescription());
+    assertEquals(expected.getCompletedAt(), result.getBody().getCompletedAt());
+    assertEquals(expected.getSetGroup().getId(), result.getBody().getSetGroup().getId());
   }
 }

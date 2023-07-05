@@ -34,28 +34,31 @@ class UpdateSetListOrderControllerImplTest {
   @Test
   void updateSetData() {
     final UUID setId = UUID.randomUUID();
-    final int listOrder = 3;
     final UpdateSetListOrderRequestInfrastructure updateSetListOrderRequestInfrastructure =
-        new UpdateSetListOrderRequestInfrastructure();
-    updateSetListOrderRequestInfrastructure.setListOrder(listOrder);
-
+        easyRandom.nextObject(UpdateSetListOrderRequestInfrastructure.class);
     final List<UpdateSetListOrderResponseApplication> expected =
         easyRandom.objects(UpdateSetListOrderResponseApplication.class, 5).toList();
 
-    when(updateSetListOrderService.execute(setId, listOrder)).thenReturn(expected);
+    when(updateSetListOrderService.execute(
+            setId, updateSetListOrderRequestInfrastructure.getListOrder()))
+        .thenReturn(expected);
 
     final ResponseEntity<List<UpdateSetListOrderResponseInfrastructure>> result =
         updateSetListOrderControllerImpl.execute(setId, updateSetListOrderRequestInfrastructure);
     assertEquals(HttpStatus.OK, result.getStatusCode());
     assertNotNull(result.getBody());
     assertEquals(expected.size(), result.getBody().size());
-    assertEquals(expected.get(0).getId(), result.getBody().get(0).getId());
-    assertEquals(expected.get(0).getListOrder(), result.getBody().get(0).getListOrder());
-    assertEquals(expected.get(0).getRir(), result.getBody().get(0).getRir());
-    assertEquals(expected.get(0).getWeight(), result.getBody().get(0).getWeight());
-    assertEquals(expected.get(0).getReps(), result.getBody().get(0).getReps());
-    assertEquals(expected.get(0).getDescription(), result.getBody().get(0).getDescription());
-    assertEquals(
-        expected.get(0).getSetGroup().getId(), result.getBody().get(0).getSetGroup().getId());
+    for (int i = 0; i < expected.size(); i++) {
+      final var setExpected = expected.get(i);
+      final var setResult = result.getBody().get(i);
+      assertEquals(setExpected.getId(), setResult.getId());
+      assertEquals(setExpected.getListOrder(), setResult.getListOrder());
+      assertEquals(setExpected.getRir(), setResult.getRir());
+      assertEquals(setExpected.getWeight(), setResult.getWeight());
+      assertEquals(setExpected.getReps(), setResult.getReps());
+      assertEquals(setExpected.getDescription(), setResult.getDescription());
+      assertEquals(setExpected.getCompletedAt(), setResult.getCompletedAt());
+      assertEquals(setExpected.getSetGroup().getId(), setResult.getSetGroup().getId());
+    }
   }
 }

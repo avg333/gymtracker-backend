@@ -9,4 +9,5 @@ public class UpdateSetDataRequestApplication {
   private Integer reps;
   private Double rir;
   private Double weight;
+  private Boolean completed;
 }

@@ -26,6 +26,7 @@ class UpdateSetDataControllerImplTest {
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private UpdateSetDataControllerImpl updateSetDataControllerImpl;
+
   @Mock private UpdateSetDataService updateSetDataService;
   @Spy private UpdateSetDataControllerMapperImpl updateSetDataControllerMapper;
 
@@ -40,6 +41,7 @@ class UpdateSetDataControllerImplTest {
     updateSetDataRequestInfrastructure.setWeight(expected.getWeight());
     updateSetDataRequestInfrastructure.setRir(expected.getRir());
     updateSetDataRequestInfrastructure.setReps(expected.getReps());
+    updateSetDataRequestInfrastructure.setCompleted(expected.getCompletedAt() != null);
 
     when(updateSetDataService.execute(
             setId, updateSetDataControllerMapper.map(updateSetDataRequestInfrastructure)))
@@ -53,5 +55,6 @@ class UpdateSetDataControllerImplTest {
     assertEquals(expected.getWeight(), result.getBody().getWeight());
     assertEquals(expected.getRir(), result.getBody().getRir());
     assertEquals(expected.getReps(), result.getBody().getReps());
+    assertEquals(expected.getCompletedAt(), result.getBody().getCompletedAt());
   }
 }

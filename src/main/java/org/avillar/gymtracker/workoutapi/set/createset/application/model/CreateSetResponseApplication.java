@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.set.createset.application.model;
 
+import java.util.Date;
 import java.util.UUID;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class CreateSetResponseApplication {
   private Integer reps;
   private Double rir;
   private Double weight;
+  private Date completedAt;
   private SetGroup setGroup;
 
   @Data

@@ -3,6 +3,7 @@ package org.avillar.gymtracker.workoutapi.set.deleteset.infrastructure;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ class DeleteSetControllerImplTest {
   void deleteSet() {
     final UUID setId = UUID.randomUUID();
 
-    Mockito.doNothing().when(deleteSetService).execute(setId);
+    doNothing().when(deleteSetService).execute(setId);
 
     final ResponseEntity<Void> response =
         assertDoesNotThrow(() -> deleteSetControllerImpl.execute(setId));

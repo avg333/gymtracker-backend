@@ -2,6 +2,7 @@ package org.avillar.gymtracker.workoutapi.set.deleteset.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,11 +53,11 @@ class DeleteSetServiceImplTest {
     final List<Set> sets = setGroup.getSets().stream().toList();
 
     when(setDao.getSetFullById(setFirst.getId())).thenReturn(List.of(setFirst));
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(setFirst, AuthOperations.DELETE);
+    doNothing().when(authWorkoutsService).checkAccess(setFirst, AuthOperations.DELETE);
     when(setDao.getSetsBySetGroupId(setGroup.getId())).thenReturn(sets);
-    Mockito.doNothing().when(entitySorter).sortDelete(sets, setFirst);
+    doNothing().when(entitySorter).sortDelete(sets, setFirst); // FIXME
 
-    Assertions.assertDoesNotThrow(() -> deleteSetService.execute(setFirst.getId()));
+    assertDoesNotThrow(() -> deleteSetService.execute(setFirst.getId()));
     verify(setDao).deleteById(setFirst.getId());
     verify(entitySorter).sortDelete(sets, setFirst);
     verify(setDao).saveAll(sets);
@@ -76,10 +76,10 @@ class DeleteSetServiceImplTest {
     final List<Set> sets = setGroup.getSets().stream().toList();
 
     when(setDao.getSetFullById(setSecond.getId())).thenReturn(List.of(setSecond));
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(setSecond, AuthOperations.DELETE);
+    doNothing().when(authWorkoutsService).checkAccess(setSecond, AuthOperations.DELETE);
     when(setDao.getSetsBySetGroupId(setGroup.getId())).thenReturn(sets);
 
-    Assertions.assertDoesNotThrow(() -> deleteSetService.execute(setSecond.getId()));
+    assertDoesNotThrow(() -> deleteSetService.execute(setSecond.getId()));
     verify(setDao).deleteById(setSecond.getId());
     verify(entitySorter, never()).sortDelete(sets, setSecond);
     verify(setDao, never()).saveAll(sets);

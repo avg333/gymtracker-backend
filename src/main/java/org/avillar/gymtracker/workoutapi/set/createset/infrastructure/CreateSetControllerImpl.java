@@ -9,8 +9,6 @@ import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.Cre
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponseInfrastructure;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,8 +20,7 @@ public class CreateSetControllerImpl implements CreateSetController {
 
   @Override
   public ResponseEntity<CreateSetResponseInfrastructure> execute(
-      @PathVariable final UUID setGroupId,
-      @RequestBody final CreateSetRequestInfrastructure createSetRequestInfrastructure)
+      final UUID setGroupId, final CreateSetRequestInfrastructure createSetRequestInfrastructure)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
         createSetControllerMapper.map(

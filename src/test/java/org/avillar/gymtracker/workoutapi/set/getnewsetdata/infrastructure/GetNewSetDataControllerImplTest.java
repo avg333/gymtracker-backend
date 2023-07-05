@@ -1,5 +1,7 @@
 package org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
@@ -8,7 +10,6 @@ import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.model.Get
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.mapper.GetNewSetDataControllerMapperImpl;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.model.GetNewSetDataResponseInfrastructure;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,7 @@ class GetNewSetDataControllerImplTest {
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetNewSetDataControllerImpl getNewSetDataControllerImpl;
+
   @Mock private GetNewSetDataService getNewSetDataService;
   @Spy private GetNewSetDataControllerMapperImpl getNewSetDataControllerMapper;
 
@@ -37,11 +39,11 @@ class GetNewSetDataControllerImplTest {
 
     final ResponseEntity<GetNewSetDataResponseInfrastructure> result =
         getNewSetDataControllerImpl.execute(setId);
-    Assertions.assertEquals(HttpStatus.OK, result.getStatusCode());
-    Assertions.assertNotNull(result.getBody());
-    Assertions.assertEquals(expected.getDescription(), result.getBody().getDescription());
-    Assertions.assertEquals(expected.getReps(), result.getBody().getReps());
-    Assertions.assertEquals(expected.getRir(), result.getBody().getRir());
-    Assertions.assertEquals(expected.getWeight(), result.getBody().getWeight());
+    assertEquals(HttpStatus.OK, result.getStatusCode());
+    assertNotNull(result.getBody());
+    assertEquals(expected.getDescription(), result.getBody().getDescription());
+    assertEquals(expected.getReps(), result.getBody().getReps());
+    assertEquals(expected.getRir(), result.getBody().getRir());
+    assertEquals(expected.getWeight(), result.getBody().getWeight());
   }
 }

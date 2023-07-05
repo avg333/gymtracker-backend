@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model;
 
+import java.util.Date;
 import lombok.Data;
 
 @Data
@@ -9,4 +10,5 @@ public class UpdateSetDataResponseInfrastructure {
   private Integer reps;
   private Double rir;
   private Double weight;
+  private Date completedAt;
 }

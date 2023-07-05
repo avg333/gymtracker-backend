@@ -21,4 +21,6 @@ public class CreateSetRequestInfrastructure {
   @NotNull
   @Size(max = 1000, message = "The weight must be between 0 and 1000")
   private Double weight;
+
+  private Boolean completed;
 }

@@ -1,7 +1,9 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetdata.application;
 
+import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
@@ -32,10 +34,17 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);
 
-    if (StringUtils.equals(set.getDescription(), updateSetDataRequestApplication.getDescription())
-        && set.getWeight().equals(updateSetDataRequestApplication.getWeight())
-        && set.getRir().equals(updateSetDataRequestApplication.getRir())
-        && set.getReps().equals(updateSetDataRequestApplication.getReps())) {
+    final boolean sameDescription =
+        StringUtils.equals(set.getDescription(), updateSetDataRequestApplication.getDescription());
+    final boolean sameWeight = set.getWeight().equals(updateSetDataRequestApplication.getWeight());
+    final boolean sameRir = set.getRir().equals(updateSetDataRequestApplication.getRir());
+    final boolean sameReps = set.getReps().equals(updateSetDataRequestApplication.getReps());
+    final boolean sameCompletedAt =
+        (!BooleanUtils.isTrue(updateSetDataRequestApplication.getCompleted())
+                && set.getCompletedAt() == null)
+            || (BooleanUtils.isTrue(updateSetDataRequestApplication.getCompleted())
+                && set.getCompletedAt() != null);
+    if (sameDescription && sameWeight && sameRir && sameReps && sameCompletedAt) {
       return updateSetDataServiceMapper.map(set);
     }
 
@@ -43,6 +52,11 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
     set.setWeight(updateSetDataRequestApplication.getWeight());
     set.setReps(updateSetDataRequestApplication.getReps());
     set.setRir(updateSetDataRequestApplication.getRir());
+    if (!BooleanUtils.isTrue(updateSetDataRequestApplication.getCompleted())) {
+      set.setCompletedAt(null);
+    } else if (set.getCompletedAt() == null) {
+      set.setCompletedAt(new Date());
+    }
 
     setDao.save(set);
 

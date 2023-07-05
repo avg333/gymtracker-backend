@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import java.util.Date;
 import org.avillar.gymtracker.workoutapi.set.createset.application.CreateSetService;
 import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.CreateSetControllerMapperImpl;
@@ -40,12 +41,14 @@ class CreateSetControllerImplTest {
     createSetRequestInfrastructure.setRir(expected.getRir());
     createSetRequestInfrastructure.setWeight(expected.getWeight());
     createSetRequestInfrastructure.setDescription(expected.getDescription());
+    createSetRequestInfrastructure.setCompleted(expected.getCompletedAt() != null);
 
     when(createSetService.execute(
             expected.getSetGroup().getId(),
             createSetControllerMapper.map(createSetRequestInfrastructure)))
         .thenReturn(expected);
 
+    final Date timestampBeforeCall = new Date();
     final ResponseEntity<CreateSetResponseInfrastructure> result =
         postSetControllerImpl.execute(
             expected.getSetGroup().getId(), createSetRequestInfrastructure);
@@ -59,5 +62,6 @@ class CreateSetControllerImplTest {
     assertEquals(expected.getRir(), result.getBody().getRir());
     assertEquals(expected.getReps(), result.getBody().getReps());
     assertEquals(expected.getId(), result.getBody().getId());
+    assertEquals(expected.getCompletedAt(), result.getBody().getCompletedAt());
   }
 }

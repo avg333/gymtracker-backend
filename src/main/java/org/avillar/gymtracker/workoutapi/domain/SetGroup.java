@@ -31,8 +31,7 @@ import org.hibernate.annotations.BatchSize;
     )
 public class SetGroup extends SortableEntity {
 
-  @Column
-  private String description;
+  @Column private String description;
 
   @Column(nullable = false)
   private UUID exerciseId;
@@ -49,6 +48,28 @@ public class SetGroup extends SortableEntity {
   @OrderBy("listOrder ASC")
   @BatchSize(size = 20)
   private java.util.Set<Set> sets = new HashSet<>();
+
+  @Column(precision = 3)
+  private Integer rest;
+
+  @Column(precision = 2)
+  private Integer eccentric = 3;
+
+  @Column(precision = 2)
+  private Integer firstPause = 0;
+
+  @Column(precision = 2)
+  private Integer concentric = 1;
+
+  @Column(precision = 2)
+  private Integer secondPause = 0;
+
+  public SetGroup(String description, UUID exerciseId, Workout workout, java.util.Set<Set> sets) {
+    this.description = description;
+    this.exerciseId = exerciseId;
+    this.workout = workout;
+    this.sets = sets;
+  }
 
   public static SetGroup clone(final SetGroup setGroup) {
     final SetGroup newSetGroup = new SetGroup();

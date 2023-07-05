@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.workoutapi.set.getnewsetdata.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -21,12 +21,10 @@ import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.mapper.GetNewSetDataServiceMapperImpl;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -94,7 +92,7 @@ class GetNewSetDataServiceImplTest {
         .thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             EntityNotFoundException.class, () -> getNewSetDataService.execute(setGroup.getId()));
     assertEquals(Set.class.getSimpleName(), exception.getClassName());
     assertEquals("exerciseId", exception.getSearchParam());
@@ -108,8 +106,7 @@ class GetNewSetDataServiceImplTest {
     when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
-            EntityNotFoundException.class, () -> getNewSetDataService.execute(setGroupId));
+        assertThrows(EntityNotFoundException.class, () -> getNewSetDataService.execute(setGroupId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
   }
@@ -117,21 +114,20 @@ class GetNewSetDataServiceImplTest {
   @Test
   void getNotPermission() {
     final UUID userId = UUID.randomUUID();
-    final UUID setGroupId = UUID.randomUUID();
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setId(setGroupId);
+    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
+    final AuthOperations readOperation = AuthOperations.READ;
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(List.of(setGroup));
-    doThrow(new IllegalAccessException(setGroup, AuthOperations.READ, userId))
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    doThrow(new IllegalAccessException(setGroup, readOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(Mockito.any(SetGroup.class), eq(AuthOperations.READ));
+        .checkAccess(setGroup, readOperation);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
-            IllegalAccessException.class, () -> getNewSetDataService.execute(setGroupId));
+        assertThrows(
+            IllegalAccessException.class, () -> getNewSetDataService.execute(setGroup.getId()));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(setGroupId, exception.getEntityId());
+    assertEquals(setGroup.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(AuthOperations.READ, exception.getAuthOperations());
+    assertEquals(readOperation, exception.getAuthOperations());
   }
 }
