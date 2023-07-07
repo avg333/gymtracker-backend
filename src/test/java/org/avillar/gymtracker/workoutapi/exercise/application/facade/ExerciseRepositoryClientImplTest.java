@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.exercise.application.facade;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +19,6 @@ import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.applicatio
 import org.avillar.gymtracker.workoutapi.exercise.application.mapper.GetExerciseFacadeMapperImpl;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,7 +54,7 @@ class ExerciseRepositoryClientImplTest {
         .thenThrow(new EntityNotFoundException(Exercise.class, exerciseId));
 
     final ExerciseNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             ExerciseNotFoundException.class,
             () -> exerciseRepositoryClient.checkExerciseAccessById(exerciseId));
     assertEquals(exerciseId, exception.getId());
@@ -72,7 +72,7 @@ class ExerciseRepositoryClientImplTest {
                 mapExercise(exercise), AuthOperations.READ, UUID.randomUUID()));
 
     final ExerciseNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             ExerciseNotFoundException.class,
             () -> exerciseRepositoryClient.checkExerciseAccessById(exercise.getId()));
     assertEquals(exercise.getId(), exception.getId());
@@ -92,12 +92,8 @@ class ExerciseRepositoryClientImplTest {
 
     final List<GetExerciseResponseFacade> result =
         assertDoesNotThrow(() -> exerciseRepositoryClient.getExerciseByIds(exercisesIds));
-    assertEquals(expected.size(), result.size());
-    for (int i = 0; i < expected.size(); i++) {
-      assertEquals(expected.get(i).getId(), result.get(i).getId());
-      assertEquals(expected.get(i).getName(), result.get(i).getName());
-      assertEquals(expected.get(i).getDescription(), result.get(i).getDescription());
-    } // TODO Comprobar el resto de valores
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 
   @Test
@@ -108,21 +104,23 @@ class ExerciseRepositoryClientImplTest {
         exercises.stream()
             .map(GetExercisesByIdsResponseApplication::getId)
             .collect(Collectors.toSet());
+    final GetExercisesByIdsResponseApplication exerciseNoAccess = exercises.get(0);
+
     when(getExercisesByIdsService.execute(exercisesIds))
         .thenThrow(
             new IllegalAccessException(
-                mapExercise(exercises.get(0)), AuthOperations.READ, UUID.randomUUID()));
+                mapExercise(exerciseNoAccess), AuthOperations.READ, UUID.randomUUID()));
 
     final ExerciseNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             ExerciseNotFoundException.class,
             () -> exerciseRepositoryClient.getExerciseByIds(exercisesIds));
-    assertEquals(exercises.get(0).getId(), exception.getId());
+    assertEquals(exerciseNoAccess.getId(), exception.getId());
     assertEquals(AccessError.NOT_ACCESS, exception.getAccessError());
   }
 
   private Exercise mapExercise(
-      GetExercisesByIdsResponseApplication getExercisesByIdsResponseApplication) {
+      final GetExercisesByIdsResponseApplication getExercisesByIdsResponseApplication) {
     final Exercise exercise = new Exercise();
     exercise.setId(getExercisesByIdsResponseApplication.getId());
 

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthWorkoutsServiceImpl extends AuthServiceBase implements AuthWorkoutsService {
-
+  // TODO Se deberia devolver excepcion de la clase que no se tiene acceso y su id, no el WO
   @Override
   public void checkAccess(final Workout workout, final AuthOperations authOperations)
       throws IllegalAccessException {
@@ -27,7 +27,6 @@ public class AuthWorkoutsServiceImpl extends AuthServiceBase implements AuthWork
   public void checkAccess(final SetGroup setGroup, final AuthOperations authOperations)
       throws IllegalAccessException {
     checkParameters(setGroup, authOperations);
-
     checkAccess(setGroup.getWorkout(), authOperations);
   }
 
@@ -35,7 +34,6 @@ public class AuthWorkoutsServiceImpl extends AuthServiceBase implements AuthWork
   public void checkAccess(final Set set, final AuthOperations authOperations)
       throws IllegalAccessException {
     checkParameters(set, authOperations);
-
     checkAccess(set.getSetGroup(), authOperations);
   }
 }

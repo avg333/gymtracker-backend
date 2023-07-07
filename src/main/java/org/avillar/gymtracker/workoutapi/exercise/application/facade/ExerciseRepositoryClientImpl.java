@@ -22,9 +22,9 @@ public class ExerciseRepositoryClientImpl implements ExerciseRepositoryClient {
   private final GetExerciseFacadeMapper getExerciseFacadeMapper;
 
   @Override
-  public void checkExerciseAccessById(UUID exerciseId)
-      throws ExerciseNotFoundException, IllegalAccessException {
+  public void checkExerciseAccessById(final UUID exerciseId) throws ExerciseNotFoundException {
     try {
+      // TODO Usar un metodo mas liviano que este
       getExercisesByIdsService.execute(Collections.singleton(exerciseId));
     } catch (EntityNotFoundException ex) {
       throw new ExerciseNotFoundException(ex.getId(), AccessError.NOT_FOUND);
@@ -34,8 +34,8 @@ public class ExerciseRepositoryClientImpl implements ExerciseRepositoryClient {
   }
 
   @Override
-  public List<GetExerciseResponseFacade> getExerciseByIds(Set<UUID> exerciseIds)
-      throws IllegalAccessException {
+  public List<GetExerciseResponseFacade> getExerciseByIds(final Set<UUID> exerciseIds)
+      throws ExerciseNotFoundException {
     try {
       return getExerciseFacadeMapper.map(getExercisesByIdsService.execute(exerciseIds));
     } catch (IllegalAccessException ex) {
