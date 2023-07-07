@@ -1,11 +1,11 @@
-package org.avillar.gymtracker.workoutapi.set.getset.infrastructure.model;
+package org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model;
 
 import java.util.Date;
 import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class GetSetResponseInfrastructure {
+public class CreateSetResponse {
 
   private UUID id;
   private Integer listOrder;
@@ -18,6 +18,7 @@ public class GetSetResponseInfrastructure {
 
   @Data
   public static class SetGroup {
+
     private UUID id;
   }
 }

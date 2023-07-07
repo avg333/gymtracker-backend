@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.set.getset.infrastructure.model.GetSetResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.getset.infrastructure.model.GetSetResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,12 +28,12 @@ public interface GetSetController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = GetSetResponseInfrastructure.class))
+                  schema = @Schema(implementation = GetSetResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Set not found", content = @Content)
       })
   @GetMapping("sets/{setId}")
-  ResponseEntity<GetSetResponseInfrastructure> execute(@PathVariable UUID setId)
+  ResponseEntity<GetSetResponse> execute(@PathVariable UUID setId)
       throws EntityNotFoundException, IllegalAccessException;
 }

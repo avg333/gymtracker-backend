@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class UpdateSetListOrderResponseInfrastructure {
+public class UpdateSetListOrderResponse {
 
   private UUID id;
   private Integer listOrder;
@@ -18,6 +18,7 @@ public class UpdateSetListOrderResponseInfrastructure {
 
   @Data
   public static class SetGroup {
+
     private UUID id;
   }
 }

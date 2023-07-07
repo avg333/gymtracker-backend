@@ -7,6 +7,7 @@ import org.avillar.gymtracker.authapi.domain.UserApp;
 import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
 import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
 import org.avillar.gymtracker.authapi.domain.UserDao;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,9 +20,12 @@ public class AuthDataLoader implements ApplicationRunner {
 
   private final UserDao userDao;
 
+  @Value("${spring.profiles.active}")
+  private String activeProfile;
+
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();
-    if (!userDao.findAll().isEmpty()) {
+    if (activeProfile.equals("test") || !userDao.findAll().isEmpty()) {
       log.info("Micro org.avillar.gymtracker.authapi.auth is already populated");
       return;
     }

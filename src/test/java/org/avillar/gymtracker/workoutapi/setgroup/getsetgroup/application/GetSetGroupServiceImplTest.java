@@ -1,6 +1,8 @@
 package org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -16,12 +18,10 @@ import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.mapper.GetSetGroupServiceMapperImpl;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.model.GetSetGroupResponseApplication;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -41,14 +41,10 @@ class GetSetGroupServiceImplTest {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
 
     when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);
+    doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);
 
     final GetSetGroupResponseApplication result = getSetGroupService.execute(setGroup.getId());
-    assertEquals(setGroup.getId(), result.getId());
-    assertEquals(setGroup.getListOrder(), result.getListOrder());
-    assertEquals(setGroup.getDescription(), result.getDescription());
-    assertEquals(setGroup.getExerciseId(), result.getExerciseId());
-    assertEquals(setGroup.getWorkout().getId(), result.getWorkout().getId());
+    assertThat(result).usingRecursiveComparison().isEqualTo(setGroup);
   }
 
   @Test
@@ -58,8 +54,7 @@ class GetSetGroupServiceImplTest {
     when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
-            EntityNotFoundException.class, () -> getSetGroupService.execute(setGroupId));
+        assertThrows(EntityNotFoundException.class, () -> getSetGroupService.execute(setGroupId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
   }
@@ -68,19 +63,19 @@ class GetSetGroupServiceImplTest {
   void getNotPermission() {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     final UUID userId = UUID.randomUUID();
-    final AuthOperations authOperation = AuthOperations.READ;
+    final AuthOperations readOperation = AuthOperations.READ;
 
     when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
-    doThrow(new IllegalAccessException(setGroup, authOperation, userId))
+    doThrow(new IllegalAccessException(setGroup, readOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(setGroup, authOperation);
+        .checkAccess(setGroup, readOperation);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
+        assertThrows(
             IllegalAccessException.class, () -> getSetGroupService.execute(setGroup.getId()));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setGroup.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(authOperation, exception.getAuthOperations());
+    assertEquals(readOperation, exception.getAuthOperations());
   }
 }

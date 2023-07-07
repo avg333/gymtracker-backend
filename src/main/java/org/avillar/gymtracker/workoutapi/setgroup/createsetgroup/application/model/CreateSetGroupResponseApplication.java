@@ -14,6 +14,7 @@ public class CreateSetGroupResponseApplication {
 
   @Data
   public static class Workout {
+
     private UUID id;
   }
 }

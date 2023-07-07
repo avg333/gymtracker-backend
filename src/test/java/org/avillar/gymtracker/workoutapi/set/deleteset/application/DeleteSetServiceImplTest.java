@@ -20,7 +20,6 @@ import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,54 +34,49 @@ class DeleteSetServiceImplTest {
   @InjectMocks private DeleteSetServiceImpl deleteSetService;
 
   @Mock private SetDao setDao;
-
   @Mock private AuthWorkoutsService authWorkoutsService;
-
   @Mock private EntitySorter entitySorter;
 
   @Test
   void deleteOk() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final Set setFirst = new Set(null, 1, 1.0, 1.0, setGroup);
-    setFirst.setListOrder(0);
-    setFirst.setId(UUID.randomUUID());
-    final Set setSecond = new Set(null, 1, 1.0, 1.0, setGroup);
-    setSecond.setListOrder(1);
-    setSecond.setId(UUID.randomUUID());
-    setGroup.setSets(java.util.Set.of(setFirst, setSecond));
-    final List<Set> sets = setGroup.getSets().stream().toList();
+    final List<Set> sets = getSets();
+    final Set secondSet = sets.get(1);
 
-    when(setDao.getSetFullById(setFirst.getId())).thenReturn(List.of(setFirst));
-    doNothing().when(authWorkoutsService).checkAccess(setFirst, AuthOperations.DELETE);
-    when(setDao.getSetsBySetGroupId(setGroup.getId())).thenReturn(sets);
-    doNothing().when(entitySorter).sortDelete(sets, setFirst); // FIXME
+    when(setDao.getSetFullById(secondSet.getId())).thenReturn(List.of(secondSet));
+    doNothing().when(authWorkoutsService).checkAccess(secondSet, AuthOperations.DELETE);
+    when(setDao.getSetsBySetGroupId(secondSet.getSetGroup().getId())).thenReturn(sets);
+    doNothing().when(entitySorter).sortDelete(sets, secondSet);
 
-    assertDoesNotThrow(() -> deleteSetService.execute(setFirst.getId()));
-    verify(setDao).deleteById(setFirst.getId());
-    verify(entitySorter).sortDelete(sets, setFirst);
-    verify(setDao).saveAll(sets);
+    assertDoesNotThrow(() -> deleteSetService.execute(secondSet.getId()));
+    verify(setDao).deleteById(secondSet.getId());
+    verify(entitySorter).sortDelete(sets, secondSet); // FIXME
+    verify(setDao).saveAll(sets); // FIXME Se deberia llamar sin la set eliminada
   }
 
   @Test
   void deleteOkNoReorder() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final Set setFirst = new Set(null, 1, 1.0, 1.0, setGroup);
-    setFirst.setListOrder(0);
-    setFirst.setId(UUID.randomUUID());
-    final Set setSecond = new Set(null, 1, 1.0, 1.0, setGroup);
-    setSecond.setListOrder(1);
-    setSecond.setId(UUID.randomUUID());
-    setGroup.setSets(java.util.Set.of(setFirst, setSecond));
-    final List<Set> sets = setGroup.getSets().stream().toList();
+    final List<Set> sets = getSets();
+    final Set lastSet = sets.get(sets.size() - 1);
 
-    when(setDao.getSetFullById(setSecond.getId())).thenReturn(List.of(setSecond));
-    doNothing().when(authWorkoutsService).checkAccess(setSecond, AuthOperations.DELETE);
-    when(setDao.getSetsBySetGroupId(setGroup.getId())).thenReturn(sets);
+    when(setDao.getSetFullById(lastSet.getId())).thenReturn(List.of(lastSet));
+    doNothing().when(authWorkoutsService).checkAccess(lastSet, AuthOperations.DELETE);
+    when(setDao.getSetsBySetGroupId(lastSet.getSetGroup().getId())).thenReturn(sets);
 
-    assertDoesNotThrow(() -> deleteSetService.execute(setSecond.getId()));
-    verify(setDao).deleteById(setSecond.getId());
-    verify(entitySorter, never()).sortDelete(sets, setSecond);
+    assertDoesNotThrow(() -> deleteSetService.execute(lastSet.getId()));
+    verify(setDao).deleteById(lastSet.getId());
+    verify(entitySorter, never()).sortDelete(sets, lastSet);
     verify(setDao, never()).saveAll(sets);
+  }
+
+  private List<Set> getSets() {
+    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
+    final List<Set> sets = easyRandom.objects(Set.class, 5).toList();
+    for (int i = 0; i < sets.size(); i++) {
+      final Set set = sets.get(i);
+      set.setListOrder(i);
+      set.setSetGroup(setGroup);
+    }
+    return sets;
   }
 
   @Test
@@ -92,8 +86,7 @@ class DeleteSetServiceImplTest {
     when(setDao.getSetFullById(setId)).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
-            EntityNotFoundException.class, () -> deleteSetService.execute(setId));
+        assertThrows(EntityNotFoundException.class, () -> deleteSetService.execute(setId));
     assertEquals(Set.class.getSimpleName(), exception.getClassName());
     assertEquals(setId, exception.getId());
     verify(setDao, never()).deleteById(any());
@@ -113,8 +106,7 @@ class DeleteSetServiceImplTest {
         .checkAccess(set, deleteOperation);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
-            IllegalAccessException.class, () -> deleteSetService.execute(set.getId()));
+        assertThrows(IllegalAccessException.class, () -> deleteSetService.execute(set.getId()));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(set.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());

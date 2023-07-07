@@ -2,16 +2,14 @@ package org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure
 
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupRequestApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupRequest;
+import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface CreateSetGroupControllerMapper {
 
-  CreateSetGroupResponseInfrastructure map(
-      CreateSetGroupResponseApplication createSetGroupResponseApplication);
+  CreateSetGroupResponse map(CreateSetGroupResponseApplication createSetGroupResponseApplication);
 
-  CreateSetGroupRequestApplication map(
-      CreateSetGroupRequestInfrastructure createSetGroupRequestInfrastructure);
+  CreateSetGroupRequestApplication map(CreateSetGroupRequest createSetGroupRequest);
 }

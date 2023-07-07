@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -54,28 +55,8 @@ class GetSetGroupsByExerciseServiceImplTest {
 
     final List<GetSetGroupsByExerciseResponseApplication> result =
         getSetGroupsByExerciseService.execute(userId, exerciseId);
-    assertEquals(expected.size(), result.size());
-
-    for (int i = 0; i < expected.size(); i++) {
-      final var setGroupExpected = expected.get(i);
-      final var setGroupResult = result.get(i);
-      assertEquals(setGroupExpected.getId(), setGroupResult.getId());
-      assertEquals(setGroupExpected.getDescription(), setGroupResult.getDescription());
-      assertEquals(setGroupExpected.getListOrder(), setGroupResult.getListOrder());
-      assertEquals(setGroupExpected.getExerciseId(), setGroupResult.getExerciseId());
-      assertEquals(setGroupExpected.getWorkout().getId(), setGroupResult.getWorkout().getId());
-      assertEquals(setGroupExpected.getSets().size(), setGroupResult.getSets().size());
-      for (int k = 0; k < expected.size(); k++) {
-        final var setExpected = setGroupExpected.getSets().stream().toList().get(k);
-        final var setResult = setGroupResult.getSets().get(k);
-        assertEquals(setExpected.getId(), setResult.getId());
-        assertEquals(setExpected.getDescription(), setResult.getDescription());
-        assertEquals(setExpected.getListOrder(), setResult.getListOrder());
-        assertEquals(setExpected.getRir(), setResult.getRir());
-        assertEquals(setExpected.getReps(), setResult.getReps());
-        assertEquals(setExpected.getWeight(), setResult.getWeight());
-      }
-    }
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 
   @Test
@@ -85,11 +66,11 @@ class GetSetGroupsByExerciseServiceImplTest {
     workout.setUserId(userId);
     final SetGroup setGroup = new SetGroup();
     setGroup.setWorkout(workout);
-    final AuthOperations authOperation = AuthOperations.READ;
+    final AuthOperations readOperation = AuthOperations.READ;
 
-    doThrow(new IllegalAccessException(setGroup, authOperation, userId))
+    doThrow(new IllegalAccessException(setGroup, readOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(any(SetGroup.class), eq(authOperation));
+        .checkAccess(any(SetGroup.class), eq(readOperation));
 
     final IllegalAccessException exception =
         Assertions.assertThrows(
@@ -98,7 +79,7 @@ class GetSetGroupsByExerciseServiceImplTest {
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(authOperation, exception.getAuthOperations());
+    assertEquals(readOperation, exception.getAuthOperations());
     verify(setGroupDao, never()).getSetGroupsFullByUserIdAndExerciseId(any(), any());
   }
 }

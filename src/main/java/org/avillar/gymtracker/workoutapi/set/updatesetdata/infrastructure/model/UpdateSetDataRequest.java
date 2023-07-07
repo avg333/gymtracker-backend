@@ -1,11 +1,11 @@
-package org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model;
+package org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CreateSetRequestInfrastructure {
+public class UpdateSetDataRequest {
 
   @Size(max = 255, message = "The description must have a length between 0 and 255 characters")
   private String description;

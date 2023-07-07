@@ -6,8 +6,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.set.createset.application.CreateSetService;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.CreateSetControllerMapper;
-import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequest;
+import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,12 +19,11 @@ public class CreateSetControllerImpl implements CreateSetController {
   private final CreateSetControllerMapper createSetControllerMapper;
 
   @Override
-  public ResponseEntity<CreateSetResponseInfrastructure> execute(
-      final UUID setGroupId, final CreateSetRequestInfrastructure createSetRequestInfrastructure)
+  public ResponseEntity<CreateSetResponse> execute(
+      final UUID setGroupId, final CreateSetRequest createSetRequest)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
         createSetControllerMapper.map(
-            createSetService.execute(
-                setGroupId, createSetControllerMapper.map(createSetRequestInfrastructure))));
+            createSetService.execute(setGroupId, createSetControllerMapper.map(createSetRequest))));
   }
 }

@@ -7,8 +7,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.UpdateSetGroupListOrderService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.mapper.UpdateSetGroupListOrderControllerMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderRequest;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,14 +20,12 @@ public class UpdateSetGroupListOrderControllerImpl implements UpdateSetGroupList
   private final UpdateSetGroupListOrderControllerMapper updateSetGroupListOrderControllerMapper;
 
   @Override
-  public ResponseEntity<List<UpdateSetGroupListOrderResponseInfrastructure>> execute(
-      final UUID setGroupId,
-      final UpdateSetGroupListOrderRequestInfrastructure
-          updateSetGroupListOrderRequestInfrastructure)
+  public ResponseEntity<List<UpdateSetGroupListOrderResponse>> execute(
+      final UUID setGroupId, final UpdateSetGroupListOrderRequest updateSetGroupListOrderRequest)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
         updateSetGroupListOrderControllerMapper.map(
             updateSetGroupListOrderService.execute(
-                setGroupId, updateSetGroupListOrderRequestInfrastructure.getListOrder())));
+                setGroupId, updateSetGroupListOrderRequest.getListOrder())));
   }
 }

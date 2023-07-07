@@ -2,7 +2,6 @@ package org.avillar.gymtracker.workoutapi;
 
 import java.util.*;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.authapi.domain.UserApp;
 import org.avillar.gymtracker.authapi.domain.UserDao;
@@ -45,9 +44,9 @@ public class WorkoutsDataLoader implements ApplicationRunner {
   private final List<Workout> workouts = new ArrayList<>();
   private final List<SetGroup> setGroups = new ArrayList<>();
   private final List<Set> sets = new ArrayList<>();
-  @Value("${preload_data}")
-  @Setter
-  private boolean preload;
+
+  @Value("${spring.profiles.active}")
+  private String activeProfile;
 
   @PostMapping("/users/{userId}/create")
   public ResponseEntity<Void> postWorkout(@PathVariable final UUID userId) {
@@ -57,7 +56,7 @@ public class WorkoutsDataLoader implements ApplicationRunner {
 
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();
-    if (!preload || !workoutDao.findAll().isEmpty()) {
+    if (activeProfile.equals("test")|| !workoutDao.findAll().isEmpty()) {
       log.info("Micro workouts is already populated");
       return;
     }

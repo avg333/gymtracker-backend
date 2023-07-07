@@ -18,6 +18,7 @@ public class CreateSetResponseApplication {
 
   @Data
   public static class SetGroup {
+
     private UUID id;
   }
 }

@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.application.UpdateSetGroupDescriptionService;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequest;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,14 +18,13 @@ public class UpdateSetGroupDescriptionControllerImpl
   private final UpdateSetGroupDescriptionService updateSetGroupDescriptionService;
 
   @Override
-  public ResponseEntity<UpdateSetGroupDescriptionResponseInfrastructure> patch(
+  public ResponseEntity<UpdateSetGroupDescriptionResponse> execute(
       final UUID setGroupId,
-      final UpdateSetGroupDescriptionRequestInfrastructure
-          updateSetGroupDescriptionRequestInfrastructure)
+      final UpdateSetGroupDescriptionRequest updateSetGroupDescriptionRequest)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
-        new UpdateSetGroupDescriptionResponseInfrastructure(
+        new UpdateSetGroupDescriptionResponse(
             updateSetGroupDescriptionService.execute(
-                setGroupId, updateSetGroupDescriptionRequestInfrastructure.getDescription())));
+                setGroupId, updateSetGroupDescriptionRequest.getDescription())));
   }
 }

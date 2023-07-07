@@ -2,16 +2,14 @@ package org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.mappe
 
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataRequestApplication;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataResponseApplication;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface UpdateSetDataControllerMapper {
 
-  UpdateSetDataResponseInfrastructure map(
-      UpdateSetDataResponseApplication updateSetDataResponseApplication);
+  UpdateSetDataResponse map(UpdateSetDataResponseApplication updateSetDataResponseApplication);
 
-  UpdateSetDataRequestApplication map(
-      UpdateSetDataRequestInfrastructure updateSetDataRequestInfrastructure);
+  UpdateSetDataRequestApplication map(UpdateSetDataRequest updateSetDataRequest);
 }

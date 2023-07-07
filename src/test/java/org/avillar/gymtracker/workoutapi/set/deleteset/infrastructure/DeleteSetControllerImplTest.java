@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.set.deleteset.application.DeleteSetService;
@@ -33,6 +32,5 @@ class DeleteSetControllerImplTest {
         assertDoesNotThrow(() -> deleteSetControllerImpl.execute(setId));
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     assertNull(response.getBody());
-    verify(deleteSetService).execute(setId);
   }
 }

@@ -26,8 +26,6 @@ public class CreateWorkoutServiceImpl implements CreateWorkoutService {
       final UUID userId, final CreateWorkoutRequestApplication createWorkoutRequestApplication)
       throws IllegalAccessException, DuplicatedWorkoutDateException {
 
-    // TODO Verificar si el usuario existe?
-
     final Workout workout = createWorkoutServiceMapper.map(createWorkoutRequestApplication);
     workout.setUserId(userId);
 

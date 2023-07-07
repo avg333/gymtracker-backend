@@ -7,8 +7,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.UpdateSetListOrderService;
 import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.mapper.UpdateSetListOrderControllerMapper;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model.UpdateSetListOrderRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model.UpdateSetListOrderResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model.UpdateSetListOrderRequest;
+import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model.UpdateSetListOrderResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,13 +20,11 @@ public class UpdateSetListOrderControllerImpl implements UpdateSetListOrderContr
   private final UpdateSetListOrderControllerMapper updateSetListOrderControllerMapper;
 
   @Override
-  public ResponseEntity<List<UpdateSetListOrderResponseInfrastructure>> execute(
-      final UUID setId,
-      final UpdateSetListOrderRequestInfrastructure updateSetListOrderRequestInfrastructure)
+  public ResponseEntity<List<UpdateSetListOrderResponse>> execute(
+      final UUID setId, final UpdateSetListOrderRequest updateSetListOrderRequest)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
         updateSetListOrderControllerMapper.map(
-            updateSetListOrderService.execute(
-                setId, updateSetListOrderRequestInfrastructure.getListOrder())));
+            updateSetListOrderService.execute(setId, updateSetListOrderRequest.getListOrder())));
   }
 }

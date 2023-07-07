@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class UpdateSetListOrderResponseApplication {
+
   private UUID id;
   private Integer listOrder;
   private String description;
@@ -17,6 +18,7 @@ public class UpdateSetListOrderResponseApplication {
 
   @Data
   public static class SetGroup {
+
     private UUID id;
   }
 }

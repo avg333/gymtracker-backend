@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,14 +30,13 @@ public interface UpdateSetDataController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = UpdateSetDataResponseInfrastructure.class))
+                  schema = @Schema(implementation = UpdateSetDataResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Set not found", content = @Content)
       })
   @PatchMapping("sets/{setId}")
-  ResponseEntity<UpdateSetDataResponseInfrastructure> patch(
-      @PathVariable UUID setId,
-      @RequestBody UpdateSetDataRequestInfrastructure updateSetDataRequestInfrastructure)
+  ResponseEntity<UpdateSetDataResponse> execute(
+      @PathVariable UUID setId, @RequestBody UpdateSetDataRequest updateSetDataRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }

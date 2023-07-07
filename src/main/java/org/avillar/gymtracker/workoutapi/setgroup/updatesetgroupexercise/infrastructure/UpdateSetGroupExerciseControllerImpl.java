@@ -6,8 +6,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.application.UpdateSetGroupExerciseService;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseRequest;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,13 +18,12 @@ public class UpdateSetGroupExerciseControllerImpl implements UpdateSetGroupExerc
   private final UpdateSetGroupExerciseService updateSetGroupExerciseService;
 
   @Override
-  public ResponseEntity<UpdateSetGroupExerciseResponseInfrastructure> execute(
-      final UUID setGroupId,
-      final UpdateSetGroupExerciseRequestInfrastructure updateSetGroupExerciseRequestInfrastructure)
+  public ResponseEntity<UpdateSetGroupExerciseResponse> execute(
+      final UUID setGroupId, final UpdateSetGroupExerciseRequest updateSetGroupExerciseRequest)
       throws EntityNotFoundException, IllegalAccessException, ExerciseNotFoundException {
     return ResponseEntity.ok(
-        new UpdateSetGroupExerciseResponseInfrastructure(
+        new UpdateSetGroupExerciseResponse(
             updateSetGroupExerciseService.execute(
-                setGroupId, updateSetGroupExerciseRequestInfrastructure.getExerciseId())));
+                setGroupId, updateSetGroupExerciseRequest.getExerciseId())));
   }
 }

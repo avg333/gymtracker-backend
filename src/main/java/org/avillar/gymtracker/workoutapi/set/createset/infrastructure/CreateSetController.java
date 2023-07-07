@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequest;
+import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,14 +30,13 @@ public interface CreateSetController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = CreateSetResponseInfrastructure.class))
+                  schema = @Schema(implementation = CreateSetResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "SetGroup not found", content = @Content)
       })
   @PostMapping("setGroups/{setGroupId}/sets")
-  ResponseEntity<CreateSetResponseInfrastructure> execute(
-      @PathVariable UUID setGroupId,
-      @RequestBody CreateSetRequestInfrastructure createSetRequestInfrastructure)
+  ResponseEntity<CreateSetResponse> execute(
+      @PathVariable UUID setGroupId, @RequestBody CreateSetRequest createSetRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }

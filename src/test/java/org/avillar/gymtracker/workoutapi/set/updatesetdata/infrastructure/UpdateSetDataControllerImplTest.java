@@ -1,15 +1,14 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.UpdateSetDataService;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.mapper.UpdateSetDataControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,29 +31,24 @@ class UpdateSetDataControllerImplTest {
 
   @Test
   void updateSetData() {
+    final UUID setId = UUID.randomUUID();
     final UpdateSetDataResponseApplication expected =
         easyRandom.nextObject(UpdateSetDataResponseApplication.class);
-    final UUID setId = UUID.randomUUID();
-    final UpdateSetDataRequestInfrastructure updateSetDataRequestInfrastructure =
-        new UpdateSetDataRequestInfrastructure();
-    updateSetDataRequestInfrastructure.setDescription(expected.getDescription());
-    updateSetDataRequestInfrastructure.setWeight(expected.getWeight());
-    updateSetDataRequestInfrastructure.setRir(expected.getRir());
-    updateSetDataRequestInfrastructure.setReps(expected.getReps());
-    updateSetDataRequestInfrastructure.setCompleted(expected.getCompletedAt() != null);
+    final UpdateSetDataRequest updateSetDataRequest = new UpdateSetDataRequest();
+    updateSetDataRequest.setDescription(expected.getDescription());
+    updateSetDataRequest.setWeight(expected.getWeight());
+    updateSetDataRequest.setRir(expected.getRir());
+    updateSetDataRequest.setReps(expected.getReps());
+    updateSetDataRequest.setCompleted(expected.getCompletedAt() != null);
 
     when(updateSetDataService.execute(
-            setId, updateSetDataControllerMapper.map(updateSetDataRequestInfrastructure)))
+            setId, updateSetDataControllerMapper.map(updateSetDataRequest)))
         .thenReturn(expected);
 
-    final ResponseEntity<UpdateSetDataResponseInfrastructure> result =
-        updateSetDataControllerImpl.patch(setId, updateSetDataRequestInfrastructure);
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals(expected.getDescription(), result.getBody().getDescription());
-    assertEquals(expected.getWeight(), result.getBody().getWeight());
-    assertEquals(expected.getRir(), result.getBody().getRir());
-    assertEquals(expected.getReps(), result.getBody().getReps());
-    assertEquals(expected.getCompletedAt(), result.getBody().getCompletedAt());
+    final ResponseEntity<UpdateSetDataResponse> result =
+        updateSetDataControllerImpl.execute(setId, updateSetDataRequest);
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

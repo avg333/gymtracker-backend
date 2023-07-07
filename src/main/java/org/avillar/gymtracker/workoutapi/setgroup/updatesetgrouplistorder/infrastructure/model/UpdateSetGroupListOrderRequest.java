@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class UpdateSetGroupListOrderRequestInfrastructure {
+public class UpdateSetGroupListOrderRequest {
 
   @NotNull private Integer listOrder;
 }

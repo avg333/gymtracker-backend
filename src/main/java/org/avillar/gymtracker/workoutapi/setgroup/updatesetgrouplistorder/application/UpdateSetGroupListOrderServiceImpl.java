@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
@@ -32,7 +31,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.UPDATE);
 
-    final Set<SetGroup> setGroups =
+    final List<SetGroup> setGroups =
         setGroupDao.getSetGroupsByWorkoutId(setGroup.getWorkout().getId());
 
     final int oldPosition = setGroup.getListOrder();

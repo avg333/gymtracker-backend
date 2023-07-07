@@ -25,6 +25,11 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
   private final AuthWorkoutsService authWorkoutsService;
   private final UpdateSetDataServiceMapper updateSetDataServiceMapper;
 
+  private static boolean isSameCompletedAt(final Boolean completed, final Date completedAt) {
+    return (!BooleanUtils.isTrue(completed) && completedAt == null)
+        || (BooleanUtils.isTrue(completed) && completedAt != null);
+  }
+
   @Override
   @Transactional
   public UpdateSetDataResponseApplication execute(
@@ -40,10 +45,7 @@ public class UpdateSetDataServiceImpl implements UpdateSetDataService {
     final boolean sameRir = set.getRir().equals(updateSetDataRequestApplication.getRir());
     final boolean sameReps = set.getReps().equals(updateSetDataRequestApplication.getReps());
     final boolean sameCompletedAt =
-        (!BooleanUtils.isTrue(updateSetDataRequestApplication.getCompleted())
-                && set.getCompletedAt() == null)
-            || (BooleanUtils.isTrue(updateSetDataRequestApplication.getCompleted())
-                && set.getCompletedAt() != null);
+        isSameCompletedAt(updateSetDataRequestApplication.getCompleted(), set.getCompletedAt());
     if (sameDescription && sameWeight && sameRir && sameReps && sameCompletedAt) {
       return updateSetDataServiceMapper.map(set);
     }

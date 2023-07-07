@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model.UpdateSetListOrderRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model.UpdateSetListOrderResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model.UpdateSetListOrderRequest;
+import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model.UpdateSetListOrderResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,14 +31,13 @@ public interface UpdateSetListOrderController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = UpdateSetListOrderResponseInfrastructure.class))
+                  schema = @Schema(implementation = UpdateSetListOrderResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Set not found", content = @Content)
       })
   @PatchMapping("sets/{setId}/listOrder")
-  ResponseEntity<List<UpdateSetListOrderResponseInfrastructure>> execute(
-      @PathVariable UUID setId,
-      @RequestBody UpdateSetListOrderRequestInfrastructure updateSetListOrderRequestInfrastructure)
+  ResponseEntity<List<UpdateSetListOrderResponse>> execute(
+      @PathVariable UUID setId, @RequestBody UpdateSetListOrderRequest updateSetListOrderRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }

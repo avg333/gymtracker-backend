@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UpdateSetGroupDescriptionResponseInfrastructure {
+public class UpdateSetGroupDescriptionResponse {
 
   private String description;
 }

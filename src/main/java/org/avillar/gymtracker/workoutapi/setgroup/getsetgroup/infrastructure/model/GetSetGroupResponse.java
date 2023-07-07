@@ -1,10 +1,10 @@
-package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model;
+package org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.model;
 
 import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class UpdateSetGroupListOrderResponseInfrastructure {
+public class GetSetGroupResponse {
 
   private UUID id;
   private Integer listOrder;
@@ -14,6 +14,7 @@ public class UpdateSetGroupListOrderResponseInfrastructure {
 
   @Data
   public static class Workout {
+
     private UUID id;
   }
 }

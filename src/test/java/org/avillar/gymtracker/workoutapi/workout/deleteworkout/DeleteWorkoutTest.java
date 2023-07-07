@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.setgroup;
+package org.avillar.gymtracker.workoutapi.workout.deleteworkout;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.authapi.domain.UserApp;
+import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
+import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
 import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
@@ -18,18 +20,27 @@ import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class DeleteSetGroupTest {
+@TestInstance(Lifecycle.PER_CLASS)
+class DeleteWorkoutTest {
+
+  private static final String USER_NAME_OK = "adrian";
+  private static final String USER_NAME_KO = "chema";
 
   final List<Workout> workouts = new ArrayList<>();
   @Autowired private MockMvc mockMvc;
@@ -38,80 +49,130 @@ class DeleteSetGroupTest {
   @Autowired private SetDao setDao;
   @Autowired private UserDao userDao;
 
+
+  @BeforeAll
+  public void before() {
+    userDao.deleteAll();
+    userDao.saveAll(
+        List.of(
+            new UserApp(
+                null,
+                "chema",
+                new BCryptPasswordEncoder().encode("chema69"),
+                null,
+                "Chema",
+                "Garcia",
+                "Romero",
+                null,
+                GenderEnum.MALE,
+                ActivityLevelEnum.EXTREME),
+            new UserApp(
+                null,
+                "alex",
+                new BCryptPasswordEncoder().encode("alex69"),
+                null,
+                "Alex",
+                "Garcia",
+                "Fernandez",
+                null,
+                GenderEnum.FEMALE,
+                ActivityLevelEnum.SEDENTARY),
+            new UserApp(
+                null,
+                "adrian",
+                new BCryptPasswordEncoder().encode("adrian69"),
+                null,
+                "Adrian",
+                "Villar",
+                "Gesto",
+                null,
+                GenderEnum.MALE,
+                ActivityLevelEnum.MODERATE)));
+  }
+
+  @AfterAll
+  public void afterAll() {
+    userDao.deleteAll();
+    workoutDao.deleteAll();
+  }
+
   @BeforeEach
   void beforeEach() {
-    final UserApp userApp = userDao.findByUsername("adrian");
+    final UserApp userApp = userDao.findByUsername(USER_NAME_OK);
 
     final Workout workout = new Workout(new Date(), null, userApp.getId(), new HashSet<>());
-    workoutDao.save(workout);
     final SetGroup setGroup = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
     setGroup.setListOrder(0);
-    setGroupDao.save(setGroup);
+    workoutDao.save(workout);
     workout.getSetGroups().add(setGroup);
     final Set set = new Set(null, 1, 1.0, 1.0, setGroup);
     set.setListOrder(0);
-    setDao.save(set);
+    setGroupDao.save(setGroup);
     setGroup.getSets().add(set);
-    workouts.clear();
+    setDao.save(set);
     workouts.add(workout);
   }
 
   @AfterEach
   void afterEach() {
-    workoutDao.deleteById(workouts.get(0).getId());
+    workoutDao.deleteAll();
+    setGroupDao.deleteAll();
+    setDao.deleteAll();
     workouts.clear();
   }
 
   @Test
-  @WithUserDetails("adrian")
+  @WithUserDetails(USER_NAME_OK)
   void deleteOneWorkout() throws Exception {
     final Workout workout = workouts.get(0);
     final SetGroup setGroup = workout.getSetGroups().stream().findAny().get();
     final Set set = setGroup.getSets().stream().findAny().get();
     final UUID workoutId = workouts.get(0).getId();
     mockMvc
-        .perform(get("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + workout.getId()))
+        .perform(get("/workout-api/workouts/" + workout.getId()))
         .andDo(print())
         .andExpect(status().isOk());
     mockMvc
-        .perform(
-            get("/org.avillar.gymtracker.workoutapi.workout-api/setGroups/" + setGroup.getId()))
+        .perform(get("/workout-api/setGroups/" + setGroup.getId()))
         .andDo(print())
         .andExpect(status().isOk());
     mockMvc
-        .perform(get("/org.avillar.gymtracker.workoutapi.workout-api/sets/" + set.getId()))
+        .perform(get("/workout-api/sets/" + set.getId()))
         .andDo(print())
         .andExpect(status().isOk());
     mockMvc
-        .perform(delete("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + workoutId))
+        .perform(delete("/workout-api/workouts/" + workoutId))
         .andDo(print())
         .andExpect(status().isNoContent());
     mockMvc
-        .perform(get("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + workoutId))
+        .perform(get("/workout-api/workouts/" + workoutId))
         .andDo(print())
         .andExpect(status().isNotFound());
     mockMvc
-        .perform(
-            get("/org.avillar.gymtracker.workoutapi.workout-api/setGroups/" + setGroup.getId()))
+        .perform(get("/workout-api/setGroups/" + setGroup.getId()))
         .andDo(print())
         .andExpect(status().isNotFound());
     mockMvc
-        .perform(get("/org.avillar.gymtracker.workoutapi.workout-api/sets/" + set.getId()))
+        .perform(get("/workout-api/sets/" + set.getId()))
         .andDo(print())
         .andExpect(status().isNotFound());
   }
 
   @Test
-  @WithUserDetails("chema")
-  void deleteNotFoundAndNotPermission() throws Exception {
-    final Workout workout = workouts.get(0);
+  @WithUserDetails(USER_NAME_OK)
+  void deleteNotFound() throws Exception {
     mockMvc
-        .perform(
-            get("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + UUID.randomUUID()))
+        .perform(get("/workout-api/workouts/" + UUID.randomUUID()))
         .andDo(print())
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @WithUserDetails(USER_NAME_KO)
+  void NotPermission() throws Exception {
+    final Workout workout = workoutDao.findAll().get(0);
     mockMvc
-        .perform(get("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + workout.getId()))
+        .perform(get("/workout-api/workouts/" + workout.getId()))
         .andDo(print())
         .andExpect(status().isForbidden());
   }

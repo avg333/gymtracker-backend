@@ -14,6 +14,7 @@ public class UpdateSetGroupListOrderResponseApplication {
 
   @Data
   public static class Workout {
+
     private UUID id;
   }
 }

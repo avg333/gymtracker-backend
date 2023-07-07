@@ -2,31 +2,30 @@ package org.avillar.gymtracker.workoutapi.setgroup.deletesetgroup.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.common.sort.application.EntitySorter;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,48 +42,49 @@ class DeleteSetGroupServiceImplTest {
 
   @Test
   void deleteOk() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final SetGroup setGroupFirst = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
-    setGroupFirst.setListOrder(0);
-    setGroupFirst.setId(UUID.randomUUID());
-    final SetGroup setGroupSecond = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
-    setGroupSecond.setListOrder(1);
-    setGroupSecond.setId(UUID.randomUUID());
-    workout.setSetGroups(Set.of(setGroupFirst, setGroupSecond));
+    final List<SetGroup> setGroups = getSetGroups();
+    final SetGroup setGroupSecond = setGroups.get(1);
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupFirst.getId()))
-        .thenReturn(List.of(setGroupFirst));
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(setGroupFirst, AuthOperations.DELETE);
-    when(setGroupDao.getSetGroupsByWorkoutId(workout.getId())).thenReturn(workout.getSetGroups());
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroupSecond.getId()))
+        .thenReturn(List.of(setGroupSecond));
+    doNothing().when(authWorkoutsService).checkAccess(setGroupSecond, AuthOperations.DELETE);
+    when(setGroupDao.getSetGroupsByWorkoutId(setGroupSecond.getWorkout().getId()))
+        .thenReturn(setGroups);
 
-    Assertions.assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupFirst.getId()));
-    verify(setGroupDao).deleteById(setGroupFirst.getId());
-    verify(entitySorter).sortDelete(workout.getSetGroups(), setGroupFirst);
-    verify(setGroupDao).saveAll(workout.getSetGroups());
+    assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupSecond.getId()));
+    verify(setGroupDao).deleteById(setGroupSecond.getId());
+    verify(entitySorter).sortDelete(setGroups, setGroupSecond); // FIXM
+    verify(setGroupDao).saveAll(setGroups); // FIXME Se deberia llamar sin la set eliminada
   }
 
   @Test
   void deleteOkNoReorder() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final SetGroup setGroupFirst = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
-    setGroupFirst.setListOrder(0);
-    setGroupFirst.setId(UUID.randomUUID());
-    final SetGroup setGroupSecond = new SetGroup(null, UUID.randomUUID(), workout, new HashSet<>());
-    setGroupSecond.setListOrder(1);
-    setGroupSecond.setId(UUID.randomUUID());
-    workout.setSetGroups(Set.of(setGroupFirst, setGroupSecond));
+    final List<SetGroup> setGroups = getSetGroups();
+    final SetGroup setGroupLast = setGroups.get(setGroups.size() - 1);
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupSecond.getId()))
-        .thenReturn(List.of(setGroupSecond));
-    Mockito.doNothing()
-        .when(authWorkoutsService)
-        .checkAccess(setGroupSecond, AuthOperations.DELETE);
-    when(setGroupDao.getSetGroupsByWorkoutId(workout.getId())).thenReturn(workout.getSetGroups());
+    when(setGroupDao.getSetGroupWithWorkoutById(setGroupLast.getId()))
+        .thenReturn(List.of(setGroupLast));
+    doNothing().when(authWorkoutsService).checkAccess(setGroupLast, AuthOperations.DELETE);
+    when(setGroupDao.getSetGroupsByWorkoutId(setGroupLast.getWorkout().getId()))
+        .thenReturn(setGroups);
 
-    Assertions.assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupSecond.getId()));
-    verify(setGroupDao).deleteById(setGroupSecond.getId());
+    assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupLast.getId()));
+    verify(setGroupDao).deleteById(setGroupLast.getId());
     verify(entitySorter, never()).sortDelete(any(), any());
     verify(setGroupDao, never()).saveAll(any());
+  }
+
+  private List<SetGroup> getSetGroups() {
+    final Workout workout = easyRandom.nextObject(Workout.class);
+    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, 5).toList();
+    for (int i = 0; i < setGroups.size(); i++) {
+      final SetGroup setGroup = setGroups.get(i);
+      setGroup.setListOrder(i);
+      setGroup.setWorkout(workout);
+      setGroup.setSets(easyRandom.objects(Set.class, 5).collect(Collectors.toSet()));
+      setGroup.getSets().forEach(set -> set.setSetGroup(setGroup));
+    }
+    return setGroups;
   }
 
   @Test
@@ -94,7 +94,7 @@ class DeleteSetGroupServiceImplTest {
     when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             EntityNotFoundException.class, () -> deleteSetGroupService.execute(setGroupId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
@@ -115,7 +115,7 @@ class DeleteSetGroupServiceImplTest {
         .checkAccess(setGroup, deleteOperation);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
+        assertThrows(
             IllegalAccessException.class, () -> deleteSetGroupService.execute(setGroup.getId()));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(setGroup.getId(), exception.getEntityId());

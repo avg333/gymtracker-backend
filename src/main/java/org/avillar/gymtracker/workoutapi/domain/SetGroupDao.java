@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.workoutapi.domain;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,7 +30,7 @@ public interface SetGroupDao extends JpaRepository<SetGroup, UUID> {
             FROM SetGroup sg
             WHERE sg.workout.id = :workoutId
             """)
-  Set<SetGroup> getSetGroupsByWorkoutId(@Param("workoutId") UUID workoutId);
+  List<SetGroup> getSetGroupsByWorkoutId(@Param("workoutId") UUID workoutId);
 
   /**
    * Se usa en: -Get SetGroup -Update SetGroup sets -Post Set

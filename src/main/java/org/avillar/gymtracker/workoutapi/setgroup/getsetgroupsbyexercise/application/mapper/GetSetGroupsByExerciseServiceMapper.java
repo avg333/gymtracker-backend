@@ -7,5 +7,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface GetSetGroupsByExerciseServiceMapper {
+
   List<GetSetGroupsByExerciseResponseApplication> map(List<SetGroup> setGroups);
 }

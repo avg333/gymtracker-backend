@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.setgroup.movesets.infrastrucure;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // FINALIZAR
+@Tag(name = "SetGroups", description = "API to manage setGroups")
 @RestController
 @RequestMapping(path = "${workoutsApiPrefix}/")
 @RequiredArgsConstructor

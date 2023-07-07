@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.workoutapi.setgroup.deletesetgroup.application;
 
 import jakarta.transaction.Transactional;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
@@ -31,7 +31,7 @@ public class DeleteSetGroupServiceImpl implements DeleteSetGroupService {
 
     setGroupDao.deleteById(setGroupId);
 
-    final Set<SetGroup> setGroups =
+    final List<SetGroup> setGroups =
         setGroupDao.getSetGroupsByWorkoutId(setGroup.getWorkout().getId());
 
     if (setGroup.getListOrder() != setGroups.size() - 1) {
@@ -39,7 +39,7 @@ public class DeleteSetGroupServiceImpl implements DeleteSetGroupService {
     }
   }
 
-  private void reorderSetGroups(final Set<SetGroup> setGroups, final SetGroup setGroup) {
+  private void reorderSetGroups(final List<SetGroup> setGroups, final SetGroup setGroup) {
     entitySorter.sortDelete(setGroups, setGroup);
     setGroupDao.saveAll(setGroups);
   }

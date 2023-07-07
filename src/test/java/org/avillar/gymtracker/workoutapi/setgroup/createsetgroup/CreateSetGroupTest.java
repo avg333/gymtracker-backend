@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.workout;
+package org.avillar.gymtracker.workoutapi.setgroup.createsetgroup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,8 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.Optional;
 import org.avillar.gymtracker.authapi.domain.UserApp;
+import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
+import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
 import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
@@ -18,18 +21,25 @@ import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponseInfrastructure;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class CreateWorkoutTest {
+@TestInstance(Lifecycle.PER_CLASS)
+class CreateSetGroupTest {
 
   private static final String USER_NAME_OK = "adrian";
   private static final String USER_NAME_KO = "chema";
@@ -38,6 +48,58 @@ class CreateWorkoutTest {
   @Autowired private SetGroupDao setGroupDao;
   @Autowired private SetDao setDao;
   @Autowired private UserDao userDao;
+
+  @BeforeAll
+  public void before() {
+    userDao.deleteAll();
+    userDao.saveAll(
+        List.of(
+            new UserApp(
+                null,
+                "chema",
+                new BCryptPasswordEncoder().encode("chema69"),
+                null,
+                "Chema",
+                "Garcia",
+                "Romero",
+                null,
+                GenderEnum.MALE,
+                ActivityLevelEnum.EXTREME),
+            new UserApp(
+                null,
+                "alex",
+                new BCryptPasswordEncoder().encode("alex69"),
+                null,
+                "Alex",
+                "Garcia",
+                "Fernandez",
+                null,
+                GenderEnum.FEMALE,
+                ActivityLevelEnum.SEDENTARY),
+            new UserApp(
+                null,
+                "adrian",
+                new BCryptPasswordEncoder().encode("adrian69"),
+                null,
+                "Adrian",
+                "Villar",
+                "Gesto",
+                null,
+                GenderEnum.MALE,
+                ActivityLevelEnum.MODERATE)));
+  }
+
+  @AfterAll
+  public void afterAll() {
+    userDao.deleteAll();
+    workoutDao.deleteAll();
+  }
+
+
+  @BeforeEach
+  void beforeEach() {
+    workoutDao.deleteAll();
+  }
 
   @AfterEach
   void afterEach() {
@@ -55,7 +117,9 @@ class CreateWorkoutTest {
     final ResultActions resultActions =
         mockMvc
             .perform(
-                post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+                post("/workout-api/users/"
+                        + userApp.getId()
+                        + "/workouts")
                     .contentType(APPLICATION_JSON)
                     .content(updateWorkoutDateRequest.toString()))
             .andDo(print())
@@ -91,7 +155,9 @@ class CreateWorkoutTest {
 
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
@@ -102,7 +168,9 @@ class CreateWorkoutTest {
 
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
@@ -123,7 +191,9 @@ class CreateWorkoutTest {
 
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
@@ -144,7 +214,9 @@ class CreateWorkoutTest {
     updateWorkoutDateRequest.put("description", "Description TEST");
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())
@@ -154,7 +226,9 @@ class CreateWorkoutTest {
     updateWorkoutDateRequest.put("description", new String(new char[300]).replace('\0', ' '));
     mockMvc
         .perform(
-            post("/org.avillar.gymtracker.workoutapi.workout-api/users/" + userApp.getId() + "/workouts")
+            post("/workout-api/users/"
+                    + userApp.getId()
+                    + "/workouts")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest.toString()))
         .andDo(print())

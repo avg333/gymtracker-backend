@@ -1,14 +1,12 @@
 package org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.GetSetGroupService;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.model.GetSetGroupResponseApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.mapper.GetSetGroupControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.model.GetSetGroupResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.model.GetSetGroupResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,15 +34,10 @@ class SetGroupControllerImplTest {
 
     when(getSetGroupService.execute(expected.getId())).thenReturn(expected);
 
-    final ResponseEntity<GetSetGroupResponseInfrastructure> result =
-        setGroupControllerImpl.get(expected.getId());
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals(expected.getId(), result.getBody().getId());
-    assertEquals(expected.getListOrder(), result.getBody().getListOrder());
-    assertEquals(expected.getExerciseId(), result.getBody().getExerciseId());
-    assertEquals(expected.getDescription(), result.getBody().getDescription());
-    assertEquals(expected.getWorkout().getId(), result.getBody().getWorkout().getId());
-    verify(getSetGroupService).execute(expected.getId());
+    final ResponseEntity<GetSetGroupResponse> result =
+        setGroupControllerImpl.execute(expected.getId());
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

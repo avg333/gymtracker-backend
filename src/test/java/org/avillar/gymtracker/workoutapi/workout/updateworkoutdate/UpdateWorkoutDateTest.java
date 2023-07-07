@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.workoutapi.workout;
+package org.avillar.gymtracker.workoutapi.workout.updateworkoutdate;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -13,27 +13,82 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.avillar.gymtracker.authapi.domain.UserApp;
+import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
+import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
 import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(Lifecycle.PER_CLASS)
 class UpdateWorkoutDateTest {
 
   final List<Workout> workouts = new ArrayList<>();
   @Autowired private MockMvc mockMvc;
   @Autowired private WorkoutDao workoutDao;
   @Autowired private UserDao userDao;
+
+
+  @BeforeAll
+  public void before() {
+    userDao.deleteAll();
+    userDao.saveAll(
+        List.of(
+            new UserApp(
+                null,
+                "chema",
+                new BCryptPasswordEncoder().encode("chema69"),
+                null,
+                "Chema",
+                "Garcia",
+                "Romero",
+                null,
+                GenderEnum.MALE,
+                ActivityLevelEnum.EXTREME),
+            new UserApp(
+                null,
+                "alex",
+                new BCryptPasswordEncoder().encode("alex69"),
+                null,
+                "Alex",
+                "Garcia",
+                "Fernandez",
+                null,
+                GenderEnum.FEMALE,
+                ActivityLevelEnum.SEDENTARY),
+            new UserApp(
+                null,
+                "adrian",
+                new BCryptPasswordEncoder().encode("adrian69"),
+                null,
+                "Adrian",
+                "Villar",
+                "Gesto",
+                null,
+                GenderEnum.MALE,
+                ActivityLevelEnum.MODERATE)));
+  }
+
+  @AfterAll
+  public void afterAll() {
+    userDao.deleteAll();
+    workoutDao.deleteAll();
+  }
 
   @BeforeEach
   void beforeEach() {
@@ -62,7 +117,7 @@ class UpdateWorkoutDateTest {
 
     mockMvc
         .perform(
-            patch("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + workout.getId() + "/date")
+            patch("/workout-api/workouts/" + workout.getId() + "/date")
                 .contentType(APPLICATION_JSON)
                 .content(String.format(updateWorkoutDateRequest, "2023-06-28")))
         .andDo(print())
@@ -84,7 +139,7 @@ class UpdateWorkoutDateTest {
 
     mockMvc
         .perform(
-            patch("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + workout.getId() + "/date")
+            patch("/workout-api/workouts/" + workout.getId() + "/date")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest))
         .andDo(print())
@@ -100,14 +155,14 @@ class UpdateWorkoutDateTest {
 """;
     mockMvc
         .perform(
-            patch("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + UUID.randomUUID() + "/description")
+            patch("/workout-api/workouts/" + UUID.randomUUID() + "/description")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest))
         .andDo(print())
         .andExpect(status().isNotFound());
     mockMvc
         .perform(
-            patch("/org.avillar.gymtracker.workoutapi.workout-api/workouts/" + workout.getId() + "/description")
+            patch("/workout-api/workouts/" + workout.getId() + "/description")
                 .contentType(APPLICATION_JSON)
                 .content(updateWorkoutDateRequest))
         .andDo(print())

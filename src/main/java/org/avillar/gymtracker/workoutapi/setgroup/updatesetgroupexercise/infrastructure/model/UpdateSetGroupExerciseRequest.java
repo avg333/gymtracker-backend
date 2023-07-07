@@ -1,12 +1,11 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class UpdateSetGroupExerciseResponseInfrastructure {
+public class UpdateSetGroupExerciseRequest {
 
-  private UUID exerciseId;
+  @NotNull private UUID exerciseId;
 }

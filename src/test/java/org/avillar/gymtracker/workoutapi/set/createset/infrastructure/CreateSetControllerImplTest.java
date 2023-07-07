@@ -1,15 +1,13 @@
 package org.avillar.gymtracker.workoutapi.set.createset.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
 import org.avillar.gymtracker.workoutapi.set.createset.application.CreateSetService;
 import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.CreateSetControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequest;
+import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,40 +26,28 @@ class CreateSetControllerImplTest {
   @InjectMocks private CreateSetControllerImpl postSetControllerImpl;
 
   @Mock private CreateSetService createSetService;
-
   @Spy private CreateSetControllerMapperImpl createSetControllerMapper;
 
   @Test
-  void postSet() {
+  void createOk() {
     final CreateSetResponseApplication expected =
         easyRandom.nextObject(CreateSetResponseApplication.class);
-    final CreateSetRequestInfrastructure createSetRequestInfrastructure =
-        new CreateSetRequestInfrastructure();
-    createSetRequestInfrastructure.setReps(expected.getReps());
-    createSetRequestInfrastructure.setRir(expected.getRir());
-    createSetRequestInfrastructure.setWeight(expected.getWeight());
-    createSetRequestInfrastructure.setDescription(expected.getDescription());
-    createSetRequestInfrastructure.setCompleted(expected.getCompletedAt() != null);
+    final CreateSetRequest createSetRequest = new CreateSetRequest();
+    createSetRequest.setReps(expected.getReps());
+    createSetRequest.setRir(expected.getRir());
+    createSetRequest.setWeight(expected.getWeight());
+    createSetRequest.setDescription(expected.getDescription());
+    createSetRequest.setCompleted(expected.getCompletedAt() != null);
 
     when(createSetService.execute(
-            expected.getSetGroup().getId(),
-            createSetControllerMapper.map(createSetRequestInfrastructure)))
+            expected.getSetGroup().getId(), createSetControllerMapper.map(createSetRequest)))
         .thenReturn(expected);
 
-    final Date timestampBeforeCall = new Date();
-    final ResponseEntity<CreateSetResponseInfrastructure> result =
-        postSetControllerImpl.execute(
-            expected.getSetGroup().getId(), createSetRequestInfrastructure);
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertNotNull(result.getBody().getId());
-    assertEquals(expected.getSetGroup().getId(), result.getBody().getSetGroup().getId());
-    assertEquals(expected.getListOrder(), result.getBody().getListOrder());
-    assertEquals(expected.getDescription(), result.getBody().getDescription());
-    assertEquals(expected.getWeight(), result.getBody().getWeight());
-    assertEquals(expected.getRir(), result.getBody().getRir());
-    assertEquals(expected.getReps(), result.getBody().getReps());
-    assertEquals(expected.getId(), result.getBody().getId());
-    assertEquals(expected.getCompletedAt(), result.getBody().getCompletedAt());
+    final ResponseEntity<CreateSetResponse> result =
+        postSetControllerImpl.execute(expected.getSetGroup().getId(), createSetRequest);
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody().getId()).isNotNull();
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

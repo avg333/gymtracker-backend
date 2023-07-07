@@ -4,7 +4,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class UpdateSetDataResponseInfrastructure {
+public class UpdateSetDataResponse {
 
   private String description;
   private Integer reps;

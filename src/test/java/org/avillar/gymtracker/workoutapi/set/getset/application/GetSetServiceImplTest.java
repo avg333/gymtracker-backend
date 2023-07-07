@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.set.getset.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -43,14 +44,7 @@ class GetSetServiceImplTest {
     doNothing().when(authWorkoutsService).checkAccess(set, AuthOperations.READ);
 
     final GetSetResponseApplication result = getSetService.execute(set.getId());
-    assertEquals(set.getId(), result.getId());
-    assertEquals(set.getListOrder(), result.getListOrder());
-    assertEquals(set.getRir(), result.getRir());
-    assertEquals(set.getRir(), result.getRir());
-    assertEquals(set.getReps(), result.getReps());
-    assertEquals(set.getWeight(), result.getWeight());
-    assertEquals(set.getCompletedAt(), result.getCompletedAt());
-    assertEquals(set.getSetGroup().getId(), result.getSetGroup().getId());
+    assertThat(result).usingRecursiveComparison().isEqualTo(set);
   }
 
   @Test
@@ -69,18 +63,18 @@ class GetSetServiceImplTest {
   void getNotPermission() {
     final UUID userId = UUID.randomUUID();
     final Set set = easyRandom.nextObject(Set.class);
-    final AuthOperations authOperation = AuthOperations.READ;
+    final AuthOperations readOperation = AuthOperations.READ;
 
     when(setDao.getSetFullById(set.getId())).thenReturn(List.of(set));
-    doThrow(new IllegalAccessException(set, authOperation, userId))
+    doThrow(new IllegalAccessException(set, readOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(set, authOperation);
+        .checkAccess(set, readOperation);
 
     final IllegalAccessException exception =
         assertThrows(IllegalAccessException.class, () -> getSetService.execute(set.getId()));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(set.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(authOperation, exception.getAuthOperations());
+    assertEquals(readOperation, exception.getAuthOperations());
   }
 }

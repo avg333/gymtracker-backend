@@ -6,8 +6,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.UpdateSetDataService;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.mapper.UpdateSetDataControllerMapper;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,12 +19,12 @@ public class UpdateSetDataControllerImpl implements UpdateSetDataController {
   private final UpdateSetDataControllerMapper updateSetDataControllerMapper;
 
   @Override
-  public ResponseEntity<UpdateSetDataResponseInfrastructure> patch(
-      final UUID setId, final UpdateSetDataRequestInfrastructure updateSetDataRequestInfrastructure)
+  public ResponseEntity<UpdateSetDataResponse> execute(
+      final UUID setId, final UpdateSetDataRequest updateSetDataRequest)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
         updateSetDataControllerMapper.map(
             updateSetDataService.execute(
-                setId, updateSetDataControllerMapper.map(updateSetDataRequestInfrastructure))));
+                setId, updateSetDataControllerMapper.map(updateSetDataRequest))));
   }
 }

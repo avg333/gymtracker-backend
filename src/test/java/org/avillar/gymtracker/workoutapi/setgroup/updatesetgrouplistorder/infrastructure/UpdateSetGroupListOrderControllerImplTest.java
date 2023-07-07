@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -9,8 +8,8 @@ import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.UpdateSetGroupListOrderService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.model.UpdateSetGroupListOrderResponseApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.mapper.UpdateSetGroupListOrderControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderRequest;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,34 +28,26 @@ class UpdateSetGroupListOrderControllerImplTest {
   @InjectMocks private UpdateSetGroupListOrderControllerImpl updateSetGroupListOrderControllerImpl;
 
   @Mock private UpdateSetGroupListOrderService updateSetGroupListOrderService;
-
   @Spy private UpdateSetGroupListOrderControllerMapperImpl updateSetGroupListOrderControllerMapper;
 
   @Test
   void updateSetGroupExercise() {
     final UUID setGroupId = UUID.randomUUID();
-    final int listOrder = 3;
-    final UpdateSetGroupListOrderRequestInfrastructure
-        updateSetGroupListOrderRequestInfrastructure =
-            new UpdateSetGroupListOrderRequestInfrastructure();
-    updateSetGroupListOrderRequestInfrastructure.setListOrder(listOrder);
+    final UpdateSetGroupListOrderRequest updateSetGroupListOrderRequest =
+        easyRandom.nextObject(UpdateSetGroupListOrderRequest.class);
 
     final List<UpdateSetGroupListOrderResponseApplication> expected =
         easyRandom.objects(UpdateSetGroupListOrderResponseApplication.class, 5).toList();
 
-    when(updateSetGroupListOrderService.execute(setGroupId, listOrder)).thenReturn(expected);
+    when(updateSetGroupListOrderService.execute(
+            setGroupId, updateSetGroupListOrderRequest.getListOrder()))
+        .thenReturn(expected);
 
-    final ResponseEntity<List<UpdateSetGroupListOrderResponseInfrastructure>> response =
-        updateSetGroupListOrderControllerImpl.execute(
-            setGroupId, updateSetGroupListOrderRequestInfrastructure);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals(expected.size(), response.getBody().size());
-    assertEquals(expected.get(0).getId(), response.getBody().get(0).getId());
-    assertEquals(expected.get(0).getExerciseId(), response.getBody().get(0).getExerciseId());
-    assertEquals(expected.get(0).getListOrder(), response.getBody().get(0).getListOrder());
-    assertEquals(expected.get(0).getDescription(), response.getBody().get(0).getDescription());
-    assertEquals(
-        expected.get(0).getWorkout().getId(), response.getBody().get(0).getWorkout().getId());
+    final ResponseEntity<List<UpdateSetGroupListOrderResponse>> result =
+        updateSetGroupListOrderControllerImpl.execute(setGroupId, updateSetGroupListOrderRequest);
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody()).hasSameSizeAs(expected);
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

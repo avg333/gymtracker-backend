@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Tag(name = "Exercises", description = "API to manage Exercises")
 @RequestMapping(path = "${exercisesApiPrefix}")
 public interface GetExercisesByIdsController {
 

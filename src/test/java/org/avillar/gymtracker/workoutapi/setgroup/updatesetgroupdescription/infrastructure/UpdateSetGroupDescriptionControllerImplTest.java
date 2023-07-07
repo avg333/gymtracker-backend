@@ -2,13 +2,13 @@ package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.inf
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.application.UpdateSetGroupDescriptionService;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequest;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionResponse;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupDescriptionControllerImplTest {
 
+  private final EasyRandom easyRandom = new EasyRandom();
+
   @InjectMocks
   private UpdateSetGroupDescriptionControllerImpl updateSetGroupDescriptionControllerImpl;
 
@@ -27,21 +29,17 @@ class UpdateSetGroupDescriptionControllerImplTest {
 
   @Test
   void putSetGroup() {
-    final String description = "Description example 54.";
     final UUID workoutId = UUID.randomUUID();
-    final UpdateSetGroupDescriptionRequestInfrastructure
-        updateWorkoutDescriptionRequestInfrastructure =
-            new UpdateSetGroupDescriptionRequestInfrastructure();
-    updateWorkoutDescriptionRequestInfrastructure.setDescription(description);
+    final UpdateSetGroupDescriptionRequest expected =
+        easyRandom.nextObject(UpdateSetGroupDescriptionRequest.class);
 
-    when(updateSetGroupDescriptionService.execute(workoutId, description)).thenReturn(description);
+    when(updateSetGroupDescriptionService.execute(workoutId, expected.getDescription()))
+        .thenReturn(expected.getDescription());
 
-    final ResponseEntity<UpdateSetGroupDescriptionResponseInfrastructure> result =
-        updateSetGroupDescriptionControllerImpl.patch(
-            workoutId, updateWorkoutDescriptionRequestInfrastructure);
+    final ResponseEntity<UpdateSetGroupDescriptionResponse> result =
+        updateSetGroupDescriptionControllerImpl.execute(workoutId, expected);
     assertEquals(HttpStatus.OK, result.getStatusCode());
     assertNotNull(result.getBody());
-    assertEquals(description, result.getBody().getDescription());
-    verify(updateSetGroupDescriptionService).execute(workoutId, description);
+    assertEquals(expected.getDescription(), result.getBody().getDescription());
   }
 }

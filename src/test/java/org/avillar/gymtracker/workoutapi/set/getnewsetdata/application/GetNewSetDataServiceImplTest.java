@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.set.getnewsetdata.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
@@ -51,10 +52,7 @@ class GetNewSetDataServiceImplTest {
     final Set expected =
         setGroup.getSets().stream().max(Comparator.comparingInt(Set::getListOrder)).get();
     final var result = getNewSetDataService.execute(setGroup.getId());
-    assertEquals(expected.getWeight(), result.getWeight());
-    assertEquals(expected.getRir(), result.getRir());
-    assertEquals(expected.getReps(), result.getReps());
-    assertEquals(expected.getDescription(), result.getDescription());
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 
   @Test
@@ -72,10 +70,7 @@ class GetNewSetDataServiceImplTest {
         .thenReturn(List.of(expected));
 
     final var result = getNewSetDataService.execute(setGroup.getId());
-    assertEquals(expected.getWeight(), result.getWeight());
-    assertEquals(expected.getRir(), result.getRir());
-    assertEquals(expected.getReps(), result.getReps());
-    assertEquals(expected.getDescription(), result.getDescription());
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 
   @Test
@@ -100,7 +95,7 @@ class GetNewSetDataServiceImplTest {
   }
 
   @Test
-  void getSetGroupNotFound() {
+  void setGroupNotFound() {
     final UUID setGroupId = UUID.randomUUID();
 
     when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(Collections.emptyList());

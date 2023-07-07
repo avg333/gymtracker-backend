@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,7 +28,6 @@ import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.map
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupRequestApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupResponseApplication;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -51,17 +51,16 @@ class CreateSetGroupServiceImplTest {
   @Test
   void postOk() {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final Workout workout = easyRandom.nextObject(Workout.class);
     final CreateSetGroupRequestApplication createSetGroupRequestApplication =
         new CreateSetGroupRequestApplication();
     createSetGroupRequestApplication.setExerciseId(setGroup.getExerciseId());
     createSetGroupRequestApplication.setDescription(setGroup.getDescription());
 
     when(workoutDao.getWorkoutWithSetGroupsById(setGroup.getWorkout().getId()))
-        .thenReturn(List.of(workout));
+        .thenReturn(List.of(setGroup.getWorkout()));
     doNothing()
         .when(authWorkoutsService)
-        .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE));
+        .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE)); // FIXME Eliminar any
     doNothing().when(exerciseRepositoryClient).checkExerciseAccessById(setGroup.getExerciseId());
     when(setGroupDao.save(any(SetGroup.class))).thenAnswer(i -> i.getArguments()[0]);
 
@@ -69,11 +68,12 @@ class CreateSetGroupServiceImplTest {
         createSetGroupService.execute(
             setGroup.getWorkout().getId(), createSetGroupRequestApplication);
     // assertNotNull(result.getId()); TODO Arreglar .save
-    assertEquals(workout.getId(), result.getWorkout().getId());
-    assertEquals(setGroup.getExerciseId(), result.getExerciseId());
-    assertEquals(setGroup.getDescription(), result.getDescription());
-    assertEquals(workout.getSetGroups().size(), result.getListOrder());
-    verify(setGroupDao).save(any(SetGroup.class));
+    assertEquals(setGroup.getWorkout().getSetGroups().size(), result.getListOrder());
+    assertThat(result)
+        .usingRecursiveComparison()
+        .ignoringFields("id", "listOrder")
+        .isEqualTo(setGroup); // FIXME
+    verify(setGroupDao).save(any(SetGroup.class)); // FIXME
   }
 
   @Test
@@ -94,12 +94,12 @@ class CreateSetGroupServiceImplTest {
         .checkExerciseAccessById(createSetGroupRequestApplication.getExerciseId());
 
     final ExerciseNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             ExerciseNotFoundException.class,
             () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
     assertEquals(createSetGroupRequestApplication.getExerciseId(), exception.getId());
     assertEquals(notFound, exception.getAccessError());
-    verify(setGroupDao, never()).save(any(SetGroup.class));
+    verify(setGroupDao, never()).save(any());
   }
 
   @Test
@@ -107,7 +107,7 @@ class CreateSetGroupServiceImplTest {
     final Workout workout = easyRandom.nextObject(Workout.class);
     final CreateSetGroupRequestApplication createSetGroupRequestApplication =
         easyRandom.nextObject(CreateSetGroupRequestApplication.class);
-    final AccessError notFound = AccessError.NOT_ACCESS;
+    final AccessError notAccess = AccessError.NOT_ACCESS;
 
     when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
     doNothing()
@@ -115,57 +115,58 @@ class CreateSetGroupServiceImplTest {
         .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE));
     doThrow(
             new ExerciseNotFoundException(
-                createSetGroupRequestApplication.getExerciseId(), notFound))
+                createSetGroupRequestApplication.getExerciseId(), notAccess))
         .when(exerciseRepositoryClient)
         .checkExerciseAccessById(createSetGroupRequestApplication.getExerciseId());
 
     final ExerciseNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             ExerciseNotFoundException.class,
             () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
     assertEquals(createSetGroupRequestApplication.getExerciseId(), exception.getId());
-    assertEquals(notFound, exception.getAccessError());
-    verify(setGroupDao, never()).save(any(SetGroup.class));
+    assertEquals(notAccess, exception.getAccessError());
+    verify(setGroupDao, never()).save(any());
   }
 
   @Test
   void workoutNotFound() {
     final UUID workoutId = UUID.randomUUID();
-    final CreateSetGroupRequestApplication createSetGroupRequestApplication =
-        easyRandom.nextObject(CreateSetGroupRequestApplication.class);
 
     when(workoutDao.getWorkoutWithSetGroupsById(workoutId)).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             EntityNotFoundException.class,
-            () -> createSetGroupService.execute(workoutId, createSetGroupRequestApplication));
+            () ->
+                createSetGroupService.execute(
+                    workoutId, easyRandom.nextObject(CreateSetGroupRequestApplication.class)));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
-    verify(setGroupDao, never()).save(any(SetGroup.class));
+    verify(setGroupDao, never()).save(any());
   }
 
   @Test
   void createNotPermission() {
     final UUID userId = UUID.randomUUID();
     final Workout workout = easyRandom.nextObject(Workout.class);
-    final CreateSetGroupRequestApplication createSetGroupRequestApplication =
-        easyRandom.nextObject(CreateSetGroupRequestApplication.class);
-    final AuthOperations authOperation = AuthOperations.CREATE;
+    final AuthOperations createOperation = AuthOperations.CREATE;
 
     when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
-    doThrow(new IllegalAccessException(new SetGroup(), authOperation, userId))
+    doThrow(new IllegalAccessException(new SetGroup(), createOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(any(SetGroup.class), eq(authOperation));
+        .checkAccess(any(SetGroup.class), eq(createOperation));
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
+        assertThrows(
             IllegalAccessException.class,
-            () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
+            () ->
+                createSetGroupService.execute(
+                    workout.getId(),
+                    easyRandom.nextObject(CreateSetGroupRequestApplication.class)));
     assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(authOperation, exception.getAuthOperations());
-    verify(setGroupDao, never()).save(any(SetGroup.class));
+    assertEquals(createOperation, exception.getAuthOperations());
+    verify(setGroupDao, never()).save(any());
   }
 }

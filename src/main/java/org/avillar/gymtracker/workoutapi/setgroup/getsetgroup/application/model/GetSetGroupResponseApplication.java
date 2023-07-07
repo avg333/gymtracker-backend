@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class GetSetGroupResponseApplication {
+
   private UUID id;
   private Integer listOrder;
   private String description;
@@ -13,6 +14,7 @@ public class GetSetGroupResponseApplication {
 
   @Data
   public static class Workout {
+
     private UUID id;
   }
 }

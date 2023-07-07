@@ -64,6 +64,9 @@ public class SetGroup extends SortableEntity {
   @Column(precision = 2)
   private Integer secondPause = 0;
 
+  @Column(nullable = false)
+  private Boolean superSetWithNext = false;
+
   public SetGroup(String description, UUID exerciseId, Workout workout, java.util.Set<Set> sets) {
     this.description = description;
     this.exerciseId = exerciseId;

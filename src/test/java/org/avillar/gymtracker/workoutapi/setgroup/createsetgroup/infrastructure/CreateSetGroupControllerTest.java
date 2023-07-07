@@ -1,14 +1,13 @@
 package org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.CreateSetGroupService;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupResponseApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.mapper.CreateSetGroupControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupRequest;
+import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,35 +23,27 @@ class CreateSetGroupControllerTest {
 
   private final EasyRandom easyRandom = new EasyRandom();
 
-  @InjectMocks private CreteSetGroupControllerImpl creteSetGroupControllerImpl;
+  @InjectMocks private CreateSetGroupControllerImpl createSetGroupController;
 
   @Mock private CreateSetGroupService createSetGroupService;
-
   @Spy private CreateSetGroupControllerMapperImpl postSetGroupControllerMapper;
 
   @Test
   void post() {
     final CreateSetGroupResponseApplication expected =
         easyRandom.nextObject(CreateSetGroupResponseApplication.class);
-    final CreateSetGroupRequestInfrastructure postWorkoutRequestInfrastructure =
-        new CreateSetGroupRequestInfrastructure();
-    postWorkoutRequestInfrastructure.setExerciseId(expected.getExerciseId());
-    postWorkoutRequestInfrastructure.setDescription(expected.getDescription());
+    final CreateSetGroupRequest request = new CreateSetGroupRequest();
+    request.setExerciseId(expected.getExerciseId());
+    request.setDescription(expected.getDescription());
 
     when(createSetGroupService.execute(
-            expected.getWorkout().getId(),
-            postSetGroupControllerMapper.map(postWorkoutRequestInfrastructure)))
+            expected.getWorkout().getId(), postSetGroupControllerMapper.map(request)))
         .thenReturn(expected);
 
-    final ResponseEntity<CreateSetGroupResponseInfrastructure> result =
-        creteSetGroupControllerImpl.execute(
-            expected.getWorkout().getId(), postWorkoutRequestInfrastructure);
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertNotNull(result.getBody().getId());
-    assertEquals(expected.getWorkout().getId(), result.getBody().getWorkout().getId());
-    assertEquals(expected.getListOrder(), result.getBody().getListOrder());
-    assertEquals(expected.getExerciseId(), result.getBody().getExerciseId());
-    assertEquals(expected.getDescription(), result.getBody().getDescription());
+    final ResponseEntity<CreateSetGroupResponse> result =
+        createSetGroupController.execute(expected.getWorkout().getId(), request);
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }
