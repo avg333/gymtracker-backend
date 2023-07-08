@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.application.GetAllMuscleSubGroupByMuscleGroupService;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.mapper.GetAllMuscleSubGroupByMuscleGroupControllerMapper;
-import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.model.GetAllMuscleSubGroupByMuscleGroupResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.model.GetAllMuscleSubGroupByMuscleGroupResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +19,7 @@ public class GetAllMuscleSubGroupByMuscleGroupControllerImpl
       getAllMuscleSubGroupByMuscleGroupControllerMapper;
 
   @Override
-  public ResponseEntity<List<GetAllMuscleSubGroupByMuscleGroupResponseInfrastructure>> execute(
+  public ResponseEntity<List<GetAllMuscleSubGroupByMuscleGroupResponse>> execute(
       final UUID muscleGroupId) {
     return ResponseEntity.ok(
         getAllMuscleSubGroupByMuscleGroupControllerMapper.map(

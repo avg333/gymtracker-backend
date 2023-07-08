@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.getallmusclesupgroups.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -51,31 +52,7 @@ class GetMuscleSupGroupServiceImplTest {
 
     final List<GetAllMuscleSupGroupsResponseApplication> result =
         getGetMuscleSupGroupService.execute();
-    assertEquals(expected.size(), result.size());
-    for (int i = 0; i < expected.size(); i++) {
-      final var mSupGExpected = expected.get(i);
-      final var mSupGResult = result.get(i);
-      assertEquals(mSupGExpected.getId(), mSupGResult.getId());
-      assertEquals(mSupGExpected.getName(), mSupGResult.getName());
-      assertEquals(mSupGExpected.getDescription(), mSupGResult.getDescription());
-      assertEquals(mSupGExpected.getMuscleGroups().size(), mSupGResult.getMuscleGroups().size());
-
-      for (int j = 0; j < mSupGExpected.getMuscleGroups().size(); j++) {
-        final var mgExpected = mSupGExpected.getMuscleGroups().stream().toList().get(j);
-        final var mgResult = mSupGResult.getMuscleGroups().get(j);
-        assertEquals(mgExpected.getId(), mgResult.getId());
-        assertEquals(mgExpected.getName(), mgResult.getName());
-        assertEquals(mgExpected.getDescription(), mgResult.getDescription());
-        assertEquals(mgExpected.getMuscleSubGroups().size(), mgResult.getMuscleSubGroups().size());
-
-        for (int k = 0; k < mSupGExpected.getMuscleGroups().size(); k++) {
-          final var mSubExpected = mgExpected.getMuscleSubGroups().stream().toList().get(k);
-          final var mSubResult = mgResult.getMuscleSubGroups().get(k);
-          assertEquals(mSubExpected.getId(), mSubResult.getId());
-          assertEquals(mSubExpected.getName(), mSubResult.getName());
-          assertEquals(mSubExpected.getDescription(), mSubResult.getDescription());
-        }
-      }
-    }
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 }

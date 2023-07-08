@@ -19,7 +19,7 @@ public class GetAllMuscleGroupsByMuscleSupGroupServiceImpl
 
   @Override
   public List<GetAllMuscleGroupsByMuscleSupGroupResponseApplication> execute(
-      UUID muscleSupGroupId) {
+      final UUID muscleSupGroupId) {
     return getAllMuscleGroupsByMuscleSupGroupServiceMapper.map(
         muscleGroupDao.getALlMuscleGroupsByMuscleSupGroupId(muscleSupGroupId));
   }

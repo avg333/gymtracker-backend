@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.getallmusclesubgroupsbymusclegroup.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -24,7 +25,7 @@ class GetAllMuscleSubGroupByMuscleGroupServiceImplTest {
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks
-  GetAllMuscleSubGroupByMuscleGroupServiceImpl getAllMuscleSubGroupByMuscleGroupService;
+  private GetAllMuscleSubGroupByMuscleGroupServiceImpl getAllMuscleSubGroupByMuscleGroupService;
 
   @Mock private MuscleSubGroupDao muscleSubGroupDao;
 
@@ -41,13 +42,7 @@ class GetAllMuscleSubGroupByMuscleGroupServiceImplTest {
 
     final List<GetAllMuscleSubGroupByMuscleGroupResponseApplication> result =
         getAllMuscleSubGroupByMuscleGroupService.execute(muscleGroupId);
-    assertEquals(expected.size(), result.size());
-    for (int i = 0; i < expected.size(); i++) {
-      final var msgExpected = expected.get(i);
-      final var msgResult = result.get(i);
-      assertEquals(msgExpected.getId(), msgResult.getId());
-      assertEquals(msgExpected.getName(), msgResult.getName());
-      assertEquals(msgExpected.getDescription(), msgResult.getDescription());
-    }
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 }

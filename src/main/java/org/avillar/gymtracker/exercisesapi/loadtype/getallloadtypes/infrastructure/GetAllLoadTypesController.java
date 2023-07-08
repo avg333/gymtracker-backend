@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.model.GetAllLoadTypesResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.model.GetAllLoadTypesResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +25,9 @@ public interface GetAllLoadTypesController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = GetAllLoadTypesResponseInfrastructure.class))
+                  schema = @Schema(implementation = GetAllLoadTypesResponse.class))
             })
       })
   @GetMapping("/loadTypes")
-  ResponseEntity<List<GetAllLoadTypesResponseInfrastructure>> execute();
+  ResponseEntity<List<GetAllLoadTypesResponse>> execute();
 }

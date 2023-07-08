@@ -9,9 +9,9 @@ public interface MuscleSubGroupDao extends JpaRepository<MuscleSubGroup, UUID> {
 
   @Query(
       """
-        SELECT msubg
-        FROM MuscleSubGroup msubg
-        WHERE msubg.muscleGroup.id = :muscleGroupId
-      """)
+            SELECT msubg
+            FROM MuscleSubGroup msubg
+            WHERE msubg.muscleGroup.id = :muscleGroupId
+          """)
   List<MuscleSubGroup> getAllByMuscleGroupId(UUID muscleGroupId);
 }

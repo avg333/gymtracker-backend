@@ -14,6 +14,7 @@ public class GetAllMuscleSupGroupsResponseApplication {
 
   @Data
   public static class MuscleGroup {
+
     private UUID id;
     private String name;
     private String description;
@@ -21,6 +22,7 @@ public class GetAllMuscleSupGroupsResponseApplication {
 
     @Data
     public static class MuscleSubGroup {
+
       private UUID id;
       private String name;
       private String description;

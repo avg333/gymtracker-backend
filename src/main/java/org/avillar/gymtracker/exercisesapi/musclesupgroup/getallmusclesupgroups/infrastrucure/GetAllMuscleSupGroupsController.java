@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.infrastrucure.model.GetAllMuscleSupGroupsResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.infrastrucure.model.GetAllMuscleSupGroupsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +25,9 @@ public interface GetAllMuscleSupGroupsController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema =
-                      @Schema(implementation = GetAllMuscleSupGroupsResponseInfrastructure.class))
+                  schema = @Schema(implementation = GetAllMuscleSupGroupsResponse.class))
             })
       })
   @GetMapping("muscleSupGroups")
-  ResponseEntity<List<GetAllMuscleSupGroupsResponseInfrastructure>> execute();
+  ResponseEntity<List<GetAllMuscleSupGroupsResponse>> execute();
 }

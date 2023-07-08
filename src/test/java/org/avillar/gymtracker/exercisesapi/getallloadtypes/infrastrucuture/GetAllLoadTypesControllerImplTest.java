@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.getallloadtypes.infrastrucuture;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -8,7 +9,7 @@ import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.application.
 import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.application.model.GetAllLoadTypesResponseApplication;
 import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.GetAllLoadTypesControllerImpl;
 import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.mapper.GetAllLoadTypesControllerMapperImpl;
-import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.model.GetAllLoadTypesResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.model.GetAllLoadTypesResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,25 +26,22 @@ class GetAllLoadTypesControllerImplTest {
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetAllLoadTypesControllerImpl getAllLoadTypesControllerImpl;
+
   @Mock private GetLoadTypeService getLoadTypeService;
   @Spy private GetAllLoadTypesControllerMapperImpl getLoadTypesControllerMapper;
 
   @Test
   void get() {
     final List<GetAllLoadTypesResponseApplication> expected =
-        easyRandom.objects(GetAllLoadTypesResponseApplication.class, 2).toList();
+        easyRandom.objects(GetAllLoadTypesResponseApplication.class, 5).toList();
 
     when(getLoadTypeService.execute()).thenReturn(expected);
 
-    final ResponseEntity<List<GetAllLoadTypesResponseInfrastructure>> result =
+    final ResponseEntity<List<GetAllLoadTypesResponse>> result =
         getAllLoadTypesControllerImpl.execute();
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals(expected.size(), result.getBody().size());
-    for (int i = 0; i < expected.size(); i++) {
-      assertEquals(expected.get(i).getId(), result.getBody().get(i).getId());
-      assertEquals(expected.get(i).getName(), result.getBody().get(i).getName());
-      assertEquals(expected.get(i).getDescription(), result.getBody().get(i).getDescription());
-    }
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody()).hasSameSizeAs(expected);
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

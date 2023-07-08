@@ -33,7 +33,12 @@ class AuthExercisesServiceImplTest {
   void beforeEach() {
     SecurityContextHolder.clearContext();
     when(auth.getPrincipal())
-        .thenReturn(new UserDetailsImpl(UUID.randomUUID(), "adrian", "adrian69", null));
+        .thenReturn(
+            new UserDetailsImpl(
+                UUID.randomUUID(),
+                easyRandom.nextObject(String.class),
+                easyRandom.nextObject(String.class),
+                null));
     when(auth.isAuthenticated()).thenReturn(true);
     SecurityContextHolder.getContext().setAuthentication(auth);
   }
@@ -63,18 +68,42 @@ class AuthExercisesServiceImplTest {
   void checkAccessKo() {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
     exercise.setAccessType(AccessTypeEnum.PRIVATE);
-    assertThrows(
-        IllegalAccessException.class,
-        () -> authExercisesService.checkAccess(exercise, AuthOperations.CREATE));
-    assertThrows(
-        IllegalAccessException.class,
-        () -> authExercisesService.checkAccess(exercise, AuthOperations.DELETE));
-    assertThrows(
-        IllegalAccessException.class,
-        () -> authExercisesService.checkAccess(exercise, AuthOperations.UPDATE));
-    assertThrows(
-        IllegalAccessException.class,
-        () -> authExercisesService.checkAccess(exercise, AuthOperations.READ));
+    final IllegalAccessException createException =
+        assertThrows(
+            IllegalAccessException.class,
+            () -> authExercisesService.checkAccess(exercise, AuthOperations.CREATE));
+    final IllegalAccessException deleteException =
+        assertThrows(
+            IllegalAccessException.class,
+            () -> authExercisesService.checkAccess(exercise, AuthOperations.DELETE));
+    final IllegalAccessException updateException =
+        assertThrows(
+            IllegalAccessException.class,
+            () -> authExercisesService.checkAccess(exercise, AuthOperations.UPDATE));
+    final IllegalAccessException readException =
+        assertThrows(
+            IllegalAccessException.class,
+            () -> authExercisesService.checkAccess(exercise, AuthOperations.READ));
+
+    assertEquals(exercise.getId(), createException.getEntityId());
+    assertEquals(getUserId(), createException.getCurrentUserId());
+    assertEquals(Exercise.class.getSimpleName(), createException.getEntityClassName());
+    assertEquals(AuthOperations.CREATE, createException.getAuthOperations());
+
+    assertEquals(exercise.getId(), deleteException.getEntityId());
+    assertEquals(getUserId(), deleteException.getCurrentUserId());
+    assertEquals(Exercise.class.getSimpleName(), deleteException.getEntityClassName());
+    assertEquals(AuthOperations.DELETE, deleteException.getAuthOperations());
+
+    assertEquals(exercise.getId(), updateException.getEntityId());
+    assertEquals(getUserId(), updateException.getCurrentUserId());
+    assertEquals(Exercise.class.getSimpleName(), updateException.getEntityClassName());
+    assertEquals(AuthOperations.UPDATE, updateException.getAuthOperations());
+
+    assertEquals(exercise.getId(), readException.getEntityId());
+    assertEquals(getUserId(), readException.getCurrentUserId());
+    assertEquals(Exercise.class.getSimpleName(), readException.getEntityClassName());
+    assertEquals(AuthOperations.READ, readException.getAuthOperations());
   }
 
   @Test
@@ -107,18 +136,42 @@ class AuthExercisesServiceImplTest {
     final List<Exercise> exercises = List.of(exercise1, exercise2);
     exercise1.setOwner(getUserId());
     exercises.forEach(exercise -> exercise.setAccessType(AccessTypeEnum.PRIVATE));
-    assertThrows(
-        IllegalAccessException.class,
-        () -> authExercisesService.checkAccess(exercises, AuthOperations.CREATE));
-    assertThrows(
-        IllegalAccessException.class,
-        () -> authExercisesService.checkAccess(exercises, AuthOperations.DELETE));
-    assertThrows(
-        IllegalAccessException.class,
-        () -> authExercisesService.checkAccess(exercises, AuthOperations.UPDATE));
-    assertThrows(
-        IllegalAccessException.class,
-        () -> authExercisesService.checkAccess(exercises, AuthOperations.READ));
+    final IllegalAccessException createException =
+        assertThrows(
+            IllegalAccessException.class,
+            () -> authExercisesService.checkAccess(exercises, AuthOperations.CREATE));
+    final IllegalAccessException deleteException =
+        assertThrows(
+            IllegalAccessException.class,
+            () -> authExercisesService.checkAccess(exercises, AuthOperations.DELETE));
+    final IllegalAccessException updateException =
+        assertThrows(
+            IllegalAccessException.class,
+            () -> authExercisesService.checkAccess(exercises, AuthOperations.UPDATE));
+    final IllegalAccessException readException =
+        assertThrows(
+            IllegalAccessException.class,
+            () -> authExercisesService.checkAccess(exercises, AuthOperations.READ));
+
+    assertEquals(exercise2.getId(), createException.getEntityId());
+    assertEquals(getUserId(), createException.getCurrentUserId());
+    assertEquals(Exercise.class.getSimpleName(), createException.getEntityClassName());
+    assertEquals(AuthOperations.CREATE, createException.getAuthOperations());
+
+    assertEquals(exercise2.getId(), deleteException.getEntityId());
+    assertEquals(getUserId(), deleteException.getCurrentUserId());
+    assertEquals(Exercise.class.getSimpleName(), deleteException.getEntityClassName());
+    assertEquals(AuthOperations.DELETE, deleteException.getAuthOperations());
+
+    assertEquals(exercise2.getId(), updateException.getEntityId());
+    assertEquals(getUserId(), updateException.getCurrentUserId());
+    assertEquals(Exercise.class.getSimpleName(), updateException.getEntityClassName());
+    assertEquals(AuthOperations.UPDATE, updateException.getAuthOperations());
+
+    assertEquals(exercise2.getId(), readException.getEntityId());
+    assertEquals(getUserId(), readException.getCurrentUserId());
+    assertEquals(Exercise.class.getSimpleName(), readException.getEntityClassName());
+    assertEquals(AuthOperations.READ, readException.getAuthOperations());
   }
 
   private UUID getUserId() {

@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.getallmusclegroupsbymusclesupgroup.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -49,22 +50,7 @@ class GetAllMuscleGroupsByMuscleSupGroupServiceImplTest {
 
     final List<GetAllMuscleGroupsByMuscleSupGroupResponseApplication> result =
         getAllMuscleGroupsByMuscleSupGroupService.execute(muscleSupGroupId);
-    assertEquals(expected.size(), result.size());
-    for (int i = 0; i < expected.size(); i++) {
-      final var mgExpected = expected.get(i);
-      final var mgResult = result.get(i);
-      assertEquals(mgExpected.getId(), mgResult.getId());
-      assertEquals(mgExpected.getName(), mgResult.getName());
-      assertEquals(mgExpected.getDescription(), mgResult.getDescription());
-      assertEquals(mgExpected.getMuscleSubGroups().size(), mgResult.getMuscleSubGroups().size());
-
-      for (int k = 0; k < mgExpected.getMuscleSubGroups().size(); k++) {
-        final var mSubExpected = mgExpected.getMuscleSubGroups().stream().toList().get(k);
-        final var mSubResult = mgResult.getMuscleSubGroups().get(k);
-        assertEquals(mSubExpected.getId(), mSubResult.getId());
-        assertEquals(mSubExpected.getName(), mSubResult.getName());
-        assertEquals(mSubExpected.getDescription(), mSubResult.getDescription());
-      }
-    }
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 }

@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class GetAllMuscleSubGroupByMuscleGroupResponseInfrastructure {
+public class GetAllMuscleSubGroupByMuscleGroupResponse {
 
   private UUID id;
   private String name;

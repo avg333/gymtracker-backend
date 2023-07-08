@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class GetAllLoadTypesResponseInfrastructure {
+public class GetAllLoadTypesResponse {
 
   private UUID id;
   private String name;

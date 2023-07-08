@@ -1,6 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.getallmusclesubgroupsbymusclegroup.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsb
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.application.model.GetAllMuscleSubGroupByMuscleGroupResponseApplication;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.GetAllMuscleSubGroupByMuscleGroupControllerImpl;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.mapper.GetAllMuscleSubGroupByMuscleGroupControllerMapperImpl;
-import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.model.GetAllMuscleSubGroupByMuscleGroupResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.model.GetAllMuscleSubGroupByMuscleGroupResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,13 +43,11 @@ class GetAllMuscleSubGroupByMuscleGroupControllerImplTest {
 
     when(getAllMuscleSubGroupByMuscleGroupService.execute(muscleGroupId)).thenReturn(expected);
 
-    final ResponseEntity<List<GetAllMuscleSubGroupByMuscleGroupResponseInfrastructure>> result =
+    final ResponseEntity<List<GetAllMuscleSubGroupByMuscleGroupResponse>> result =
         getAllMuscleSubGroupByMuscleGroupController.execute(muscleGroupId);
-    assertEquals(expected.size(), result.getBody().size());
-    for (int i = 0; i < expected.size(); i++) {
-      assertEquals(expected.get(i).getId(), result.getBody().get(i).getId());
-      assertEquals(expected.get(i).getName(), result.getBody().get(i).getName());
-      assertEquals(expected.get(i).getDescription(), result.getBody().get(i).getDescription());
-    }
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody()).hasSameSizeAs(expected);
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

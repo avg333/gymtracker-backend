@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.exercisesapi.musclegroup.getallmusclegroupsbymusclesupgroup.infrastructure.model.GetAllMuscleGroupsByMuscleSupGroupResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.musclegroup.getallmusclegroupsbymusclesupgroup.infrastructure.model.GetAllMuscleGroupsByMuscleSupGroupResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +32,10 @@ public interface GetAllMuscleGroupsByMuscleSupGroupController {
               @Content(
                   mediaType = "application/json",
                   schema =
-                      @Schema(
-                          implementation =
-                              GetAllMuscleGroupsByMuscleSupGroupResponseInfrastructure.class))
+                      @Schema(implementation = GetAllMuscleGroupsByMuscleSupGroupResponse.class))
             })
       })
   @GetMapping("muscleSupGroups/{muscleSupGroupId}/muscleGroups")
-  ResponseEntity<List<GetAllMuscleGroupsByMuscleSupGroupResponseInfrastructure>> execute(
+  ResponseEntity<List<GetAllMuscleGroupsByMuscleSupGroupResponse>> execute(
       @PathVariable UUID muscleSupGroupId);
 }
