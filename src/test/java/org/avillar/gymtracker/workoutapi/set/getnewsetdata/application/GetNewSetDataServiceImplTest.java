@@ -46,7 +46,7 @@ class GetNewSetDataServiceImplTest {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     setGroup.setSets(easyRandom.objects(Set.class, 5).collect(Collectors.toSet()));
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
     doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);
 
     final Set expected =
@@ -61,7 +61,7 @@ class GetNewSetDataServiceImplTest {
     setGroup.setSets(Collections.emptySet());
     final Set expected = easyRandom.nextObject(Set.class);
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
     doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);
     when(setDao.findLastSetForExerciseAndUserAux(
             setGroup.getWorkout().getUserId(),
@@ -78,7 +78,7 @@ class GetNewSetDataServiceImplTest {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     setGroup.setSets(Collections.emptySet());
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
     doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);
     when(setDao.findLastSetForExerciseAndUserAux(
             setGroup.getWorkout().getUserId(),
@@ -98,7 +98,7 @@ class GetNewSetDataServiceImplTest {
   void setGroupNotFound() {
     final UUID setGroupId = UUID.randomUUID();
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(Collections.emptyList());
+    when(setGroupDao.getSetGroupFullByIds(List.of(setGroupId))).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
         assertThrows(EntityNotFoundException.class, () -> getNewSetDataService.execute(setGroupId));
@@ -112,7 +112,7 @@ class GetNewSetDataServiceImplTest {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
     final AuthOperations readOperation = AuthOperations.READ;
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
     doThrow(new IllegalAccessException(setGroup, readOperation, userId))
         .when(authWorkoutsService)
         .checkAccess(setGroup, readOperation);

@@ -29,8 +29,8 @@ import org.hibernate.annotations.BatchSize;
 @Entity
 @Table(
     indexes = {
-      @Index(name = "userDate", columnList = "user_id"),
-      @Index(name = "userDate", columnList = "user_id, date", unique = true)
+      @Index(name = "idxUserId", columnList = "user_id"),
+      @Index(name = "idxUserDate", columnList = "user_id, date", unique = true)
     })
 public class Workout extends BaseEntity {
 

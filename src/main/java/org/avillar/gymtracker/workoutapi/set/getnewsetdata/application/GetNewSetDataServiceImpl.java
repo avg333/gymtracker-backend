@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.workoutapi.set.getnewsetdata.application;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
   }
 
   private SetGroup getSetGroupFull(final UUID setGroupId) {
-    return setGroupDao.getSetGroupWithWorkoutById(setGroupId).stream()
+    return setGroupDao.getSetGroupFullByIds(List.of(setGroupId)).stream()
         .findAny()
         .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
   }

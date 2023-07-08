@@ -11,20 +11,20 @@ public interface SetDao extends JpaRepository<Set, UUID> {
 
   @Query(
       """
-            SELECT s
-            FROM Set s
-            JOIN FETCH s.setGroup sg
-            JOIN FETCH sg.workout w
-            WHERE s.id = :id
-            """)
+          SELECT s
+          FROM Set s
+          JOIN FETCH s.setGroup sg
+          JOIN FETCH sg.workout w
+          WHERE s.id = :id
+          """)
   List<Set> getSetFullById(@Param("id") UUID id);
 
   @Query(
       """
-            SELECT s
-            FROM Set s
-            WHERE s.setGroup.id = :setGroupId
-            """)
+          SELECT s
+          FROM Set s
+          WHERE s.setGroup.id = :setGroupId
+          """)
   List<Set> getSetsBySetGroupId(@Param("setGroupId") UUID setGroupId);
 
   @Query(

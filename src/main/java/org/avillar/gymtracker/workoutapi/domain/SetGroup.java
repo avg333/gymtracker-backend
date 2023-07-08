@@ -26,14 +26,14 @@ import org.hibernate.annotations.BatchSize;
 @Entity
 @Table(
     indexes = {
-      @Index(name = "workoutId", columnList = "workout_id")
-    } // TODO Añadir indice workoutId exerciseId
-    )
+      @Index(name = "idxWorkoutId", columnList = "workout_id"),
+      @Index(name = "idxWorkoutIdExerciseId", columnList = "workout_id, exercise_id")
+    })
 public class SetGroup extends SortableEntity {
 
   @Column private String description;
 
-  @Column(nullable = false)
+  @Column(name = "exercise_id", nullable = false)
   private UUID exerciseId;
 
   @ManyToOne(fetch = FetchType.LAZY)

@@ -22,7 +22,7 @@ import org.avillar.gymtracker.common.sort.domain.SortableEntity;
 @AllArgsConstructor
 @Entity
 @Table(
-    indexes = {@Index(name = "setGroupId", columnList = "set_group_id")},
+    indexes = {@Index(name = "idxSetGroupId", columnList = "set_group_id")},
     name = "set_table")
 public class Set extends SortableEntity {
 

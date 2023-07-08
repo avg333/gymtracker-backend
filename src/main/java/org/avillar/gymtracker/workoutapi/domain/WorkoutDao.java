@@ -11,51 +11,49 @@ public interface WorkoutDao extends JpaRepository<Workout, UUID> {
 
   @Query(
       """
-            SELECT w
-            FROM Workout w
-            WHERE w.userId = :userId
-            ORDER BY w.date ASC
-            """)
+          SELECT w
+          FROM Workout w
+          WHERE w.userId = :userId
+          ORDER BY w.date ASC
+          """)
   List<WorkoutDateAndId> getWorkoutsIdAndDatesByUser(@Param("userId") UUID userId);
 
   @Query(
       """
-            SELECT w
-            FROM Workout w
-            JOIN w.setGroups sg
-            WHERE w.userId = :userId AND sg.exerciseId = :exerciseId
-            ORDER BY w.date DESC
-            """)
+          SELECT w
+          FROM Workout w
+          JOIN w.setGroups sg
+          WHERE w.userId = :userId AND sg.exerciseId = :exerciseId
+          ORDER BY w.date DESC
+          """)
   List<WorkoutDateAndId> getWorkoutsIdAndDatesByUserAndExercise(
       @Param("userId") UUID userId, @Param("exerciseId") UUID exerciseId);
 
   //
   @Query(
       """
-            SELECT COUNT(w) > 0
-            FROM Workout w
-            WHERE w.userId = :userId AND w.date = :date
-            """)
+          SELECT COUNT(w) > 0
+          FROM Workout w
+          WHERE w.userId = :userId AND w.date = :date
+          """)
   boolean existsWorkoutByUserAndDate(@Param("userId") UUID userId, @Param("date") Date date);
 
-  // Se usa en el POST y en el UPDATE date y en el UpdateSetGroups
   @Query(
       """
-            SELECT w
-            FROM Workout w
-            LEFT JOIN FETCH w.setGroups sg
-            LEFT JOIN FETCH sg.sets s
-            WHERE w.id IN :ids
-            """)
+          SELECT w
+          FROM Workout w
+          LEFT JOIN FETCH w.setGroups sg
+          LEFT JOIN FETCH sg.sets s
+          WHERE w.id IN :ids
+          """)
   List<Workout> getFullWorkoutByIds(@Param("ids") List<UUID> ids);
 
-  // Se usa en el POST SetGroup
   @Query(
       """
-            SELECT w
-            FROM Workout w
-            LEFT JOIN FETCH w.setGroups sg
-            WHERE w.id = :id
-            """)
+          SELECT w
+          FROM Workout w
+          LEFT JOIN FETCH w.setGroups sg
+          WHERE w.id = :id
+          """)
   List<Workout> getWorkoutWithSetGroupsById(@Param("id") UUID id);
 }
