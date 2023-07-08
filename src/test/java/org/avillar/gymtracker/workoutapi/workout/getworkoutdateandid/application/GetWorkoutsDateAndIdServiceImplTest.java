@@ -3,6 +3,7 @@ package org.avillar.gymtracker.workoutapi.workout.getworkoutdateandid.applicatio
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -13,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
@@ -22,6 +22,7 @@ import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDateAndId;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.application.GetWorkoutsDateAndIdServiceImpl;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutsDateAndIdServiceImplTest {
 
+  private final EasyRandom easyRandom = new EasyRandom();
+
   @InjectMocks private GetWorkoutsDateAndIdServiceImpl getWorkoutIdAndDateService;
 
   @Mock private WorkoutDao workoutDao;
@@ -41,20 +44,22 @@ class GetWorkoutsDateAndIdServiceImplTest {
   @Test
   void getAllUserWorkoutDates() {
     final UUID userId = UUID.randomUUID();
-    final UUID workoutId = UUID.randomUUID();
-    final Date workoutDate = new Date();
-    final List<WorkoutDateAndId> expectedResults = new ArrayList<>();
-    expectedResults.add(new Results(workoutDate, workoutId));
+    final List<WorkoutDateAndId> expected = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      expected.add(new Results());
+    }
 
-    Mockito.doNothing()
+    doNothing()
         .when(authWorkoutsService)
         .checkAccess(Mockito.any(Workout.class), eq(AuthOperations.READ));
-    when(workoutDao.getWorkoutsIdAndDatesByUser(userId)).thenReturn(expectedResults);
+    when(workoutDao.getWorkoutsIdAndDatesByUser(userId)).thenReturn(expected);
 
     final Map<Date, UUID> results = getWorkoutIdAndDateService.execute(userId, null);
-    assertEquals(expectedResults.size(), results.size());
-    assertTrue(results.containsKey(workoutDate));
-    assertEquals(workoutId, results.get(workoutDate));
+    assertEquals(expected.size(), results.size());
+    for (final WorkoutDateAndId workoutDateAndId : expected) {
+      assertTrue(results.containsKey(workoutDateAndId.getDate()));
+      assertEquals(workoutDateAndId.getId(), results.get(workoutDateAndId.getDate()));
+    }
     verify(workoutDao).getWorkoutsIdAndDatesByUser(userId);
     verify(workoutDao, never()).getWorkoutsIdAndDatesByUserAndExercise(any(), any());
   }
@@ -63,21 +68,23 @@ class GetWorkoutsDateAndIdServiceImplTest {
   void getAllUserWorkoutsWithExercise() {
     final UUID userId = UUID.randomUUID();
     final UUID exerciseId = UUID.randomUUID();
-    final UUID workoutId = UUID.randomUUID();
-    final Date workoutDate = new Date();
-    final List<WorkoutDateAndId> expectedResults = new ArrayList<>();
-    expectedResults.add(new Results(workoutDate, workoutId));
+    final List<WorkoutDateAndId> expected = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      expected.add(new Results());
+    }
 
-    Mockito.doNothing()
+    doNothing()
         .when(authWorkoutsService)
         .checkAccess(Mockito.any(Workout.class), eq(AuthOperations.READ));
     when(workoutDao.getWorkoutsIdAndDatesByUserAndExercise(userId, exerciseId))
-        .thenReturn(expectedResults);
+        .thenReturn(expected);
 
     final Map<Date, UUID> results = getWorkoutIdAndDateService.execute(userId, exerciseId);
-    assertEquals(expectedResults.size(), results.size());
-    assertTrue(results.containsKey(workoutDate));
-    assertEquals(workoutId, results.get(workoutDate));
+    assertEquals(expected.size(), results.size());
+    for (final WorkoutDateAndId workoutDateAndId : expected) {
+      assertTrue(results.containsKey(workoutDateAndId.getDate()));
+      assertEquals(workoutDateAndId.getId(), results.get(workoutDateAndId.getDate()));
+    }
     verify(workoutDao, never()).getWorkoutsIdAndDatesByUser(any());
     verify(workoutDao).getWorkoutsIdAndDatesByUserAndExercise(userId, exerciseId);
   }
@@ -105,7 +112,6 @@ class GetWorkoutsDateAndIdServiceImplTest {
   @Test
   void getAllUserWorkoutsWithExerciseNoPermission() {
     final UUID userId = UUID.randomUUID();
-    final UUID exerciseId = UUID.randomUUID();
     final AuthOperations readOperation = AuthOperations.READ;
 
     doThrow(new IllegalAccessException(new Workout(), readOperation, userId))
@@ -113,9 +119,9 @@ class GetWorkoutsDateAndIdServiceImplTest {
         .checkAccess(any(Workout.class), eq(readOperation));
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
+        assertThrows(
             IllegalAccessException.class,
-            () -> getWorkoutIdAndDateService.execute(userId, exerciseId));
+            () -> getWorkoutIdAndDateService.execute(userId, UUID.randomUUID()));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
@@ -125,9 +131,8 @@ class GetWorkoutsDateAndIdServiceImplTest {
   }
 
   @Data
-  @AllArgsConstructor
-  private static class Results implements WorkoutDateAndId {
-    private Date date;
-    private UUID id;
+  private class Results implements WorkoutDateAndId {
+    private final Date date = easyRandom.nextObject(Date.class);
+    private final UUID id = UUID.randomUUID();
   }
 }

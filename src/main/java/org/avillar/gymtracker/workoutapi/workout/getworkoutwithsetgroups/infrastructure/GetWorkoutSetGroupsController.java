@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.model.GetWorkoutSetGroupsResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.model.GetWorkoutSetGroupsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,23 +19,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface GetWorkoutSetGroupsController {
 
-  /** GetSGFromWorkout. 1 Retorno simple + 1 retorno con SG (depth = 1) */
-  @Operation(summary = "Get workout by its id with its setGroups")
+  @Operation(summary = "API used to get a workout with its setGroups")
   @ApiResponses(
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Workout",
+            description = "Workout with its setGroups",
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema =
-                      @Schema(implementation = GetWorkoutSetGroupsResponseInfrastructure.class))
+                  schema = @Schema(implementation = GetWorkoutSetGroupsResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @GetMapping("/workouts/{workoutId}/sgs") // TODO Definir este endpoint
-  ResponseEntity<GetWorkoutSetGroupsResponseInfrastructure> get(@PathVariable UUID workoutId)
+  ResponseEntity<GetWorkoutSetGroupsResponse> get(@PathVariable UUID workoutId)
       throws EntityNotFoundException, IllegalAccessException;
 }

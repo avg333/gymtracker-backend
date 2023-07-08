@@ -29,36 +29,43 @@ public class GetWorkoutDetailsServiceImpl implements GetWorkoutDetailsService {
   private final GetWorkoutDetailsServiceMapper getWorkoutDetailsServiceMapper;
   private final ExerciseRepositoryClient exerciseRepositoryClient;
 
+  private static void mapExercises(
+      final List<GetExerciseResponseFacade> getExerciseResponseFacades,
+      final GetWorkoutDetailsResponseApplication getWorkoutDetailsResponseApplication) {
+    getWorkoutDetailsResponseApplication
+        .getSetGroups()
+        .forEach(
+            setGroup ->
+                setGroup.setExercise(
+                    getExerciseResponseFacades.stream()
+                        .filter(
+                            getExerciseResponse ->
+                                getExerciseResponse.getId().equals(setGroup.getExerciseId()))
+                        .findAny()
+                        .orElse(null))); // FIXME revisar casos null
+  }
+
   @Override
   public GetWorkoutDetailsResponseApplication execute(final UUID workoutId) {
     final Workout workout = getFullWorkout(workoutId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.READ);
 
-    final List<GetExerciseResponseFacade> getExerciseResponsFacades =
-        getExercisesFromRepository(workout);
+    final List<GetExerciseResponseFacade> getExerciseResponseFacades =
+        getExercisesFromRepository(
+            workout.getSetGroups().stream()
+                .map(SetGroup::getExerciseId)
+                .collect(Collectors.toSet()));
 
     final GetWorkoutDetailsResponseApplication getWorkoutDetailsResponseApplication =
         getWorkoutDetailsServiceMapper.map(workout);
 
-    getWorkoutDetailsResponseApplication
-        .getSetGroups()
-        .forEach(
-            setGroup ->
-                setGroup.setExercise(
-                    getExerciseResponsFacades.stream()
-                        .filter(
-                            getExerciseResponse ->
-                                getExerciseResponse.getId().equals(setGroup.getExerciseId()))
-                        .findAny()
-                        .orElse(null))); // FIXME revisar casos null
+    mapExercises(getExerciseResponseFacades, getWorkoutDetailsResponseApplication);
 
     return getWorkoutDetailsResponseApplication;
   }
 
-  private List<GetExerciseResponseFacade> getExercisesFromRepository(Workout workout) {
-    final Set<UUID> exerciseIds =
-        workout.getSetGroups().stream().map(SetGroup::getExerciseId).collect(Collectors.toSet());
+  private List<GetExerciseResponseFacade> getExercisesFromRepository(final Set<UUID> exerciseIds) {
     try {
       return exerciseRepositoryClient.getExerciseByIds(exerciseIds);
     } catch (Exception e) {

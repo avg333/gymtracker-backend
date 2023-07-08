@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetWorkoutsDateAndIdResponseInfrastructure {
+public class GetWorkoutsDateAndIdResponse {
 
   private Map<Date, UUID> workoutsDateAndId;
 }

@@ -7,8 +7,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.CopySetGroupsService;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.mapper.CopySetGroupsControllerMapper;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsRequest;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,16 +20,14 @@ public class CopySetGroupsControllerImpl implements CopySetGroupsController {
   private final CopySetGroupsControllerMapper copySetGroupsControllerMapper;
 
   @Override
-  public ResponseEntity<List<CopySetGroupsResponseInfrastructure>> execute(
-      final UUID workoutId,
-      final CopySetGroupsRequestInfrastructure copySetGroupsRequestInfrastructure)
+  public ResponseEntity<List<CopySetGroupsResponse>> execute(
+      final UUID workoutId, final CopySetGroupsRequest copySetGroupsRequest)
       throws EntityNotFoundException, IllegalAccessException {
     return ResponseEntity.ok(
         copySetGroupsControllerMapper.map(
             copySetGroupsService.execute(
                 workoutId,
-                copySetGroupsRequestInfrastructure.getId(),
-                copySetGroupsRequestInfrastructure.getSource()
-                    == CopySetGroupsRequestInfrastructure.Source.WORKOUT)));
+                copySetGroupsRequest.getId(),
+                copySetGroupsRequest.getSource() == CopySetGroupsRequest.Source.WORKOUT)));
   }
 }

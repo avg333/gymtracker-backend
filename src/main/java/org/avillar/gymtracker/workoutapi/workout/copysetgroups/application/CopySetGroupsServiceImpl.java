@@ -1,13 +1,19 @@
 package org.avillar.gymtracker.workoutapi.workout.copysetgroups.application;
 
 import jakarta.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
@@ -17,7 +23,6 @@ import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.mappe
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.CopySetGroupsResponseApplication;
 import org.springframework.stereotype.Service;
 
-// FINALIZAR
 @Service
 @RequiredArgsConstructor
 public class CopySetGroupsServiceImpl implements CopySetGroupsService {
@@ -38,7 +43,7 @@ public class CopySetGroupsServiceImpl implements CopySetGroupsService {
       throw new NotImplementedException();
     }
 
-    final Set<Workout> workouts =
+    final List<Workout> workouts =
         workoutDao.getFullWorkoutByIds(List.of(workoutDestinationId, workoutSourceId));
     final Workout workoutSource = getWorkoutByIdFromCollection(workouts, workoutSourceId);
     final Workout workoutDestination = getWorkoutByIdFromCollection(workouts, workoutDestinationId);
@@ -51,18 +56,18 @@ public class CopySetGroupsServiceImpl implements CopySetGroupsService {
   }
 
   private List<SetGroup> copySetGroupsToWorkout(
-      final Workout workout, final Set<SetGroup> setGroupsSource) {
+      final Workout workout, final Collection<SetGroup> setGroupsSource) {
     final int listOrderOffset = workout.getSetGroups().size();
 
     final List<SetGroup> setGroups = new ArrayList<>(setGroupsSource.size());
-    final List<org.avillar.gymtracker.workoutapi.domain.Set> sets = new ArrayList<>();
+    final List<Set> sets = new ArrayList<>();
     for (final SetGroup setGroupDb : setGroupsSource) {
       final SetGroup setGroup = SetGroup.clone(setGroupDb);
       setGroup.setListOrder(setGroupDb.getListOrder() + listOrderOffset);
       setGroup.setWorkout(workout);
       setGroups.add(setGroup);
-      for (final org.avillar.gymtracker.workoutapi.domain.Set setDb : setGroupDb.getSets()) {
-        final org.avillar.gymtracker.workoutapi.domain.Set set = org.avillar.gymtracker.workoutapi.domain.Set.clone(setDb);
+      for (final Set setDb : setGroupDb.getSets()) {
+        final Set set = Set.clone(setDb);
         set.setSetGroup(setGroup);
         sets.add(set);
       }
@@ -71,10 +76,7 @@ public class CopySetGroupsServiceImpl implements CopySetGroupsService {
     setGroupDao.saveAll(setGroups);
     setDao.saveAll(sets);
 
-    final List<SetGroup> totalSetGroups = new ArrayList<>(workout.getSetGroups());
-    totalSetGroups.addAll(setGroups);
-
-    return totalSetGroups;
+    return Stream.concat(workout.getSetGroups().stream(), setGroups.stream()).toList();
   }
 
   private Workout getWorkoutByIdFromCollection(

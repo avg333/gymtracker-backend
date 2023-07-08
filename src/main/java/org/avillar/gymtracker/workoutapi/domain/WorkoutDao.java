@@ -2,7 +2,6 @@ package org.avillar.gymtracker.workoutapi.domain;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -48,7 +47,7 @@ public interface WorkoutDao extends JpaRepository<Workout, UUID> {
             LEFT JOIN FETCH sg.sets s
             WHERE w.id IN :ids
             """)
-  Set<Workout> getFullWorkoutByIds(@Param("ids") List<UUID> ids);
+  List<Workout> getFullWorkoutByIds(@Param("ids") List<UUID> ids);
 
   // Se usa en el POST SetGroup
   @Query(

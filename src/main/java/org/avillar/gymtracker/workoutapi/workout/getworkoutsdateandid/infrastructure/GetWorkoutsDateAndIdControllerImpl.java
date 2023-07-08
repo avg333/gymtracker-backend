@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.application.GetWorkoutsDateAndIdService;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.infrastructure.model.GetWorkoutsDateAndIdResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.infrastructure.model.GetWorkoutsDateAndIdResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,10 +15,9 @@ public class GetWorkoutsDateAndIdControllerImpl implements GetWorkoutsDateAndIdC
   private final GetWorkoutsDateAndIdService getWorkoutsDateAndIdService;
 
   @Override
-  public ResponseEntity<GetWorkoutsDateAndIdResponseInfrastructure> execute(
+  public ResponseEntity<GetWorkoutsDateAndIdResponse> execute(
       final UUID userId, final UUID exerciseId) throws IllegalAccessException {
     return ResponseEntity.ok(
-        new GetWorkoutsDateAndIdResponseInfrastructure(
-            getWorkoutsDateAndIdService.execute(userId, exerciseId)));
+        new GetWorkoutsDateAndIdResponse(getWorkoutsDateAndIdService.execute(userId, exerciseId)));
   }
 }

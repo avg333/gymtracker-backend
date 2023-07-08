@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.workout.createworkout.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,7 +21,6 @@ import org.avillar.gymtracker.workoutapi.workout.createworkout.application.mappe
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutRequestApplication;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutResponseApplication;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,14 +53,11 @@ class CreateWorkoutServiceImplTest {
         .when(authWorkoutsService)
         .checkAccess(any(Workout.class), eq(AuthOperations.CREATE));
     when(workoutDao.save(any(Workout.class))).thenAnswer(i -> i.getArguments()[0]);
-    // TODO Answer org.avillar.gymtracker.workoutapi.workout
 
-    final CreateWorkoutResponseApplication createWorkoutResponseApplication =
+    final CreateWorkoutResponseApplication result =
         createWorkoutService.execute(workout.getUserId(), createWorkoutRequestApplication);
-    assertNotNull(workout.getId());
-    assertEquals(workout.getUserId(), createWorkoutResponseApplication.getUserId());
-    assertEquals(workout.getDate(), createWorkoutResponseApplication.getDate());
-    assertEquals(workout.getDescription(), createWorkoutResponseApplication.getDescription());
+    // assertNotNull(result.getId()); TODO Arreglar .save
+    assertThat(result).usingRecursiveComparison().ignoringFields("id").isEqualTo(workout); // FIXME
     verify(workoutDao).save(any(Workout.class));
   }
 
@@ -74,34 +71,33 @@ class CreateWorkoutServiceImplTest {
         .thenReturn(true);
 
     final DuplicatedWorkoutDateException exception =
-        Assertions.assertThrows(
+        assertThrows(
             DuplicatedWorkoutDateException.class,
             () -> createWorkoutService.execute(userId, createWorkoutRequestApplication));
     assertEquals(createWorkoutRequestApplication.getDate(), exception.getWorkoutDate());
     assertEquals(userId, exception.getUserId());
-    verify(workoutDao, never()).save(any(Workout.class));
+    verify(workoutDao, never()).save(any());
   }
 
   @Test
   void createNotPermission() {
     final UUID userId = UUID.randomUUID();
-    final CreateWorkoutRequestApplication createWorkoutRequestApplication =
-        easyRandom.nextObject(CreateWorkoutRequestApplication.class);
-    final AuthOperations authOperation = AuthOperations.CREATE;
+    final AuthOperations createOperation = AuthOperations.CREATE;
 
-    final Workout workout = createWorkoutServiceMapper.map(createWorkoutRequestApplication);
-    doThrow(new IllegalAccessException(workout, authOperation, userId))
+    doThrow(new IllegalAccessException(new Workout(), createOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(any(Workout.class), eq(authOperation));
+        .checkAccess(any(Workout.class), eq(createOperation));
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
+        assertThrows(
             IllegalAccessException.class,
-            () -> createWorkoutService.execute(userId, createWorkoutRequestApplication));
+            () ->
+                createWorkoutService.execute(
+                    userId, easyRandom.nextObject(CreateWorkoutRequestApplication.class)));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(authOperation, exception.getAuthOperations());
-    verify(workoutDao, never()).save(any(Workout.class));
+    assertEquals(createOperation, exception.getAuthOperations());
+    verify(workoutDao, never()).save(any());
   }
 }

@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.GetWorkoutDetailsService;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.mapper.GetWorkoutDetailsControllerMapper;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +16,7 @@ public class GetWorkoutDetailsControllerImpl implements GetWorkoutDetailsControl
   private final GetWorkoutDetailsControllerMapper getWorkoutDetailsControllerMapper;
 
   @Override
-  public ResponseEntity<GetWorkoutDetailsResponseInfrastructure> execute(final UUID workoutId) {
+  public ResponseEntity<GetWorkoutDetailsResponse> execute(final UUID workoutId) {
     return ResponseEntity.ok(
         getWorkoutDetailsControllerMapper.map(getWorkoutDetailsService.execute(workoutId)));
   }

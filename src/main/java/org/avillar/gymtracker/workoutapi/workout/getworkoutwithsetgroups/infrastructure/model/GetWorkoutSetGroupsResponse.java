@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class GetWorkoutSetGroupsResponseInfrastructure {
+public class GetWorkoutSetGroupsResponse {
 
   private UUID id;
   private Date date;
@@ -16,6 +16,7 @@ public class GetWorkoutSetGroupsResponseInfrastructure {
 
   @Data
   public static class SetGroup {
+
     private UUID id;
     private Integer listOrder;
     private String description;

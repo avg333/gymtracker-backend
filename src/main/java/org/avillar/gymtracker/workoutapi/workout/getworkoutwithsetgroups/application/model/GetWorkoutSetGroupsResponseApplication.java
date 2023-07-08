@@ -16,6 +16,7 @@ public class GetWorkoutSetGroupsResponseApplication {
 
   @Data
   public static class SetGroup {
+
     private UUID id;
     private Integer listOrder;
     private String description;

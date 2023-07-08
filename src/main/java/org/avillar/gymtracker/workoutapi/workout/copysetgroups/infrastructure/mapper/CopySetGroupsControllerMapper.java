@@ -2,12 +2,12 @@ package org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.m
 
 import java.util.List;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.CopySetGroupsResponseApplication;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface CopySetGroupsControllerMapper {
 
-  List<CopySetGroupsResponseInfrastructure> map(
+  List<CopySetGroupsResponse> map(
       List<CopySetGroupsResponseApplication> copySetGroupsResponseApplications);
 }

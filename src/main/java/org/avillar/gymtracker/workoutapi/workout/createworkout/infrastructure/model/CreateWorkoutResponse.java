@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class CreateWorkoutResponseInfrastructure {
+public class CreateWorkoutResponse {
 
   private UUID id;
   private Date date;

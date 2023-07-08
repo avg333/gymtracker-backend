@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import lombok.Data;
@@ -15,11 +16,13 @@ public class CopySetGroupsResponseApplication {
 
   @Data
   public static class Set {
+
     private UUID id;
     private Integer listOrder;
     private String description;
     private Integer reps;
     private Double rir;
     private Double weight;
+    private Date completedAt;
   }
 }

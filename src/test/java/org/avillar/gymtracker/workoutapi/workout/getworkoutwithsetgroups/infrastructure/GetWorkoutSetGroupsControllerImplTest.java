@@ -1,13 +1,13 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.GetWorkoutSetGroupsService;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.model.GetWorkoutSetGroupsResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.mapper.GetWorkoutSetGroupsControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.model.GetWorkoutSetGroupsResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.model.GetWorkoutSetGroupsResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,30 +35,11 @@ class GetWorkoutSetGroupsControllerImplTest {
 
     when(getWorkoutSetGroupsService.execute(expected.getId())).thenReturn(expected);
 
-    final ResponseEntity<GetWorkoutSetGroupsResponseInfrastructure> response =
+    final ResponseEntity<GetWorkoutSetGroupsResponse> result =
         getWorkoutSetGroupsControllerImpl.get(expected.getId());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    verify(getWorkoutSetGroupsService).execute(expected.getId());
-    assertEquals(expected.getId(), response.getBody().getId());
-    assertEquals(expected.getUserId(), response.getBody().getUserId());
-    assertEquals(expected.getDescription(), response.getBody().getDescription());
-    assertEquals(expected.getDate(), response.getBody().getDate());
-    assertEquals(expected.getDate(), response.getBody().getDate());
-    assertEquals(expected.getSetGroups().size(), response.getBody().getSetGroups().size());
-
-    if (!response.getBody().getSetGroups().isEmpty()) {
-      assertEquals(
-          expected.getSetGroups().get(0).getDescription(),
-          response.getBody().getSetGroups().get(0).getDescription());
-      assertEquals(
-          expected.getSetGroups().get(0).getListOrder(),
-          response.getBody().getSetGroups().get(0).getListOrder());
-      assertEquals(
-          expected.getSetGroups().get(0).getExerciseId(),
-          response.getBody().getSetGroups().get(0).getExerciseId());
-      assertEquals(
-          expected.getSetGroups().get(0).getId(), response.getBody().getSetGroups().get(0).getId());
-    }
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody().getId()).isNotNull();
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

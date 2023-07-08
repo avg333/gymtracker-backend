@@ -19,7 +19,7 @@ import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponse;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -126,11 +126,11 @@ class CreateWorkoutTest {
             .andExpect(
                 jsonPath("$.description").value(updateWorkoutDateRequest.get("description")));
 
-    final CreateWorkoutResponseInfrastructure result =
+    final CreateWorkoutResponse result =
         new ObjectMapper()
             .readValue(
                 resultActions.andReturn().getResponse().getContentAsString(),
-                CreateWorkoutResponseInfrastructure.class);
+                CreateWorkoutResponse.class);
 
     final Optional<Workout> workoutDb = workoutDao.findById(result.getId());
     assertTrue(workoutDb.isPresent());

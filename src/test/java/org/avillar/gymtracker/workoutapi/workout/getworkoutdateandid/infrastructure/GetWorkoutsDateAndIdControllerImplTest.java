@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutdateandid.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -9,7 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.application.GetWorkoutsDateAndIdService;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.infrastructure.GetWorkoutsDateAndIdControllerImpl;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.infrastructure.model.GetWorkoutsDateAndIdResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.infrastructure.model.GetWorkoutsDateAndIdResponse;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutsDateAndIdControllerImplTest {
 
+  private final EasyRandom easyRandom = new EasyRandom();
+
   @InjectMocks private GetWorkoutsDateAndIdControllerImpl getWorkoutsDateAndIdControllerImpl;
 
   @Mock private GetWorkoutsDateAndIdService getWorkoutsDateAndIdService;
@@ -28,19 +32,21 @@ class GetWorkoutsDateAndIdControllerImplTest {
   @Test
   void getWorkoutsIdAndDateByUserAndExercise() {
     final Map<Date, UUID> expected = new HashMap<>();
-    final Date dateKey = new Date();
-    expected.put(dateKey, UUID.randomUUID());
+    for (int i = 0; i < 5; i++) {
+      expected.put(easyRandom.nextObject(Date.class), UUID.randomUUID());
+    }
     final UUID userId = UUID.randomUUID();
     final UUID exerciseId = UUID.randomUUID();
 
     when(getWorkoutsDateAndIdService.execute(userId, exerciseId)).thenReturn(expected);
 
-    final ResponseEntity<GetWorkoutsDateAndIdResponseInfrastructure> result =
+    final ResponseEntity<GetWorkoutsDateAndIdResponse> result =
         getWorkoutsDateAndIdControllerImpl.execute(userId, exerciseId);
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals(expected.size(), result.getBody().getWorkoutsDateAndId().size());
-    assertTrue(result.getBody().getWorkoutsDateAndId().containsKey(dateKey));
-    assertEquals(expected.get(dateKey), result.getBody().getWorkoutsDateAndId().get(dateKey));
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody().getWorkoutsDateAndId()).hasSameSizeAs(expected);
+    assertThat(result.getBody().getWorkoutsDateAndId())
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
   }
 }

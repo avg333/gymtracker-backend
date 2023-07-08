@@ -1,16 +1,13 @@
 package org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.CreateWorkoutService;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.mapper.CreateWorkoutControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutRequest;
+import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,35 +30,21 @@ class CreateWorkoutControllerImplTest {
 
   @Test
   void createWorkout() {
-    final CreateWorkoutResponseApplication createWorkoutResponseApplication =
+    final CreateWorkoutResponseApplication expected =
         easyRandom.nextObject(CreateWorkoutResponseApplication.class);
-    final CreateWorkoutRequestInfrastructure createWorkoutRequestInfrastructure =
-        new CreateWorkoutRequestInfrastructure();
-    createWorkoutRequestInfrastructure.setDate(createWorkoutResponseApplication.getDate());
-    createWorkoutRequestInfrastructure.setDescription(
-        createWorkoutResponseApplication.getDescription());
+    final CreateWorkoutRequest createWorkoutRequest = new CreateWorkoutRequest();
+    createWorkoutRequest.setDate(expected.getDate());
+    createWorkoutRequest.setDescription(expected.getDescription());
 
     when(createWorkoutService.execute(
-            createWorkoutResponseApplication.getUserId(),
-            createWorkoutControllerMapper.map(createWorkoutRequestInfrastructure)))
-        .thenReturn(createWorkoutResponseApplication);
+            expected.getUserId(), createWorkoutControllerMapper.map(createWorkoutRequest)))
+        .thenReturn(expected);
 
-    final ResponseEntity<CreateWorkoutResponseInfrastructure> response =
-        assertDoesNotThrow(
-            () ->
-                postWorkoutControllerImpl.execute(
-                    createWorkoutResponseApplication.getUserId(),
-                    createWorkoutRequestInfrastructure));
-    assertNotNull(response.getBody());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(createWorkoutRequestInfrastructure.getDate(), response.getBody().getDate());
-    assertEquals(
-        createWorkoutRequestInfrastructure.getDescription(), response.getBody().getDescription());
-    assertEquals(createWorkoutResponseApplication.getId(), response.getBody().getId());
-    assertEquals(createWorkoutResponseApplication.getUserId(), response.getBody().getUserId());
-    verify(createWorkoutService)
-        .execute(
-            createWorkoutResponseApplication.getUserId(),
-            createWorkoutControllerMapper.map(createWorkoutRequestInfrastructure));
+    final ResponseEntity<CreateWorkoutResponse> result =
+        postWorkoutControllerImpl.execute(expected.getUserId(), createWorkoutRequest);
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody().getId()).isNotNull();
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

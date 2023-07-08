@@ -1,12 +1,12 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.GetWorkoutDetailsService;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.model.GetWorkoutDetailsResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.mapper.GetWorkoutDetailsControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutDetailsControllerImplTest {
@@ -27,33 +29,15 @@ class GetWorkoutDetailsControllerImplTest {
 
   @Test
   void get() {
-    final GetWorkoutDetailsResponseApplication getWorkoutDetailsResponseApplication =
+    final GetWorkoutDetailsResponseApplication expected =
         easyRandom.nextObject(GetWorkoutDetailsResponseApplication.class);
 
-    when(getWorkoutDetailsService.execute(getWorkoutDetailsResponseApplication.getId()))
-        .thenReturn(getWorkoutDetailsResponseApplication);
+    when(getWorkoutDetailsService.execute(expected.getId())).thenReturn(expected);
 
-    final GetWorkoutDetailsResponseInfrastructure getWorkoutDetailsResponseInfrastructure =
-        getWorkoutDetailsControllerImpl
-            .execute(getWorkoutDetailsResponseApplication.getId())
-            .getBody();
-    assertEquals(
-        getWorkoutDetailsResponseApplication.getId(),
-        getWorkoutDetailsResponseInfrastructure.getId());
-    assertEquals(
-        getWorkoutDetailsResponseApplication.getUserId(),
-        getWorkoutDetailsResponseInfrastructure.getUserId());
-    assertEquals(
-        getWorkoutDetailsResponseApplication.getDescription(),
-        getWorkoutDetailsResponseInfrastructure.getDescription());
-    assertEquals(
-        getWorkoutDetailsResponseApplication.getDate(),
-        getWorkoutDetailsResponseInfrastructure.getDate());
-    assertEquals(
-        getWorkoutDetailsResponseApplication.getDate(),
-        getWorkoutDetailsResponseInfrastructure.getDate());
-    assertEquals(
-        getWorkoutDetailsResponseApplication.getSetGroups().size(),
-        getWorkoutDetailsResponseInfrastructure.getSetGroups().size());
+    final ResponseEntity<GetWorkoutDetailsResponse> result =
+        getWorkoutDetailsControllerImpl.execute(expected.getId());
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

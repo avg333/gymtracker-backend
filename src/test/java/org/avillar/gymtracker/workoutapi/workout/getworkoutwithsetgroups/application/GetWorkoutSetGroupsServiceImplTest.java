@@ -1,6 +1,8 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -18,12 +20,10 @@ import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.mapper.GetWorkoutSetGroupsServiceMapperImpl;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.model.GetWorkoutSetGroupsResponseApplication;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -44,29 +44,11 @@ class GetWorkoutSetGroupsServiceImplTest {
     workout.setSetGroups(easyRandom.objects(SetGroup.class, 5).collect(Collectors.toSet()));
 
     when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.READ);
+    doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.READ);
 
     final GetWorkoutSetGroupsResponseApplication result =
         getWorkoutSetGroupsService.execute(workout.getId());
-    assertEquals(workout.getId(), result.getId());
-    assertEquals(workout.getDate(), result.getDate());
-    assertEquals(workout.getDescription(), result.getDescription());
-    assertEquals(workout.getUserId(), result.getUserId());
-    assertEquals(workout.getSetGroups().size(), result.getSetGroups().size());
-    if (!workout.getSetGroups().isEmpty()) {
-      assertEquals(
-          workout.getSetGroups().stream().toList().get(0).getId(),
-          result.getSetGroups().get(0).getId());
-      assertEquals(
-          workout.getSetGroups().stream().toList().get(0).getExerciseId(),
-          result.getSetGroups().get(0).getExerciseId());
-      assertEquals(
-          workout.getSetGroups().stream().toList().get(0).getListOrder(),
-          result.getSetGroups().get(0).getListOrder());
-      assertEquals(
-          workout.getSetGroups().stream().toList().get(0).getDescription(),
-          result.getSetGroups().get(0).getDescription());
-    }
+    assertThat(result).usingRecursiveComparison().isEqualTo(workout);
   }
 
   @Test
@@ -76,7 +58,7 @@ class GetWorkoutSetGroupsServiceImplTest {
     when(workoutDao.getWorkoutWithSetGroupsById(workoutId)).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             EntityNotFoundException.class, () -> getWorkoutSetGroupsService.execute(workoutId));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
@@ -86,20 +68,20 @@ class GetWorkoutSetGroupsServiceImplTest {
   void getNotPermission() {
     final Workout workout = easyRandom.nextObject(Workout.class);
     final UUID userId = UUID.randomUUID();
-    final AuthOperations authOperation = AuthOperations.READ;
+    final AuthOperations readOperation = AuthOperations.READ;
 
     when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
-    doThrow(new IllegalAccessException(workout, authOperation, userId))
+    doThrow(new IllegalAccessException(workout, readOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(workout, authOperation);
+        .checkAccess(workout, readOperation);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
+        assertThrows(
             IllegalAccessException.class,
             () -> getWorkoutSetGroupsService.execute(workout.getId()));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workout.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(authOperation, exception.getAuthOperations());
+    assertEquals(readOperation, exception.getAuthOperations());
   }
 }
