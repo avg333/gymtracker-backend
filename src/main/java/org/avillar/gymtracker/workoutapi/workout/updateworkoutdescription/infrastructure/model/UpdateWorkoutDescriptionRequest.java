@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UpdateWorkoutDescriptionRequestInfrastructure {
+public class UpdateWorkoutDescriptionRequest {
 
   @Size(max = 255, message = "The description must have a length between 0 and 255 characters")
   private String description;

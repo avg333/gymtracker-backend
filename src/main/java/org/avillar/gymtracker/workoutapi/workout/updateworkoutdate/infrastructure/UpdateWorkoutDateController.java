@@ -11,8 +11,8 @@ import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.DuplicatedWorkoutDateException;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateRequest;
+import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,16 +23,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface UpdateWorkoutDateController {
 
-  @Operation(summary = "Modify the workout's date with that id")
+  @Operation(summary = "API used to update the Workout date")
   @ApiResponses(
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Date modified",
+            description = "Workout date updated",
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = UpdateWorkoutDateResponseInfrastructure.class))
+                  schema = @Schema(implementation = UpdateWorkoutDateResponse.class))
             }),
         @ApiResponse(
             responseCode = "400",
@@ -42,9 +42,8 @@ public interface UpdateWorkoutDateController {
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @PatchMapping("/workouts/{workoutId}/date")
-  ResponseEntity<UpdateWorkoutDateResponseInfrastructure> execute(
+  ResponseEntity<UpdateWorkoutDateResponse> execute(
       @PathVariable UUID workoutId,
-      @Valid @RequestBody
-          UpdateWorkoutDateRequestInfrastructure updateWorkoutDateRequestInfrastructure)
+      @Valid @RequestBody UpdateWorkoutDateRequest updateWorkoutDateRequest)
       throws EntityNotFoundException, DuplicatedWorkoutDateException, IllegalAccessException;
 }

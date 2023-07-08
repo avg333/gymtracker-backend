@@ -10,8 +10,8 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionRequest;
+import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,27 +22,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface UpdateWorkoutDescriptionController {
 
-  @Operation(summary = "Modify workout's description with that id")
+  @Operation(summary = "API used to update the Workout description")
   @ApiResponses(
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Description modified",
+            description = "Workout description modified",
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema =
-                      @Schema(
-                          implementation = UpdateWorkoutDescriptionResponseInfrastructure.class))
+                  schema = @Schema(implementation = UpdateWorkoutDescriptionResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @PatchMapping("/workouts/{workoutId}/description")
-  ResponseEntity<UpdateWorkoutDescriptionResponseInfrastructure> execute(
+  ResponseEntity<UpdateWorkoutDescriptionResponse> execute(
       @PathVariable UUID workoutId,
-      @Valid @RequestBody
-          UpdateWorkoutDescriptionRequestInfrastructure
-              updateWorkoutDescriptionRequestInfrastructure)
+      @Valid @RequestBody UpdateWorkoutDescriptionRequest updateWorkoutDescriptionRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }

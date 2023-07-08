@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.workoutapi.workout.deleteworkout.application;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -16,7 +17,6 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +27,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class DeleteWorkoutServiceImplTest {
 
   private final EasyRandom easyRandom = new EasyRandom();
+
   @InjectMocks private DeleteWorkoutServiceImpl deleteWorkoutService;
+
   @Mock private WorkoutDao workoutDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
@@ -50,11 +52,10 @@ class DeleteWorkoutServiceImplTest {
         .thenThrow(new EntityNotFoundException(Workout.class, workoutId));
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
-            EntityNotFoundException.class, () -> deleteWorkoutService.execute(workoutId));
+        assertThrows(EntityNotFoundException.class, () -> deleteWorkoutService.execute(workoutId));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
-    verify(workoutDao, never()).deleteById(workoutId);
+    verify(workoutDao, never()).deleteById(any());
   }
 
   @Test
@@ -69,12 +70,12 @@ class DeleteWorkoutServiceImplTest {
         .checkAccess(workout, deleteOperation);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
+        assertThrows(
             IllegalAccessException.class, () -> deleteWorkoutService.execute(workout.getId()));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workout.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(deleteOperation, exception.getAuthOperations());
-    verify(workoutDao, never()).deleteById(workout.getId());
+    verify(workoutDao, never()).deleteById(any());
   }
 }

@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @Data
-public class UpdateWorkoutDateRequestInfrastructure {
+public class UpdateWorkoutDateRequest {
 
   @NotNull(message = "The date is obligatory")
   @DateTimeFormat(iso = ISO.DATE)

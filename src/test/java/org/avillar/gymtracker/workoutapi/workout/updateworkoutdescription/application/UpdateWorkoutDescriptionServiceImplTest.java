@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.application;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -15,7 +16,6 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,14 +36,14 @@ class UpdateWorkoutDescriptionServiceImplTest {
   @Test
   void postOk() {
     final Workout workout = easyRandom.nextObject(Workout.class);
-    final String description = "Description example 54.";
+    final String description = easyRandom.nextObject(String.class);
 
     when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
     Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
     when(workoutDao.save(workout)).thenAnswer(i -> i.getArguments()[0]);
 
-    assertEquals(
-        description, updateWorkoutDescriptionService.execute(workout.getId(), description));
+    final String result = updateWorkoutDescriptionService.execute(workout.getId(), description);
+    assertEquals(description, result);
     verify(workoutDao).save(workout);
   }
 
@@ -57,45 +57,46 @@ class UpdateWorkoutDescriptionServiceImplTest {
     assertEquals(
         workout.getDescription(),
         updateWorkoutDescriptionService.execute(workout.getId(), workout.getDescription()));
-    verify(workoutDao, never()).save(Mockito.any(Workout.class));
+    verify(workoutDao, never()).save(any());
   }
 
   @Test
   void updateNotFound() {
     final UUID workoutId = UUID.randomUUID();
-    final String description = "Description example 54.";
+    final String description = easyRandom.nextObject(String.class);
 
     when(workoutDao.findById(workoutId))
         .thenThrow(new EntityNotFoundException(Workout.class, workoutId));
 
     final EntityNotFoundException exception =
-        Assertions.assertThrows(
+        assertThrows(
             EntityNotFoundException.class,
             () -> updateWorkoutDescriptionService.execute(workoutId, description));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
-    verify(workoutDao, never()).save(Mockito.any(Workout.class));
+    verify(workoutDao, never()).save(any());
   }
 
   @Test
   void updateNotPermission() {
     final Workout workout = easyRandom.nextObject(Workout.class);
     final UUID userId = UUID.randomUUID();
-    final String description = "Description example 54.";
+    final String description = easyRandom.nextObject(String.class);
+    final AuthOperations updateOperation = AuthOperations.UPDATE;
 
     when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
-    doThrow(new IllegalAccessException(workout, AuthOperations.UPDATE, userId))
+    doThrow(new IllegalAccessException(workout, updateOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(workout, AuthOperations.UPDATE);
+        .checkAccess(workout, updateOperation);
 
     final IllegalAccessException exception =
-        Assertions.assertThrows(
+        assertThrows(
             IllegalAccessException.class,
             () -> updateWorkoutDescriptionService.execute(workout.getId(), description));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workout.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(AuthOperations.UPDATE, exception.getAuthOperations());
-    verify(workoutDao, never()).save(Mockito.any(Workout.class));
+    assertEquals(updateOperation, exception.getAuthOperations());
+    verify(workoutDao, never()).save(any());
   }
 }

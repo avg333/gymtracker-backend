@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UpdateWorkoutDateResponseInfrastructure {
+public class UpdateWorkoutDateResponse {
 
   private Date date;
 }

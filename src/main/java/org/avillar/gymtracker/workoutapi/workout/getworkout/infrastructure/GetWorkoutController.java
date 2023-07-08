@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,21 +19,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface GetWorkoutController {
 
-  @Operation(summary = "Get workout by its id")
+  @Operation(summary = "API used to get a workout")
   @ApiResponses(
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Workout",
+            description = "Workout by its id",
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = GetWorkoutResponseInfrastructure.class))
+                  schema = @Schema(implementation = GetWorkoutResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @GetMapping("/workouts/{workoutId}")
-  ResponseEntity<GetWorkoutResponseInfrastructure> execute(@PathVariable UUID workoutId)
+  ResponseEntity<GetWorkoutResponse> execute(@PathVariable UUID workoutId)
       throws EntityNotFoundException, IllegalAccessException;
 }

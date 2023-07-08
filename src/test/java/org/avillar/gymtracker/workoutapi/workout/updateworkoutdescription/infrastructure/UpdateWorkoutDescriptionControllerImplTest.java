@@ -2,13 +2,13 @@ package org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infra
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.application.UpdateWorkoutDescriptionService;
-import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionRequestInfrastructure;
-import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionRequest;
+import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionResponse;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 @ExtendWith(MockitoExtension.class)
 class UpdateWorkoutDescriptionControllerImplTest {
 
+  private final EasyRandom easyRandom = new EasyRandom();
+
   @InjectMocks
   private UpdateWorkoutDescriptionControllerImpl updateWorkoutDescriptionControllerImpl;
 
@@ -27,21 +29,19 @@ class UpdateWorkoutDescriptionControllerImplTest {
 
   @Test
   void updateWorkoutDescription() {
-    final String description = "Description example 54.";
     final UUID workoutId = UUID.randomUUID();
-    final UpdateWorkoutDescriptionRequestInfrastructure
-        updateWorkoutDescriptionRequestInfrastructure =
-            new UpdateWorkoutDescriptionRequestInfrastructure();
-    updateWorkoutDescriptionRequestInfrastructure.setDescription(description);
+    final UpdateWorkoutDescriptionRequest updateWorkoutDescriptionRequest =
+        easyRandom.nextObject(UpdateWorkoutDescriptionRequest.class);
 
-    when(updateWorkoutDescriptionService.execute(workoutId, description)).thenReturn(description);
+    when(updateWorkoutDescriptionService.execute(
+            workoutId, updateWorkoutDescriptionRequest.getDescription()))
+        .thenReturn(updateWorkoutDescriptionRequest.getDescription());
 
-    final ResponseEntity<UpdateWorkoutDescriptionResponseInfrastructure> result =
-        updateWorkoutDescriptionControllerImpl.execute(
-            workoutId, updateWorkoutDescriptionRequestInfrastructure);
+    final ResponseEntity<UpdateWorkoutDescriptionResponse> result =
+        updateWorkoutDescriptionControllerImpl.execute(workoutId, updateWorkoutDescriptionRequest);
     assertEquals(HttpStatus.OK, result.getStatusCode());
     assertNotNull(result.getBody());
-    assertEquals(description, result.getBody().getDescription());
-    verify(updateWorkoutDescriptionService).execute(workoutId, description);
+    assertEquals(
+        updateWorkoutDescriptionRequest.getDescription(), result.getBody().getDescription());
   }
 }

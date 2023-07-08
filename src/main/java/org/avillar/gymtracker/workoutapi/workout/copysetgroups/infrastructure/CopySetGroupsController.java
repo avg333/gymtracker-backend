@@ -13,7 +13,7 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsRequestInfrastructure;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponseInfrastructure;
-import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutResponseInfrastructure;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +35,7 @@ public interface CopySetGroupsController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = GetWorkoutResponseInfrastructure.class))
+                  schema = @Schema(implementation = GetWorkoutResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(
