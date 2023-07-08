@@ -41,13 +41,13 @@ public class EntitySorter {
     final Iterator<? extends SortableEntity> iterator = entities.iterator();
     while (iterator.hasNext()) {
       final SortableEntity sortableEntity = iterator.next();
-      final boolean esMismaPosicion =
+      final boolean isSamePosition =
           Objects.equals(entity.getListOrder(), sortableEntity.getListOrder());
-      final boolean menorQueMaximo =
+      final boolean lessThanMax =
           sortableEntity.getListOrder() < Math.max(oldPosition, newPosition);
-      final boolean mayorQueMinimo =
+      final boolean moreThanMin =
           sortableEntity.getListOrder() > Math.min(oldPosition, newPosition);
-      if (esMismaPosicion || (menorQueMaximo && mayorQueMinimo)) {
+      if (isSamePosition || (lessThanMax && moreThanMin)) {
         sortableEntity.setListOrder(
             sortableEntity.getListOrder() + oldPosition > newPosition ? 1 : -1);
       } else {

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class GetExercisesByFilterRequestInfrastructure {
+public class GetExercisesByFilterRequest {
 
   private String name;
   private String description;

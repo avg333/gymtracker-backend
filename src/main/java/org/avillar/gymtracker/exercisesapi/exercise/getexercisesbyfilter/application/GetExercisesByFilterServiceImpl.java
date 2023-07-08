@@ -33,7 +33,7 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
             AccessTypeEnum.PUBLIC,
             getExercisesByFilterRequestApplication.getName(),
             getExercisesByFilterRequestApplication.getDescription(),
-            getExercisesByFilterRequestApplication.getUnilateral());
+            getExercisesByFilterRequestApplication.getUnilateral()); // FIXME Usar el filtro
 
     authExercisesService.checkAccess(exercises, AuthOperations.READ); // TODO Necesario esto?
 

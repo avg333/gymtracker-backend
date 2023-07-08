@@ -43,10 +43,6 @@ public abstract class BaseEntity implements Serializable {
   @Temporal(TemporalType.TIMESTAMP)
   private Date lastModifiedAt;
 
-  public static <T extends BaseEntity> boolean exists(T baseEntity) {
-    return baseEntity != null && baseEntity.getId() != null;
-  }
-
   @Override
   public boolean equals(final Object o) {
     if (this == o) return true;

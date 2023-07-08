@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -7,8 +8,8 @@ import java.util.List;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.GetExercisesByFilterService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterResponseApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.mapper.GetExercisesByFilterControllerMapperImpl;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequestInfrastructure;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,15 +32,15 @@ class GetExercisesByFilterControllerImplTest {
 
   @Test
   void get() {
-    final GetExercisesByFilterRequestInfrastructure request =
-        easyRandom.nextObject(GetExercisesByFilterRequestInfrastructure.class);
+    final GetExercisesByFilterRequest request =
+        easyRandom.nextObject(GetExercisesByFilterRequest.class);
     final List<GetExercisesByFilterResponseApplication> expected =
         easyRandom.objects(GetExercisesByFilterResponseApplication.class, 2).toList();
 
     when(getExercisesByFilterService.execute(getExercisesByFilterControllerMapper.map(request)))
         .thenReturn(expected);
 
-    final ResponseEntity<List<GetExercisesByFilterResponseInfrastructure>> result =
+    final ResponseEntity<List<GetExercisesByFilterResponse>> result =
         getExercisesByFilterController.execute(
             request.getName(),
             request.getDescription(),
@@ -48,14 +49,9 @@ class GetExercisesByFilterControllerImplTest {
             request.getMuscleSupGroupIds(),
             request.getMuscleGroupIds(),
             request.getMuscleSubGroupIds());
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals(expected.size(), result.getBody().size());
-    for (int i = 0; i < expected.size(); i++) {
-      assertEquals(expected.get(i).getId(), result.getBody().get(i).getId());
-      assertEquals(expected.get(i).getName(), result.getBody().get(i).getName());
-      assertEquals(expected.get(i).getDescription(), result.getBody().get(i).getDescription());
-      assertEquals(expected.get(i).isUnilateral(), result.getBody().get(i).isUnilateral());
-    }
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isNotNull();
+    assertThat(result.getBody()).hasSameSizeAs(expected);
+    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
   }
 }

@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class GetExercisesByFilterResponseInfrastructure {
+public class GetExercisesByFilterResponse {
 
   private UUID id;
   private String name;

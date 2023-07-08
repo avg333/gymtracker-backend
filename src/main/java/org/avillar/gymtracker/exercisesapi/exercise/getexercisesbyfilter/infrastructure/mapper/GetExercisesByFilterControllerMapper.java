@@ -3,16 +3,16 @@ package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infras
 import java.util.List;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterRequestApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterResponseApplication;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequestInfrastructure;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface GetExercisesByFilterControllerMapper {
 
-  List<GetExercisesByFilterResponseInfrastructure> map(
+  List<GetExercisesByFilterResponse> map(
       List<GetExercisesByFilterResponseApplication> getExercisesByFilterResponseApplication);
 
   GetExercisesByFilterRequestApplication map(
-      GetExercisesByFilterRequestInfrastructure getExercisesByFilterRequestInfrastructure);
+      GetExercisesByFilterRequest getExercisesByFilterRequest);
 }

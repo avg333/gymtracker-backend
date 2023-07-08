@@ -5,8 +5,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.GetExercisesByFilterService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.mapper.GetExercisesByFilterControllerMapper;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequestInfrastructure;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,7 @@ public class GetExercisesByFilterControllerImpl implements GetExercisesByFilterC
   private final GetExercisesByFilterControllerMapper getExercisesByFilterControllerMapper;
 
   @Override
-  public ResponseEntity<List<GetExercisesByFilterResponseInfrastructure>> execute(
+  public ResponseEntity<List<GetExercisesByFilterResponse>> execute(
       final String name,
       final String description,
       final Boolean unilateral,
@@ -30,7 +30,7 @@ public class GetExercisesByFilterControllerImpl implements GetExercisesByFilterC
         getExercisesByFilterControllerMapper.map(
             getExercisesByFilterService.execute(
                 getExercisesByFilterControllerMapper.map(
-                    GetExercisesByFilterRequestInfrastructure.builder()
+                    GetExercisesByFilterRequest.builder()
                         .name(name)
                         .description(description)
                         .unilateral(unilateral)

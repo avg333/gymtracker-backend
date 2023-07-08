@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -56,11 +57,7 @@ class GetExercisesByFilterServiceImplTest {
 
     final List<GetExercisesByFilterResponseApplication> result =
         getExercisesByFilterService.execute(request);
-    assertEquals(expected.size(), result.size());
-    for (int i = 0; i < expected.size(); i++) {
-      assertEquals(expected.get(i).getId(), result.get(i).getId());
-      assertEquals(expected.get(i).getName(), result.get(i).getName());
-      assertEquals(expected.get(i).getDescription(), result.get(i).getDescription());
-    }
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 }
