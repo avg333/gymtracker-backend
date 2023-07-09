@@ -4,8 +4,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>spring-boot-starter-parent</artifactId>
     <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.1.1</version>
     <relativePath/>
   </parent>
@@ -13,7 +13,7 @@
   <groupId>org.avillar</groupId>
   <artifactId>gymtracker-backend</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.9.1-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
 
   <properties>
@@ -26,6 +26,7 @@
     <org.commons-lang3.version>3.12.0</org.commons-lang3.version>
     <org.springdoc.version>2.1.0</org.springdoc.version>
     <com.h2database.version>2.2.220</com.h2database.version>
+    <embedded-redis.version>0.7.3</embedded-redis.version>
     <org.springframework.security.version>6.1.1</org.springframework.security.version>
     <org.json.version>20230618</org.json.version>
     <org.jeasy.version>5.0.0</org.jeasy.version>
@@ -34,20 +35,20 @@
   <dependencies>
     <!-- SPRINGBOOT -->
     <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-      <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
-      <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
-      <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -64,51 +65,51 @@
 
     <!-- DB -->
     <dependency>
-      <artifactId>postgresql</artifactId>
       <groupId>org.postgresql</groupId>
-      <scope>runtime</scope>
+      <artifactId>postgresql</artifactId>
       <version>${org.postgresql.version}</version>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- JWT -->
     <dependency>
+      <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-api</artifactId>
-      <groupId>io.jsonwebtoken</groupId>
       <version>${org.jjwt.version}</version>
     </dependency>
     <dependency>
+      <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-impl</artifactId>
-      <groupId>io.jsonwebtoken</groupId>
-      <scope>runtime</scope>
       <version>${org.jjwt.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-      <artifactId>jjwt-jackson</artifactId>
       <groupId>io.jsonwebtoken</groupId>
-      <scope>runtime</scope>
+      <artifactId>jjwt-jackson</artifactId>
       <version>${org.jjwt.version}</version>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- LOMBOK -->
     <dependency>
-      <artifactId>lombok</artifactId>
       <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${org.lombok.version}</version>
       <optional>true</optional>
       <scope>provided</scope>
-      <version>${org.lombok.version}</version>
     </dependency>
 
     <!-- MAPSTRUCT -->
     <dependency>
-      <artifactId>mapstruct</artifactId>
       <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
       <version>${org.mapstruct.version}</version>
     </dependency>
 
     <!-- APACHE COMMONS -->
     <dependency>
-      <artifactId>commons-lang3</artifactId>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
       <version>${org.commons-lang3.version}</version>
     </dependency>
 
@@ -121,8 +122,8 @@
 
     <!-- TEST -->
     <dependency>
-      <artifactId>spring-boot-starter-test</artifactId>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -139,7 +140,7 @@
     <dependency>
       <groupId>it.ozimov</groupId>
       <artifactId>embedded-redis</artifactId>
-      <version>0.7.1</version>
+      <version>${embedded-redis.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -166,33 +167,33 @@
     <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.version}</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
           <annotationProcessorPaths>
             <path>
-              <artifactId>lombok</artifactId>
               <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
               <version>${org.lombok.version}</version>
             </path>
             <path>
-              <artifactId>mapstruct-processor</artifactId>
               <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
               <version>${org.mapstruct.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <layout>JAR</layout>
           <mainClass>org.avillar.gymtracker.GymTrackerApplication</mainClass>
         </configuration>
-        <groupId>org.springframework.boot</groupId>
       </plugin>
     </plugins>
   </build>
