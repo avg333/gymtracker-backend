@@ -1,11 +1,12 @@
 package org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.application.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class GetAllMuscleSupGroupsResponseApplication {
+public class GetAllMuscleSupGroupsResponseApplication implements Serializable {
 
   private UUID id;
   private String name;
@@ -13,7 +14,7 @@ public class GetAllMuscleSupGroupsResponseApplication {
   private List<MuscleGroup> muscleGroups;
 
   @Data
-  public static class MuscleGroup {
+  public static class MuscleGroup implements Serializable {
 
     private UUID id;
     private String name;
@@ -21,7 +22,7 @@ public class GetAllMuscleSupGroupsResponseApplication {
     private List<MuscleSubGroup> muscleSubGroups;
 
     @Data
-    public static class MuscleSubGroup {
+    public static class MuscleSubGroup implements Serializable {
 
       private UUID id;
       private String name;

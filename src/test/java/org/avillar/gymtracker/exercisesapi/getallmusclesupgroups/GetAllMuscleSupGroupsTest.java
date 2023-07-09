@@ -6,6 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +33,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,12 +49,11 @@ class GetAllMuscleSupGroupsTest {
   private static final String USER_NAME_OK = "adrian";
   private final EasyRandom easyRandom = new EasyRandom();
   @Autowired private MockMvc mockMvc;
-
   @Autowired private MuscleSupGroupDao muscleSupGroupDao;
   @Autowired private MuscleGroupDao muscleGroupDao;
   @Autowired private MuscleSubGroupDao muscleSubGroupDao;
-
   @Autowired private UserDao userDao;
+
   @BeforeAll
   public void before() {
     userDao.deleteAll();
@@ -149,5 +153,26 @@ class GetAllMuscleSupGroupsTest {
         .andExpect(jsonPath("$.*", hasSize(3)))
         .andExpect(jsonPath("$.[0].muscleGroups.*", hasSize(4)))
         .andExpect(jsonPath("$.[0].muscleGroups.[0].muscleSubGroups.*", hasSize(5)));
+  }
+
+  @TestConfiguration
+  public static class EmbeddedRedisTestConfiguration {
+
+    private final redis.embedded.RedisServer redisServer;
+
+    public EmbeddedRedisTestConfiguration(@Value("${spring.data.redis.port}") final int redisPort)
+        throws IOException {
+      this.redisServer = new redis.embedded.RedisServer(redisPort);
+    }
+
+    @PostConstruct
+    public void startRedis() {
+      this.redisServer.start();
+    }
+
+    @PreDestroy
+    public void stopRedis() {
+      this.redisServer.stop();
+    }
   }
 }
