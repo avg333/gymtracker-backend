@@ -8,8 +8,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class ExerciseNotFoundException extends RuntimeException { // TODO Extener EntityNotFound?
 
-  private final String className = "Exercise";
-  private final String searchParam = "id";
+  private static final String className = "Exercise";
+  private static final String searchParam = "id";
   private final UUID id;
   private final AccessError accessError;
 
