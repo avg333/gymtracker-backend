@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class LoginControllerResponseInfrastructure {
+public class LoginControllerResponse {
 
   private static final String type = "Bearer";
   private String token;

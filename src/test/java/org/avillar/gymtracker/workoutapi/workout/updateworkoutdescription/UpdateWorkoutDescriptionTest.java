@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.UUID;
 import org.avillar.gymtracker.IntegrationBaseTest;
 import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.avillar.gymtracker.workoutapi.IntegrationTestDataGenerator;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import redis.embedded.RedisServer;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -21,10 +22,8 @@ public abstract class IntegrationBaseTest {
   protected static final String USER_NAME_KO = "user_ko";
 
   protected final EasyRandom easyRandom = new EasyRandom();
-
-  private redis.embedded.RedisServer redisServer;
-
   @Autowired protected UserDao userDao;
+  private redis.embedded.RedisServer redisServer;
 
   public void createUsers() {
     userDao.deleteAll();
@@ -59,12 +58,18 @@ public abstract class IntegrationBaseTest {
   }
 
   public void startRedis() {
-    redisServer = new redis.embedded.RedisServer(6379); // FIXME poner el puerto
+    redisServer =
+        RedisServer.builder()
+            .port(6379) // FIXME poner el puerto
+            .setting("maxheap 128M")
+            .setting("daemonize no")
+            .setting("appendonly no")
+            .build();
     redisServer.start();
   }
 
   public void stopRedis() {
-    if (redisServer != null) {
+    if (redisServer != null && redisServer.isActive()) {
       redisServer.stop();
     }
   }
