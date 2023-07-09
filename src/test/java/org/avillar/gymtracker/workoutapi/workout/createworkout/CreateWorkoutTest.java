@@ -9,11 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import java.util.Optional;
+import org.avillar.gymtracker.IntegrationBaseTest;
 import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
-import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
 import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
@@ -26,23 +24,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(Lifecycle.PER_CLASS)
-class CreateWorkoutTest {
+class CreateWorkoutTest extends IntegrationBaseTest {
 
-  private static final String USER_NAME_OK = "adrian";
-  private static final String USER_NAME_KO = "chema";
   @Autowired private MockMvc mockMvc;
   @Autowired private WorkoutDao workoutDao;
   @Autowired private SetGroupDao setGroupDao;
@@ -50,49 +38,15 @@ class CreateWorkoutTest {
   @Autowired private UserDao userDao;
 
   @BeforeAll
-  public void before() {
-    userDao.deleteAll();
-    userDao.saveAll(
-        List.of(
-            new UserApp(
-                null,
-                "chema",
-                new BCryptPasswordEncoder().encode("chema69"),
-                null,
-                "Chema",
-                "Garcia",
-                "Romero",
-                null,
-                GenderEnum.MALE,
-                ActivityLevelEnum.EXTREME),
-            new UserApp(
-                null,
-                "alex",
-                new BCryptPasswordEncoder().encode("alex69"),
-                null,
-                "Alex",
-                "Garcia",
-                "Fernandez",
-                null,
-                GenderEnum.FEMALE,
-                ActivityLevelEnum.SEDENTARY),
-            new UserApp(
-                null,
-                "adrian",
-                new BCryptPasswordEncoder().encode("adrian69"),
-                null,
-                "Adrian",
-                "Villar",
-                "Gesto",
-                null,
-                GenderEnum.MALE,
-                ActivityLevelEnum.MODERATE)));
+  public void beforeAll() {
+    this.startRedis();
+    this.createUsers();
   }
 
   @AfterAll
   public void afterAll() {
-    userDao.deleteAll();
-    workoutDao.deleteAll();
+    this.stopRedis();
+    this.deleteUsers();
   }
 
   @AfterEach

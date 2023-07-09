@@ -12,10 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.avillar.gymtracker.IntegrationBaseTest;
 import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
-import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
-import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.junit.jupiter.api.AfterAll;
@@ -24,75 +22,31 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(Lifecycle.PER_CLASS)
-class UpdateWorkoutDateTest {
+class UpdateWorkoutDateTest extends IntegrationBaseTest {
 
   final List<Workout> workouts = new ArrayList<>();
   @Autowired private MockMvc mockMvc;
   @Autowired private WorkoutDao workoutDao;
-  @Autowired private UserDao userDao;
-
 
   @BeforeAll
-  public void before() {
-    userDao.deleteAll();
-    userDao.saveAll(
-        List.of(
-            new UserApp(
-                null,
-                "chema",
-                new BCryptPasswordEncoder().encode("chema69"),
-                null,
-                "Chema",
-                "Garcia",
-                "Romero",
-                null,
-                GenderEnum.MALE,
-                ActivityLevelEnum.EXTREME),
-            new UserApp(
-                null,
-                "alex",
-                new BCryptPasswordEncoder().encode("alex69"),
-                null,
-                "Alex",
-                "Garcia",
-                "Fernandez",
-                null,
-                GenderEnum.FEMALE,
-                ActivityLevelEnum.SEDENTARY),
-            new UserApp(
-                null,
-                "adrian",
-                new BCryptPasswordEncoder().encode("adrian69"),
-                null,
-                "Adrian",
-                "Villar",
-                "Gesto",
-                null,
-                GenderEnum.MALE,
-                ActivityLevelEnum.MODERATE)));
+  public void beforeAll() {
+    this.startRedis();
+    this.createUsers();
   }
 
   @AfterAll
   public void afterAll() {
-    userDao.deleteAll();
-    workoutDao.deleteAll();
+    this.stopRedis();
+    this.deleteUsers();
   }
 
   @BeforeEach
   void beforeEach() {
-    final UserApp userApp = userDao.findByUsername("adrian");
+    final UserApp userApp = userDao.findByUsername(USER_NAME_OK);
 
     final Workout workout = new Workout(new Date(), null, userApp.getId(), new HashSet<>());
     workoutDao.save(workout);
@@ -101,13 +55,13 @@ class UpdateWorkoutDateTest {
   }
 
   @AfterEach
-  void afterEach(){
+  void afterEach() {
     workoutDao.deleteById(workouts.get(0).getId());
     workouts.clear();
   }
 
   @Test
-  @WithUserDetails("adrian")
+  @WithUserDetails(USER_NAME_OK)
   void deleteOneWorkout() throws Exception {
     final Workout workout = workouts.get(0);
     final UUID workoutId = workouts.get(0).getId();
@@ -126,11 +80,11 @@ class UpdateWorkoutDateTest {
 
     final Optional<Workout> workoutDb = workoutDao.findById(workoutId);
     Assertions.assertTrue(workoutDb.isPresent());
-    //Assertions.assertEquals("newDescription", workoutDb.get().getDescription());
+    // Assertions.assertEquals("newDescription", workoutDb.get().getDescription());
   }
 
   @Test
-  @WithUserDetails("adrian")
+  @WithUserDetails(USER_NAME_OK)
   void deleteOneWorkout2() throws Exception {
     final Workout workout = workouts.get(0);
     final String updateWorkoutDateRequest = """
@@ -147,7 +101,7 @@ class UpdateWorkoutDateTest {
   }
 
   @Test
-  @WithUserDetails("chema")
+  @WithUserDetails(USER_NAME_KO)
   void deleteNotFoundAndNotPermission() throws Exception {
     final Workout workout = workouts.get(0);
     final String updateWorkoutDateRequest = """

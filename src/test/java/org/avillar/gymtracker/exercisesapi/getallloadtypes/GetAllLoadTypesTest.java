@@ -6,88 +6,37 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
-import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
-import org.avillar.gymtracker.authapi.domain.UserDao;
+import org.avillar.gymtracker.IntegrationBaseTest;
 import org.avillar.gymtracker.exercisesapi.domain.LoadType;
 import org.avillar.gymtracker.exercisesapi.domain.LoadTypeDao;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(Lifecycle.PER_CLASS)
-class GetAllLoadTypesTest {
+class GetAllLoadTypesTest extends IntegrationBaseTest {
 
-  private static final String USER_NAME_OK = "adrian";
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final String ENDPOINT = "/exercises-api/loadTypes";
+
   @Autowired private MockMvc mockMvc;
   @Autowired private LoadTypeDao loadTypeDao;
-  @Autowired private UserDao userDao;
 
   @BeforeAll
-  public void before() {
-    userDao.deleteAll();
-    userDao.saveAll(
-        List.of(
-            new UserApp(
-                null,
-                "chema",
-                new BCryptPasswordEncoder().encode("chema69"),
-                null,
-                "Chema",
-                "Garcia",
-                "Romero",
-                null,
-                GenderEnum.MALE,
-                ActivityLevelEnum.EXTREME),
-            new UserApp(
-                null,
-                "alex",
-                new BCryptPasswordEncoder().encode("alex69"),
-                null,
-                "Alex",
-                "Garcia",
-                "Fernandez",
-                null,
-                GenderEnum.FEMALE,
-                ActivityLevelEnum.SEDENTARY),
-            new UserApp(
-                null,
-                "adrian",
-                new BCryptPasswordEncoder().encode("adrian69"),
-                null,
-                "Adrian",
-                "Villar",
-                "Gesto",
-                null,
-                GenderEnum.MALE,
-                ActivityLevelEnum.MODERATE)));
+  public void beforeAll() {
+    this.startRedis();
+    this.createUsers();
   }
 
   @AfterAll
   public void afterAll() {
-    userDao.deleteAll();
+    this.stopRedis();
+    this.deleteUsers();
   }
 
   @BeforeEach
@@ -111,30 +60,15 @@ class GetAllLoadTypesTest {
   @WithUserDetails(USER_NAME_OK)
   void getAllLoadTypes() throws Exception {
     mockMvc
-        .perform(get("/exercises-api/loadTypes"))
+        .perform(get(ENDPOINT))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.*", hasSize(10)));
-  }
 
-  @TestConfiguration
-  public static class EmbeddedRedisTestConfiguration {
-
-    private final redis.embedded.RedisServer redisServer;
-
-    public EmbeddedRedisTestConfiguration(@Value("${spring.data.redis.port}") final int redisPort)
-        throws IOException {
-      this.redisServer = new redis.embedded.RedisServer(redisPort);
-    }
-
-    @PostConstruct
-    public void startRedis() {
-      this.redisServer.start();
-    }
-
-    @PreDestroy
-    public void stopRedis() {
-      this.redisServer.stop();
-    }
+    mockMvc
+        .perform(get(ENDPOINT))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.*", hasSize(10)));
   }
 }
