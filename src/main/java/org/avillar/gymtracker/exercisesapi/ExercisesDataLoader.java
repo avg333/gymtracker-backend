@@ -18,6 +18,7 @@ import org.avillar.gymtracker.exercisesapi.domain.MuscleSubGroup;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleSubGroupDao;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleSupGroup;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleSupGroupDao;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ExercisesDataLoader implements ApplicationRunner {
+
+  @Value("${spring.profiles.active}")
+  private String activeProfile;
 
   private final LoadTypeDao loadTypeDao;
   private final MuscleSupGroupDao muscleSupGroupDao;
@@ -36,12 +40,21 @@ public class ExercisesDataLoader implements ApplicationRunner {
 
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();
-    if (!exerciseDao.findAll().isEmpty()) {
+    if (activeProfile.equals("test")) {
+      return;
+    } else if (!exerciseDao.findAll().isEmpty()) {
       log.info("Micro exercises is already populated");
       return;
     }
-    log.info("Populating exercises micro...");
 
+    log.info("Populating exercises micro...");
+    int totalInserts = createExercises();
+
+    long finish = System.currentTimeMillis();
+    log.info("Populated exercise micro with {} entities in {} ms", totalInserts, finish - start);
+  }
+
+  private int createExercises() {
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------LOAD TYPES-------------------------------------------------
     // ---------------------------------------------------------------------------------------------
@@ -52,9 +65,9 @@ public class ExercisesDataLoader implements ApplicationRunner {
     var machine = new LoadType("MACHINE", null, new HashSet<>());
     var multipower = new LoadType("MULTIPOWER", null, new HashSet<>());
     var loadTypes = List.of(bar, dumbbell, cable, bodyweight, machine, multipower);
-    log.info("\tInserting " + loadTypes.size() + " load types...");
+    log.info("\tInserting {} load types...", loadTypes.size());
     loadTypeDao.saveAll(loadTypes);
-    log.info("\tInserting " + loadTypes.size() + " load types");
+    log.info("\tInserting {} load types", loadTypes.size());
 
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------MUSCLE SUP GROUPS------------------------------------------
@@ -66,9 +79,9 @@ public class ExercisesDataLoader implements ApplicationRunner {
     var core = new MuscleSupGroup("CORE", null, new HashSet<>());
     var legs = new MuscleSupGroup("LEGS", null, new HashSet<>());
     var muscleSupGroups = List.of(chestMsupg, back, shoulders, arms, core, legs);
-    log.info("\tInserting " + muscleSupGroups.size() + " muscleSupGroups...");
+    log.info("\tInserting {} muscleSupGroups...", muscleSupGroups.size());
     muscleSupGroupDao.saveAll(muscleSupGroups);
-    log.info("\tInserting " + muscleSupGroups.size() + " muscleSupGroups");
+    log.info("\tInserting {} muscleSupGroups", muscleSupGroups.size());
 
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------MUSCLE GROUPS----------------------------------------------
@@ -159,9 +172,9 @@ public class ExercisesDataLoader implements ApplicationRunner {
             glutes,
             calves,
             tibialesAnterior);
-    log.info("\tInserting " + muscleGroups.size() + " muscleGroups...");
+    log.info("\tInserting {} muscleGroups...", muscleGroups.size());
     muscleGroupDao.saveAll(muscleGroups);
-    log.info("\tInserting " + muscleGroups.size() + " muscleGroups");
+    log.info("\tInserting {} muscleGroups", muscleGroups.size());
 
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------MUSCLE SUB GROUPS------------------------------------------
@@ -192,9 +205,9 @@ public class ExercisesDataLoader implements ApplicationRunner {
             forearmsFlexors,
             forearmsExtensors,
             forearmsBrachioradialis);
-    log.info("\tInserting " + muscleSubGroups.size() + " muscleSupGroups...");
+    log.info("\tInserting {} muscleSupGroups...", muscleSubGroups.size());
     muscleSubGroupDao.saveAll(muscleSubGroups);
-    log.info("\tInserting " + muscleSubGroups.size() + " muscleSupGroups");
+    log.info("\tInserting {} muscleSupGroups", muscleSubGroups.size());
 
     final UUID adminId = UUID.randomUUID();
     // ---------------------------------------------------------------------------------------------
@@ -334,9 +347,9 @@ public class ExercisesDataLoader implements ApplicationRunner {
             aperturasMancuernas,
             aperturasMancuernasInclinado,
             aperturasMancuernasDeclinado);
-    log.info("\tInserting " + exercises.size() + " exercises...");
+    log.info("\tInserting {} exercises...", exercises.size());
     exerciseDao.saveAll(exercises);
-    log.info("\tInserting " + exercises.size() + " exercises");
+    log.info("\tInserting {} exercises", exercises.size());
 
     // ---------------------------------------------------------------------------------------------
     // ----------------------------------EXERCISES_MUSCLE_GROUPS------------------------------------
@@ -368,23 +381,15 @@ public class ExercisesDataLoader implements ApplicationRunner {
             press8,
             press9,
             press10);
-    log.info("\tInserting " + exercisesMuscleGroups.size() + " exercises-muscleGroups...");
+    log.info("\tInserting {} exercises-muscleGroups...", exercisesMuscleGroups.size());
     muscleGroupExerciseDao.saveAll(exercisesMuscleGroups);
-    log.info("\tInserting " + exercisesMuscleGroups.size() + " exercises-muscleGroups");
+    log.info("\tInserting {} exercises-muscleGroups", exercisesMuscleGroups.size());
 
-    int totalInserts =
-        loadTypes.size()
-            + muscleSupGroups.size()
-            + muscleGroups.size()
-            + muscleSubGroups.size()
-            + exercises.size()
-            + exercisesMuscleGroups.size();
-    long finish = System.currentTimeMillis();
-    log.info(
-        "Populated exercise micro with "
-            + totalInserts
-            + " enitities in "
-            + (finish - start)
-            + "ms");
+    return loadTypes.size()
+        + muscleSupGroups.size()
+        + muscleGroups.size()
+        + muscleSubGroups.size()
+        + exercises.size()
+        + exercisesMuscleGroups.size();
   }
 }

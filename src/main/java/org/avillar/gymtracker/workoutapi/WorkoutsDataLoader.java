@@ -56,25 +56,20 @@ public class WorkoutsDataLoader implements ApplicationRunner {
 
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();
-    if (activeProfile.equals("test") || !workoutDao.findAll().isEmpty()) {
+    if (activeProfile.equals("test")) {
+      return;
+    } else if (!workoutDao.findAll().isEmpty()) {
       log.info("Micro workouts is already populated");
       return;
     }
-    log.info("Populating workouts micro...");
 
-    setDao.deleteAll();
-    setGroupDao.deleteAll();
-    workoutDao.deleteAll();
+    log.info("Populating workouts micro...");
     createHeavyData();
     saveHeavyData();
     int totalInserts = workouts.size() + setGroups.size() + sets.size();
+
     long finish = System.currentTimeMillis();
-    log.info(
-        "Populated workouts micro with "
-            + totalInserts
-            + " enitities in "
-            + (finish - start)
-            + "ms");
+    log.info("Populated workouts micro with {} entities in {} ms", totalInserts, finish - start);
   }
 
   private void saveHeavyData() {

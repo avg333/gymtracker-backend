@@ -18,19 +18,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AuthDataLoader implements ApplicationRunner {
 
-  private final UserDao userDao;
-
   @Value("${spring.profiles.active}")
   private String activeProfile;
 
-  public void run(ApplicationArguments args) {
-    final long start = System.currentTimeMillis();
-    if (activeProfile.equals("test") || !userDao.findAll().isEmpty()) {
-      log.info("Micro org.avillar.gymtracker.authapi.auth is already populated");
-      return;
-    }
-    log.info("Populating org.avillar.gymtracker.authapi.auth micro...");
+  private final UserDao userDao;
 
+  private static List<UserApp> generateUsers() {
     var user1 =
         new UserApp(
             null,
@@ -67,18 +60,26 @@ public class AuthDataLoader implements ApplicationRunner {
             null,
             GenderEnum.MALE,
             ActivityLevelEnum.MODERATE);
-    var users = List.of(user1, user2, user3);
+    return List.of(user1, user2, user3);
+  }
 
-    log.info("\tInserting " + users.size() + " users...");
+  public void run(ApplicationArguments args) {
+    final long start = System.currentTimeMillis();
+    if (activeProfile.equals("test")) {
+      return;
+    } else if (!userDao.findAll().isEmpty()) {
+      log.info("Micro auth is already populated");
+      return;
+    }
+
+    log.info("Populating auth micro...");
+    final List<UserApp> users = generateUsers();
+
+    log.info("\tInserting {} users...", users.size());
     userDao.saveAll(users);
-    log.info("\tInserted " + users.size() + " users");
+    log.info("\tInserted {} users", users.size());
 
     long finish = System.currentTimeMillis();
-    log.info(
-        "Populated org.avillar.gymtracker.authapi.auth micro with "
-            + users.size()
-            + " enitities in "
-            + (finish - start)
-            + "ms");
+    log.info("Populated auth micro with {} entities in {} ms", users.size(), finish - start);
   }
 }
