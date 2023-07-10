@@ -61,9 +61,9 @@ public abstract class IntegrationBaseTest {
     redisServer =
         RedisServer.builder()
             .port(6379) // FIXME poner el puerto
-            .setting("maxheap 128M")
-            .setting("daemonize no")
-            .setting("appendonly no")
+//            .setting("maxheap 128M")
+//            .setting("daemonize no")
+//            .setting("appendonly no")
             .build();
     redisServer.start();
   }
