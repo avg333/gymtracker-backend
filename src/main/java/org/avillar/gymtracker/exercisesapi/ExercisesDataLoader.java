@@ -227,7 +227,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
         new Exercise(
             "PRESS BANCA INCLINADO",
             null,
-            AccessTypeEnum.PRIVATE,
+            AccessTypeEnum.PUBLIC,
             adminId,
             false,
             bar,
