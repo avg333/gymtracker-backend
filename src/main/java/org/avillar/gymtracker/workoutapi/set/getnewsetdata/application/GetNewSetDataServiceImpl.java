@@ -57,7 +57,7 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
             setGroup.getWorkout().getDate())
         .stream()
         .findAny()
-        .orElseThrow( // FIXME Arreglar esta excepcion
+        .orElseThrow( // TODO Mejorar esta excepcion
             () -> new EntityNotFoundException(Set.class, "exerciseId", setGroup.getExerciseId()));
   }
 }

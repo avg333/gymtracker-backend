@@ -48,9 +48,9 @@ public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService 
         .setListOrder(newPosition);
 
     entitySorter.sortUpdate(sets, set, oldPosition);
-    setDao.saveAll(sets); // FIXME Devolver todas las sets
+    setDao.saveAll(sets);
 
-    return updateSetListOrderServiceMapper.map(sets);
+    return updateSetListOrderServiceMapper.map(sets); // FIXME Must return all the sets
   }
 
   private Set getSetFull(final UUID setId) {

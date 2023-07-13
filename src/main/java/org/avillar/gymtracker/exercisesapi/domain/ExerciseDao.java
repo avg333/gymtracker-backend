@@ -14,6 +14,14 @@ public interface ExerciseDao extends JpaRepository<Exercise, UUID> {
       """
             SELECT e
             FROM Exercise e
+            WHERE e.id IN (:exerciseIds)
+          """)
+  List<Exercise> getExerciseById(@Param("exerciseIds") Set<UUID> exerciseIds);
+
+  @Query(
+      """
+            SELECT e
+            FROM Exercise e
             LEFT JOIN FETCH e.loadType lt
             LEFT JOIN FETCH e.muscleSubGroups msubg
             JOIN FETCH e.muscleGroupExercises mge
@@ -27,15 +35,15 @@ public interface ExerciseDao extends JpaRepository<Exercise, UUID> {
       """
             SELECT e
             FROM Exercise e
-            LEFT JOIN FETCH e.muscleSubGroups msubg
-            JOIN FETCH e.muscleGroupExercises mge
-            JOIN FETCH mge.muscleGroup mg
-            JOIN FETCH mg.muscleSupGroups msupg
+            LEFT JOIN e.muscleSubGroups msubg
+            JOIN e.muscleGroupExercises mge
+            JOIN mge.muscleGroup mg
+            JOIN mg.muscleSupGroups msupg
             WHERE ((e.owner = :userId AND e.accessType = :privateAT) OR e.accessType = :publicAT)
             AND (:name IS NULL OR e.name LIKE CONCAT('%',:name,'%'))
             AND (:description IS NULL OR e.description LIKE CONCAT('%',:description,'%'))
             AND (:unilateral IS NULL OR e.unilateral = :unilateral)
-          """) // FIXME Necesario el fetch?
+          """)
   List<Exercise> getAllFullExercises(
       @Param("userId") final UUID userId,
       @Param("privateAT") final AccessTypeEnum privateAT,

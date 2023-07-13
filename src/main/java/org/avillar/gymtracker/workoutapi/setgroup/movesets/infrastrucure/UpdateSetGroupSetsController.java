@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// FINALIZAR
+// TODO FINALIZAR
 @Tag(name = "SetGroups", description = "API to manage setGroups")
 @RestController
 @RequestMapping(path = "${workoutsApiPrefix}/")
@@ -25,7 +25,6 @@ public class UpdateSetGroupSetsController {
   private final UpdateSetGroupSetsService updateSetGroupSetsService;
   private final UpdateSetGroupSetsControllereMapper updateSetGroupSetsControllereMapper;
 
-  // TODO Debe devolver el setGroup solo (con la sets dentro si se considera)
   @PatchMapping("/setGroups/{setGroupId}/sets")
   public ResponseEntity<UpdateSetGroupSetsResponseInfrastructure> execute(
       @PathVariable final UUID setGroupId,

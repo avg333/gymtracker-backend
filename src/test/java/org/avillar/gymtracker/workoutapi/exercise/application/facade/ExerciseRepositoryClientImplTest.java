@@ -2,6 +2,8 @@ package org.avillar.gymtracker.workoutapi.exercise.application.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFo
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
+import org.avillar.gymtracker.exercisesapi.exercise.checkexercisereadaccess.application.CheckExerciseReadAccessService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.GetExercisesByIdsService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication;
 import org.avillar.gymtracker.workoutapi.exercise.application.mapper.GetExerciseFacadeMapperImpl;
@@ -33,6 +36,7 @@ class ExerciseRepositoryClientImplTest {
 
   @InjectMocks private ExerciseRepositoryClientImpl exerciseRepositoryClient;
 
+  @Mock private CheckExerciseReadAccessService checkExerciseReadAccessService;
   @Mock private GetExercisesByIdsService getExercisesByIdsService;
   @Spy private GetExerciseFacadeMapperImpl getExerciseFacadeMapper;
 
@@ -40,8 +44,7 @@ class ExerciseRepositoryClientImplTest {
   void checkExerciseAccessByIdOk() {
     final UUID exerciseId = UUID.randomUUID();
 
-    when(getExercisesByIdsService.execute(Set.of(exerciseId)))
-        .thenReturn(List.of(easyRandom.nextObject(GetExercisesByIdsResponseApplication.class)));
+    doNothing().when(checkExerciseReadAccessService).execute(exerciseId);
 
     assertDoesNotThrow(() -> exerciseRepositoryClient.checkExerciseAccessById(exerciseId));
   }
@@ -50,8 +53,9 @@ class ExerciseRepositoryClientImplTest {
   void checkExerciseAccessByIdOkNotFound() {
     final UUID exerciseId = UUID.randomUUID();
 
-    when(getExercisesByIdsService.execute(Set.of(exerciseId)))
-        .thenThrow(new EntityNotFoundException(Exercise.class, exerciseId));
+    doThrow(new EntityNotFoundException(Exercise.class, exerciseId))
+        .when(checkExerciseReadAccessService)
+        .execute(exerciseId);
 
     final ExerciseNotFoundException exception =
         assertThrows(
@@ -66,10 +70,11 @@ class ExerciseRepositoryClientImplTest {
     final GetExercisesByIdsResponseApplication exercise =
         easyRandom.nextObject(GetExercisesByIdsResponseApplication.class);
 
-    when(getExercisesByIdsService.execute(Set.of(exercise.getId())))
-        .thenThrow(
+    doThrow(
             new IllegalAccessException(
-                mapExercise(exercise), AuthOperations.READ, UUID.randomUUID()));
+                mapExercise(exercise), AuthOperations.READ, UUID.randomUUID()))
+        .when(checkExerciseReadAccessService)
+        .execute(exercise.getId());
 
     final ExerciseNotFoundException exception =
         assertThrows(

@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.workoutapi.exercise.application.facade;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -9,6 +8,7 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.exercisesapi.exercise.checkexercisereadaccess.application.CheckExerciseReadAccessService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.GetExercisesByIdsService;
 import org.avillar.gymtracker.workoutapi.exercise.application.mapper.GetExerciseFacadeMapper;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
@@ -18,14 +18,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ExerciseRepositoryClientImpl implements ExerciseRepositoryClient {
 
+  private final CheckExerciseReadAccessService checkExerciseReadAccessService;
   private final GetExercisesByIdsService getExercisesByIdsService;
   private final GetExerciseFacadeMapper getExerciseFacadeMapper;
 
   @Override
   public void checkExerciseAccessById(final UUID exerciseId) throws ExerciseNotFoundException {
     try {
-      // TODO Usar un metodo mas liviano que este
-      getExercisesByIdsService.execute(Collections.singleton(exerciseId));
+      checkExerciseReadAccessService.execute(exerciseId);
     } catch (EntityNotFoundException ex) {
       throw new ExerciseNotFoundException(ex.getId(), AccessError.NOT_FOUND);
     } catch (IllegalAccessException ex) {

@@ -14,7 +14,7 @@ import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.mapper.Up
 import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.model.UpdateSetGroupSetsResponseApplication;
 import org.springframework.stereotype.Service;
 
-// FINALIZAR
+// TODO FINALIZAR
 @Service
 @RequiredArgsConstructor
 public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService {
@@ -45,7 +45,7 @@ public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService 
       sets.add(set);
     }
 
-    setGroupDao.deleteById(setGroupSourceId); // TODO Es correcto borrar el source?
+    setGroupDao.deleteById(setGroupSourceId);
     setDao.saveAll(sets);
 
     return new UpdateSetGroupSetsResponseApplication(updateSetGroupSetsServiceMapper.map(sets));

@@ -33,9 +33,9 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
             AccessTypeEnum.PUBLIC,
             getExercisesByFilterRequestApplication.getName(),
             getExercisesByFilterRequestApplication.getDescription(),
-            getExercisesByFilterRequestApplication.getUnilateral()); // FIXME Usar el filtro
+            getExercisesByFilterRequestApplication.getUnilateral()); // FIXME Use the filter
 
-    authExercisesService.checkAccess(exercises, AuthOperations.READ); // TODO Necesario esto?
+    authExercisesService.checkAccess(exercises, AuthOperations.READ);
 
     return getExercisesByFilterServiceMapper.map(exercises);
   }
