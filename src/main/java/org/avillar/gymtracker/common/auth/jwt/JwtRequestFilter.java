@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -34,32 +35,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
 
     final String requestTokenHeader = request.getHeader("Authorization");
-    if (SecurityContextHolder.getContext().getAuthentication() == null
-        && StringUtils.isNotEmpty(requestTokenHeader)) {
+    if (!isAuthenticated() && StringUtils.isNotBlank(requestTokenHeader)) {
       if (!StringUtils.startsWith(requestTokenHeader, AUTHORIZATION_HEADER_START)) {
         log.warn("JWT Token does not begin with Bearer String");
       } else {
-        verifyJwt(request, requestTokenHeader.substring(7));
+        verifyJwt(request, requestTokenHeader.substring(AUTHORIZATION_HEADER_START.length()));
       }
     }
 
     chain.doFilter(request, response);
   }
 
+  private boolean isAuthenticated() {
+    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication != null && authentication.isAuthenticated();
+  }
+
   private void verifyJwt(final HttpServletRequest request, final String jwtToken) {
     try {
       if (!Boolean.TRUE.equals(jwtTokenUtil.validateToken(jwtToken))) {
-        log.info("El token JWT no es válido");
+        log.info("The JWT Token is not valid");
         return;
       }
 
-      final UserDetails userDetails = jwtTokenUtil.getUserDetailsImplFromToken(jwtToken);
-
-      final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-          new UsernamePasswordAuthenticationToken(userDetails, null, null);
-      usernamePasswordAuthenticationToken.setDetails(
-          new WebAuthenticationDetailsSource().buildDetails(request));
-      SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+      SecurityContextHolder.getContext()
+          .setAuthentication(getAuthenticationFromJwt(request, jwtToken));
     } catch (IllegalArgumentException e) {
       log.error("Unable to fetch JWT Token");
     } catch (ExpiredJwtException e) {
@@ -67,5 +67,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     } catch (Exception e) {
       log.error(e.getMessage());
     }
+  }
+
+  private UsernamePasswordAuthenticationToken getAuthenticationFromJwt(
+      final HttpServletRequest request, final String jwtToken) {
+    final UserDetails userDetails = jwtTokenUtil.getUserDetailsImplFromToken(jwtToken);
+
+    final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+        new UsernamePasswordAuthenticationToken(userDetails, null, null);
+    usernamePasswordAuthenticationToken.setDetails(
+        new WebAuthenticationDetailsSource().buildDetails(request));
+    return usernamePasswordAuthenticationToken;
   }
 }

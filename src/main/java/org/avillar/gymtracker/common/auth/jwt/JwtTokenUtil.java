@@ -9,11 +9,13 @@ import java.io.Serializable;
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class JwtTokenUtil implements Serializable {
 
@@ -61,9 +63,10 @@ public class JwtTokenUtil implements Serializable {
   public boolean validateToken(final String token) {
     try {
       Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
-      return true; // FIXME getClaimFromToken(token, Claims::getExpiration).before(new Date());
+      return getClaimFromToken(token, Claims::getExpiration)
+          .after(new Date(System.currentTimeMillis()));
     } catch (Exception e) {
-      e.printStackTrace();
+      log.info("The JWT Token is not valid", e);
     }
     return false;
   }
@@ -82,7 +85,7 @@ public class JwtTokenUtil implements Serializable {
         .setSubject(userDetails.getUsername())
         .setId(userDetails.getId().toString())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs * 1000))
+        .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
         .signWith(getSignKey(), SignatureAlgorithm.HS256)
         .compact();
   }
