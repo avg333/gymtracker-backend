@@ -47,7 +47,7 @@ public class WorkoutsDataLoader implements ApplicationRunner {
 
   @PostMapping("/users/{userId}/create")
   public ResponseEntity<Void> postWorkout(@PathVariable final UUID userId) {
-    this.createHeavyData(List.of(userId));
+    saveHeavyData(createHeavyData(List.of(userId)));
     return ResponseEntity.noContent().build();
   }
 

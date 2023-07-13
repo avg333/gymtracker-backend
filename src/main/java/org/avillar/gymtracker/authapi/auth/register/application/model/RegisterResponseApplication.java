@@ -1,12 +1,10 @@
-package org.avillar.gymtracker.authapi.auth.login.infrastructure.model;
+package org.avillar.gymtracker.authapi.auth.register.application.model;
 
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class LoginControllerResponse {
+public class RegisterResponseApplication {
 
   private static final String type = "Bearer";
   private String token;

@@ -32,6 +32,9 @@ public abstract class WebSecurityConfigBase {
   @Value("${authApiEndpoint}")
   private String authEndpoint;
 
+  @Value("${authApiRegisterEndpoint}")
+  private String authRegisterEndpoint;
+
   @Bean
   public AuthenticationManager authenticationManager(final AuthenticationConfiguration authConfig)
       throws Exception {
@@ -46,8 +49,9 @@ public abstract class WebSecurityConfigBase {
             requests ->
                 requests
                     .requestMatchers(
+                        new AntPathRequestMatcher(ACTUATOR_HEALTH_ENDPOINT, "GET"),
                         new AntPathRequestMatcher(authApiPrefix + authEndpoint, "POST"),
-                        new AntPathRequestMatcher(ACTUATOR_HEALTH_ENDPOINT, "GET"))
+                        new AntPathRequestMatcher(authApiPrefix + authRegisterEndpoint, "POST"))
                     .permitAll()
                     .anyRequest()
                     .authenticated())
