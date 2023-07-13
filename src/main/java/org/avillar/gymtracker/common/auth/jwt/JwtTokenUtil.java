@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,6 @@ public class JwtTokenUtil implements Serializable {
     Claims claims =
         Jwts.parserBuilder()
             .setSigningKey(getSignKey())
-            // .setSigningKey(key)
             .build()
             .parseClaimsJws(token)
             .getBody();
@@ -53,7 +53,6 @@ public class JwtTokenUtil implements Serializable {
     return claimsResolver.apply(
         Jwts.parserBuilder()
             .setSigningKey(getSignKey())
-            // .setSigningKey(key)
             .build()
             .parseClaimsJws(token)
             .getBody());
@@ -84,11 +83,13 @@ public class JwtTokenUtil implements Serializable {
         .setId(userDetails.getId().toString())
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs * 1000))
-        .signWith(getSignKey(), SignatureAlgorithm.HS256) // .signWith(KEY)
+        .signWith(getSignKey(), SignatureAlgorithm.HS256)
         .compact();
   }
 
   private Key getSignKey() {
-    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    return StringUtils.isNotBlank(secret)
+        ? Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
+        : KEY;
   }
 }

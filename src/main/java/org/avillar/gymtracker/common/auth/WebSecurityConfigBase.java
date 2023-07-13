@@ -13,15 +13,18 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
-public class WebSecurityConfigBase {
+public abstract class WebSecurityConfigBase {
 
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtRequestFilter jwtRequestFilter;
+
+  private static final String ACTUATOR_HEALTH_ENDPOINT = "/actuator/health";
 
   @Value("${authApiPrefix}")
   private String authApiPrefix;
@@ -39,8 +42,15 @@ public class WebSecurityConfigBase {
   public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
     return http.cors(cors -> cors.configurationSource(corsConfiguration()))
         .csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests( // FIXME Autorizar solo API
-            authorize -> authorize.requestMatchers("/**").permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests(
+            requests ->
+                requests
+                    .requestMatchers(
+                        new AntPathRequestMatcher(authApiPrefix + authEndpoint, "POST"),
+                        new AntPathRequestMatcher(ACTUATOR_HEALTH_ENDPOINT, "GET"))
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
         .exceptionHandling(eh -> eh.authenticationEntryPoint(jwtAuthenticationEntryPoint))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -49,14 +59,7 @@ public class WebSecurityConfigBase {
         .build();
   }
 
-  //        .authorizeHttpRequests(
-  //            requests ->
-  //                requests
-  //                    .requestMatchers(new AntPathRequestMatcher(authApiPrefix +
-  // authEndpoint))
-  //                    .permitAll()
-  //                    .anyRequest()
-  //                    .authenticated())
+
   private CorsConfigurationSource corsConfiguration() {
     final CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(List.of("*"));
