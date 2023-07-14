@@ -4,8 +4,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
-import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
 import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -24,42 +22,9 @@ public class AuthDataLoader implements ApplicationRunner {
   private final UserDao userDao;
 
   private static List<UserApp> generateUsers() {
-    var user1 =
-        new UserApp(
-            null,
-            "chema",
-            new BCryptPasswordEncoder().encode("chema69"),
-            null,
-            "Chema",
-            "Garcia",
-            "Romero",
-            null,
-            GenderEnum.MALE,
-            ActivityLevelEnum.EXTREME);
-    var user2 =
-        new UserApp(
-            null,
-            "alex",
-            new BCryptPasswordEncoder().encode("alex69"),
-            null,
-            "Alex",
-            "Garcia",
-            "Fernandez",
-            null,
-            GenderEnum.FEMALE,
-            ActivityLevelEnum.SEDENTARY);
-    var user3 =
-        new UserApp(
-            null,
-            "adrian",
-            new BCryptPasswordEncoder().encode("adrian69"),
-            null,
-            "Adrian",
-            "Villar",
-            "Gesto",
-            null,
-            GenderEnum.MALE,
-            ActivityLevelEnum.MODERATE);
+    var user1 = new UserApp(null, "chema", new BCryptPasswordEncoder().encode("chema69"));
+    var user2 = new UserApp(null, "alex", new BCryptPasswordEncoder().encode("alex69"));
+    var user3 = new UserApp(null, "adrian", new BCryptPasswordEncoder().encode("adrian69"));
     return List.of(user1, user2, user3);
   }
 

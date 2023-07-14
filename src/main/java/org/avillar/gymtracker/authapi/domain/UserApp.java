@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,25 +24,4 @@ public class UserApp implements Serializable {
 
   private String username;
   private String password;
-
-  private String email;
-  private String name;
-  private String lastNameFirst;
-  private String lastNameSecond;
-  private Date birth;
-  private GenderEnum gender;
-  private ActivityLevelEnum activityLevel;
-
-  public enum ActivityLevelEnum {
-    SEDENTARY,
-    LIGHT,
-    MODERATE,
-    HIGH,
-    EXTREME
-  }
-
-  public enum GenderEnum {
-    MALE,
-    FEMALE
-  }
 }

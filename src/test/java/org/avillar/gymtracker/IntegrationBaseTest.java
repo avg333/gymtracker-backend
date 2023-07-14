@@ -3,8 +3,6 @@ package org.avillar.gymtracker;
 import java.util.List;
 import org.apache.commons.lang3.SystemUtils;
 import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserApp.ActivityLevelEnum;
-import org.avillar.gymtracker.authapi.domain.UserApp.GenderEnum;
 import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.TestInstance;
@@ -35,28 +33,8 @@ public abstract class IntegrationBaseTest {
     userDao.deleteAll();
     userDao.saveAll(
         List.of(
-            new UserApp(
-                null,
-                USER_NAME_OK,
-                easyRandom.nextObject(String.class),
-                null,
-                null,
-                null,
-                null,
-                null,
-                GenderEnum.MALE,
-                ActivityLevelEnum.MODERATE),
-            new UserApp(
-                null,
-                USER_NAME_KO,
-                easyRandom.nextObject(String.class),
-                null,
-                null,
-                null,
-                null,
-                null,
-                GenderEnum.MALE,
-                ActivityLevelEnum.EXTREME)));
+            new UserApp(null, USER_NAME_OK, easyRandom.nextObject(String.class)),
+            new UserApp(null, USER_NAME_KO, easyRandom.nextObject(String.class))));
   }
 
   protected void deleteUsers() {
