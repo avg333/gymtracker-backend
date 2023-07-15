@@ -12,14 +12,30 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthExercisesServiceImpl extends AuthServiceBase implements AuthExercisesService {
 
+  private static void checkReadAccess(
+      Exercise exercise, AuthOperations authOperations, UUID userId) {
+    if (exercise.getAccessType() == AccessTypeEnum.PRIVATE && !exercise.getOwner().equals(userId)) {
+      throw new IllegalAccessException(exercise, authOperations, userId);
+    }
+  }
+
+  private static void checkModifyAccess(
+      Exercise exercise, AuthOperations authOperations, UUID userId) {
+    if (!exercise.getOwner().equals(userId)) {
+      throw new IllegalAccessException(exercise, authOperations, userId);
+    }
+  }
+
   @Override
   public void checkAccess(final Exercise exercise, final AuthOperations authOperations)
       throws IllegalAccessException {
     checkParameters(exercise, authOperations);
 
     final UUID userId = getLoggedUserId();
-    if (exercise.getAccessType() == AccessTypeEnum.PRIVATE && !exercise.getOwner().equals(userId)) {
-      throw new IllegalAccessException(exercise, authOperations, userId);
+    if (authOperations.equals(AuthOperations.READ)) {
+      checkReadAccess(exercise, authOperations, userId);
+    } else {
+      checkModifyAccess(exercise, authOperations, userId);
     }
   }
 

@@ -5,9 +5,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
@@ -37,7 +35,7 @@ class CheckExerciseReadAccessServiceImplTest {
   void getOk() {
     final Exercise expected = easyRandom.nextObject(Exercise.class);
 
-    when(exerciseDao.getExerciseById(Set.of(expected.getId()))).thenReturn(List.of(expected));
+    when(exerciseDao.findById(expected.getId())).thenReturn(Optional.of(expected));
     doNothing().when(authExercisesService).checkAccess(expected, AuthOperations.READ);
 
     assertDoesNotThrow(() -> checkExerciseReadAccess.execute(expected.getId()));
@@ -51,7 +49,7 @@ class CheckExerciseReadAccessServiceImplTest {
     exercise.setAccessType(AccessTypeEnum.PRIVATE);
     exercise.setOwner(UUID.randomUUID());
 
-    when(exerciseDao.getExerciseById(Set.of(exercise.getId()))).thenReturn(List.of(exercise));
+    when(exerciseDao.findById(exercise.getId())).thenReturn(Optional.of(exercise));
     doThrow(new IllegalAccessException(exercise, authOperation, userId))
         .when(authExercisesService)
         .checkAccess(exercise, authOperation);
@@ -69,7 +67,8 @@ class CheckExerciseReadAccessServiceImplTest {
   void getNotFound() {
     final UUID exerciseId = UUID.randomUUID();
 
-    when(exerciseDao.getExerciseById(Set.of(exerciseId))).thenReturn(Collections.emptyList());
+    when(exerciseDao.findById(exerciseId))
+        .thenThrow(new EntityNotFoundException(Exercise.class, exerciseId));
 
     final EntityNotFoundException exception =
         assertThrows(

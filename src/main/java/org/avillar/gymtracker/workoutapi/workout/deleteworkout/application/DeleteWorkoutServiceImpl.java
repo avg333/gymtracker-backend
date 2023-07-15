@@ -4,6 +4,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
@@ -17,8 +18,7 @@ public class DeleteWorkoutServiceImpl implements DeleteWorkoutService {
   private final AuthWorkoutsService authWorkoutsService;
 
   @Override
-  public void execute(final UUID workoutId)
-      throws EntityNotFoundException, IllegalArgumentException {
+  public void execute(final UUID workoutId) throws EntityNotFoundException, IllegalAccessException {
     final Workout workout =
         workoutDao
             .findById(workoutId)

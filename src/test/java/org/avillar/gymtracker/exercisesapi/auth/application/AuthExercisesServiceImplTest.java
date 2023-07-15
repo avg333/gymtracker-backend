@@ -3,7 +3,6 @@ package org.avillar.gymtracker.exercisesapi.auth.application;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.auth.jwt.UserDetailsImpl;
 import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
@@ -44,30 +43,40 @@ class AuthExercisesServiceImplTest {
   }
 
   @Test
-  void checkAccessOk() {
+  void checkAccessOwner() {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
-    exercise.setAccessType(AccessTypeEnum.PUBLIC);
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.CREATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.DELETE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.UPDATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.READ));
     exercise.setOwner(getUserId());
-    exercise.setAccessType(AccessTypeEnum.PRIVATE);
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.CREATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.DELETE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.UPDATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.READ));
-    exercise.setAccessType(AccessTypeEnum.PUBLIC);
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.CREATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.DELETE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.UPDATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.READ));
+    for (AccessTypeEnum at : AccessTypeEnum.values()) {
+      exercise.setAccessType(at);
+      for (AuthOperations ao : AuthOperations.values()) {
+        assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, ao));
+      }
+    }
   }
 
   @Test
-  void checkAccessKo() {
+  void checkAccessNotOwnerPrivate() {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
     exercise.setAccessType(AccessTypeEnum.PRIVATE);
+
+    for (AuthOperations ao : AuthOperations.values()) {
+      final IllegalAccessException ex =
+          assertThrows(
+              IllegalAccessException.class, () -> authExercisesService.checkAccess(exercise, ao));
+      assertEquals(exercise.getId(), ex.getEntityId());
+      assertEquals(getUserId(), ex.getCurrentUserId());
+      assertEquals(Exercise.class.getSimpleName(), ex.getEntityClassName());
+      assertEquals(ao, ex.getAuthOperations());
+    }
+  }
+
+  @Test
+  void checkAccessNotOwnerPublic() {
+    final Exercise exercise = easyRandom.nextObject(Exercise.class);
+    exercise.setAccessType(AccessTypeEnum.PUBLIC);
+
+    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, AuthOperations.READ));
+
     final IllegalAccessException createException =
         assertThrows(
             IllegalAccessException.class,
@@ -80,10 +89,6 @@ class AuthExercisesServiceImplTest {
         assertThrows(
             IllegalAccessException.class,
             () -> authExercisesService.checkAccess(exercise, AuthOperations.UPDATE));
-    final IllegalAccessException readException =
-        assertThrows(
-            IllegalAccessException.class,
-            () -> authExercisesService.checkAccess(exercise, AuthOperations.READ));
 
     assertEquals(exercise.getId(), createException.getEntityId());
     assertEquals(getUserId(), createException.getCurrentUserId());
@@ -99,79 +104,6 @@ class AuthExercisesServiceImplTest {
     assertEquals(getUserId(), updateException.getCurrentUserId());
     assertEquals(Exercise.class.getSimpleName(), updateException.getEntityClassName());
     assertEquals(AuthOperations.UPDATE, updateException.getAuthOperations());
-
-    assertEquals(exercise.getId(), readException.getEntityId());
-    assertEquals(getUserId(), readException.getCurrentUserId());
-    assertEquals(Exercise.class.getSimpleName(), readException.getEntityClassName());
-    assertEquals(AuthOperations.READ, readException.getAuthOperations());
-  }
-
-  @Test
-  void testCheckAccessAllOk() {
-    final Exercise exercise1 = easyRandom.nextObject(Exercise.class);
-    final Exercise exercise2 = easyRandom.nextObject(Exercise.class);
-    final List<Exercise> exercises = List.of(exercise1, exercise2);
-    exercises.forEach(exercise -> exercise.setAccessType(AccessTypeEnum.PUBLIC));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.CREATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.DELETE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.UPDATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.READ));
-    exercises.forEach(exercise -> exercise.setOwner(getUserId()));
-    exercises.forEach(exercise -> exercise.setAccessType(AccessTypeEnum.PRIVATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.CREATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.DELETE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.UPDATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.READ));
-    exercises.forEach(exercise -> exercise.setAccessType(AccessTypeEnum.PUBLIC));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.CREATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.DELETE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.UPDATE));
-    assertDoesNotThrow(() -> authExercisesService.checkAccess(exercises, AuthOperations.READ));
-  }
-
-  @Test
-  void testCheckAccessOneKo() {
-    final Exercise exercise1 = easyRandom.nextObject(Exercise.class);
-    final Exercise exercise2 = easyRandom.nextObject(Exercise.class);
-    final List<Exercise> exercises = List.of(exercise1, exercise2);
-    exercise1.setOwner(getUserId());
-    exercises.forEach(exercise -> exercise.setAccessType(AccessTypeEnum.PRIVATE));
-    final IllegalAccessException createException =
-        assertThrows(
-            IllegalAccessException.class,
-            () -> authExercisesService.checkAccess(exercises, AuthOperations.CREATE));
-    final IllegalAccessException deleteException =
-        assertThrows(
-            IllegalAccessException.class,
-            () -> authExercisesService.checkAccess(exercises, AuthOperations.DELETE));
-    final IllegalAccessException updateException =
-        assertThrows(
-            IllegalAccessException.class,
-            () -> authExercisesService.checkAccess(exercises, AuthOperations.UPDATE));
-    final IllegalAccessException readException =
-        assertThrows(
-            IllegalAccessException.class,
-            () -> authExercisesService.checkAccess(exercises, AuthOperations.READ));
-
-    assertEquals(exercise2.getId(), createException.getEntityId());
-    assertEquals(getUserId(), createException.getCurrentUserId());
-    assertEquals(Exercise.class.getSimpleName(), createException.getEntityClassName());
-    assertEquals(AuthOperations.CREATE, createException.getAuthOperations());
-
-    assertEquals(exercise2.getId(), deleteException.getEntityId());
-    assertEquals(getUserId(), deleteException.getCurrentUserId());
-    assertEquals(Exercise.class.getSimpleName(), deleteException.getEntityClassName());
-    assertEquals(AuthOperations.DELETE, deleteException.getAuthOperations());
-
-    assertEquals(exercise2.getId(), updateException.getEntityId());
-    assertEquals(getUserId(), updateException.getCurrentUserId());
-    assertEquals(Exercise.class.getSimpleName(), updateException.getEntityClassName());
-    assertEquals(AuthOperations.UPDATE, updateException.getAuthOperations());
-
-    assertEquals(exercise2.getId(), readException.getEntityId());
-    assertEquals(getUserId(), readException.getCurrentUserId());
-    assertEquals(Exercise.class.getSimpleName(), readException.getEntityClassName());
-    assertEquals(AuthOperations.READ, readException.getAuthOperations());
   }
 
   private UUID getUserId() {

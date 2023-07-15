@@ -14,9 +14,10 @@ public interface ExerciseDao extends JpaRepository<Exercise, UUID> {
       """
             SELECT e
             FROM Exercise e
-            WHERE e.id IN (:exerciseIds)
+            LEFT JOIN FETCH e.muscleGroupExercises mge
+            WHERE e.id = :exerciseId
           """)
-  List<Exercise> getExerciseById(@Param("exerciseIds") Set<UUID> exerciseIds);
+  List<Exercise> getExerciseByIdWithMuscleGroupEx(@Param("exerciseId") UUID exerciseId);
 
   @Query(
       """

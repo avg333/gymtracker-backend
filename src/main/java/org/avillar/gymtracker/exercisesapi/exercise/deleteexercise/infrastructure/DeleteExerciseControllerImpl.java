@@ -1,22 +1,23 @@
-package org.avillar.gymtracker.workoutapi.workout.deleteworkout.infrastructure;
+package org.avillar.gymtracker.exercisesapi.exercise.deleteexercise.infrastructure;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.workout.deleteworkout.application.DeleteWorkoutService;
+import org.avillar.gymtracker.exercisesapi.exercise.deleteexercise.application.DeleteExerciseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class DeleteWorkoutControllerImpl implements DeleteWorkoutController {
+public class DeleteExerciseControllerImpl implements DeleteExerciseController {
 
-  private final DeleteWorkoutService deleteWorkoutService;
+  private final DeleteExerciseService deleteExerciseService;
 
-  public ResponseEntity<Void> execute(final UUID workoutId)
+  @Override
+  public ResponseEntity<Void> execute(final UUID exerciseId)
       throws EntityNotFoundException, IllegalAccessException {
-    deleteWorkoutService.execute(workoutId);
+    deleteExerciseService.execute(exerciseId);
     return ResponseEntity.noContent().build();
   }
 }

@@ -1,10 +1,10 @@
-package org.avillar.gymtracker.workoutapi.workout.deleteworkout.application;
+package org.avillar.gymtracker.exercisesapi.exercise.deleteexercise.application;
 
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 
-public interface DeleteWorkoutService {
+public interface DeleteExerciseService {
 
-  void execute(UUID workoutId) throws EntityNotFoundException, IllegalAccessException;
+  void execute(UUID exerciseId) throws EntityNotFoundException, IllegalAccessException;
 }

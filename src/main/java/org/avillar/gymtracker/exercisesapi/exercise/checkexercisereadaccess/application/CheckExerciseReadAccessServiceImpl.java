@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.exercisesapi.exercise.checkexercisereadaccess.application;
 
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
@@ -22,14 +21,11 @@ public class CheckExerciseReadAccessServiceImpl implements CheckExerciseReadAcce
   public void execute(final UUID exerciseId)
       throws EntityNotFoundException, IllegalAccessException {
 
-    final Exercise exercise = getExercise(exerciseId);
+    final Exercise exercise =
+        exerciseDao
+            .findById(exerciseId)
+            .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId));
 
     authExercisesService.checkAccess(exercise, AuthOperations.READ);
-  }
-
-  private Exercise getExercise(final UUID exerciseId) {
-    return exerciseDao.getExerciseById(Set.of(exerciseId)).stream()
-        .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Exercise.class, exerciseId));
   }
 }
