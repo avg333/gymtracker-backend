@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "${workoutsApiPrefix}/")
 public interface CreateWorkoutController {
 
-  @Operation(summary = "API used to create a setGroup")
+  @Operation(summary = "API used to create a workout")
   @ApiResponses(
       value = {
         @ApiResponse(
