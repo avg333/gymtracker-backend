@@ -34,10 +34,7 @@ public interface CreateExerciseController {
                   schema = @Schema(implementation = CreateExerciseResponse.class))
             }),
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
-        @ApiResponse(
-            responseCode = "404",
-            description = "MuscleGroupExercise not found",
-            content = @Content)
+        @ApiResponse(responseCode = "404", description = "SubEntity not found", content = @Content)
       })
   @PostMapping("/users/{userId}/exercises")
   ResponseEntity<CreateExerciseResponse> execute(

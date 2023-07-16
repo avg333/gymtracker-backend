@@ -42,7 +42,7 @@ class GetExerciseByIdServiceImplTest {
   @Test
   void getOk() {
     final Exercise expected = easyRandom.nextObject(Exercise.class);
-    final UUID exerciseId = UUID.randomUUID();
+    final UUID exerciseId = expected.getId();
 
     when(exerciseDao.getFullExerciseByIds(Set.of(exerciseId))).thenReturn(List.of(expected));
     doNothing().when(authExercisesService).checkAccess(expected, AuthOperations.READ);
@@ -54,11 +54,11 @@ class GetExerciseByIdServiceImplTest {
   @Test
   void getNotPermission() {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
-    final UUID exerciseId = UUID.randomUUID();
+    final UUID exerciseId = exercise.getId();
     final AuthOperations authOperation = AuthOperations.READ;
     final UUID userId = UUID.randomUUID();
-    exercise.setAccessType(AccessTypeEnum.PUBLIC);
-    exercise.setOwner(null);
+    exercise.setAccessType(AccessTypeEnum.PRIVATE);
+    exercise.setOwner(UUID.randomUUID());
 
     when(exerciseDao.getFullExerciseByIds(Set.of(exerciseId))).thenReturn(List.of(exercise));
     doThrow(new IllegalAccessException(exercise, authOperation, userId))

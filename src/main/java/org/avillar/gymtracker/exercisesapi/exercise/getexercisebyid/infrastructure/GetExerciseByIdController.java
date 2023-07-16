@@ -29,7 +29,9 @@ public interface GetExerciseByIdController {
               @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = GetExerciseByIdResponse.class))
-            })
+            }),
+        @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Exercise not found", content = @Content)
       })
   @GetMapping("exercises/{exerciseId}")
   ResponseEntity<GetExerciseByIdResponse> execute(@PathVariable UUID exerciseId)

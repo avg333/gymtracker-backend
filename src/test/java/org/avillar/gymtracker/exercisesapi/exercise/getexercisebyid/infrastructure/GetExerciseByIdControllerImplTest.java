@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
@@ -31,9 +30,9 @@ class GetExerciseByIdControllerImplTest {
 
   @Test
   void get() {
-    final UUID exerciseId = UUID.randomUUID();
     final GetExerciseByIdResponseApplication expected =
         easyRandom.nextObject(GetExerciseByIdResponseApplication.class);
+    final UUID exerciseId = expected.getId();
 
     when(getExerciseByIdService.execute(exerciseId)).thenReturn(expected);
 

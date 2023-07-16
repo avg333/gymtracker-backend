@@ -33,7 +33,7 @@ class GetExercisesByIdsServiceImplTest {
 
   private final EasyRandom easyRandom = new EasyRandom();
 
-  @InjectMocks GetExercisesByIdsServiceImpl getExercisesByIdsService;
+  @InjectMocks private GetExercisesByIdsServiceImpl getExercisesByIdsService;
 
   @Mock private ExerciseDao exerciseDao;
   @Mock private AuthExercisesService authExercisesService;
@@ -65,9 +65,15 @@ class GetExercisesByIdsServiceImplTest {
         exercises.stream().map(BaseEntity::getId).collect(Collectors.toSet());
     final AuthOperations readOperation = AuthOperations.READ;
     final UUID userId = UUID.randomUUID();
+    exercises.stream()
+        .filter(exercise -> exercise.getAccessType() == AccessTypeEnum.PRIVATE)
+        .forEach(exercise -> exercise.setOwner(userId));
+    final Exercise exerciseNotPermission = exercises.get(3);
+    exerciseNotPermission.setAccessType(AccessTypeEnum.PRIVATE);
+    exerciseNotPermission.setOwner(UUID.randomUUID());
 
     when(exerciseDao.getFullExerciseByIds(exercisesIds)).thenReturn(exercises);
-    doThrow(new IllegalAccessException(exercises.get(0), readOperation, userId))
+    doThrow(new IllegalAccessException(exerciseNotPermission, readOperation, userId))
         .when(authExercisesService)
         .checkAccess(exercises, readOperation);
 
@@ -75,7 +81,7 @@ class GetExercisesByIdsServiceImplTest {
         assertThrows(
             IllegalAccessException.class, () -> getExercisesByIdsService.execute(exercisesIds));
     assertEquals(Exercise.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(exercises.get(0).getId(), exception.getEntityId());
+    assertEquals(exerciseNotPermission.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(readOperation, exception.getAuthOperations());
   }

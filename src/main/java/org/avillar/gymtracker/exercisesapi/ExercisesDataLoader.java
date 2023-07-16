@@ -250,7 +250,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            dumbbell,
             new HashSet<>(),
             new HashSet<>());
     var pressMancuernasInclinado =
@@ -260,7 +260,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            dumbbell,
             new HashSet<>(List.of(chestUpper)),
             new HashSet<>());
     var pressMancuernasDeclinado =
@@ -270,7 +270,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            dumbbell,
             new HashSet<>(List.of(chestLower)),
             new HashSet<>());
     var pressMultipower =
@@ -280,7 +280,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            multipower,
             new HashSet<>(),
             new HashSet<>());
     var pressMultipowerInclinado =
@@ -290,7 +290,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            multipower,
             new HashSet<>(List.of(chestUpper)),
             new HashSet<>());
     var pressMultipowerDeclinado =
@@ -300,7 +300,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            multipower,
             new HashSet<>(List.of(chestLower)),
             new HashSet<>());
     var aperturasMancuernas =
@@ -310,7 +310,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            dumbbell,
             new HashSet<>(List.of(chestMiddle)),
             new HashSet<>());
     var aperturasMancuernasInclinado =
@@ -320,7 +320,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            dumbbell,
             new HashSet<>(List.of(chestUpper, chestMiddle)),
             new HashSet<>());
     var aperturasMancuernasDeclinado =
@@ -330,7 +330,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             AccessTypeEnum.PUBLIC,
             adminId,
             false,
-            bar,
+            dumbbell,
             new HashSet<>(List.of(chestLower, chestMiddle)),
             new HashSet<>());
     var exercises =

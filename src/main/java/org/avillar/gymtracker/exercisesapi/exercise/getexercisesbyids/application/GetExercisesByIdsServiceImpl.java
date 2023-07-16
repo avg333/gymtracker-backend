@@ -22,7 +22,7 @@ public class GetExercisesByIdsServiceImpl implements GetExercisesByIdsService {
   private final GetExercisesByIdsServiceMapper getExercisesByIdsServiceMapper;
 
   @Override
-  public List<GetExercisesByIdsResponseApplication> execute(Set<UUID> exerciseIds)
+  public List<GetExercisesByIdsResponseApplication> execute(final Set<UUID> exerciseIds)
       throws IllegalAccessException {
     final List<Exercise> exercises = exerciseDao.getFullExerciseByIds(exerciseIds);
 

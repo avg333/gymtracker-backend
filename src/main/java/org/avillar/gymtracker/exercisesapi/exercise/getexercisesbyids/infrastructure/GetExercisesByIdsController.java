@@ -30,7 +30,8 @@ public interface GetExercisesByIdsController {
               @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = GetExercisesByIdsResponseInfrastructure.class))
-            })
+            }),
+        @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content)
       })
   @GetMapping("exercises")
   ResponseEntity<List<GetExercisesByIdsResponseInfrastructure>> execute(

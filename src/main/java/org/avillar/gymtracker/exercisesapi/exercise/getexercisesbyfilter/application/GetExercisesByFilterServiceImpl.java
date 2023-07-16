@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.applica
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterRequestApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterResponseApplication;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,8 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
 
   @Override
   public List<GetExercisesByFilterResponseApplication> execute(
-      final GetExercisesByFilterRequestApplication getExercisesByFilterRequestApplication) {
+      final GetExercisesByFilterRequestApplication request) {
+
     final UUID loggedUserId = authExercisesService.getLoggedUserId();
 
     final List<Exercise> exercises =
@@ -31,9 +34,25 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
             loggedUserId,
             AccessTypeEnum.PRIVATE,
             AccessTypeEnum.PUBLIC,
-            getExercisesByFilterRequestApplication.getName(),
-            getExercisesByFilterRequestApplication.getDescription(),
-            getExercisesByFilterRequestApplication.getUnilateral()); // FIXME Use the filter
+            request.getName(),
+            request.getDescription(),
+            request.getUnilateral(),
+            CollectionUtils.isEmpty(request.getLoadTypeIds()),
+            CollectionUtils.isEmpty(request.getLoadTypeIds())
+                ? Collections.emptyList()
+                : request.getLoadTypeIds(),
+            CollectionUtils.isEmpty(request.getMuscleSubGroupIds()),
+            CollectionUtils.isEmpty(request.getMuscleSubGroupIds())
+                ? Collections.emptyList()
+                : request.getMuscleSubGroupIds(),
+            CollectionUtils.isEmpty(request.getMuscleSupGroupIds()),
+            CollectionUtils.isEmpty(request.getMuscleSupGroupIds())
+                ? Collections.emptyList()
+                : request.getMuscleSupGroupIds(),
+            CollectionUtils.isEmpty(request.getMuscleGroupIds()),
+            CollectionUtils.isEmpty(request.getMuscleGroupIds())
+                ? Collections.emptyList()
+                : request.getMuscleGroupIds());
 
     authExercisesService.checkAccess(exercises, AuthOperations.READ);
 

@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -35,7 +34,7 @@ class GetExercisesByFilterControllerImplTest {
     final GetExercisesByFilterRequest request =
         easyRandom.nextObject(GetExercisesByFilterRequest.class);
     final List<GetExercisesByFilterResponseApplication> expected =
-        easyRandom.objects(GetExercisesByFilterResponseApplication.class, 2).toList();
+        easyRandom.objects(GetExercisesByFilterResponseApplication.class, 5).toList();
 
     when(getExercisesByFilterService.execute(getExercisesByFilterControllerMapper.map(request)))
         .thenReturn(expected);

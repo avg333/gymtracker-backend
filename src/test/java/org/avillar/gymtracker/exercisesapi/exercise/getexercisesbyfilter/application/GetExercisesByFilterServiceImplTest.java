@@ -1,10 +1,10 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.CollectionUtils;
 
 @ExtendWith(MockitoExtension.class)
 class GetExercisesByFilterServiceImplTest {
@@ -44,15 +45,31 @@ class GetExercisesByFilterServiceImplTest {
         .filter(exercise -> exercise.getAccessType() == AccessTypeEnum.PRIVATE)
         .forEach(exercise -> exercise.setOwner(userId));
 
+    when(authExercisesService.getLoggedUserId()).thenReturn(userId);
     when(exerciseDao.getAllFullExercises(
             userId,
             AccessTypeEnum.PRIVATE,
             AccessTypeEnum.PUBLIC,
             request.getName(),
             request.getDescription(),
-            request.getUnilateral()))
+            request.getUnilateral(),
+            CollectionUtils.isEmpty(request.getLoadTypeIds()),
+            CollectionUtils.isEmpty(request.getLoadTypeIds())
+                ? Collections.emptyList()
+                : request.getLoadTypeIds(),
+            CollectionUtils.isEmpty(request.getMuscleSubGroupIds()),
+            CollectionUtils.isEmpty(request.getMuscleSubGroupIds())
+                ? Collections.emptyList()
+                : request.getMuscleSubGroupIds(),
+            CollectionUtils.isEmpty(request.getMuscleSupGroupIds()),
+            CollectionUtils.isEmpty(request.getMuscleSupGroupIds())
+                ? Collections.emptyList()
+                : request.getMuscleSupGroupIds(),
+            CollectionUtils.isEmpty(request.getMuscleGroupIds()),
+            CollectionUtils.isEmpty(request.getMuscleGroupIds())
+                ? Collections.emptyList()
+                : request.getMuscleGroupIds()))
         .thenReturn(expected);
-    when(authExercisesService.getLoggedUserId()).thenReturn(userId);
     doNothing().when(authExercisesService).checkAccess(expected, AuthOperations.READ);
 
     final List<GetExercisesByFilterResponseApplication> result =
