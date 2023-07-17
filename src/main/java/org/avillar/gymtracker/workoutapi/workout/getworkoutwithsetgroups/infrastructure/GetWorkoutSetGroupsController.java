@@ -33,7 +33,7 @@ public interface GetWorkoutSetGroupsController {
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
-  @GetMapping("/workouts/{workoutId}/sgs") // TODO Definir este endpoint
+  @GetMapping("/workouts/{workoutId}/sgs") // TODO Define better this endpoint
   ResponseEntity<GetWorkoutSetGroupsResponse> get(@PathVariable UUID workoutId)
       throws EntityNotFoundException, IllegalAccessException;
 }

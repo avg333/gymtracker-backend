@@ -104,7 +104,7 @@ class CreateSetServiceImplTest {
     when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
     doThrow(new IllegalAccessException(new Set(), createOperation, userId))
         .when(authWorkoutsService)
-        .checkAccess(Mockito.any(Set.class), eq(createOperation)); // FIXME Mejorar este any
+        .checkAccess(Mockito.any(Set.class), eq(createOperation)); // FIXME Avoid this any
 
     final IllegalAccessException exception =
         assertThrows(

@@ -21,11 +21,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public abstract class WebSecurityConfigBase {
 
+  private static final String ACTUATOR_HEALTH_ENDPOINT = "/actuator/health";
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtRequestFilter jwtRequestFilter;
-
-  private static final String ACTUATOR_HEALTH_ENDPOINT = "/actuator/health";
-
   @Value("${authApiPrefix}")
   private String authApiPrefix;
 

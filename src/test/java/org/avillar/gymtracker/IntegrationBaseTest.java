@@ -22,11 +22,9 @@ public abstract class IntegrationBaseTest {
   protected static final String USER_NAME_KO = "user_ko";
 
   protected final EasyRandom easyRandom = new EasyRandom();
-
+  @Autowired protected UserDao userDao;
   @Value("${spring.data.redis.port}")
   private int redisPort;
-
-  @Autowired protected UserDao userDao;
   private redis.embedded.RedisServer redisServer;
 
   protected void createUsers() {

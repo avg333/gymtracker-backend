@@ -50,7 +50,7 @@ class DeleteSetServiceImplTest {
     assertDoesNotThrow(() -> deleteSetService.execute(secondSet.getId()));
     verify(setDao).deleteById(secondSet.getId());
     verify(entitySorter).sortDelete(sets, secondSet); // FIXME
-    verify(setDao).saveAll(sets); // FIXME Se deberia llamar sin la set eliminada
+    verify(setDao).saveAll(sets); // FIXME It must be called without the deleted set
   }
 
   @Test

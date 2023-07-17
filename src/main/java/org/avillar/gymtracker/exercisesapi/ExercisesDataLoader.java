@@ -28,15 +28,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ExercisesDataLoader implements ApplicationRunner {
 
-  @Value("${spring.profiles.active}")
-  private String activeProfile;
-
   private final LoadTypeDao loadTypeDao;
   private final MuscleSupGroupDao muscleSupGroupDao;
   private final MuscleGroupDao muscleGroupDao;
   private final MuscleSubGroupDao muscleSubGroupDao;
   private final ExerciseDao exerciseDao;
   private final MuscleGroupExerciseDao muscleGroupExerciseDao;
+  @Value("${spring.profiles.active}")
+  private String activeProfile;
 
   public void run(ApplicationArguments args) {
     final long start = System.currentTimeMillis();

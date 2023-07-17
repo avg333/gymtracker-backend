@@ -39,7 +39,7 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
       return getNewSetDataServiceMapper.map(set.get());
     }
 
-    // TODO Definir bien la logica de negocio
+    // TODO Improve business logic
     return getNewSetDataServiceMapper.map(getSetGroupExerciseHistory(setGroup));
   }
 
@@ -57,7 +57,7 @@ public class GetNewSetDataServiceImpl implements GetNewSetDataService {
             setGroup.getWorkout().getDate())
         .stream()
         .findAny()
-        .orElseThrow( // TODO Mejorar esta excepcion
+        .orElseThrow( // TODO Improve this exception
             () -> new EntityNotFoundException(Set.class, "exerciseId", setGroup.getExerciseId()));
   }
 }

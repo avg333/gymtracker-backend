@@ -56,7 +56,7 @@ class CreateWorkoutServiceImplTest {
 
     final CreateWorkoutResponseApplication result =
         createWorkoutService.execute(workout.getUserId(), createWorkoutRequestApplication);
-    // assertNotNull(result.getId()); TODO Arreglar .save
+    // assertNotNull(result.getId()); TODO Fix .save
     assertThat(result).usingRecursiveComparison().ignoringFields("id").isEqualTo(workout); // FIXME
     verify(workoutDao).save(any(Workout.class));
   }

@@ -14,7 +14,7 @@ import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.mapper.Up
 import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.model.UpdateSetGroupSetsResponseApplication;
 import org.springframework.stereotype.Service;
 
-// TODO FINALIZAR
+// TODO Finish this
 @Service
 @RequiredArgsConstructor
 public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService {

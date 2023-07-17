@@ -29,6 +29,19 @@ public class GetWorkoutDetailsServiceImpl implements GetWorkoutDetailsService {
   private final GetWorkoutDetailsServiceMapper getWorkoutDetailsServiceMapper;
   private final ExerciseRepositoryClient exerciseRepositoryClient;
 
+  private static void mapExercises(
+      final List<GetExerciseResponseFacade> getExerciseResponseFacades,
+      final GetWorkoutDetailsResponseApplication getWorkoutDetailsResponseApplication) {
+    getWorkoutDetailsResponseApplication
+        .getSetGroups()
+        .forEach(
+            setGroup ->
+                setGroup.setExercise(
+                    getExerciseResponseFacades.stream()
+                        .filter(ex -> ex.getId().equals(setGroup.getExerciseId()))
+                        .findAny()
+                        .orElse(null)));
+  }
 
   @Override
   public GetWorkoutDetailsResponseApplication execute(final UUID workoutId) {
@@ -47,21 +60,7 @@ public class GetWorkoutDetailsServiceImpl implements GetWorkoutDetailsService {
 
     mapExercises(getExerciseResponseFacades, getWorkoutDetailsResponseApplication);
 
-    return getWorkoutDetailsResponseApplication;
-  }
-
-  private static void mapExercises(
-      final List<GetExerciseResponseFacade> getExerciseResponseFacades,
-      final GetWorkoutDetailsResponseApplication getWorkoutDetailsResponseApplication) {
-    getWorkoutDetailsResponseApplication
-        .getSetGroups()
-        .forEach(
-            setGroup ->
-                setGroup.setExercise(
-                    getExerciseResponseFacades.stream()
-                        .filter(ex -> ex.getId().equals(setGroup.getExerciseId()))
-                        .findAny()
-                        .orElse(null)));
+    return getWorkoutDetailsResponseApplication; // TODO Avoid return msupg and more
   }
 
   private List<GetExerciseResponseFacade> getExercisesFromRepository(final Set<UUID> exerciseIds) {

@@ -54,7 +54,7 @@ class DeleteSetGroupServiceImplTest {
     assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupSecond.getId()));
     verify(setGroupDao).deleteById(setGroupSecond.getId());
     verify(entitySorter).sortDelete(setGroups, setGroupSecond); // FIXM
-    verify(setGroupDao).saveAll(setGroups); // FIXME Se deberia llamar sin la set eliminada
+    verify(setGroupDao).saveAll(setGroups); // FIXME It must be called without the deleted SG
   }
 
   @Test

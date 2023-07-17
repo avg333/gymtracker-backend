@@ -52,7 +52,7 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
             CollectionUtils.isEmpty(request.getMuscleGroupIds()),
             CollectionUtils.isEmpty(request.getMuscleGroupIds())
                 ? Collections.emptyList()
-                : request.getMuscleGroupIds());
+                : request.getMuscleGroupIds()); // TODO Improve this method (criteria?)
 
     authExercisesService.checkAccess(exercises, AuthOperations.READ);
 

@@ -58,7 +58,7 @@ class CopySetGroupsServiceImplTest {
     final List<CopySetGroupsResponseApplication> result =
         copySetGroupsService.execute(workoutDestination.getId(), workoutSource.getId(), true);
 
-    // assertThat(result).hasSameSizeAs(expected); TODO Acabar tests
+    // assertThat(result).hasSameSizeAs(expected); TODO Finish tests
     // assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     verify(setGroupDao).saveAll(any());
     verify(setDao).saveAll(any());

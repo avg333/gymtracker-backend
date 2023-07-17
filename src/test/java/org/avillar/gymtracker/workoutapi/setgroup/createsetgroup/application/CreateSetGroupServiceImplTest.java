@@ -60,14 +60,14 @@ class CreateSetGroupServiceImplTest {
         .thenReturn(List.of(setGroup.getWorkout()));
     doNothing()
         .when(authWorkoutsService)
-        .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE)); // FIXME Eliminar any
+        .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE)); // FIXME Avoid any
     doNothing().when(exerciseRepositoryClient).checkExerciseAccessById(setGroup.getExerciseId());
     when(setGroupDao.save(any(SetGroup.class))).thenAnswer(i -> i.getArguments()[0]);
 
     final CreateSetGroupResponseApplication result =
         createSetGroupService.execute(
             setGroup.getWorkout().getId(), createSetGroupRequestApplication);
-    // assertNotNull(result.getId()); TODO Arreglar .save
+    // assertNotNull(result.getId()); TODO Fix .save
     assertEquals(setGroup.getWorkout().getSetGroups().size(), result.getListOrder());
     assertThat(result)
         .usingRecursiveComparison()

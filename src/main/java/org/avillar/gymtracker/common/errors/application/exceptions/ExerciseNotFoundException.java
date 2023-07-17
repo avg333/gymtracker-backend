@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ExerciseNotFoundException extends RuntimeException { // TODO Extener EntityNotFound?
+public class ExerciseNotFoundException extends RuntimeException { // TODO Extend EntityNotFound?
 
   private static final String className = "Exercise";
   private static final String searchParam = "id";

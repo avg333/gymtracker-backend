@@ -90,7 +90,7 @@ class CreateWorkoutTest extends IntegrationBaseTest {
     assertTrue(workoutDb.isPresent());
     assertEquals(userApp.getId(), result.getUserId());
     assertEquals(updateWorkoutDateRequest.get("description"), result.getDescription());
-    // assertEquals(updateWorkoutDateRequest.get("date"), result.getDate());TODO Verificar date
+    // assertEquals(updateWorkoutDateRequest.get("date"), result.getDate());TODO Verify date
     assertEquals(1, workoutDao.findAll().size());
     assertTrue(setGroupDao.findAll().isEmpty());
     assertTrue(setDao.findAll().isEmpty());

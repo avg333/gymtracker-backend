@@ -30,7 +30,7 @@ import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.m
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.model.CreateExerciseResponseApplication;
 import org.springframework.stereotype.Service;
 
-// TODO Finalizar
+// TODO Finish this
 @Service
 @RequiredArgsConstructor
 public class CreateExerciseServiceImpl implements CreateExerciseService {

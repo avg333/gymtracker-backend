@@ -50,7 +50,7 @@ public class UpdateSetGroupListOrderServiceImpl implements UpdateSetGroupListOrd
     entitySorter.sortUpdate(setGroups, setGroup, oldPosition);
     setGroupDao.saveAll(setGroups);
 
-    return updateSetGroupListOrderServiceMapper.map(setGroups);
+    return updateSetGroupListOrderServiceMapper.map(setGroups); // FIXME Must return all the sgs
   }
 
   private SetGroup getSetGroupWithWorkout(final UUID setGroupId) {

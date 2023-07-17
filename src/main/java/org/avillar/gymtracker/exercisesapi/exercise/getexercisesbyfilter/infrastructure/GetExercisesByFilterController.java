@@ -28,7 +28,7 @@ public interface GetExercisesByFilterController {
               @Content(
                   mediaType = "application/json",
                   schema = @Schema(implementation = GetExercisesByFilterResponse.class))
-            }) // TODO Explicar requertParams
+            }) // TODO Explain requestParams
       })
   @GetMapping("exercises/filter")
   ResponseEntity<List<GetExercisesByFilterResponse>> execute(

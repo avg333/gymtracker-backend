@@ -16,10 +16,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AuthDataLoader implements ApplicationRunner {
 
+  private final UserDao userDao;
   @Value("${spring.profiles.active}")
   private String activeProfile;
-
-  private final UserDao userDao;
 
   private static List<UserApp> generateUsers() {
     var user1 = new UserApp(null, "chema", new BCryptPasswordEncoder().encode("chema69"));

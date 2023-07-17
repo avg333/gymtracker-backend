@@ -25,7 +25,7 @@ class LoginServiceImplTest {
   @Mock private JwtTokenUtil jwtTokenUtil;
   @Spy private LoginServiceMapper loginServiceMapper;
 
-  void loginOk() { // TODO Finalizar
+  void loginOk() { // TODO Finish this
     final LoginRequestApplication request = easyRandom.nextObject(LoginRequestApplication.class);
     final String jwt = easyRandom.nextObject(String.class);
 
