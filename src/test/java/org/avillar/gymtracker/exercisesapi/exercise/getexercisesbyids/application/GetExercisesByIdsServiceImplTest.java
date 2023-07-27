@@ -18,11 +18,12 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService;
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.mapper.GetExercisesByIdsServiceMapperImpl;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.mapper.GetExercisesByIdsServiceMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -37,7 +38,10 @@ class GetExercisesByIdsServiceImplTest {
 
   @Mock private ExerciseDao exerciseDao;
   @Mock private AuthExercisesService authExercisesService;
-  @Spy private GetExercisesByIdsServiceMapperImpl getExercisesByIdsServiceMapper;
+
+  @Spy
+  private GetExercisesByIdsServiceMapper getExercisesByIdsServiceMapper =
+      Mappers.getMapper(GetExercisesByIdsServiceMapper.class);
 
   @Test
   void getOk() {

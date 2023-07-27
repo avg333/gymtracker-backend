@@ -12,11 +12,12 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.model.CreateExerciseRequest;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.model.CreateExerciseResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Exercises", description = "API to manage Exercises")
 @RequestMapping(path = "${exercisesApiPrefix}")
@@ -37,7 +38,8 @@ public interface CreateExerciseController {
         @ApiResponse(responseCode = "404", description = "SubEntity not found", content = @Content)
       })
   @PostMapping("/users/{userId}/exercises")
-  ResponseEntity<CreateExerciseResponse> execute(
+  @ResponseStatus(HttpStatus.OK)
+  CreateExerciseResponse execute(
       @PathVariable UUID userId, @Valid @RequestBody CreateExerciseRequest createExerciseRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }

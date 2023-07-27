@@ -6,18 +6,17 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.GetExercisesByFilterService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterResponseApplication;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.mapper.GetExercisesByFilterControllerMapperImpl;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.mapper.GetExercisesByFilterControllerMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class GetExercisesByFilterControllerImplTest {
@@ -27,7 +26,10 @@ class GetExercisesByFilterControllerImplTest {
   @InjectMocks private GetExercisesByFilterControllerImpl getExercisesByFilterController;
 
   @Mock private GetExercisesByFilterService getExercisesByFilterService;
-  @Spy private GetExercisesByFilterControllerMapperImpl getExercisesByFilterControllerMapper;
+
+  @Spy
+  private GetExercisesByFilterControllerMapper getExercisesByFilterControllerMapper =
+      Mappers.getMapper(GetExercisesByFilterControllerMapper.class);
 
   @Test
   void get() {
@@ -39,18 +41,9 @@ class GetExercisesByFilterControllerImplTest {
     when(getExercisesByFilterService.execute(getExercisesByFilterControllerMapper.map(request)))
         .thenReturn(expected);
 
-    final ResponseEntity<List<GetExercisesByFilterResponse>> result =
-        getExercisesByFilterController.execute(
-            request.getName(),
-            request.getDescription(),
-            request.getUnilateral(),
-            request.getLoadTypeIds(),
-            request.getMuscleSupGroupIds(),
-            request.getMuscleGroupIds(),
-            request.getMuscleSubGroupIds());
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).hasSameSizeAs(expected);
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    final List<GetExercisesByFilterResponse> result =
+        getExercisesByFilterController.execute(request);
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 }

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService;
@@ -34,8 +35,8 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
             loggedUserId,
             AccessTypeEnum.PRIVATE,
             AccessTypeEnum.PUBLIC,
-            request.getName(),
-            request.getDescription(),
+            StringUtils.isBlank(request.getName()) ? null : request.getName(),
+            StringUtils.isBlank(request.getDescription()) ? null : request.getDescription(),
             request.getUnilateral(),
             CollectionUtils.isEmpty(request.getLoadTypeIds()),
             CollectionUtils.isEmpty(request.getLoadTypeIds())

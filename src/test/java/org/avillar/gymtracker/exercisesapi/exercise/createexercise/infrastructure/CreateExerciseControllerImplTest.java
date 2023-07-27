@@ -1,23 +1,24 @@
 package org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.CreateExerciseService;
+import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.model.CreateExerciseRequestApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.model.CreateExerciseResponseApplication;
-import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.mapper.CreteExerciseControllerMapperImpl;
+import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.mapper.CreteExerciseControllerMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.model.CreateExerciseRequest;
-import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.model.CreateExerciseResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class CreateExerciseControllerImplTest {
@@ -27,25 +28,30 @@ class CreateExerciseControllerImplTest {
   @InjectMocks private CreateExerciseControllerImpl createExerciseController;
 
   @Mock private CreateExerciseService createExerciseService;
-  @Spy private CreteExerciseControllerMapperImpl creteExerciseControllerMapper;
+
+  @Spy
+  private CreteExerciseControllerMapper creteExerciseControllerMapper =
+      Mappers.getMapper(CreteExerciseControllerMapper.class);
 
   @Test
   void createExerciseOk() {
     final UUID userId = UUID.randomUUID();
     final CreateExerciseResponseApplication expected =
         easyRandom.nextObject(CreateExerciseResponseApplication.class);
-    final CreateExerciseRequest createExerciseRequest =
-        easyRandom.nextObject(CreateExerciseRequest.class);
+    final CreateExerciseRequest request = easyRandom.nextObject(CreateExerciseRequest.class);
+
+    final ArgumentCaptor<CreateExerciseRequestApplication> createExerciseRequestApplicationCaptor =
+        ArgumentCaptor.forClass(CreateExerciseRequestApplication.class);
 
     when(createExerciseService.execute(
-            userId, creteExerciseControllerMapper.map(createExerciseRequest)))
+            eq(userId), createExerciseRequestApplicationCaptor.capture()))
         .thenReturn(expected);
 
-    final ResponseEntity<CreateExerciseResponse> result =
-        createExerciseController.execute(userId, createExerciseRequest);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody().getId()).isNotNull();
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(createExerciseController.execute(userId, request))
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
+    assertThat(createExerciseRequestApplicationCaptor.getValue())
+        .usingRecursiveComparison()
+        .isEqualTo(request);
   }
 }

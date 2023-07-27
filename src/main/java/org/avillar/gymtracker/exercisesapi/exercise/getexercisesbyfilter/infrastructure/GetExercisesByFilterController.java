@@ -7,12 +7,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.UUID;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.cloud.openfeign.SpringQueryMap;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Exercises", description = "API to manage Exercises")
 @RequestMapping(path = "${exercisesApiPrefix}")
@@ -31,12 +32,7 @@ public interface GetExercisesByFilterController {
             }) // TODO Explain requestParams
       })
   @GetMapping("exercises/filter")
-  ResponseEntity<List<GetExercisesByFilterResponse>> execute(
-      @RequestParam(required = false) String name,
-      @RequestParam(required = false) String description,
-      @RequestParam(required = false) Boolean unilateral,
-      @RequestParam(required = false) List<UUID> loadTypeIds,
-      @RequestParam(required = false) List<UUID> muscleSupGroupIds,
-      @RequestParam(required = false) List<UUID> muscleGroupId,
-      @RequestParam(required = false) List<UUID> muscleSubGroupIds);
+  @ResponseStatus(HttpStatus.OK)
+  List<GetExercisesByFilterResponse> execute(
+      @SpringQueryMap GetExercisesByFilterRequest getExercisesByFilterRequest);
 }

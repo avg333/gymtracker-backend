@@ -8,7 +8,6 @@ import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.C
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.mapper.CreteExerciseControllerMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.model.CreateExerciseRequest;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.model.CreateExerciseResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,12 +18,11 @@ public class CreateExerciseControllerImpl implements CreateExerciseController {
   private final CreteExerciseControllerMapper creteExerciseControllerMapper;
 
   @Override
-  public ResponseEntity<CreateExerciseResponse> execute(
+  public CreateExerciseResponse execute(
       final UUID userId, final CreateExerciseRequest createExerciseRequest)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        creteExerciseControllerMapper.map(
-            createExerciseService.execute(
-                userId, creteExerciseControllerMapper.map(createExerciseRequest))));
+    return creteExerciseControllerMapper.map(
+        createExerciseService.execute(
+            userId, creteExerciseControllerMapper.map(createExerciseRequest)));
   }
 }

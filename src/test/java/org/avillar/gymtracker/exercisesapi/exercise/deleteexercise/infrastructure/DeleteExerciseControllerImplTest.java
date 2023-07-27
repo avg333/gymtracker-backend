@@ -10,8 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class DeleteExerciseControllerImplTest {
@@ -26,9 +24,6 @@ class DeleteExerciseControllerImplTest {
 
     doNothing().when(deleteExerciseService).execute(exerciseId);
 
-    final ResponseEntity<Void> response =
-        assertDoesNotThrow(() -> deleteExerciseController.execute(exerciseId));
-    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    assertNull(response.getBody());
+    assertNull(assertDoesNotThrow(() -> deleteExerciseController.execute(exerciseId)));
   }
 }

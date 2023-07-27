@@ -8,10 +8,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Exercises", description = "API to manage Exercises")
 @RequestMapping(path = "${exercisesApiPrefix}")
@@ -25,6 +26,7 @@ public interface DeleteExerciseController {
         @ApiResponse(responseCode = "404", description = "Exercise not found", content = @Content)
       })
   @DeleteMapping("exercises/{exerciseId}")
-  ResponseEntity<Void> execute(@PathVariable UUID exerciseId)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  Void execute(@PathVariable UUID exerciseId)
       throws EntityNotFoundException, IllegalAccessException;
 }

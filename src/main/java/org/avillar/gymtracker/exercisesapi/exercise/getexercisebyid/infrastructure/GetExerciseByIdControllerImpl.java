@@ -7,7 +7,6 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.application.GetExerciseByIdService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.infrastructure.mapper.GetExerciseByIdControllerMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.infrastructure.model.GetExerciseByIdResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,9 +17,8 @@ public class GetExerciseByIdControllerImpl implements GetExerciseByIdController 
   private final GetExerciseByIdControllerMapper getExerciseByIdControllerMapper;
 
   @Override
-  public ResponseEntity<GetExerciseByIdResponse> execute(final UUID exerciseId)
+  public GetExerciseByIdResponse execute(final UUID exerciseId)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        getExerciseByIdControllerMapper.map(getExerciseByIdService.execute(exerciseId)));
+    return getExerciseByIdControllerMapper.map(getExerciseByIdService.execute(exerciseId));
   }
 }

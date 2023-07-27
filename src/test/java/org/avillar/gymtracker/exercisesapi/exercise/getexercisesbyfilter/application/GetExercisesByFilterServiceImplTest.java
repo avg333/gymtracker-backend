@@ -12,12 +12,13 @@ import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService;
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.mapper.GetExercisesByFilterServiceMapperImpl;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.mapper.GetExercisesByFilterServiceMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterRequestApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -33,7 +34,10 @@ class GetExercisesByFilterServiceImplTest {
 
   @Mock private ExerciseDao exerciseDao;
   @Mock private AuthExercisesService authExercisesService;
-  @Spy private GetExercisesByFilterServiceMapperImpl getExercisesByFilterServiceMapper;
+
+  @Spy
+  private GetExercisesByFilterServiceMapper getExercisesByFilterServiceMapper =
+      Mappers.getMapper(GetExercisesByFilterServiceMapper.class);
 
   @Test
   void getOk() {
