@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
 import redis.embedded.RedisServer;
 
 @SpringBootTest
@@ -22,9 +23,13 @@ public abstract class IntegrationBaseTest {
   protected static final String USER_NAME_KO = "user_ko";
 
   protected final EasyRandom easyRandom = new EasyRandom();
+
+  @Autowired protected MockMvc mockMvc;
   @Autowired protected UserDao userDao;
+
   @Value("${spring.data.redis.port}")
   private int redisPort;
+
   private redis.embedded.RedisServer redisServer;
 
   protected void createUsers() {

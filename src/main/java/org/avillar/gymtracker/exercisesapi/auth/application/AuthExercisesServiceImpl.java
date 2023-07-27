@@ -14,7 +14,11 @@ public class AuthExercisesServiceImpl extends AuthServiceBase implements AuthExe
 
   private static void checkReadAccess(
       Exercise exercise, AuthOperations authOperations, UUID userId) {
-    if (exercise.getAccessType() == AccessTypeEnum.PRIVATE && !exercise.getOwner().equals(userId)) {
+    if (exercise.getAccessType() == AccessTypeEnum.PUBLIC) {
+      return;
+    }
+
+    if (!exercise.getOwner().equals(userId)) {
       throw new IllegalAccessException(exercise, authOperations, userId);
     }
   }

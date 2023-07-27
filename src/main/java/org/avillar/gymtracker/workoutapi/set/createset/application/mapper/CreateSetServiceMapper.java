@@ -8,8 +8,9 @@ import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateS
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CreateSetServiceMapper {
 
   CreateSetResponseApplication map(Set set);

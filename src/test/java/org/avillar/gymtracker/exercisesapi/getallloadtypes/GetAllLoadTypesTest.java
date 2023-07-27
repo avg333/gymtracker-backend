@@ -24,7 +24,8 @@ class GetAllLoadTypesTest extends IntegrationBaseTest {
 
   private static final String ENDPOINT = "/exercises-api/loadTypes";
 
-  @Autowired private MockMvc mockMvc;
+  private static final int TOTAL_LOAD_TYPES = 10;
+
   @Autowired private LoadTypeDao loadTypeDao;
 
   @BeforeAll
@@ -42,7 +43,7 @@ class GetAllLoadTypesTest extends IntegrationBaseTest {
   @BeforeEach
   void beforeEach() {
     loadTypeDao.deleteAll();
-    final List<LoadType> loadTypes = easyRandom.objects(LoadType.class, 10).toList();
+    final List<LoadType> loadTypes = easyRandom.objects(LoadType.class, TOTAL_LOAD_TYPES).toList();
     loadTypes.forEach(
         loadType -> {
           loadType.setId(null);
@@ -63,12 +64,12 @@ class GetAllLoadTypesTest extends IntegrationBaseTest {
         .perform(get(ENDPOINT))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.*", hasSize(10)));
+        .andExpect(jsonPath("$.*", hasSize(TOTAL_LOAD_TYPES)));
 
     mockMvc
         .perform(get(ENDPOINT))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.*", hasSize(10)));
+        .andExpect(jsonPath("$.*", hasSize(TOTAL_LOAD_TYPES)));
   }
 }

@@ -19,10 +19,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @RequestMapping(path = "${exercisesApiPrefix}")
 public interface GetAllMuscleSubGroupByMuscleGroupController {
 
-  /**
-   * @deprecated Only for develop
-   */
-  @Deprecated(forRemoval = true)
   @Operation(summary = "API used to get all the MuscleSubGroups by MuscleGroup", deprecated = true)
   @ApiResponses(
       value = {

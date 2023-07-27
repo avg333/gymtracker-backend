@@ -10,6 +10,7 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.common.errors.infrastructure.RestExceptionHandler.ApiError;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
@@ -28,14 +29,13 @@ class RestExceptionHandlerTest {
   @InjectMocks private RestExceptionHandler restExceptionHandler;
 
   @Test
-  void handleDuplicatedWorkoutDate() {
-    final ResponseEntity<ApiError> result =
-        restExceptionHandler.handleDuplicatedWorkoutDate(
-            new DuplicatedWorkoutDateException(UUID.randomUUID(), new Date()));
-    assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-    assertNotNull(result.getBody());
+  void testHandleDuplicatedWorkoutDate() {
     assertEquals(
-        "There is already a workout on that date for that user", result.getBody().getMessage());
+        "There is already a workout on that date for that user",
+        restExceptionHandler
+            .handleDuplicatedWorkoutDate(
+                new DuplicatedWorkoutDateException(UUID.randomUUID(), new Date()))
+            .getMessage());
   }
 
   @Test
@@ -77,48 +77,43 @@ class RestExceptionHandlerTest {
 
   @Test
   void handleEntityNotFound() {
-    final ResponseEntity<ApiError> result =
-        restExceptionHandler.handleEntityNotFound(
-            new EntityNotFoundException(Workout.class, UUID.randomUUID()));
-    assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals("Entity not found", result.getBody().getMessage());
+    assertEquals(
+        "Entity not found",
+        restExceptionHandler
+            .handleEntityNotFound(new EntityNotFoundException(Workout.class, UUID.randomUUID()))
+            .getMessage());
   }
 
   @Test
   void handleIllegalAccessException() {
-    final ResponseEntity<ApiError> result =
-        restExceptionHandler.handleIllegalAccessException(
-            new IllegalAccessException(
-                easyRandom.nextObject(Workout.class), AuthOperations.READ, UUID.randomUUID()));
-    assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
-    assertNotNull(result.getBody());
     assertEquals(
-        "You do not have permissions to access the resource", result.getBody().getMessage());
+        "You do not have permissions to access the resource",
+        restExceptionHandler
+            .handleIllegalAccessException(
+                new IllegalAccessException(
+                    easyRandom.nextObject(Workout.class), AuthOperations.READ, UUID.randomUUID()))
+            .getMessage());
   }
 
   @Test
   void testHandleIllegalAccessException() {
     class NoOpenPortAuthenticationException extends AuthenticationException {
-
       public NoOpenPortAuthenticationException(String msg) {
         super(msg);
       }
     }
-
-    final ResponseEntity<ApiError> result =
-        restExceptionHandler.handleIllegalAccessException(
-            new NoOpenPortAuthenticationException(""));
-    assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals("An error occurred during authentication", result.getBody().getMessage());
+    assertEquals(
+        "An error occurred during authentication",
+        restExceptionHandler
+            .handleIllegalAccessException(
+                new NoOpenPortAuthenticationException(easyRandom.nextObject(String.class)))
+            .getMessage());
   }
 
   @Test
-  void handleException() {
-    final ResponseEntity<ApiError> result = restExceptionHandler.handleException(new Exception());
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals("Internal server error", result.getBody().getMessage());
+  void testHandleException() {
+    assertEquals(
+        "Internal server error",
+        restExceptionHandler.handleException(new Exception()).getMessage());
   }
 }

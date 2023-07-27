@@ -13,7 +13,7 @@
   <groupId>org.avillar</groupId>
   <artifactId>gymtracker-backend</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.2-SNAPSHOT</version>
+  <version>0.9.3-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
 
   <properties>
@@ -24,6 +24,7 @@
     <org.lombok.version>1.18.28</org.lombok.version>
     <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
     <org.commons-lang3.version>3.12.0</org.commons-lang3.version>
+    <spring-cloud-starter-openfeign.version>4.0.3</spring-cloud-starter-openfeign.version>
     <org.springdoc.version>2.1.0</org.springdoc.version>
     <com.h2database.version>2.2.220</com.h2database.version>
     <embedded-redis.version>0.7.3</embedded-redis.version>
@@ -62,14 +63,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-redis</artifactId>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-openfeign</artifactId>
-      <version>4.0.3</version>
-    </dependency>
-
 
     <!-- DB -->
     <dependency>
@@ -119,6 +112,13 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>${org.commons-lang3.version}</version>
+    </dependency>
+
+    <!-- @SpringQueryMap -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+      <version>${spring-cloud-starter-openfeign.version}</version>
     </dependency>
 
     <!-- SWAGGER -->

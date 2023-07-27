@@ -24,13 +24,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.web.servlet.MockMvc;
 
 class GetAllMuscleSupGroupsTest extends IntegrationBaseTest {
 
   private static final String ENDPOINT = "/exercises-api/muscleSupGroups";
 
-  @Autowired private MockMvc mockMvc;
+  private static final int TOTAL_M_SUP_G = 3;
+  private static final int TOTAL_M_G = 4;
+  private static final int TOTAL_M_SUB_G = 5;
+
   @Autowired private MuscleSupGroupDao muscleSupGroupDao;
   @Autowired private MuscleGroupDao muscleGroupDao;
   @Autowired private MuscleSubGroupDao muscleSubGroupDao;
@@ -54,7 +56,7 @@ class GetAllMuscleSupGroupsTest extends IntegrationBaseTest {
     muscleSupGroupDao.deleteAll();
 
     final List<MuscleSupGroup> muscleSupGroups =
-        easyRandom.objects(MuscleSupGroup.class, 3).toList();
+        easyRandom.objects(MuscleSupGroup.class, TOTAL_M_SUP_G).toList();
     final List<MuscleGroup> muscleGroups = new ArrayList<>();
     final List<MuscleSubGroup> muscleSubGroups = new ArrayList<>();
     muscleSupGroups.forEach(
@@ -62,14 +64,14 @@ class GetAllMuscleSupGroupsTest extends IntegrationBaseTest {
           mSupG.setId(null);
           mSupG.setMuscleGroups(new HashSet<>());
           final List<MuscleGroup> muscleGroupsAux =
-              easyRandom.objects(MuscleGroup.class, 4).toList();
+              easyRandom.objects(MuscleGroup.class, TOTAL_M_G).toList();
           muscleGroupsAux.forEach(
               mg -> {
                 mg.setId(null);
                 mg.setMuscleSubGroups(new HashSet<>());
                 mg.setMuscleSupGroups(Set.of(mSupG));
                 final List<MuscleSubGroup> muscleSubGroupsAux =
-                    easyRandom.objects(MuscleSubGroup.class, 5).toList();
+                    easyRandom.objects(MuscleSubGroup.class, TOTAL_M_SUB_G).toList();
                 muscleSubGroupsAux.forEach(
                     mSubG -> {
                       mSubG.setId(null);
@@ -98,16 +100,16 @@ class GetAllMuscleSupGroupsTest extends IntegrationBaseTest {
         .perform(get(ENDPOINT))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.*", hasSize(3)))
-        .andExpect(jsonPath("$.[0].muscleGroups.*", hasSize(4)))
-        .andExpect(jsonPath("$.[0].muscleGroups.[0].muscleSubGroups.*", hasSize(5)));
+        .andExpect(jsonPath("$.*", hasSize(TOTAL_M_SUP_G)))
+        .andExpect(jsonPath("$.[0].muscleGroups.*", hasSize(TOTAL_M_G)))
+        .andExpect(jsonPath("$.[0].muscleGroups.[0].muscleSubGroups.*", hasSize(TOTAL_M_SUB_G)));
 
     mockMvc
         .perform(get(ENDPOINT))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.*", hasSize(3)))
-        .andExpect(jsonPath("$.[0].muscleGroups.*", hasSize(4)))
-        .andExpect(jsonPath("$.[0].muscleGroups.[0].muscleSubGroups.*", hasSize(5)));
+        .andExpect(jsonPath("$.*", hasSize(TOTAL_M_SUP_G)))
+        .andExpect(jsonPath("$.[0].muscleGroups.*", hasSize(TOTAL_M_G)))
+        .andExpect(jsonPath("$.[0].muscleGroups.[0].muscleSubGroups.*", hasSize(TOTAL_M_SUB_G)));
   }
 }
