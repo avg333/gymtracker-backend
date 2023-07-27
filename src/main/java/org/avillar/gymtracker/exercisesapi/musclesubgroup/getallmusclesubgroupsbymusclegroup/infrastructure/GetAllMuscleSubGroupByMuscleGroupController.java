@@ -9,10 +9,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.model.GetAllMuscleSubGroupByMuscleGroupResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "MuscleSubGroups", description = "API to manage MuscleSubGroups")
 @RequestMapping(path = "${exercisesApiPrefix}")
@@ -36,6 +37,6 @@ public interface GetAllMuscleSubGroupByMuscleGroupController {
             })
       })
   @GetMapping("muscleGroups/{muscleGroupId}/muscleSubGroups")
-  ResponseEntity<List<GetAllMuscleSubGroupByMuscleGroupResponse>> execute(
-      @PathVariable UUID muscleGroupId);
+  @ResponseStatus(HttpStatus.OK)
+  List<GetAllMuscleSubGroupByMuscleGroupResponse> execute(@PathVariable UUID muscleGroupId);
 }

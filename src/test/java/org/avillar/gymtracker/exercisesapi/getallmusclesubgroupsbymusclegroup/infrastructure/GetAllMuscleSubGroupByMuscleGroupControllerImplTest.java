@@ -8,17 +8,16 @@ import java.util.UUID;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.application.GetAllMuscleSubGroupByMuscleGroupService;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.application.model.GetAllMuscleSubGroupByMuscleGroupResponseApplication;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.GetAllMuscleSubGroupByMuscleGroupControllerImpl;
-import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.mapper.GetAllMuscleSubGroupByMuscleGroupControllerMapperImpl;
+import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.mapper.GetAllMuscleSubGroupByMuscleGroupControllerMapper;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.infrastructure.model.GetAllMuscleSubGroupByMuscleGroupResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class GetAllMuscleSubGroupByMuscleGroupControllerImplTest {
@@ -32,8 +31,9 @@ class GetAllMuscleSubGroupByMuscleGroupControllerImplTest {
   @Mock private GetAllMuscleSubGroupByMuscleGroupService getAllMuscleSubGroupByMuscleGroupService;
 
   @Spy
-  private GetAllMuscleSubGroupByMuscleGroupControllerMapperImpl
-      getAllMuscleSubGroupByMuscleGroupControllerMapper;
+  private GetAllMuscleSubGroupByMuscleGroupControllerMapper
+      getAllMuscleSubGroupByMuscleGroupControllerMapper =
+          Mappers.getMapper(GetAllMuscleSubGroupByMuscleGroupControllerMapper.class);
 
   @Test
   void get() {
@@ -43,11 +43,9 @@ class GetAllMuscleSubGroupByMuscleGroupControllerImplTest {
 
     when(getAllMuscleSubGroupByMuscleGroupService.execute(muscleGroupId)).thenReturn(expected);
 
-    final ResponseEntity<List<GetAllMuscleSubGroupByMuscleGroupResponse>> result =
+    final List<GetAllMuscleSubGroupByMuscleGroupResponse> result =
         getAllMuscleSubGroupByMuscleGroupController.execute(muscleGroupId);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).hasSameSizeAs(expected);
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 }

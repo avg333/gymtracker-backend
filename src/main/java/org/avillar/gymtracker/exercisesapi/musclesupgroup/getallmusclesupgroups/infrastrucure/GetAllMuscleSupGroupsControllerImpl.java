@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.application.GetMuscleSupGroupService;
 import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.infrastrucure.mapper.GetAllMuscleSupGroupsControllerMapper;
 import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.infrastrucure.model.GetAllMuscleSupGroupsResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,8 +15,7 @@ public class GetAllMuscleSupGroupsControllerImpl implements GetAllMuscleSupGroup
   private final GetAllMuscleSupGroupsControllerMapper getAllMuscleSupGroupsControllerMapper;
 
   @Override
-  public ResponseEntity<List<GetAllMuscleSupGroupsResponse>> execute() {
-    return ResponseEntity.ok(
-        getAllMuscleSupGroupsControllerMapper.map(getMuscleSupGroupService.execute()));
+  public List<GetAllMuscleSupGroupsResponse> execute() {
+    return getAllMuscleSupGroupsControllerMapper.map(getMuscleSupGroupService.execute());
   }
 }

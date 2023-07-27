@@ -11,11 +11,12 @@ import org.avillar.gymtracker.exercisesapi.domain.MuscleSubGroup;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleSupGroup;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleSupGroupDao;
 import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.application.GetMuscleSupGroupServiceImpl;
-import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.application.mapper.GetAllMuscleSupGroupsApplicationMapperImpl;
+import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.application.mapper.GetAllMuscleSupGroupsApplicationMapper;
 import org.avillar.gymtracker.exercisesapi.musclesupgroup.getallmusclesupgroups.application.model.GetAllMuscleSupGroupsResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -29,7 +30,10 @@ class GetMuscleSupGroupServiceImplTest {
   @InjectMocks private GetMuscleSupGroupServiceImpl getGetMuscleSupGroupService;
 
   @Mock private MuscleSupGroupDao muscleSupGroupDao;
-  @Spy private GetAllMuscleSupGroupsApplicationMapperImpl getMuscleSupGroupApplicationMapper;
+
+  @Spy
+  private GetAllMuscleSupGroupsApplicationMapper getMuscleSupGroupApplicationMapper =
+      Mappers.getMapper(GetAllMuscleSupGroupsApplicationMapper.class);
 
   @Test
   void execute() {

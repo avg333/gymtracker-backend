@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.application.GetLoadTypeService;
 import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.mapper.GetAllLoadTypesControllerMapper;
 import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.model.GetAllLoadTypesResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,7 +15,7 @@ public class GetAllLoadTypesControllerImpl implements GetAllLoadTypesController 
   private final GetAllLoadTypesControllerMapper getAllLoadTypesControllerMapper;
 
   @Override
-  public ResponseEntity<List<GetAllLoadTypesResponse>> execute() {
-    return ResponseEntity.ok(getAllLoadTypesControllerMapper.map(getLoadTypeService.execute()));
+  public List<GetAllLoadTypesResponse> execute() {
+    return getAllLoadTypesControllerMapper.map(getLoadTypeService.execute());
   }
 }

@@ -8,9 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.avillar.gymtracker.exercisesapi.loadtype.getallloadtypes.infrastructure.model.GetAllLoadTypesResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "LoadTypes", description = "API to manage LoadTypes")
 @RequestMapping(path = "${exercisesApiPrefix}")
@@ -29,5 +30,6 @@ public interface GetAllLoadTypesController {
             })
       })
   @GetMapping("/loadTypes")
-  ResponseEntity<List<GetAllLoadTypesResponse>> execute();
+  @ResponseStatus(HttpStatus.OK)
+  List<GetAllLoadTypesResponse> execute();
 }

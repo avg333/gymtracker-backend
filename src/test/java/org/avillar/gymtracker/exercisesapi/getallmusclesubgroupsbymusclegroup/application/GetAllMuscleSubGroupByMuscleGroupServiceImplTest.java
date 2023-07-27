@@ -8,11 +8,12 @@ import java.util.UUID;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleSubGroup;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleSubGroupDao;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.application.GetAllMuscleSubGroupByMuscleGroupServiceImpl;
-import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.application.mapper.GetAllMuscleSubGroupByMuscleGroupServiceMapperImpl;
+import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.application.mapper.GetAllMuscleSubGroupByMuscleGroupServiceMapper;
 import org.avillar.gymtracker.exercisesapi.musclesubgroup.getallmusclesubgroupsbymusclegroup.application.model.GetAllMuscleSubGroupByMuscleGroupResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -29,8 +30,9 @@ class GetAllMuscleSubGroupByMuscleGroupServiceImplTest {
   @Mock private MuscleSubGroupDao muscleSubGroupDao;
 
   @Spy
-  private GetAllMuscleSubGroupByMuscleGroupServiceMapperImpl
-      getAllMuscleSubGroupByMuscleGroupServiceMapper;
+  private GetAllMuscleSubGroupByMuscleGroupServiceMapper
+      getAllMuscleSubGroupByMuscleGroupServiceMapper =
+          Mappers.getMapper(GetAllMuscleSubGroupByMuscleGroupServiceMapper.class);
 
   @Test
   void execute() {
