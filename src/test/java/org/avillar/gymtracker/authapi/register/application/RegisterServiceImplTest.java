@@ -11,12 +11,13 @@ import org.avillar.gymtracker.authapi.domain.UserApp;
 import org.avillar.gymtracker.authapi.domain.UserDao;
 import org.avillar.gymtracker.authapi.login.application.LoginService;
 import org.avillar.gymtracker.authapi.login.application.model.LoginResponseApplication;
-import org.avillar.gymtracker.authapi.register.application.mapper.RegisterServiceMapperImpl;
+import org.avillar.gymtracker.authapi.register.application.mapper.RegisterServiceMapper;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterRequestApplication;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -33,7 +34,10 @@ class RegisterServiceImplTest {
 
   @Mock private UserDao userDao;
   @Mock private LoginService loginService;
-  @Spy private RegisterServiceMapperImpl registerServiceMapper;
+
+  @Spy
+  private final RegisterServiceMapper registerServiceMapper =
+      Mappers.getMapper(RegisterServiceMapper.class);
 
   @Test
   void registerOk() {

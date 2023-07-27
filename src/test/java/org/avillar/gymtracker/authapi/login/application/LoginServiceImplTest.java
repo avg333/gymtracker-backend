@@ -8,6 +8,7 @@ import org.avillar.gymtracker.authapi.login.application.model.LoginRequestApplic
 import org.avillar.gymtracker.common.auth.jwt.JwtTokenUtil;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -23,7 +24,9 @@ class LoginServiceImplTest {
 
   @Mock private AuthenticationManager authenticationManager;
   @Mock private JwtTokenUtil jwtTokenUtil;
-  @Spy private LoginServiceMapper loginServiceMapper;
+
+  @Spy
+  private final LoginServiceMapper loginServiceMapper = Mappers.getMapper(LoginServiceMapper.class);
 
   void loginOk() { // TODO Finish this
     final LoginRequestApplication request = easyRandom.nextObject(LoginRequestApplication.class);

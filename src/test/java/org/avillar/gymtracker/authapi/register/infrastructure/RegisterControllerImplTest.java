@@ -5,18 +5,16 @@ import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.authapi.register.application.RegisterService;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterResponseApplication;
-import org.avillar.gymtracker.authapi.register.infrastructure.mapper.RegisterControllerMapperImpl;
+import org.avillar.gymtracker.authapi.register.infrastructure.mapper.RegisterControllerMapper;
 import org.avillar.gymtracker.authapi.register.infrastructure.model.RegisterRequest;
-import org.avillar.gymtracker.authapi.register.infrastructure.model.RegisterResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class RegisterControllerImplTest {
@@ -26,7 +24,10 @@ class RegisterControllerImplTest {
   @InjectMocks private RegisterControllerImpl registerController;
 
   @Mock private RegisterService registerService;
-  @Spy private RegisterControllerMapperImpl registerControllerMapper;
+
+  @Spy
+  private final RegisterControllerMapper registerControllerMapper =
+      Mappers.getMapper(RegisterControllerMapper.class);
 
   @Test
   void registerOk() {
@@ -36,9 +37,6 @@ class RegisterControllerImplTest {
 
     when(registerService.execute(registerControllerMapper.map(request))).thenReturn(expected);
 
-    final ResponseEntity<RegisterResponse> result = registerController.execute(request);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(registerController.execute(request)).usingRecursiveComparison().isEqualTo(expected);
   }
 }
