@@ -18,13 +18,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.web.servlet.MockMvc;
 
 class GetAllLoadTypesTest extends IntegrationBaseTest {
 
   private static final String ENDPOINT = "/exercises-api/loadTypes";
 
-  private static final int TOTAL_LOAD_TYPES = 10;
+  private static final int TOTAL_LOAD_TYPES = 5;
 
   @Autowired private LoadTypeDao loadTypeDao;
 

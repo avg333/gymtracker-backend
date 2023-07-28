@@ -9,15 +9,20 @@ import lombok.Data;
 public class GetAllMuscleGroupsByMuscleSupGroupResponseApplication implements Serializable {
 
   private UUID id;
+
   private String name;
+
   private String description;
+
   private List<MuscleSubGroup> muscleSubGroups;
 
   @Data
   public static class MuscleSubGroup implements Serializable {
 
     private UUID id;
+
     private String name;
+
     private String description;
   }
 }

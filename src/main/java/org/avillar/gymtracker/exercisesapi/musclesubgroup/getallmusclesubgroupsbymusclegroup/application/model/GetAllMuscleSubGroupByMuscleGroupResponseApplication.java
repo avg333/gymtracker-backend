@@ -8,6 +8,8 @@ import lombok.Data;
 public class GetAllMuscleSubGroupByMuscleGroupResponseApplication implements Serializable {
 
   private UUID id;
+
   private String name;
+
   private String description;
 }

@@ -8,6 +8,8 @@ import lombok.Data;
 public class GetAllLoadTypesResponseApplication implements Serializable {
 
   private UUID id;
+
   private String name;
+
   private String description;
 }

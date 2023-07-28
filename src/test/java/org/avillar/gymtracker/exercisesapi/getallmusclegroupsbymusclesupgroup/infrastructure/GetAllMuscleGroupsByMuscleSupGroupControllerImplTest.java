@@ -22,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetAllMuscleGroupsByMuscleSupGroupControllerImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks
@@ -31,7 +33,7 @@ class GetAllMuscleGroupsByMuscleSupGroupControllerImplTest {
   @Mock private GetAllMuscleGroupsByMuscleSupGroupService getAllMuscleGroupsByMuscleSupGroupService;
 
   @Spy
-  private GetAllMuscleGroupsByMuscleSupGroupControllerMapper
+  private final GetAllMuscleGroupsByMuscleSupGroupControllerMapper
       getAllMuscleGroupsByMuscleSupGroupControllerMapper =
           Mappers.getMapper(GetAllMuscleGroupsByMuscleSupGroupControllerMapper.class);
 
@@ -39,7 +41,9 @@ class GetAllMuscleGroupsByMuscleSupGroupControllerImplTest {
   void get() {
     final UUID muscleSupGroupId = UUID.randomUUID();
     final List<GetAllMuscleGroupsByMuscleSupGroupResponseApplication> expected =
-        easyRandom.objects(GetAllMuscleGroupsByMuscleSupGroupResponseApplication.class, 2).toList();
+        easyRandom
+            .objects(GetAllMuscleGroupsByMuscleSupGroupResponseApplication.class, LIST_SIZE)
+            .toList();
 
     when(getAllMuscleGroupsByMuscleSupGroupService.execute(muscleSupGroupId)).thenReturn(expected);
 

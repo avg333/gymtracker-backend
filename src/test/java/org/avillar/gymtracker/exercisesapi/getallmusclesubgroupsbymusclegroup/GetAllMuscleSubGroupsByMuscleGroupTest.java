@@ -98,7 +98,9 @@ class GetAllMuscleSubGroupsByMuscleGroupTest extends IntegrationBaseTest {
   @Test
   @WithUserDetails(USER_NAME_OK)
   void getAllMuscleSubGroupsByMuscleGroup() throws Exception {
+
     final MuscleGroup muscleGroup = muscleGroupDao.findAll().get(0);
+
     mockMvc
         .perform(get(ENDPOINT, muscleGroup.getId()))
         .andDo(print())
@@ -110,6 +112,11 @@ class GetAllMuscleSubGroupsByMuscleGroupTest extends IntegrationBaseTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.*", hasSize(TOTAL_M_SUB_G)));
+  }
+
+  @Test
+  @WithUserDetails(USER_NAME_OK)
+  void getAllWithRandomUUID() throws Exception {
 
     mockMvc
         .perform(get(ENDPOINT, UUID.randomUUID()))

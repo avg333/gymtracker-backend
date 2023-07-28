@@ -22,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetLoadTypeServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetLoadTypeServiceImpl getLoadTypeService;
@@ -29,12 +31,12 @@ class GetLoadTypeServiceImplTest {
   @Mock private LoadTypeDao loadTypeDao;
 
   @Spy
-  private GetAllLoadTypesServiceMapper getAllLoadTypesServiceMapper =
+  private final GetAllLoadTypesServiceMapper getAllLoadTypesServiceMapper =
       Mappers.getMapper(GetAllLoadTypesServiceMapper.class);
 
   @Test
   void execute() {
-    final List<LoadType> expected = easyRandom.objects(LoadType.class, 5).toList();
+    final List<LoadType> expected = easyRandom.objects(LoadType.class, LIST_SIZE).toList();
 
     when(loadTypeDao.findAll()).thenReturn(expected);
 
