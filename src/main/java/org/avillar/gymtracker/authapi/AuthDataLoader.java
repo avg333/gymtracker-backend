@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.authapi;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +17,24 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AuthDataLoader implements ApplicationRunner {
 
+  private static final List<String> DEFAULT_USERS = List.of("chema", "alex", "adrian");
+  private static final String PASSWORD_SUFFIX = "69";
+
   private final UserDao userDao;
+
   @Value("${spring.profiles.active}")
   private String activeProfile;
 
   private static List<UserApp> generateUsers() {
-    var user1 = new UserApp(null, "chema", new BCryptPasswordEncoder().encode("chema69"));
-    var user2 = new UserApp(null, "alex", new BCryptPasswordEncoder().encode("alex69"));
-    var user3 = new UserApp(null, "adrian", new BCryptPasswordEncoder().encode("adrian69"));
-    return List.of(user1, user2, user3);
+    final List<UserApp> users = new ArrayList<>(DEFAULT_USERS.size());
+
+    for (final String username : DEFAULT_USERS) {
+      users.add(
+          new UserApp(
+              null, username, new BCryptPasswordEncoder().encode(username + PASSWORD_SUFFIX)));
+    }
+
+    return users;
   }
 
   public void run(ApplicationArguments args) {

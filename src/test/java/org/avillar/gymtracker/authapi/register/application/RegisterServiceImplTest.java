@@ -66,13 +66,14 @@ class RegisterServiceImplTest {
 
   @Test
   void registerInvalidCode() {
+    final RegisterRequestApplication registerRequestApplication =
+        easyRandom.nextObject(RegisterRequestApplication.class);
     ReflectionTestUtils.setField(
         registerService, "registerCode", easyRandom.nextObject(String.class));
 
     final RegisterException exception =
         assertThrows(
-            RegisterException.class,
-            () -> registerService.execute(easyRandom.nextObject(RegisterRequestApplication.class)));
+            RegisterException.class, () -> registerService.execute(registerRequestApplication));
     assertEquals("Wrong auth code!", exception.getMessage());
   }
 

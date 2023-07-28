@@ -23,5 +23,6 @@ public class UserApp implements Serializable {
   private UUID id;
 
   private String username;
+
   private String password;
 }

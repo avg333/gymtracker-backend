@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+  private static final String DEFAULT_ROLE = "USER_ROLE";
+
   private final UserDao userDao;
 
   @Override
@@ -28,6 +30,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userApp.getId(),
         userApp.getUsername(),
         userApp.getPassword(),
-        List.of(new SimpleGrantedAuthority("USER_ROLE")));
+        List.of(new SimpleGrantedAuthority(DEFAULT_ROLE)));
   }
 }
