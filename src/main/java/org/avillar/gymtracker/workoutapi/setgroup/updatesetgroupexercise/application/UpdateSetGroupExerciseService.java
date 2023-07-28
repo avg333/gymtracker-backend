@@ -2,8 +2,8 @@ package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.applic
 
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException;
 
 public interface UpdateSetGroupExerciseService {
 

@@ -1,4 +1,4 @@
-package org.avillar.gymtracker.common.errors.application.exceptions;
+package org.avillar.gymtracker.workoutapi.exception.application;
 
 import java.util.Date;
 import java.util.UUID;

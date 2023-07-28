@@ -2,8 +2,8 @@ package org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.DuplicatedWorkoutDateException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkoutDateException;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.CreateWorkoutService;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.mapper.CreateWorkoutControllerMapper;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutRequest;

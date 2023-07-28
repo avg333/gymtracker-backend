@@ -1,16 +1,11 @@
 package org.avillar.gymtracker.common.errors.infrastructure;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.avillar.gymtracker.common.errors.application.exceptions.DuplicatedWorkoutDateException;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,53 +13,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Slf4j
 @RestControllerAdvice
+@Order( value = Ordered.LOWEST_PRECEDENCE )
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-
-  private static final String MSG_DUPLICATED_WORKOUT_DATE_ERROR =
-      "There is already a workout on that date for that user";
+  
   private static final String MSG_NOT_FOUND_ERROR = "Entity not found";
   private static final String MSG_NOT_PERMISSION_ERROR =
       "You do not have permissions to access the resource";
   private static final String MSG_INTERNAL_SERVER_ERROR = "Internal server error";
-
-  @ExceptionHandler(DuplicatedWorkoutDateException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected ApiError handleDuplicatedWorkoutDate(final DuplicatedWorkoutDateException ex) {
-    log.debug(
-        "There is already a workout with date {} for user {}", ex.getWorkoutDate(), ex.getUserId());
-    return new ApiError(MSG_DUPLICATED_WORKOUT_DATE_ERROR, ex);
-  }
-
-  @ExceptionHandler(ExerciseNotFoundException.class)
-  protected ResponseEntity<ApiError> handleExerciseNotFoundException(
-      final ExerciseNotFoundException ex) {
-    final ApiError apiError;
-    final HttpStatus responseCode;
-    switch (ex.getAccessError()) {
-      case NOT_FOUND -> {
-        apiError = new ApiError("No exercise found with ID: " + ex.getId(), ex);
-        responseCode = HttpStatus.NOT_FOUND;
-      }
-      case NOT_ACCESS -> {
-        apiError =
-            new ApiError(
-                "You do not have permission to access the exercise with the ID: " + ex.getId(), ex);
-        responseCode = HttpStatus.FORBIDDEN;
-      }
-      case UNKNOWN -> {
-        apiError =
-            new ApiError("The exercise could not be accessed with the ID: " + ex.getId(), ex);
-        responseCode = HttpStatus.NOT_ACCEPTABLE;
-      }
-      default -> {
-        apiError = new ApiError("Error accessing the exercise with ID: " + ex.getId(), ex);
-        responseCode = HttpStatus.INTERNAL_SERVER_ERROR;
-      }
-    }
-
-    log.info("Error accessing the exercise with ID {}: {}", ex.getId(), ex.getLocalizedMessage());
-    return new ResponseEntity<>(apiError, responseCode);
-  }
 
   @ExceptionHandler(EntityNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -89,24 +44,5 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   protected ApiError handleException(final Exception ex) {
     log.error("Internal server error:", ex);
     return new ApiError(MSG_INTERNAL_SERVER_ERROR, ex);
-  }
-
-  @Getter
-  public static class ApiError {
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    private final LocalDateTime timestamp = LocalDateTime.now();
-
-    private final String message;
-    private final String debugMessage;
-
-    public ApiError(final String message, final Exception exception) {
-      boolean existsException =
-          exception != null && StringUtils.isNotEmpty(exception.getLocalizedMessage());
-
-      this.message = message;
-      this.debugMessage =
-          log.isDebugEnabled() && existsException ? exception.getLocalizedMessage() : null;
-    }
   }
 }

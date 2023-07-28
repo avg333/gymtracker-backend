@@ -3,6 +3,8 @@ package org.avillar.gymtracker.authapi.exception.infrastructure;
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.authapi.exception.application.RegisterException;
 import org.avillar.gymtracker.common.errors.infrastructure.ApiError;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Slf4j
 @RestControllerAdvice
+@Order( value = Ordered.HIGHEST_PRECEDENCE )
 public class AuthExceptionHandler extends ResponseEntityExceptionHandler {
 
   private static final String MSG_ERROR_REGISTER_PROCESS_ERROR = "Error in the register process";
