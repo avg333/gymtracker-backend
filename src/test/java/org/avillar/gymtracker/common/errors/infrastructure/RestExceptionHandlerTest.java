@@ -19,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 
 @ExtendWith(MockitoExtension.class)
 class RestExceptionHandlerTest {
@@ -92,21 +91,6 @@ class RestExceptionHandlerTest {
             .handleIllegalAccessException(
                 new IllegalAccessException(
                     easyRandom.nextObject(Workout.class), AuthOperations.READ, UUID.randomUUID()))
-            .getMessage());
-  }
-
-  @Test
-  void testHandleIllegalAccessException() {
-    class NoOpenPortAuthenticationException extends AuthenticationException {
-      public NoOpenPortAuthenticationException(String msg) {
-        super(msg);
-      }
-    }
-    assertEquals(
-        "An error occurred during authentication",
-        restExceptionHandler
-            .handleIllegalAccessException(
-                new NoOpenPortAuthenticationException(easyRandom.nextObject(String.class)))
             .getMessage());
   }
 

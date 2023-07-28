@@ -9,16 +9,18 @@ import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.authapi.domain.UserApp;
 import org.avillar.gymtracker.authapi.domain.UserDao;
+import org.avillar.gymtracker.authapi.exception.application.RegisterException;
 import org.avillar.gymtracker.authapi.login.application.LoginService;
+import org.avillar.gymtracker.authapi.login.application.model.LoginRequestApplication;
 import org.avillar.gymtracker.authapi.login.application.model.LoginResponseApplication;
 import org.avillar.gymtracker.authapi.register.application.mapper.RegisterServiceMapper;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterRequestApplication;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterResponseApplication;
-import org.avillar.gymtracker.common.errors.application.exceptions.RegisterExcepcion;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -47,13 +49,19 @@ class RegisterServiceImplTest {
     request.setUsername(expected.getUsername());
     ReflectionTestUtils.setField(registerService, "registerCode", request.getRegisterCode());
 
+    ArgumentCaptor<LoginRequestApplication> loginRequestApplicationCaptor =
+        ArgumentCaptor.forClass(LoginRequestApplication.class);
+
     when(userDao.findByUsername(request.getUsername())).thenReturn(null);
     when(userDao.save(any(UserApp.class))).thenAnswer(i -> i.getArguments()[0]);
-    when(loginService.execute(registerServiceMapper.map(request))).thenReturn(expected);
+    when(loginService.execute(loginRequestApplicationCaptor.capture())).thenReturn(expected);
 
     final RegisterResponseApplication result = registerService.execute(request);
     assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     verify(userDao).save(any(UserApp.class));
+    assertThat(loginRequestApplicationCaptor.getValue())
+        .usingRecursiveComparison()
+        .isEqualTo(request);
   }
 
   @Test
@@ -61,9 +69,9 @@ class RegisterServiceImplTest {
     ReflectionTestUtils.setField(
         registerService, "registerCode", easyRandom.nextObject(String.class));
 
-    final RegisterExcepcion exception =
+    final RegisterException exception =
         assertThrows(
-            RegisterExcepcion.class,
+            RegisterException.class,
             () -> registerService.execute(easyRandom.nextObject(RegisterRequestApplication.class)));
     assertEquals("Wrong auth code!", exception.getMessage());
   }
@@ -78,9 +86,9 @@ class RegisterServiceImplTest {
     when(userDao.findByUsername(registerRequestApplication.getUsername()))
         .thenReturn(easyRandom.nextObject(UserApp.class));
 
-    final RegisterExcepcion exception =
+    final RegisterException exception =
         assertThrows(
-            RegisterExcepcion.class, () -> registerService.execute(registerRequestApplication));
+            RegisterException.class, () -> registerService.execute(registerRequestApplication));
     assertEquals("Username already exists", exception.getMessage());
   }
 }

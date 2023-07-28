@@ -9,10 +9,8 @@ import org.avillar.gymtracker.common.errors.application.exceptions.DuplicatedWor
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.ExerciseNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.common.errors.application.exceptions.RegisterExcepcion;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,22 +20,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-  private static final String MSG_ERROR_REGISTER_PROCESS_ERROR = "Error in the register process";
-
   private static final String MSG_DUPLICATED_WORKOUT_DATE_ERROR =
       "There is already a workout on that date for that user";
   private static final String MSG_NOT_FOUND_ERROR = "Entity not found";
   private static final String MSG_NOT_PERMISSION_ERROR =
       "You do not have permissions to access the resource";
-  private static final String MSG_AUTH_ERROR = "An error occurred during authentication";
   private static final String MSG_INTERNAL_SERVER_ERROR = "Internal server error";
-
-  @ExceptionHandler(RegisterExcepcion.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected ApiError handleDuplicatedWorkoutDate(final RegisterExcepcion ex) {
-    log.debug("Error in the registration process: {}", ex.getLocalizedMessage());
-    return new ApiError(MSG_ERROR_REGISTER_PROCESS_ERROR, ex);
-  }
 
   @ExceptionHandler(DuplicatedWorkoutDateException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -94,13 +82,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getEntityId(),
         ex.getCurrentUserId());
     return new ApiError(MSG_NOT_PERMISSION_ERROR, ex);
-  }
-
-  @ExceptionHandler(AuthenticationException.class)
-  @ResponseStatus(HttpStatus.FORBIDDEN)
-  protected ApiError handleIllegalAccessException(final AuthenticationException ex) {
-    log.error("Error while trying to login:", ex);
-    return new ApiError(MSG_AUTH_ERROR, ex);
   }
 
   @ExceptionHandler(Exception.class)
