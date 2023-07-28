@@ -1,11 +1,13 @@
-package org.avillar.gymtracker.authapi.login;
+package org.avillar.gymtracker.authapi.register;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
 import org.avillar.gymtracker.IntegrationBaseTest;
 import org.avillar.gymtracker.authapi.domain.UserApp;
 import org.avillar.gymtracker.authapi.domain.UserDao;
@@ -15,11 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-class LoginTest extends IntegrationBaseTest {
+class RegisterTest extends IntegrationBaseTest {
 
-  private static final String ENDPOINT = "/auth-api/signin";
+  private static final String ENDPOINT = "/auth-api/register";
 
   private final String USERNAME = easyRandom.nextObject(String.class);
   private final String PASSWORD = easyRandom.nextObject(String.class);
@@ -29,10 +30,12 @@ class LoginTest extends IntegrationBaseTest {
   @Value("${security.tokenType}")
   private String tokenType;
 
+  @Value("${registerCode}")
+  private String registerCode;
+
   @BeforeEach
   void beforeEach() {
     userDao.deleteAll();
-    userDao.save(new UserApp(null, USERNAME, new BCryptPasswordEncoder().encode(PASSWORD)));
   }
 
   @AfterEach
@@ -41,44 +44,53 @@ class LoginTest extends IntegrationBaseTest {
   }
 
   @Test
-  void loginOkTest() throws Exception {
-    final UserApp userApp = userDao.findAll().get(0);
-
+  void registerOkTest() throws Exception {
     final JSONObject loginRequest = new JSONObject();
     loginRequest.put("username", USERNAME);
     loginRequest.put("password", PASSWORD);
+    loginRequest.put("registerCode", registerCode);
 
     mockMvc
         .perform(post(ENDPOINT).contentType(APPLICATION_JSON).content(loginRequest.toString()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(userApp.getId().toString()))
-        .andExpect(jsonPath("$.username").value(userApp.getUsername()))
+        .andExpect(jsonPath("$.id").isNotEmpty())
+        .andExpect(jsonPath("$.username").value(USERNAME))
         .andExpect(jsonPath("$.type").value(tokenType))
         .andExpect(jsonPath("$.token").isNotEmpty());
+
+    final List<UserApp> users = userDao.findAll();
+    assertThat(users).size().isEqualTo(1);
+    assertThat(users.get(0).getUsername()).isEqualTo(USERNAME);
   }
 
   @Test
-  void loginKoTest() throws Exception {
+  void registerKoWrongRegisterCodeTest() throws Exception {
     final JSONObject loginRequest = new JSONObject();
     loginRequest.put("username", USERNAME);
-    loginRequest.put("password", easyRandom.nextObject(String.class));
-
-    mockMvc
-        .perform(post(ENDPOINT).contentType(APPLICATION_JSON).content(loginRequest.toString()))
-        .andDo(print())
-        .andExpect(status().isForbidden());
-  }
-
-  @Test
-  void loginBadRequestTest() throws Exception {
-    final JSONObject loginRequest = new JSONObject();
-    loginRequest.put("username", USERNAME);
-    loginRequest.put("password", null);
+    loginRequest.put("password", PASSWORD);
+    loginRequest.put("registerCode", easyRandom.nextObject(String.class));
 
     mockMvc
         .perform(post(ENDPOINT).contentType(APPLICATION_JSON).content(loginRequest.toString()))
         .andDo(print())
         .andExpect(status().isBadRequest());
+
+    assertThat(userDao.findAll()).size().isEqualTo(0);
+  }
+
+  @Test
+  void registerBadRequestTest() throws Exception {
+    final JSONObject loginRequest = new JSONObject();
+    loginRequest.put("username", USERNAME);
+    loginRequest.put("password", null);
+    loginRequest.put("registerCode", registerCode);
+
+    mockMvc
+        .perform(post(ENDPOINT).contentType(APPLICATION_JSON).content(loginRequest.toString()))
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+
+    assertThat(userDao.findAll()).size().isEqualTo(0);
   }
 }

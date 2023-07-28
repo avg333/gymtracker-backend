@@ -21,6 +21,9 @@ public class JwtTokenUtil implements Serializable {
 
   private static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
+  @Value("${security.tokenType}")
+  private String tokenType;
+
   @Value("${security.secret}")
   private String secret;
 
@@ -30,6 +33,10 @@ public class JwtTokenUtil implements Serializable {
   public UserDetailsImpl getUserDetailsImplFromToken(final String token) {
     return new UserDetailsImpl(
         getIdFromToken(token), getUsernameFromToken(token), null, getAuthoritiesFromToken(token));
+  }
+
+  public String getTokenType() {
+    return tokenType;
   }
 
   private String getUsernameFromToken(final String token) {
@@ -42,22 +49,14 @@ public class JwtTokenUtil implements Serializable {
 
   private List<GrantedAuthority> getAuthoritiesFromToken(final String token) {
     Claims claims =
-        Jwts.parserBuilder()
-            .setSigningKey(getSignKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+        Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
 
     return (List<GrantedAuthority>) claims.get("authorities");
   }
 
   private <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
     return claimsResolver.apply(
-        Jwts.parserBuilder()
-            .setSigningKey(getSignKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody());
+        Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody());
   }
 
   public boolean validateToken(final String token) {

@@ -8,7 +8,7 @@ import lombok.Data;
 public class LoginResponse {
 
   @Schema(description = "Jwt type", example = "Bearer")
-  private static final String type = "Bearer"; // FIXME Esto no se muestra
+  private String type;
 
   @Schema(
       description = "User jwt",

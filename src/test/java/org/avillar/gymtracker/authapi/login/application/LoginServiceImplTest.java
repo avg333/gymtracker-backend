@@ -31,7 +31,9 @@ class LoginServiceImplTest {
   void loginOk() { // TODO Finish this
     final LoginRequestApplication request = easyRandom.nextObject(LoginRequestApplication.class);
     final String jwt = easyRandom.nextObject(String.class);
+    final String tokenType = easyRandom.nextObject(String.class);
 
     when(jwtTokenUtil.generateToken(any())).thenReturn(jwt);
+    when(jwtTokenUtil.getTokenType()).thenReturn(tokenType);
   }
 }

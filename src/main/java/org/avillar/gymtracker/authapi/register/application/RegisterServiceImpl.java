@@ -8,8 +8,8 @@ import org.avillar.gymtracker.authapi.login.application.LoginService;
 import org.avillar.gymtracker.authapi.register.application.mapper.RegisterServiceMapper;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterRequestApplication;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterResponseApplication;
+import org.avillar.gymtracker.common.errors.application.exceptions.RegisterExcepcion;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +29,11 @@ public class RegisterServiceImpl implements RegisterService {
       final RegisterRequestApplication registerRequestApplication) {
 
     if (isRegisterCodeInvalid(registerRequestApplication)) {
-      throw new AuthenticationException("Wrong auth code!") {}; // TODO Improve this
+      throw new RegisterExcepcion("Wrong auth code!");
     }
 
     if (userDao.findByUsername(registerRequestApplication.getUsername()) != null) {
-      throw new AuthenticationException("Username already exists") {}; // TODO Improve this
+      throw new RegisterExcepcion("Username already exists");
     }
 
     createUser(registerRequestApplication);

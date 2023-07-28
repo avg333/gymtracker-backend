@@ -8,7 +8,7 @@ import lombok.Data;
 public class RegisterResponse {
 
   @Schema(description = "Jwt type", example = "Bearer")
-  private static final String type = "Bearer";
+  private String type;
 
   @Schema(
       description = "User jwt",

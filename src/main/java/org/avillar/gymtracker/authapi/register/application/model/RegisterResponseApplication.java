@@ -6,9 +6,11 @@ import lombok.Data;
 @Data
 public class RegisterResponseApplication {
 
-  private static final String type = "Bearer";
+  private String type;
+
   private String token;
 
   private UUID id;
+
   private String username;
 }

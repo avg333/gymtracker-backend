@@ -14,6 +14,7 @@ import org.avillar.gymtracker.authapi.login.application.model.LoginResponseAppli
 import org.avillar.gymtracker.authapi.register.application.mapper.RegisterServiceMapper;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterRequestApplication;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterResponseApplication;
+import org.avillar.gymtracker.common.errors.application.exceptions.RegisterExcepcion;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,9 +61,9 @@ class RegisterServiceImplTest {
     ReflectionTestUtils.setField(
         registerService, "registerCode", easyRandom.nextObject(String.class));
 
-    final AuthenticationException exception =
+    final RegisterExcepcion exception =
         assertThrows(
-            AuthenticationException.class,
+            RegisterExcepcion.class,
             () -> registerService.execute(easyRandom.nextObject(RegisterRequestApplication.class)));
     assertEquals("Wrong auth code!", exception.getMessage());
   }
@@ -78,10 +78,9 @@ class RegisterServiceImplTest {
     when(userDao.findByUsername(registerRequestApplication.getUsername()))
         .thenReturn(easyRandom.nextObject(UserApp.class));
 
-    final AuthenticationException exception =
+    final RegisterExcepcion exception =
         assertThrows(
-            AuthenticationException.class,
-            () -> registerService.execute(registerRequestApplication));
+            RegisterExcepcion.class, () -> registerService.execute(registerRequestApplication));
     assertEquals("Username already exists", exception.getMessage());
   }
 }

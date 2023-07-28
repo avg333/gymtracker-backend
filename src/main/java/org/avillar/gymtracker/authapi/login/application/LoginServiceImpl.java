@@ -27,10 +27,10 @@ public class LoginServiceImpl implements LoginService {
                 loginRequestApplication.getUsername(), loginRequestApplication.getPassword()));
 
     final UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-    final String jwt = jwtTokenUtil.generateToken(userDetails);
 
     final LoginResponseApplication loginResponseApplication = loginServiceMapper.map(userDetails);
-    loginResponseApplication.setToken(jwt);
+    loginResponseApplication.setToken(jwtTokenUtil.generateToken(userDetails));
+    loginResponseApplication.setType(jwtTokenUtil.getTokenType());
     return loginResponseApplication;
   }
 }
