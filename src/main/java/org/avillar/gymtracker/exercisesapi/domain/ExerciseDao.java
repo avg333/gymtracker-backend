@@ -23,6 +23,20 @@ public interface ExerciseDao extends JpaRepository<Exercise, UUID> {
       """
             SELECT e
             FROM Exercise e
+            WHERE e.name = :name
+            AND ((e.owner = :owner AND e.accessType = :privateAT)
+            OR e.accessType = :publicAT)
+          """)
+  List<Exercise> getByNameAndOwner(
+      @Param("name") String name,
+      @Param("owner") UUID owner,
+      @Param("privateAT") final AccessTypeEnum privateAT,
+      @Param("publicAT") final AccessTypeEnum publicAT);
+
+  @Query(
+      """
+            SELECT e
+            FROM Exercise e
             LEFT JOIN FETCH e.loadType lt
             LEFT JOIN FETCH e.muscleSubGroups msubg
             JOIN FETCH e.muscleGroupExercises mge

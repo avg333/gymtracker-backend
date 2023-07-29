@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.RedisConnectionFailureException;
 
 @ExtendWith(MockitoExtension.class)
 class RestExceptionHandlerTest {
@@ -37,6 +38,16 @@ class RestExceptionHandlerTest {
             .handleIllegalAccessException(
                 new IllegalAccessException(
                     easyRandom.nextObject(Workout.class), AuthOperations.READ, UUID.randomUUID()))
+            .getMessage());
+  }
+
+  @Test
+  void testHandleRedisConnectionException() {
+    assertEquals(
+        "Redis connection error",
+        restExceptionHandler
+            .handleRedisConnectionException(
+                new RedisConnectionFailureException(easyRandom.nextObject(String.class)))
             .getMessage());
   }
 

@@ -25,7 +25,8 @@ public class AuthExercisesServiceImpl extends AuthServiceBase implements AuthExe
 
   private static void checkModifyAccess(
       Exercise exercise, AuthOperations authOperations, UUID userId) {
-    if (!exercise.getOwner().equals(userId)) {
+    if (!exercise.getOwner().equals(userId)
+        || exercise.getAccessType().equals(AccessTypeEnum.PUBLIC)) {
       throw new IllegalAccessException(exercise, authOperations, userId);
     }
   }

@@ -29,6 +29,8 @@ public class DeleteExerciseServiceImpl implements DeleteExerciseService {
 
     authExercisesService.checkAccess(exercise, AuthOperations.DELETE);
 
+    // TODO Check if it is used in some workout
+
     if (!exercise.getMuscleGroupExercises().isEmpty()) {
       muscleGroupExerciseDao.deleteAllById(
           exercise.getMuscleGroupExercises().stream().map(BaseEntity::getId).toList());

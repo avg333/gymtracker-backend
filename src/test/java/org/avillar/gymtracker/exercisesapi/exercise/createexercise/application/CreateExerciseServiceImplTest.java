@@ -17,13 +17,13 @@ class CreateExerciseServiceImplTest {
 
   private final EasyRandom easyRandom = new EasyRandom();
 
-  @InjectMocks CreateExerciseServiceImpl createExerciseService;
+  @InjectMocks private CreateExerciseServiceImpl createExerciseService;
 
   @Mock private ExerciseDao exerciseDao;
   @Mock private AuthExercisesService authExercisesService;
 
   @Spy
-  private CreateExerciseApplicationMapper createExerciseApplicationMapper =
+  private final CreateExerciseApplicationMapper createExerciseApplicationMapper =
       Mappers.getMapper(CreateExerciseApplicationMapper.class);
 
   @Test

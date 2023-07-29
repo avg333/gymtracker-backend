@@ -3,8 +3,8 @@ package org.avillar.gymtracker.common.errors.infrastructure;
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,12 +13,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Slf4j
 @RestControllerAdvice
-@Order( value = Ordered.LOWEST_PRECEDENCE )
+@Order()
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-  
+
   private static final String MSG_NOT_FOUND_ERROR = "Entity not found";
   private static final String MSG_NOT_PERMISSION_ERROR =
       "You do not have permissions to access the resource";
+  private static final String MSG_REDIS_CONNECTION_ERROR = "Redis connection error";
   private static final String MSG_INTERNAL_SERVER_ERROR = "Internal server error";
 
   @ExceptionHandler(EntityNotFoundException.class)
@@ -37,6 +38,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getEntityId(),
         ex.getCurrentUserId());
     return new ApiError(MSG_NOT_PERMISSION_ERROR, ex);
+  }
+
+  @ExceptionHandler(RedisConnectionFailureException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected ApiError handleRedisConnectionException(final RedisConnectionFailureException ex) {
+    log.error("Redis connection error:", ex);
+    return new ApiError(MSG_REDIS_CONNECTION_ERROR, ex);
   }
 
   @ExceptionHandler(Exception.class)

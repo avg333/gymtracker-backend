@@ -22,8 +22,9 @@ public class CreateExerciseRequestApplication {
 
   @Data
   public static class MuscleGroupExercises {
+    
     private UUID muscleGroupId;
 
-    private double weight;
+    private Double weight;
   }
 }

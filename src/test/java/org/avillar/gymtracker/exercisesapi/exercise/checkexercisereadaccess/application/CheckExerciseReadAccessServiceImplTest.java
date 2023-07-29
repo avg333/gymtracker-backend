@@ -44,21 +44,22 @@ class CheckExerciseReadAccessServiceImplTest {
   @Test
   void getNotPermission() {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
+    final UUID exerciseId = exercise.getId();
     final AuthOperations authOperation = AuthOperations.READ;
     final UUID userId = UUID.randomUUID();
     exercise.setAccessType(AccessTypeEnum.PRIVATE);
     exercise.setOwner(UUID.randomUUID());
 
-    when(exerciseDao.findById(exercise.getId())).thenReturn(Optional.of(exercise));
+    when(exerciseDao.findById(exerciseId)).thenReturn(Optional.of(exercise));
     doThrow(new IllegalAccessException(exercise, authOperation, userId))
         .when(authExercisesService)
         .checkAccess(exercise, authOperation);
 
     final IllegalAccessException exception =
         assertThrows(
-            IllegalAccessException.class, () -> checkExerciseReadAccess.execute(exercise.getId()));
+            IllegalAccessException.class, () -> checkExerciseReadAccess.execute(exerciseId));
     assertEquals(Exercise.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(exercise.getId(), exception.getEntityId());
+    assertEquals(exerciseId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(authOperation, exception.getAuthOperations());
   }

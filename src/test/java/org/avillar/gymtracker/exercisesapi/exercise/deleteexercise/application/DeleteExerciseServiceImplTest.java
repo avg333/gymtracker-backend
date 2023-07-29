@@ -94,20 +94,19 @@ class DeleteExerciseServiceImplTest {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
     exercise.setMuscleGroupExercises(
         easyRandom.objects(MuscleGroupExercise.class, 5).collect(Collectors.toSet()));
+    final UUID exerciseId = exercise.getId();
     final UUID userId = UUID.randomUUID();
     final AuthOperations deleteOperation = AuthOperations.DELETE;
 
-    when(exerciseDao.getExerciseByIdWithMuscleGroupEx(exercise.getId()))
-        .thenReturn(List.of(exercise));
+    when(exerciseDao.getExerciseByIdWithMuscleGroupEx(exerciseId)).thenReturn(List.of(exercise));
     doThrow(new IllegalAccessException(exercise, deleteOperation, userId))
         .when(authExercisesService)
         .checkAccess(exercise, deleteOperation);
 
     final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class, () -> deleteExerciseService.execute(exercise.getId()));
+        assertThrows(IllegalAccessException.class, () -> deleteExerciseService.execute(exerciseId));
     assertEquals(Exercise.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(exercise.getId(), exception.getEntityId());
+    assertEquals(exerciseId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(deleteOperation, exception.getAuthOperations());
     verify(muscleGroupExerciseDao, never()).deleteAllById(any());

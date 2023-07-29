@@ -30,7 +30,7 @@ class CreateExerciseControllerImplTest {
   @Mock private CreateExerciseService createExerciseService;
 
   @Spy
-  private CreteExerciseControllerMapper creteExerciseControllerMapper =
+  private final CreteExerciseControllerMapper creteExerciseControllerMapper =
       Mappers.getMapper(CreteExerciseControllerMapper.class);
 
   @Test
