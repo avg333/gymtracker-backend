@@ -12,7 +12,7 @@ public class GetExerciseResponseFacade {
   private boolean unilateral;
   private LoadType loadType;
   private List<MuscleSubGroup> muscleSubGroups;
-  private List<MuscleGroupExercise> muscleGroupExercises;
+  private List<MuscleGroup> muscleGroups;
 
   @Data
   public static class LoadType {
@@ -29,24 +29,14 @@ public class GetExerciseResponseFacade {
   }
 
   @Data
-  public static class MuscleGroupExercise {
+  public static class MuscleGroup {
+
     private UUID id;
+
+    private String name;
+
+    private String description;
+
     private Double weight;
-    private MuscleGroup muscleGroup;
-
-    @Data
-    public static class MuscleGroup {
-      private UUID id;
-      private String name;
-      private String description;
-      private List<MuscleSupGroup> muscleSupGroups;
-
-      @Data
-      public static class MuscleSupGroup {
-        private UUID id;
-        private String name;
-        private String description;
-      }
-    }
   }
 }

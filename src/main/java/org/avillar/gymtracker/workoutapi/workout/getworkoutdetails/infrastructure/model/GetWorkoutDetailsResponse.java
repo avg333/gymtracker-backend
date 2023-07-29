@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +47,7 @@ public class GetWorkoutDetailsResponse {
       private boolean unilateral;
       private LoadType loadType;
       private List<MuscleSubGroup> muscleSubGroups;
-      private List<MuscleGroupExercise> muscleGroupExercises;
+      private List<MuscleGroup> muscleGroups;
 
       @Data
       public static class LoadType {
@@ -65,28 +66,19 @@ public class GetWorkoutDetailsResponse {
       }
 
       @Data
-      public static class MuscleGroupExercise {
+      public static class MuscleGroup {
 
+        @Schema(description = "MuscleGroup id", example = "5819d9ab-5251-4916-9b5e-6cd36a01d560")
         private UUID id;
+
+        @Schema(description = "Exercise name", example = "bench press")
+        private String name;
+
+        @Schema(description = "Exercise description", example = "barbell flat press")
+        private String description;
+
+        @Schema(description = "MuscleGroup coefficient weight", example = "0.7")
         private Double weight;
-        private MuscleGroup muscleGroup;
-
-        @Data
-        public static class MuscleGroup {
-
-          private UUID id;
-          private String name;
-          private String description;
-          private List<MuscleSupGroup> muscleSupGroups;
-
-          @Data
-          public static class MuscleSupGroup {
-
-            private UUID id;
-            private String name;
-            private String description;
-          }
-        }
       }
     }
   }
