@@ -26,7 +26,7 @@ class GetExerciseByIdControllerImplTest {
   @Mock private GetExerciseByIdService getExerciseByIdService;
 
   @Spy
-  private GetExerciseByIdControllerMapper getExerciseByIdControllerMapper =
+  private final GetExerciseByIdControllerMapper getExerciseByIdControllerMapper =
       Mappers.getMapper(GetExerciseByIdControllerMapper.class);
 
   @Test

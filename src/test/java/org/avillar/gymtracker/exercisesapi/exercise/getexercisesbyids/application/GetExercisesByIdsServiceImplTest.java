@@ -32,6 +32,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetExercisesByIdsServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetExercisesByIdsServiceImpl getExercisesByIdsService;
@@ -40,12 +42,12 @@ class GetExercisesByIdsServiceImplTest {
   @Mock private AuthExercisesService authExercisesService;
 
   @Spy
-  private GetExercisesByIdsServiceMapper getExercisesByIdsServiceMapper =
+  private final GetExercisesByIdsServiceMapper getExercisesByIdsServiceMapper =
       Mappers.getMapper(GetExercisesByIdsServiceMapper.class);
 
   @Test
   void getOk() {
-    final List<Exercise> expected = easyRandom.objects(Exercise.class, 5).toList();
+    final List<Exercise> expected = easyRandom.objects(Exercise.class, LIST_SIZE).toList();
     final Set<UUID> exercisesIds =
         expected.stream().map(BaseEntity::getId).collect(Collectors.toSet());
     final UUID userId = UUID.randomUUID();
@@ -64,7 +66,7 @@ class GetExercisesByIdsServiceImplTest {
 
   @Test
   void getNotPermission() {
-    final List<Exercise> exercises = easyRandom.objects(Exercise.class, 5).toList();
+    final List<Exercise> exercises = easyRandom.objects(Exercise.class, LIST_SIZE).toList();
     final Set<UUID> exercisesIds =
         exercises.stream().map(BaseEntity::getId).collect(Collectors.toSet());
     final AuthOperations readOperation = AuthOperations.READ;

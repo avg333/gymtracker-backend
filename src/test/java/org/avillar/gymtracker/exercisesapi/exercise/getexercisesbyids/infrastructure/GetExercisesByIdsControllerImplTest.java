@@ -23,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetExercisesByIdsControllerImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetExercisesByIdsControllerImpl getExercisesByIdsController;
@@ -30,13 +32,13 @@ class GetExercisesByIdsControllerImplTest {
   @Mock private GetExercisesByIdsService getExercisesByIdsService;
 
   @Spy
-  private GetExercisesByIdsControllerMapper getExercisesByIdsControllerMapper =
+  private final GetExercisesByIdsControllerMapper getExercisesByIdsControllerMapper =
       Mappers.getMapper(GetExercisesByIdsControllerMapper.class);
 
   @Test
   void get() {
     final List<GetExercisesByIdsResponseApplication> expected =
-        easyRandom.objects(GetExercisesByIdsResponseApplication.class, 5).toList();
+        easyRandom.objects(GetExercisesByIdsResponseApplication.class, LIST_SIZE).toList();
     final Set<UUID> request =
         expected.stream()
             .map(GetExercisesByIdsResponseApplication::getId)

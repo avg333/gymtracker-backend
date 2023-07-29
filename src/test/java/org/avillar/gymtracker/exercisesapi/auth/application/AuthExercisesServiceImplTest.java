@@ -49,7 +49,22 @@ class AuthExercisesServiceImplTest {
     for (AccessTypeEnum at : AccessTypeEnum.values()) {
       exercise.setAccessType(at);
       for (AuthOperations ao : AuthOperations.values()) {
-        assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, ao));
+        if (at.equals(AccessTypeEnum.PRIVATE)) {
+          assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, ao));
+        } else {
+          if (ao.equals(AuthOperations.READ)) {
+            assertDoesNotThrow(() -> authExercisesService.checkAccess(exercise, ao));
+          } else {
+            final IllegalAccessException ex =
+                assertThrows(
+                    IllegalAccessException.class,
+                    () -> authExercisesService.checkAccess(exercise, ao));
+            assertEquals(exercise.getId(), ex.getEntityId());
+            assertEquals(getUserId(), ex.getCurrentUserId());
+            assertEquals(Exercise.class.getSimpleName(), ex.getEntityClassName());
+            assertEquals(ao, ex.getAuthOperations());
+          }
+        }
       }
     }
   }

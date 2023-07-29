@@ -19,7 +19,6 @@ import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.application.mapper.GetExerciseByIdServiceMapper;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.application.model.GetExerciseByIdResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +39,7 @@ class GetExerciseByIdServiceImplTest {
   @Mock private AuthExercisesService authExercisesService;
 
   @Spy
-  private GetExerciseByIdServiceMapper getExerciseByIdServiceMapper =
+  private final GetExerciseByIdServiceMapper getExerciseByIdServiceMapper =
       Mappers.getMapper(GetExerciseByIdServiceMapper.class);
 
   @Test
@@ -51,8 +50,9 @@ class GetExerciseByIdServiceImplTest {
     when(exerciseDao.getFullExerciseByIds(Set.of(exerciseId))).thenReturn(List.of(expected));
     doNothing().when(authExercisesService).checkAccess(expected, AuthOperations.READ);
 
-    final GetExerciseByIdResponseApplication result = getExerciseByIdService.execute(exerciseId);
-    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(getExerciseByIdService.execute(exerciseId))
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
   }
 
   @Test

@@ -28,6 +28,8 @@ import org.springframework.util.CollectionUtils;
 @ExtendWith(MockitoExtension.class)
 class GetExercisesByFilterServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetExercisesByFilterServiceImpl getExercisesByFilterService;
@@ -36,14 +38,14 @@ class GetExercisesByFilterServiceImplTest {
   @Mock private AuthExercisesService authExercisesService;
 
   @Spy
-  private GetExercisesByFilterServiceMapper getExercisesByFilterServiceMapper =
+  private final GetExercisesByFilterServiceMapper getExercisesByFilterServiceMapper =
       Mappers.getMapper(GetExercisesByFilterServiceMapper.class);
 
   @Test
   void getOk() {
     final GetExercisesByFilterRequestApplication request =
         easyRandom.nextObject(GetExercisesByFilterRequestApplication.class);
-    final List<Exercise> expected = easyRandom.objects(Exercise.class, 5).toList();
+    final List<Exercise> expected = easyRandom.objects(Exercise.class, LIST_SIZE).toList();
     final UUID userId = UUID.randomUUID();
     expected.stream()
         .filter(exercise -> exercise.getAccessType() == AccessTypeEnum.PRIVATE)

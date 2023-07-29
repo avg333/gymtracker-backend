@@ -30,6 +30,7 @@ public class GetExercisesByFilterServiceImpl implements GetExercisesByFilterServ
 
     final UUID loggedUserId = authExercisesService.getLoggedUserId();
 
+    // TODO Paginate and add order
     final List<Exercise> exercises =
         exerciseDao.getAllFullExercises(
             loggedUserId,

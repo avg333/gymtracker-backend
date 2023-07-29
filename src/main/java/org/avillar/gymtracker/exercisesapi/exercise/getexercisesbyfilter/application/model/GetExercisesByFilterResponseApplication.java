@@ -7,7 +7,10 @@ import lombok.Data;
 public class GetExercisesByFilterResponseApplication {
 
   private UUID id;
+  
   private String name;
+  
   private String description;
+  
   private boolean unilateral;
 }
