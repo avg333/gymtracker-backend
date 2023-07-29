@@ -13,7 +13,7 @@
   <groupId>org.avillar</groupId>
   <artifactId>gymtracker-backend</artifactId>
   <packaging>jar</packaging>
-  <version>0.9.3-SNAPSHOT</version>
+  <version>0.9.4-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
 
   <properties>

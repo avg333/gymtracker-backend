@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
@@ -26,12 +25,14 @@ import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.Upd
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-@Slf4j
+@Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class UpdateSetDataServiceImplTest {
 
@@ -54,16 +55,13 @@ class UpdateSetDataServiceImplTest {
     when(setDao.getSetFullById(set.getId())).thenReturn(List.of(set));
     doNothing().when(authWorkoutsService).checkAccess(set, AuthOperations.UPDATE);
     when(setDao.save(any(Set.class))).thenAnswer(i -> i.getArguments()[0]);
-
-    final Date timestampBeforeCall = new Date();
+    
     final UpdateSetDataResponseApplication result =
         updateSetDataService.execute(set.getId(), expected);
     assertThat(result).usingRecursiveComparison().isEqualTo(set);
     //    assertTrue(
     //        result.getCompletedAt().equals(new Date())
     //            || result.getCompletedAt().after(timestampBeforeCall)); // FIXME
-    log.info("Before: {}", timestampBeforeCall.getTime());
-    log.info("Set: {}", result.getCompletedAt().getTime());
 
     assertTrue(
         result.getCompletedAt().equals(new Date()) || result.getCompletedAt().before(new Date()));
