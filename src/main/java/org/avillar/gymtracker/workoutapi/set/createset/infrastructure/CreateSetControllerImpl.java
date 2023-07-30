@@ -8,7 +8,6 @@ import org.avillar.gymtracker.workoutapi.set.createset.application.CreateSetServ
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.CreateSetControllerMapper;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequest;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,11 +18,9 @@ public class CreateSetControllerImpl implements CreateSetController {
   private final CreateSetControllerMapper createSetControllerMapper;
 
   @Override
-  public ResponseEntity<CreateSetResponse> execute(
-      final UUID setGroupId, final CreateSetRequest createSetRequest)
+  public CreateSetResponse execute(final UUID setGroupId, final CreateSetRequest createSetRequest)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        createSetControllerMapper.map(
-            createSetService.execute(setGroupId, createSetControllerMapper.map(createSetRequest))));
+    return createSetControllerMapper.map(
+        createSetService.execute(setGroupId, createSetControllerMapper.map(createSetRequest)));
   }
 }

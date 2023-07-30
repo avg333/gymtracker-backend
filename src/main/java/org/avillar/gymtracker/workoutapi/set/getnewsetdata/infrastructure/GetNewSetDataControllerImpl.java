@@ -7,7 +7,6 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.GetNewSetDataService;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.mapper.GetNewSetDataControllerMapper;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.model.GetNewSetDataResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,9 +17,8 @@ public class GetNewSetDataControllerImpl implements GetNewSetDataController {
   private final GetNewSetDataControllerMapper getNewSetDataControllerMapper;
 
   @Override
-  public ResponseEntity<GetNewSetDataResponse> execute(final UUID setGroupId)
+  public GetNewSetDataResponse execute(final UUID setGroupId)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        getNewSetDataControllerMapper.map(getNewSetDataService.execute(setGroupId)));
+    return getNewSetDataControllerMapper.map(getNewSetDataService.execute(setGroupId));
   }
 }

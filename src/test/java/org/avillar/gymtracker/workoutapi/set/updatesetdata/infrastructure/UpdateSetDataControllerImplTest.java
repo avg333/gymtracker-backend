@@ -1,25 +1,26 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.UpdateSetDataService;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataRequestApplication;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataResponseApplication;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.mapper.UpdateSetDataControllerMapperImpl;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.mapper.UpdateSetDataControllerMapper;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -30,7 +31,10 @@ class UpdateSetDataControllerImplTest {
   @InjectMocks private UpdateSetDataControllerImpl updateSetDataControllerImpl;
 
   @Mock private UpdateSetDataService updateSetDataService;
-  @Spy private UpdateSetDataControllerMapperImpl updateSetDataControllerMapper;
+
+  @Spy
+  private final UpdateSetDataControllerMapper updateSetDataControllerMapper =
+      Mappers.getMapper(UpdateSetDataControllerMapper.class);
 
   @Test
   void updateSetData() {
@@ -44,14 +48,17 @@ class UpdateSetDataControllerImplTest {
     updateSetDataRequest.setReps(expected.getReps());
     updateSetDataRequest.setCompleted(expected.getCompletedAt() != null);
 
-    when(updateSetDataService.execute(
-            setId, updateSetDataControllerMapper.map(updateSetDataRequest)))
+    final ArgumentCaptor<UpdateSetDataRequestApplication> updateSetDataRequestApplicationCaptor =
+        ArgumentCaptor.forClass(UpdateSetDataRequestApplication.class);
+
+    when(updateSetDataService.execute(eq(setId), updateSetDataRequestApplicationCaptor.capture()))
         .thenReturn(expected);
 
-    final ResponseEntity<UpdateSetDataResponse> result =
-        updateSetDataControllerImpl.execute(setId, updateSetDataRequest);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(updateSetDataControllerImpl.execute(setId, updateSetDataRequest))
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
+    assertThat(updateSetDataRequestApplicationCaptor.getValue())
+        .usingRecursiveComparison()
+        .isEqualTo(updateSetDataRequest);
   }
 }

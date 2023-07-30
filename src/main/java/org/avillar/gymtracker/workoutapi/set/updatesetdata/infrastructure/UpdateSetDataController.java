@@ -11,11 +11,12 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Sets", description = "API to manage sets")
 @RequestMapping(path = "${workoutsApiPrefix}/")
@@ -36,7 +37,8 @@ public interface UpdateSetDataController {
         @ApiResponse(responseCode = "404", description = "Set not found", content = @Content)
       })
   @PatchMapping("sets/{setId}")
-  ResponseEntity<UpdateSetDataResponse> execute(
+  @ResponseStatus(HttpStatus.OK)
+  UpdateSetDataResponse execute(
       @PathVariable UUID setId, @RequestBody UpdateSetDataRequest updateSetDataRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }

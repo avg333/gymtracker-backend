@@ -5,20 +5,18 @@ import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.set.createset.application.CreateSetService;
 import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetResponseApplication;
-import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.CreateSetControllerMapperImpl;
+import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.CreateSetControllerMapper;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequest;
-import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +27,10 @@ class CreateSetControllerImplTest {
   @InjectMocks private CreateSetControllerImpl postSetControllerImpl;
 
   @Mock private CreateSetService createSetService;
-  @Spy private CreateSetControllerMapperImpl createSetControllerMapper;
+
+  @Spy
+  private final CreateSetControllerMapper createSetControllerMapper =
+      Mappers.getMapper(CreateSetControllerMapper.class);
 
   @Test
   void createOk() {
@@ -46,11 +47,8 @@ class CreateSetControllerImplTest {
             expected.getSetGroup().getId(), createSetControllerMapper.map(createSetRequest)))
         .thenReturn(expected);
 
-    final ResponseEntity<CreateSetResponse> result =
-        postSetControllerImpl.execute(expected.getSetGroup().getId(), createSetRequest);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody().getId()).isNotNull();
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(postSetControllerImpl.execute(expected.getSetGroup().getId(), createSetRequest))
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
   }
 }

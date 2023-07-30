@@ -6,19 +6,17 @@ import static org.mockito.Mockito.when;
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.GetNewSetDataService;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.model.GetNewSetDataResponseApplication;
-import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.mapper.GetNewSetDataControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.model.GetNewSetDataResponse;
+import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.mapper.GetNewSetDataControllerMapper;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +27,10 @@ class GetNewSetDataControllerImplTest {
   @InjectMocks private GetNewSetDataControllerImpl getNewSetDataControllerImpl;
 
   @Mock private GetNewSetDataService getNewSetDataService;
-  @Spy private GetNewSetDataControllerMapperImpl getNewSetDataControllerMapper;
+
+  @Spy
+  private final GetNewSetDataControllerMapper getNewSetDataControllerMapper =
+      Mappers.getMapper(GetNewSetDataControllerMapper.class);
 
   @Test
   void getOk() {
@@ -39,9 +40,8 @@ class GetNewSetDataControllerImplTest {
 
     when(getNewSetDataService.execute(setId)).thenReturn(expected);
 
-    final ResponseEntity<GetNewSetDataResponse> result = getNewSetDataControllerImpl.execute(setId);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(getNewSetDataControllerImpl.execute(setId))
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
   }
 }

@@ -8,7 +8,6 @@ import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.UpdateSet
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.mapper.UpdateSetDataControllerMapper;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,12 +18,11 @@ public class UpdateSetDataControllerImpl implements UpdateSetDataController {
   private final UpdateSetDataControllerMapper updateSetDataControllerMapper;
 
   @Override
-  public ResponseEntity<UpdateSetDataResponse> execute(
+  public UpdateSetDataResponse execute(
       final UUID setId, final UpdateSetDataRequest updateSetDataRequest)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        updateSetDataControllerMapper.map(
-            updateSetDataService.execute(
-                setId, updateSetDataControllerMapper.map(updateSetDataRequest))));
+    return updateSetDataControllerMapper.map(
+        updateSetDataService.execute(
+            setId, updateSetDataControllerMapper.map(updateSetDataRequest)));
   }
 }
