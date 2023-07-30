@@ -37,6 +37,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DeleteExerciseServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private DeleteExerciseServiceImpl deleteExerciseService;
@@ -50,7 +52,7 @@ class DeleteExerciseServiceImplTest {
   void deleteOk() {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
     exercise.setMuscleGroupExercises(
-        easyRandom.objects(MuscleGroupExercise.class, 5).collect(Collectors.toSet()));
+        easyRandom.objects(MuscleGroupExercise.class, LIST_SIZE).collect(Collectors.toSet()));
 
     when(exerciseDao.getExerciseByIdWithMuscleGroupEx(exercise.getId()))
         .thenReturn(List.of(exercise));
@@ -105,7 +107,7 @@ class DeleteExerciseServiceImplTest {
   void deleteNotPermission() {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
     exercise.setMuscleGroupExercises(
-        easyRandom.objects(MuscleGroupExercise.class, 5).collect(Collectors.toSet()));
+        easyRandom.objects(MuscleGroupExercise.class, LIST_SIZE).collect(Collectors.toSet()));
     final UUID exerciseId = exercise.getId();
     final UUID userId = UUID.randomUUID();
     final AuthOperations deleteOperation = AuthOperations.DELETE;
@@ -129,7 +131,7 @@ class DeleteExerciseServiceImplTest {
   void deleteKoUsedPermission() {
     final Exercise exercise = easyRandom.nextObject(Exercise.class);
     exercise.setMuscleGroupExercises(
-        easyRandom.objects(MuscleGroupExercise.class, 5).collect(Collectors.toSet()));
+        easyRandom.objects(MuscleGroupExercise.class, LIST_SIZE).collect(Collectors.toSet()));
     final UUID exerciseId = exercise.getId();
 
     when(exerciseDao.getExerciseByIdWithMuscleGroupEx(exerciseId)).thenReturn(List.of(exercise));

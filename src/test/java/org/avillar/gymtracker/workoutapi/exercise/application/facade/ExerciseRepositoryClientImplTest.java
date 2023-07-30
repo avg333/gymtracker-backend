@@ -19,13 +19,14 @@ import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.applicatio
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication;
 import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException;
 import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException.AccessError;
-import org.avillar.gymtracker.workoutapi.exercise.application.mapper.GetExerciseFacadeMapperImpl;
+import org.avillar.gymtracker.workoutapi.exercise.application.mapper.GetExerciseFacadeMapper;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -41,7 +42,10 @@ class ExerciseRepositoryClientImplTest {
 
   @Mock private CheckExerciseReadAccessService checkExerciseReadAccessService;
   @Mock private GetExercisesByIdsService getExercisesByIdsService;
-  @Spy private GetExerciseFacadeMapperImpl getExerciseFacadeMapper;
+
+  @Spy
+  private final GetExerciseFacadeMapper getExerciseFacadeMapper =
+      Mappers.getMapper(GetExerciseFacadeMapper.class);
 
   @Test
   void checkExerciseAccessByIdOk() {

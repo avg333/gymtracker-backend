@@ -22,7 +22,7 @@ import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.set.createset.application.mapper.CreateSetServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.set.createset.application.mapper.CreateSetServiceMapper;
 import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetRequestApplication;
 import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetResponseApplication;
 import org.jeasy.random.EasyRandom;
@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -47,7 +48,10 @@ class CreateSetServiceImplTest {
   @Mock private SetDao setDao;
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private CreateSetServiceMapperImpl createSetServiceMapper;
+
+  @Spy
+  private final CreateSetServiceMapper createSetServiceMapper =
+      Mappers.getMapper(CreateSetServiceMapper.class);
 
   @Test
   void createOk() {
@@ -83,16 +87,15 @@ class CreateSetServiceImplTest {
 
   @Test
   void setGroupNotFound() {
+    final CreateSetRequestApplication request =
+        easyRandom.nextObject(CreateSetRequestApplication.class);
     final UUID setGroupId = UUID.randomUUID();
 
     when(setGroupDao.getSetGroupFullByIds(List.of(setGroupId))).thenReturn(Collections.emptyList());
 
     final EntityNotFoundException exception =
         assertThrows(
-            EntityNotFoundException.class,
-            () ->
-                createSetService.execute(
-                    setGroupId, easyRandom.nextObject(CreateSetRequestApplication.class)));
+            EntityNotFoundException.class, () -> createSetService.execute(setGroupId, request));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
     verify(setDao, never()).save(any(Set.class));
@@ -100,21 +103,21 @@ class CreateSetServiceImplTest {
 
   @Test
   void createNotPermission() {
+    final CreateSetRequestApplication request =
+        easyRandom.nextObject(CreateSetRequestApplication.class);
     final UUID userId = UUID.randomUUID();
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
+    final UUID setGroupId = setGroup.getId();
     final AuthOperations createOperation = AuthOperations.CREATE;
 
-    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
+    when(setGroupDao.getSetGroupFullByIds(List.of(setGroupId))).thenReturn(List.of(setGroup));
     doThrow(new IllegalAccessException(new Set(), createOperation, userId))
         .when(authWorkoutsService)
         .checkAccess(Mockito.any(Set.class), eq(createOperation)); // FIXME Avoid this any
 
     final IllegalAccessException exception =
         assertThrows(
-            IllegalAccessException.class,
-            () ->
-                createSetService.execute(
-                    setGroup.getId(), easyRandom.nextObject(CreateSetRequestApplication.class)));
+            IllegalAccessException.class, () -> createSetService.execute(setGroupId, request));
     assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
