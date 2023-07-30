@@ -12,25 +12,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthExercisesServiceImpl extends AuthServiceBase implements AuthExercisesService {
 
-  private static void checkReadAccess(
-      Exercise exercise, AuthOperations authOperations, UUID userId) {
-    if (exercise.getAccessType() == AccessTypeEnum.PUBLIC) {
-      return;
-    }
-
-    if (!exercise.getOwner().equals(userId)) {
-      throw new IllegalAccessException(exercise, authOperations, userId);
-    }
-  }
-
-  private static void checkModifyAccess(
-      Exercise exercise, AuthOperations authOperations, UUID userId) {
-    if (!exercise.getOwner().equals(userId)
-        || exercise.getAccessType().equals(AccessTypeEnum.PUBLIC)) {
-      throw new IllegalAccessException(exercise, authOperations, userId);
-    }
-  }
-
   @Override
   public void checkAccess(final Exercise exercise, final AuthOperations authOperations)
       throws IllegalAccessException {
@@ -38,9 +19,22 @@ public class AuthExercisesServiceImpl extends AuthServiceBase implements AuthExe
 
     final UUID userId = getLoggedUserId();
     if (authOperations.equals(AuthOperations.READ)) {
-      checkReadAccess(exercise, authOperations, userId);
+      checkReadAccess(exercise, userId);
     } else {
       checkModifyAccess(exercise, authOperations, userId);
+    }
+  }
+
+  private void checkReadAccess(Exercise exercise, UUID userId) {
+    if (exercise.getAccessType() == AccessTypeEnum.PRIVATE && !exercise.getOwner().equals(userId)) {
+      throw new IllegalAccessException(exercise, AuthOperations.READ, userId);
+    }
+  }
+
+  private void checkModifyAccess(Exercise exercise, AuthOperations authOperations, UUID userId) {
+    if (!exercise.getOwner().equals(userId)
+        || exercise.getAccessType().equals(AccessTypeEnum.PUBLIC)) {
+      throw new IllegalAccessException(exercise, authOperations, userId);
     }
   }
 

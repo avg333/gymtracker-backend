@@ -11,6 +11,8 @@ import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupExerciseDao;
+import org.avillar.gymtracker.exercisesapi.exception.application.DeleteExerciseException;
+import org.avillar.gymtracker.exercisesapi.workout.application.facade.WorkoutRepositoryClient;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +22,7 @@ public class DeleteExerciseServiceImpl implements DeleteExerciseService {
   private final ExerciseDao exerciseDao;
   private final MuscleGroupExerciseDao muscleGroupExerciseDao;
   private final AuthExercisesService authExercisesService;
+  private final WorkoutRepositoryClient workoutRepositoryClient;
 
   @Transactional
   @Override
@@ -29,7 +32,9 @@ public class DeleteExerciseServiceImpl implements DeleteExerciseService {
 
     authExercisesService.checkAccess(exercise, AuthOperations.DELETE);
 
-    // TODO Check if it is used in some workout
+    if (workoutRepositoryClient.getExerciseUsesNumberForUser(exerciseId, exercise.getOwner()) > 0) {
+      throw new DeleteExerciseException("The exercise is used");
+    }
 
     if (!exercise.getMuscleGroupExercises().isEmpty()) {
       muscleGroupExerciseDao.deleteAllById(

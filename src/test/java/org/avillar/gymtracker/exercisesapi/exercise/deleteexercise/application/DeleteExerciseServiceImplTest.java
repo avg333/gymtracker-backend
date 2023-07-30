@@ -22,6 +22,8 @@ import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupExercise;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupExerciseDao;
+import org.avillar.gymtracker.exercisesapi.exception.application.DeleteExerciseException;
+import org.avillar.gymtracker.exercisesapi.workout.application.facade.WorkoutRepositoryClient;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +44,7 @@ class DeleteExerciseServiceImplTest {
   @Mock private ExerciseDao exerciseDao;
   @Mock private MuscleGroupExerciseDao muscleGroupExerciseDao;
   @Mock private AuthExercisesService authExercisesService;
+  @Mock private WorkoutRepositoryClient workoutRepositoryClient;
 
   @Test
   void deleteOk() {
@@ -52,6 +55,9 @@ class DeleteExerciseServiceImplTest {
     when(exerciseDao.getExerciseByIdWithMuscleGroupEx(exercise.getId()))
         .thenReturn(List.of(exercise));
     doNothing().when(authExercisesService).checkAccess(exercise, AuthOperations.DELETE);
+    when(workoutRepositoryClient.getExerciseUsesNumberForUser(
+            exercise.getId(), exercise.getOwner()))
+        .thenReturn(0);
 
     assertDoesNotThrow(() -> deleteExerciseService.execute(exercise.getId()));
     verify(muscleGroupExerciseDao)
@@ -70,6 +76,9 @@ class DeleteExerciseServiceImplTest {
     when(exerciseDao.getExerciseByIdWithMuscleGroupEx(exercise.getId()))
         .thenReturn(List.of(exercise));
     doNothing().when(authExercisesService).checkAccess(exercise, AuthOperations.DELETE);
+    when(workoutRepositoryClient.getExerciseUsesNumberForUser(
+            exercise.getId(), exercise.getOwner()))
+        .thenReturn(0);
 
     assertDoesNotThrow(() -> deleteExerciseService.execute(exercise.getId()));
     verify(muscleGroupExerciseDao, never()).deleteAllById(any());
@@ -112,6 +121,23 @@ class DeleteExerciseServiceImplTest {
     assertEquals(exerciseId, exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(deleteOperation, exception.getAuthOperations());
+    verify(muscleGroupExerciseDao, never()).deleteAllById(any());
+    verify(exerciseDao, never()).deleteById(any());
+  }
+
+  @Test
+  void deleteKoUsedPermission() {
+    final Exercise exercise = easyRandom.nextObject(Exercise.class);
+    exercise.setMuscleGroupExercises(
+        easyRandom.objects(MuscleGroupExercise.class, 5).collect(Collectors.toSet()));
+    final UUID exerciseId = exercise.getId();
+
+    when(exerciseDao.getExerciseByIdWithMuscleGroupEx(exerciseId)).thenReturn(List.of(exercise));
+    doNothing().when(authExercisesService).checkAccess(exercise, AuthOperations.DELETE);
+    when(workoutRepositoryClient.getExerciseUsesNumberForUser(exerciseId, exercise.getOwner()))
+        .thenReturn(1);
+
+    assertThrows(DeleteExerciseException.class, () -> deleteExerciseService.execute(exerciseId));
     verify(muscleGroupExerciseDao, never()).deleteAllById(any());
     verify(exerciseDao, never()).deleteById(any());
   }
