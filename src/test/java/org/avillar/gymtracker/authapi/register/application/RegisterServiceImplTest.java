@@ -9,7 +9,8 @@ import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.authapi.domain.UserApp;
 import org.avillar.gymtracker.authapi.domain.UserDao;
-import org.avillar.gymtracker.authapi.exception.application.RegisterException;
+import org.avillar.gymtracker.authapi.exception.application.UsernameAlreadyExistsException;
+import org.avillar.gymtracker.authapi.exception.application.WrongRegisterCodeException;
 import org.avillar.gymtracker.authapi.login.application.LoginService;
 import org.avillar.gymtracker.authapi.login.application.model.LoginRequestApplication;
 import org.avillar.gymtracker.authapi.login.application.model.LoginResponseApplication;
@@ -74,10 +75,12 @@ class RegisterServiceImplTest {
     ReflectionTestUtils.setField(
         registerService, "registerCode", easyRandom.nextObject(String.class));
 
-    final RegisterException exception =
+    assertEquals(
+        "Wrong auth code!",
         assertThrows(
-            RegisterException.class, () -> registerService.execute(registerRequestApplication));
-    assertEquals("Wrong auth code!", exception.getMessage());
+                WrongRegisterCodeException.class,
+                () -> registerService.execute(registerRequestApplication))
+            .getMessage());
   }
 
   @Test
@@ -90,9 +93,11 @@ class RegisterServiceImplTest {
     when(userDao.findByUsername(registerRequestApplication.getUsername()))
         .thenReturn(easyRandom.nextObject(UserApp.class));
 
-    final RegisterException exception =
+    assertEquals(
+        "Username already exists",
         assertThrows(
-            RegisterException.class, () -> registerService.execute(registerRequestApplication));
-    assertEquals("Username already exists", exception.getMessage());
+                UsernameAlreadyExistsException.class,
+                () -> registerService.execute(registerRequestApplication))
+            .getMessage());
   }
 }

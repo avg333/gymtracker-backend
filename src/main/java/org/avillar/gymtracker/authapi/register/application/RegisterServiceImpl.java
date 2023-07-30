@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.authapi.domain.UserApp;
 import org.avillar.gymtracker.authapi.domain.UserDao;
-import org.avillar.gymtracker.authapi.exception.application.RegisterException;
+import org.avillar.gymtracker.authapi.exception.application.UsernameAlreadyExistsException;
+import org.avillar.gymtracker.authapi.exception.application.WrongRegisterCodeException;
 import org.avillar.gymtracker.authapi.login.application.LoginService;
 import org.avillar.gymtracker.authapi.register.application.mapper.RegisterServiceMapper;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterRequestApplication;
@@ -29,11 +30,11 @@ public class RegisterServiceImpl implements RegisterService {
       final RegisterRequestApplication registerRequestApplication) {
 
     if (isRegisterCodeInvalid(registerRequestApplication)) {
-      throw new RegisterException("Wrong auth code!");
+      throw new WrongRegisterCodeException("Wrong auth code!");
     }
 
     if (userDao.findByUsername(registerRequestApplication.getUsername()) != null) {
-      throw new RegisterException("Username already exists");
+      throw new UsernameAlreadyExistsException("Username already exists");
     }
 
     createUser(registerRequestApplication);

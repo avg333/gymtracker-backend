@@ -2,7 +2,7 @@ package org.avillar.gymtracker.authapi.exception.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.avillar.gymtracker.authapi.exception.application.RegisterException;
+import org.avillar.gymtracker.authapi.exception.application.WrongRegisterCodeException;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ class AuthExceptionHandlerTest {
     assertEquals(
         "Error in the register process",
         restExceptionHandler
-            .handleRegisterException(new RegisterException(easyRandom.nextObject(String.class)))
+            .handleRegisterException(new WrongRegisterCodeException(easyRandom.nextObject(String.class)))
             .getMessage());
   }
 

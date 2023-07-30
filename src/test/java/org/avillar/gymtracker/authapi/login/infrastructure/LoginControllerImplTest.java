@@ -48,5 +48,6 @@ class LoginControllerImplTest {
     assertThat(loginRequestApplicationCaptor.getValue())
         .usingRecursiveComparison()
         .isEqualTo(request);
+    // TODO Fix types
   }
 }

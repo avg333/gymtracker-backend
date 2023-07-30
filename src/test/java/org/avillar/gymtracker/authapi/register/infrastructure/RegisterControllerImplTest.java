@@ -49,5 +49,6 @@ class RegisterControllerImplTest {
     assertThat(registerRequestApplicationCaptor.getValue())
         .usingRecursiveComparison()
         .isEqualTo(request);
+    // TODO Fix types
   }
 }
