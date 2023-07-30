@@ -17,10 +17,11 @@ import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -46,9 +47,10 @@ public class WorkoutsDataLoader implements ApplicationRunner {
   private String activeProfile;
 
   @PostMapping("/users/{userId}/create")
-  public ResponseEntity<Void> postWorkout(@PathVariable final UUID userId) {
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public Void postWorkout(@PathVariable final UUID userId) {
     saveHeavyData(createHeavyData(List.of(userId)));
-    return ResponseEntity.noContent().build();
+    return null;
   }
 
   public void run(ApplicationArguments args) {
