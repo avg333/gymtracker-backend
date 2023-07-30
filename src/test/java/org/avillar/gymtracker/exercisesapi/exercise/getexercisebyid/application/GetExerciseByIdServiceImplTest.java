@@ -53,7 +53,6 @@ class GetExerciseByIdServiceImplTest {
     when(exerciseDao.getFullExerciseByIds(Set.of(exerciseId))).thenReturn(List.of(expected));
     doNothing().when(authExercisesService).checkAccess(expected, AuthOperations.READ);
 
-    // FIXME
     assertThat(getExerciseByIdService.execute(exerciseId))
         .usingRecursiveComparison()
         .ignoringFields("muscleGroups")

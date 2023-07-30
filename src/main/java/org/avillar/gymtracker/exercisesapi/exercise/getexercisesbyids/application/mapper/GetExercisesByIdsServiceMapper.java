@@ -1,6 +1,5 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.mapper;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupExercise;
@@ -17,7 +16,7 @@ public interface GetExercisesByIdsServiceMapper {
 
   List<GetExercisesByIdsResponseApplication> map(List<Exercise> exercise);
 
-  @AfterMapping // TODO TEST THIS
+  @AfterMapping
   default void mapMuscleGroups(
       @MappingTarget
           final GetExercisesByIdsResponseApplication getExercisesByIdsResponseApplication,
@@ -28,18 +27,16 @@ public interface GetExercisesByIdsServiceMapper {
       return;
     }
 
-    final List<MuscleGroup> muscleGroups = new ArrayList<>();
+    getExercisesByIdsResponseApplication.setMuscleGroups(
+        exercise.getMuscleGroupExercises().stream().map(this::createMuscleGroup).toList());
+  }
 
-    for (final MuscleGroupExercise muscleGroupExercise : exercise.getMuscleGroupExercises()) {
-      final MuscleGroup muscleGroup = new MuscleGroup();
-      muscleGroup.setWeight(muscleGroupExercise.getWeight());
-      muscleGroup.setId(muscleGroupExercise.getMuscleGroup().getId());
-      muscleGroup.setName(muscleGroupExercise.getMuscleGroup().getName());
-      muscleGroup.setDescription(muscleGroupExercise.getMuscleGroup().getDescription());
-
-      muscleGroups.add(muscleGroup);
-    }
-
-    getExercisesByIdsResponseApplication.setMuscleGroups(muscleGroups);
+  private MuscleGroup createMuscleGroup(final MuscleGroupExercise muscleGroupExercise) {
+    final MuscleGroup muscleGroup = new MuscleGroup();
+    muscleGroup.setWeight(muscleGroupExercise.getWeight());
+    muscleGroup.setId(muscleGroupExercise.getMuscleGroup().getId());
+    muscleGroup.setName(muscleGroupExercise.getMuscleGroup().getName());
+    muscleGroup.setDescription(muscleGroupExercise.getMuscleGroup().getDescription());
+    return muscleGroup;
   }
 }

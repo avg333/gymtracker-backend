@@ -64,7 +64,6 @@ class GetExercisesByIdsServiceImplTest {
     final List<GetExercisesByIdsResponseApplication> result =
         getExercisesByIdsService.execute(exercisesIds);
     assertThat(result).hasSameSizeAs(expected);
-    // FIXME
     assertThat(result)
         .usingRecursiveComparison()
         .ignoringFields("muscleGroups")
