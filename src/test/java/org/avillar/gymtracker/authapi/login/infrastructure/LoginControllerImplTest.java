@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.authapi.login.application.LoginService;
+import org.avillar.gymtracker.authapi.login.application.model.LoginRequestApplication;
 import org.avillar.gymtracker.authapi.login.application.model.LoginResponseApplication;
 import org.avillar.gymtracker.authapi.login.infrastructure.mapper.LoginControllerMapper;
 import org.avillar.gymtracker.authapi.login.infrastructure.model.LoginRequest;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -37,8 +39,14 @@ class LoginControllerImplTest {
     final LoginRequest request = easyRandom.nextObject(LoginRequest.class);
     final LoginResponseApplication expected = easyRandom.nextObject(LoginResponseApplication.class);
 
-    when(loginService.execute(loginControllerMapper.map(request))).thenReturn(expected);
+    final ArgumentCaptor<LoginRequestApplication> loginRequestApplicationCaptor =
+        ArgumentCaptor.forClass(LoginRequestApplication.class);
+
+    when(loginService.execute(loginRequestApplicationCaptor.capture())).thenReturn(expected);
 
     assertThat(loginController.execute(request)).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(loginRequestApplicationCaptor.getValue())
+        .usingRecursiveComparison()
+        .isEqualTo(request);
   }
 }

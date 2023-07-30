@@ -1,9 +1,11 @@
 package org.avillar.gymtracker.workoutapi.set.createset.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.set.createset.application.CreateSetService;
+import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetRequestApplication;
 import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.CreateSetControllerMapper;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequest;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -43,12 +46,18 @@ class CreateSetControllerImplTest {
     createSetRequest.setDescription(expected.getDescription());
     createSetRequest.setCompleted(expected.getCompletedAt() != null);
 
+    final ArgumentCaptor<CreateSetRequestApplication> createSetRequestApplicationCaptor =
+        ArgumentCaptor.forClass(CreateSetRequestApplication.class);
+
     when(createSetService.execute(
-            expected.getSetGroup().getId(), createSetControllerMapper.map(createSetRequest)))
+            eq(expected.getSetGroup().getId()), createSetRequestApplicationCaptor.capture()))
         .thenReturn(expected);
 
     assertThat(postSetControllerImpl.execute(expected.getSetGroup().getId(), createSetRequest))
         .usingRecursiveComparison()
         .isEqualTo(expected);
+    assertThat(createSetRequestApplicationCaptor.getValue())
+        .usingRecursiveComparison()
+        .isEqualTo(createSetRequest);
   }
 }

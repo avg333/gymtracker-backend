@@ -36,6 +36,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ExerciseRepositoryClientImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private ExerciseRepositoryClientImpl exerciseRepositoryClient;
@@ -94,7 +96,7 @@ class ExerciseRepositoryClientImplTest {
   @Test
   void getExercisesByIdsOk() {
     final List<GetExercisesByIdsResponseApplication> expected =
-        easyRandom.objects(GetExercisesByIdsResponseApplication.class, 5).toList();
+        easyRandom.objects(GetExercisesByIdsResponseApplication.class, LIST_SIZE).toList();
     final Set<UUID> exercisesIds =
         expected.stream()
             .map(GetExercisesByIdsResponseApplication::getId)
@@ -111,7 +113,7 @@ class ExerciseRepositoryClientImplTest {
   @Test
   void getExercisesByIdsNotAccess() {
     final List<GetExercisesByIdsResponseApplication> exercises =
-        easyRandom.objects(GetExercisesByIdsResponseApplication.class, 5).toList();
+        easyRandom.objects(GetExercisesByIdsResponseApplication.class, LIST_SIZE).toList();
     final Set<UUID> exercisesIds =
         exercises.stream()
             .map(GetExercisesByIdsResponseApplication::getId)

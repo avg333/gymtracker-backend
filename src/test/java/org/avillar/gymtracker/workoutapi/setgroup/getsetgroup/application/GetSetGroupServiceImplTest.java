@@ -15,13 +15,14 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.mapper.GetSetGroupServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.mapper.GetSetGroupServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.model.GetSetGroupResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -37,7 +38,10 @@ class GetSetGroupServiceImplTest {
 
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private GetSetGroupServiceMapperImpl getSetGroupServiceMapper;
+
+  @Spy
+  private final GetSetGroupServiceMapper getSetGroupServiceMapper =
+      Mappers.getMapper(GetSetGroupServiceMapper.class);
 
   @Test
   void getOk() {

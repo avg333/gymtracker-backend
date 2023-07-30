@@ -22,13 +22,14 @@ import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.mapper.CopySetGroupsServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.mapper.CopySetGroupsServiceMapper;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.CopySetGroupsResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -38,6 +39,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CopySetGroupsServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private CopySetGroupsServiceImpl copySetGroupsService;
@@ -46,7 +49,10 @@ class CopySetGroupsServiceImplTest {
   @Mock private SetGroupDao setGroupDao;
   @Mock private SetDao setDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private CopySetGroupsServiceMapperImpl copySetGroupsServiceMapper;
+
+  @Spy
+  private final CopySetGroupsServiceMapper copySetGroupsServiceMapper =
+      Mappers.getMapper(CopySetGroupsServiceMapper.class);
 
   @Test
   void copyOk() {
@@ -69,12 +75,12 @@ class CopySetGroupsServiceImplTest {
 
   private Workout getWorkout() {
     final Workout workout = easyRandom.nextObject(Workout.class);
-    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, 5).toList();
+    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, LIST_SIZE).toList();
     for (int i = 0; i < setGroups.size(); i++) {
       final SetGroup setGroup = setGroups.get(i);
       setGroup.setListOrder(i);
       setGroup.setWorkout(workout);
-      final List<Set> sets = easyRandom.objects(Set.class, 5).toList();
+      final List<Set> sets = easyRandom.objects(Set.class, LIST_SIZE).toList();
       for (int j = 0; j < sets.size(); j++) {
         final Set set = sets.get(j);
         set.setListOrder(j);

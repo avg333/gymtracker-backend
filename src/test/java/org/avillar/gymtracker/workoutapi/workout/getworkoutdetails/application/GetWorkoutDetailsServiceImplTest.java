@@ -24,13 +24,14 @@ import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundE
 import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
 import org.avillar.gymtracker.workoutapi.exercise.application.model.GetExerciseResponseFacade;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.mapper.GetWorkoutDetailsServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.mapper.GetWorkoutDetailsServiceMapper;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.model.GetWorkoutDetailsResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -40,6 +41,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutDetailsServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetWorkoutDetailsServiceImpl getWorkoutDetailsService;
@@ -47,7 +50,10 @@ class GetWorkoutDetailsServiceImplTest {
   @Mock private WorkoutDao workoutDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Mock private ExerciseRepositoryClient exerciseRepositoryClient;
-  @Spy private GetWorkoutDetailsServiceMapperImpl getWorkoutDetailsServiceMapper;
+
+  @Spy
+  private final GetWorkoutDetailsServiceMapper getWorkoutDetailsServiceMapper =
+      Mappers.getMapper(GetWorkoutDetailsServiceMapper.class);
 
   @Test
   void getOk() {
@@ -103,12 +109,12 @@ class GetWorkoutDetailsServiceImplTest {
 
   private Workout getWorkout() {
     final Workout workout = easyRandom.nextObject(Workout.class);
-    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, 5).toList();
+    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, LIST_SIZE).toList();
     for (int i = 0; i < setGroups.size(); i++) {
       final SetGroup setGroup = setGroups.get(i);
       setGroup.setListOrder(i);
       setGroup.setWorkout(workout);
-      final List<Set> sets = easyRandom.objects(Set.class, 5).toList();
+      final List<Set> sets = easyRandom.objects(Set.class, LIST_SIZE).toList();
       for (int j = 0; j < sets.size(); j++) {
         final Set set = sets.get(j);
         set.setListOrder(j);

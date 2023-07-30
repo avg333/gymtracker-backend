@@ -20,12 +20,13 @@ import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.mapper.GetNewSetDataServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.mapper.GetNewSetDataServiceMapper;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -35,6 +36,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetNewSetDataServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetNewSetDataServiceImpl getNewSetDataService;
@@ -42,12 +45,15 @@ class GetNewSetDataServiceImplTest {
   @Mock private SetDao setDao;
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private GetNewSetDataServiceMapperImpl getNewSetDataServiceMapper;
+
+  @Spy
+  private final GetNewSetDataServiceMapper getNewSetDataServiceMapper =
+      Mappers.getMapper(GetNewSetDataServiceMapper.class);
 
   @Test
   void getOkResultSetGroup() {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    setGroup.setSets(easyRandom.objects(Set.class, 5).collect(Collectors.toSet()));
+    setGroup.setSets(easyRandom.objects(Set.class, LIST_SIZE).collect(Collectors.toSet()));
 
     when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
     doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);

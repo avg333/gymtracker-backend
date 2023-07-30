@@ -17,7 +17,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkoutDateException;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.application.mapper.CreateWorkoutServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.workout.createworkout.application.mapper.CreateWorkoutServiceMapper;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutRequestApplication;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutResponseApplication;
 import org.jeasy.random.EasyRandom;
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -40,7 +41,10 @@ class CreateWorkoutServiceImplTest {
 
   @Mock private WorkoutDao workoutDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private CreateWorkoutServiceMapperImpl createWorkoutServiceMapper;
+
+  @Spy
+  private final CreateWorkoutServiceMapper createWorkoutServiceMapper =
+      Mappers.getMapper(CreateWorkoutServiceMapper.class);
 
   @Test
   void createOk() {

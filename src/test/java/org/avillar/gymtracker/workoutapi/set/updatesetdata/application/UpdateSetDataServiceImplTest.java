@@ -19,7 +19,7 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.mapper.UpdateSetDataServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.mapper.UpdateSetDataServiceMapper;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataRequestApplication;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataResponseApplication;
 import org.jeasy.random.EasyRandom;
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -42,7 +43,10 @@ class UpdateSetDataServiceImplTest {
 
   @Mock private SetDao setDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private UpdateSetDataServiceMapperImpl updateSetDataServiceMapper;
+
+  @Spy
+  private final UpdateSetDataServiceMapper updateSetDataServiceMapper =
+      Mappers.getMapper(UpdateSetDataServiceMapper.class);
 
   @Test
   void updateOk() {

@@ -32,6 +32,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DeleteSetServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private DeleteSetServiceImpl deleteSetService;
@@ -73,7 +75,7 @@ class DeleteSetServiceImplTest {
 
   private List<Set> getSets() {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final List<Set> sets = easyRandom.objects(Set.class, 5).toList();
+    final List<Set> sets = easyRandom.objects(Set.class, LIST_SIZE).toList();
     for (int i = 0; i < sets.size(); i++) {
       final Set set = sets.get(i);
       set.setListOrder(i);

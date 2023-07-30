@@ -37,6 +37,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutsDateAndIdServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetWorkoutsDateAndIdServiceImpl getWorkoutIdAndDateService;
@@ -48,7 +50,7 @@ class GetWorkoutsDateAndIdServiceImplTest {
   void getAllUserWorkoutDates() {
     final UUID userId = UUID.randomUUID();
     final List<WorkoutDateAndId> expected = new ArrayList<>();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < LIST_SIZE; i++) {
       expected.add(new Results());
     }
 
@@ -72,7 +74,7 @@ class GetWorkoutsDateAndIdServiceImplTest {
     final UUID userId = UUID.randomUUID();
     final UUID exerciseId = UUID.randomUUID();
     final List<WorkoutDateAndId> expected = new ArrayList<>();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < LIST_SIZE; i++) {
       expected.add(new Results());
     }
 

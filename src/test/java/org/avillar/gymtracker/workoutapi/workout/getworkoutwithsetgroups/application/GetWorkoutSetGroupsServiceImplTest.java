@@ -17,13 +17,14 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
 import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.mapper.GetWorkoutSetGroupsServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.mapper.GetWorkoutSetGroupsServiceMapper;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.model.GetWorkoutSetGroupsResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -33,18 +34,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutSetGroupsServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetWorkoutSetGroupsServiceImpl getWorkoutSetGroupsService;
 
   @Mock private WorkoutDao workoutDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private GetWorkoutSetGroupsServiceMapperImpl getWorkoutSetGroupsServiceMapper;
+
+  @Spy
+  private final GetWorkoutSetGroupsServiceMapper getWorkoutSetGroupsServiceMapper =
+      Mappers.getMapper(GetWorkoutSetGroupsServiceMapper.class);
 
   @Test
   void getOk() {
     final Workout workout = easyRandom.nextObject(Workout.class);
-    workout.setSetGroups(easyRandom.objects(SetGroup.class, 5).collect(Collectors.toSet()));
+    workout.setSetGroups(easyRandom.objects(SetGroup.class, LIST_SIZE).collect(Collectors.toSet()));
 
     when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
     doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.READ);

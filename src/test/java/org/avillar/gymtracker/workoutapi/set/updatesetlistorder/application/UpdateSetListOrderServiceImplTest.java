@@ -22,13 +22,14 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetDao;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.mapper.UpdateSetListOrderServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.mapper.UpdateSetListOrderServiceMapper;
 import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.model.UpdateSetListOrderResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -38,6 +39,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateSetListOrderServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private UpdateSetListOrderServiceImpl updateSetListOrderService;
@@ -45,7 +48,10 @@ class UpdateSetListOrderServiceImplTest {
   @Mock private SetDao setDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Spy private EntitySorter entitySorter;
-  @Spy private UpdateSetListOrderServiceMapperImpl updateSetListOrderServiceMapper;
+
+  @Spy
+  private final UpdateSetListOrderServiceMapper updateSetListOrderServiceMapper =
+      Mappers.getMapper(UpdateSetListOrderServiceMapper.class);
 
   @Test
   void updateOk() {
@@ -89,7 +95,7 @@ class UpdateSetListOrderServiceImplTest {
 
   private List<Set> getSets() {
     final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final List<Set> sets = easyRandom.objects(Set.class, 5).toList();
+    final List<Set> sets = easyRandom.objects(Set.class, LIST_SIZE).toList();
     for (int i = 0; i < sets.size(); i++) {
       final Set set = sets.get(i);
       set.setListOrder(i);

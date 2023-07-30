@@ -20,7 +20,7 @@ import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.mapper.GetSetGroupsByExerciseServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.mapper.GetSetGroupsByExerciseServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.model.GetSetGroupsByExerciseResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -37,20 +38,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetSetGroupsByExerciseServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetSetGroupsByExerciseServiceImpl getSetGroupsByExerciseService;
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private GetSetGroupsByExerciseServiceMapperImpl getSetGroupsByExerciseServiceMapper;
+
+  @Spy
+  private final GetSetGroupsByExerciseServiceMapper getSetGroupsByExerciseServiceMapper =
+      Mappers.getMapper(GetSetGroupsByExerciseServiceMapper.class);
 
   @Test
   void getOk() {
     final UUID userId = UUID.randomUUID();
     final UUID exerciseId = UUID.randomUUID();
-    final List<SetGroup> expected = easyRandom.objects(SetGroup.class, 5).toList();
+    final List<SetGroup> expected = easyRandom.objects(SetGroup.class, LIST_SIZE).toList();
     expected.forEach(
-        setGroup -> setGroup.setSets(easyRandom.objects(Set.class, 5).collect(Collectors.toSet())));
+        setGroup ->
+            setGroup.setSets(easyRandom.objects(Set.class, LIST_SIZE).collect(Collectors.toSet())));
 
     when(setGroupDao.getSetGroupsFullByUserIdAndExerciseId(userId, exerciseId))
         .thenReturn(expected);

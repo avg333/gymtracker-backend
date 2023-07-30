@@ -24,7 +24,7 @@ import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
 import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException;
 import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.mapper.CreateSetGroupServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.mapper.CreateSetGroupServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupRequestApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupResponseApplication;
 import org.jeasy.random.EasyRandom;
@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -48,7 +49,11 @@ class CreateSetGroupServiceImplTest {
   @Mock private SetGroupDao setGroupDao;
   @Mock private WorkoutDao workoutDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private CreateSetGroupServiceMapperImpl postSetGroupServiceMapper;
+
+  @Spy
+  private final CreateSetGroupServiceMapper postSetGroupServiceMapper =
+      Mappers.getMapper(CreateSetGroupServiceMapper.class);
+
   @Mock private ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Test

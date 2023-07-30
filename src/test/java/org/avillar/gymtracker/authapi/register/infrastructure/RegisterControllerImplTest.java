@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.authapi.register.application.RegisterService;
+import org.avillar.gymtracker.authapi.register.application.model.RegisterRequestApplication;
 import org.avillar.gymtracker.authapi.register.application.model.RegisterResponseApplication;
 import org.avillar.gymtracker.authapi.register.infrastructure.mapper.RegisterControllerMapper;
 import org.avillar.gymtracker.authapi.register.infrastructure.model.RegisterRequest;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -38,8 +40,14 @@ class RegisterControllerImplTest {
     final RegisterResponseApplication expected =
         easyRandom.nextObject(RegisterResponseApplication.class);
 
-    when(registerService.execute(registerControllerMapper.map(request))).thenReturn(expected);
+    final ArgumentCaptor<RegisterRequestApplication> registerRequestApplicationCaptor =
+        ArgumentCaptor.forClass(RegisterRequestApplication.class);
+
+    when(registerService.execute(registerRequestApplicationCaptor.capture())).thenReturn(expected);
 
     assertThat(registerController.execute(request)).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(registerRequestApplicationCaptor.getValue())
+        .usingRecursiveComparison()
+        .isEqualTo(request);
   }
 }

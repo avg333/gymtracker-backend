@@ -22,7 +22,7 @@ import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.mapper.UpdateSetGroupListOrderServiceMapperImpl;
+import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.mapper.UpdateSetGroupListOrderServiceMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.model.UpdateSetGroupListOrderResponseApplication;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -39,6 +40,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupListOrderServiceImplTest {
 
+  private static final int LIST_SIZE = 5;
+
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private UpdateSetGroupListOrderServiceImpl updateSetGroupListOrderService;
@@ -46,7 +49,10 @@ class UpdateSetGroupListOrderServiceImplTest {
   @Mock private SetGroupDao setGroupDao;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Spy private EntitySorter entitySorter;
-  @Spy private UpdateSetGroupListOrderServiceMapperImpl updateSetGroupListOrderServiceMapper;
+
+  @Spy
+  private final UpdateSetGroupListOrderServiceMapper updateSetGroupListOrderServiceMapper =
+      Mappers.getMapper(UpdateSetGroupListOrderServiceMapper.class);
 
   @Test
   void updateOk() {
@@ -92,14 +98,14 @@ class UpdateSetGroupListOrderServiceImplTest {
 
   private List<SetGroup> getSetGroups() {
     final Workout workout = easyRandom.nextObject(Workout.class);
-    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, 5).toList();
+    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, LIST_SIZE).toList();
     for (int i = 0; i < setGroups.size(); i++) {
       final SetGroup setGroup = setGroups.get(i);
       setGroup.setListOrder(i);
       setGroup.setWorkout(workout);
       setGroup.setSets(
           easyRandom
-              .objects(org.avillar.gymtracker.workoutapi.domain.Set.class, 5)
+              .objects(org.avillar.gymtracker.workoutapi.domain.Set.class, LIST_SIZE)
               .collect(Collectors.toSet()));
       setGroup.getSets().forEach(set -> set.setSetGroup(setGroup));
     }
