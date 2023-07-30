@@ -7,7 +7,6 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.GetWorkoutSetGroupsService;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.mapper.GetWorkoutSetGroupsControllerMapper;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.infrastructure.model.GetWorkoutSetGroupsResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,9 +16,8 @@ public class GetWorkoutSetGroupsControllerImpl implements GetWorkoutSetGroupsCon
   private final GetWorkoutSetGroupsService getWorkoutSetGroupsService;
   private final GetWorkoutSetGroupsControllerMapper getWorkoutSetGroupsControllerMapper;
 
-  public ResponseEntity<GetWorkoutSetGroupsResponse> get(final UUID workoutId)
+  public GetWorkoutSetGroupsResponse execute(final UUID workoutId)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        getWorkoutSetGroupsControllerMapper.map(getWorkoutSetGroupsService.execute(workoutId)));
+    return getWorkoutSetGroupsControllerMapper.map(getWorkoutSetGroupsService.execute(workoutId));
   }
 }

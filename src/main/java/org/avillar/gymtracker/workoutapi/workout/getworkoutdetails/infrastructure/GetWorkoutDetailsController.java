@@ -8,10 +8,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Workouts", description = "API to manage Workouts")
 @RequestMapping(path = "${workoutsApiPrefix}/")
@@ -32,5 +33,6 @@ public interface GetWorkoutDetailsController {
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @GetMapping("/workouts/{workoutId}/details")
-  ResponseEntity<GetWorkoutDetailsResponse> execute(@PathVariable final UUID workoutId);
+  @ResponseStatus(HttpStatus.OK)
+  GetWorkoutDetailsResponse execute(@PathVariable final UUID workoutId);
 }

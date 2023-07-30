@@ -16,8 +16,6 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -40,11 +38,9 @@ class UpdateWorkoutDescriptionControllerImplTest {
             workoutId, updateWorkoutDescriptionRequest.getDescription()))
         .thenReturn(updateWorkoutDescriptionRequest.getDescription());
 
-    final ResponseEntity<UpdateWorkoutDescriptionResponse> result =
+    final UpdateWorkoutDescriptionResponse result =
         updateWorkoutDescriptionControllerImpl.execute(workoutId, updateWorkoutDescriptionRequest);
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals(
-        updateWorkoutDescriptionRequest.getDescription(), result.getBody().getDescription());
+    assertNotNull(result);
+    assertEquals(updateWorkoutDescriptionRequest.getDescription(), result.getDescription());
   }
 }

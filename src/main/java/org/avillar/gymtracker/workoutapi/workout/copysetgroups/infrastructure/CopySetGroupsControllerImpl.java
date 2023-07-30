@@ -9,7 +9,6 @@ import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.CopyS
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.mapper.CopySetGroupsControllerMapper;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsRequest;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,14 +19,13 @@ public class CopySetGroupsControllerImpl implements CopySetGroupsController {
   private final CopySetGroupsControllerMapper copySetGroupsControllerMapper;
 
   @Override
-  public ResponseEntity<List<CopySetGroupsResponse>> execute(
+  public List<CopySetGroupsResponse> execute(
       final UUID workoutId, final CopySetGroupsRequest copySetGroupsRequest)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        copySetGroupsControllerMapper.map(
-            copySetGroupsService.execute(
-                workoutId,
-                copySetGroupsRequest.getId(),
-                copySetGroupsRequest.getSource() == CopySetGroupsRequest.Source.WORKOUT)));
+    return copySetGroupsControllerMapper.map(
+        copySetGroupsService.execute(
+            workoutId,
+            copySetGroupsRequest.getId(),
+            copySetGroupsRequest.getSource() == CopySetGroupsRequest.Source.WORKOUT));
   }
 }

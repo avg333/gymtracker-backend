@@ -13,11 +13,12 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkoutDateException;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateRequest;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Workouts", description = "API to manage Workouts")
 @RequestMapping(path = "${workoutsApiPrefix}/")
@@ -42,7 +43,8 @@ public interface UpdateWorkoutDateController {
         @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
       })
   @PatchMapping("/workouts/{workoutId}/date")
-  ResponseEntity<UpdateWorkoutDateResponse> execute(
+  @ResponseStatus(HttpStatus.OK)
+  UpdateWorkoutDateResponse execute(
       @PathVariable UUID workoutId,
       @Valid @RequestBody UpdateWorkoutDateRequest updateWorkoutDateRequest)
       throws EntityNotFoundException, DuplicatedWorkoutDateException, IllegalAccessException;

@@ -8,7 +8,6 @@ import org.avillar.gymtracker.workoutapi.workout.createworkout.application.Creat
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.mapper.CreateWorkoutControllerMapper;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutRequest;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,12 +18,11 @@ public class CreateWorkoutControllerImpl implements CreateWorkoutController {
   private final CreateWorkoutControllerMapper createWorkoutControllerMapper;
 
   @Override
-  public ResponseEntity<CreateWorkoutResponse> execute(
+  public CreateWorkoutResponse execute(
       final UUID userId, final CreateWorkoutRequest createWorkoutRequest)
       throws IllegalAccessException, DuplicatedWorkoutDateException {
-    return ResponseEntity.ok(
-        createWorkoutControllerMapper.map(
-            createWorkoutService.execute(
-                userId, createWorkoutControllerMapper.map(createWorkoutRequest))));
+    return createWorkoutControllerMapper.map(
+        createWorkoutService.execute(
+            userId, createWorkoutControllerMapper.map(createWorkoutRequest)));
   }
 }

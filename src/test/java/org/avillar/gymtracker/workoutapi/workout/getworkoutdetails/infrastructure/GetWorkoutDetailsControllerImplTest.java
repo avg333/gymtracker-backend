@@ -5,19 +5,17 @@ import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.GetWorkoutDetailsService;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.model.GetWorkoutDetailsResponseApplication;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.mapper.GetWorkoutDetailsControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponse;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.mapper.GetWorkoutDetailsControllerMapper;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +26,10 @@ class GetWorkoutDetailsControllerImplTest {
   @InjectMocks private GetWorkoutDetailsControllerImpl getWorkoutDetailsControllerImpl;
 
   @Mock private GetWorkoutDetailsService getWorkoutDetailsService;
-  @Spy private GetWorkoutDetailsControllerMapperImpl getWorkoutControllerMapper;
+
+  @Spy
+  private final GetWorkoutDetailsControllerMapper getWorkoutControllerMapper =
+      Mappers.getMapper(GetWorkoutDetailsControllerMapper.class);
 
   @Test
   void get() {
@@ -37,10 +38,8 @@ class GetWorkoutDetailsControllerImplTest {
 
     when(getWorkoutDetailsService.execute(expected.getId())).thenReturn(expected);
 
-    final ResponseEntity<GetWorkoutDetailsResponse> result =
-        getWorkoutDetailsControllerImpl.execute(expected.getId());
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(getWorkoutDetailsControllerImpl.execute(expected.getId()))
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
   }
 }

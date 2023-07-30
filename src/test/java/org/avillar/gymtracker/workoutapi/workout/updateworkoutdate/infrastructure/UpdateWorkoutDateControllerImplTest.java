@@ -16,8 +16,6 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -38,10 +36,9 @@ class UpdateWorkoutDateControllerImplTest {
     when(updateWorkoutDateService.execute(workoutId, updateWorkoutDateRequest.getDate()))
         .thenReturn(updateWorkoutDateRequest.getDate());
 
-    final ResponseEntity<UpdateWorkoutDateResponse> response =
+    final UpdateWorkoutDateResponse response =
         updateWorkoutDateControllerImpl.execute(workoutId, updateWorkoutDateRequest);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals(updateWorkoutDateRequest.getDate(), response.getBody().getDate());
+    assertNotNull(response);
+    assertEquals(updateWorkoutDateRequest.getDate(), response.getDate());
   }
 }

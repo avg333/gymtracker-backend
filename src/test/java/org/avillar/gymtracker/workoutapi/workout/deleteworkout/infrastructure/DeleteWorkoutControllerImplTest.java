@@ -1,7 +1,6 @@
 package org.avillar.gymtracker.workoutapi.workout.deleteworkout.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doNothing;
 
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -31,9 +28,6 @@ class DeleteWorkoutControllerImplTest {
 
     doNothing().when(deleteWorkoutService).execute(workoutId);
 
-    final ResponseEntity<Void> response =
-        assertDoesNotThrow(() -> deleteWorkoutController.execute(workoutId));
-    assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    assertNull(response.getBody());
+    assertNull(assertDoesNotThrow(() -> deleteWorkoutController.execute(workoutId)));
   }
 }

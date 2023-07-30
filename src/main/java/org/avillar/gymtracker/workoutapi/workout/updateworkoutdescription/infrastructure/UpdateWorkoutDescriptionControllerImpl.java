@@ -7,7 +7,6 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.application.UpdateWorkoutDescriptionService;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionRequest;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,12 +15,11 @@ public class UpdateWorkoutDescriptionControllerImpl implements UpdateWorkoutDesc
 
   private final UpdateWorkoutDescriptionService updateWorkoutDescriptionService;
 
-  public ResponseEntity<UpdateWorkoutDescriptionResponse> execute(
+  public UpdateWorkoutDescriptionResponse execute(
       final UUID workoutId, final UpdateWorkoutDescriptionRequest updateWorkoutDescriptionRequest)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        new UpdateWorkoutDescriptionResponse(
-            updateWorkoutDescriptionService.execute(
-                workoutId, updateWorkoutDescriptionRequest.getDescription())));
+    return new UpdateWorkoutDescriptionResponse(
+        updateWorkoutDescriptionService.execute(
+            workoutId, updateWorkoutDescriptionRequest.getDescription()));
   }
 }

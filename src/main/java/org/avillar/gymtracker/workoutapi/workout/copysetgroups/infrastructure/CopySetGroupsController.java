@@ -14,11 +14,12 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsRequest;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponse;
 import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Workouts", description = "API to manage Workouts")
 @RequestMapping(path = "${workoutsApiPrefix}/")
@@ -44,7 +45,8 @@ public interface CopySetGroupsController {
             content = @Content),
       })
   @PatchMapping("/workouts/{workoutId}/copySetGroups")
-  ResponseEntity<List<CopySetGroupsResponse>> execute(
+  @ResponseStatus(HttpStatus.OK)
+  List<CopySetGroupsResponse> execute(
       @PathVariable UUID workoutId, @Valid @RequestBody CopySetGroupsRequest copySetGroupsRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }

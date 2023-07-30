@@ -8,7 +8,6 @@ import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkout
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.application.UpdateWorkoutDateService;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateRequest;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,11 +17,10 @@ public class UpdateWorkoutDateControllerImpl implements UpdateWorkoutDateControl
   private final UpdateWorkoutDateService updateWorkoutDateService;
 
   @Override
-  public ResponseEntity<UpdateWorkoutDateResponse> execute(
+  public UpdateWorkoutDateResponse execute(
       final UUID workoutId, final UpdateWorkoutDateRequest updateWorkoutDateRequest)
       throws EntityNotFoundException, DuplicatedWorkoutDateException, IllegalAccessException {
-    return ResponseEntity.ok(
-        new UpdateWorkoutDateResponse(
-            updateWorkoutDateService.execute(workoutId, updateWorkoutDateRequest.getDate())));
+    return new UpdateWorkoutDateResponse(
+        updateWorkoutDateService.execute(workoutId, updateWorkoutDateRequest.getDate()));
   }
 }

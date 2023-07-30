@@ -19,12 +19,12 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutsDateAndIdControllerImplTest {
+
+  private static final int LIST_SIZE = 5;
 
   private final EasyRandom easyRandom = new EasyRandom();
 
@@ -35,7 +35,7 @@ class GetWorkoutsDateAndIdControllerImplTest {
   @Test
   void getWorkoutsIdAndDateByUserAndExercise() {
     final Map<Date, UUID> expected = new HashMap<>();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < LIST_SIZE; i++) {
       expected.put(easyRandom.nextObject(Date.class), UUID.randomUUID());
     }
     final UUID userId = UUID.randomUUID();
@@ -43,13 +43,9 @@ class GetWorkoutsDateAndIdControllerImplTest {
 
     when(getWorkoutsDateAndIdService.execute(userId, exerciseId)).thenReturn(expected);
 
-    final ResponseEntity<GetWorkoutsDateAndIdResponse> result =
+    final GetWorkoutsDateAndIdResponse result =
         getWorkoutsDateAndIdControllerImpl.execute(userId, exerciseId);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody().getWorkoutsDateAndId()).hasSameSizeAs(expected);
-    assertThat(result.getBody().getWorkoutsDateAndId())
-        .usingRecursiveComparison()
-        .isEqualTo(expected);
+    assertThat(result.getWorkoutsDateAndId()).hasSameSizeAs(expected);
+    assertThat(result.getWorkoutsDateAndId()).usingRecursiveComparison().isEqualTo(expected);
   }
 }
