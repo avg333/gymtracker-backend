@@ -16,8 +16,6 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -39,10 +37,9 @@ class UpdateSetGroupDescriptionControllerImplTest {
     when(updateSetGroupDescriptionService.execute(workoutId, expected.getDescription()))
         .thenReturn(expected.getDescription());
 
-    final ResponseEntity<UpdateSetGroupDescriptionResponse> result =
+    final UpdateSetGroupDescriptionResponse result =
         updateSetGroupDescriptionControllerImpl.execute(workoutId, expected);
-    assertEquals(HttpStatus.OK, result.getStatusCode());
-    assertNotNull(result.getBody());
-    assertEquals(expected.getDescription(), result.getBody().getDescription());
+    assertNotNull(result);
+    assertEquals(expected.getDescription(), result.getDescription());
   }
 }

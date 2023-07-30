@@ -5,20 +5,18 @@ import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.CreateSetGroupService;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.mapper.CreateSetGroupControllerMapperImpl;
+import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.mapper.CreateSetGroupControllerMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupRequest;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +27,10 @@ class CreateSetGroupControllerTest {
   @InjectMocks private CreateSetGroupControllerImpl createSetGroupController;
 
   @Mock private CreateSetGroupService createSetGroupService;
-  @Spy private CreateSetGroupControllerMapperImpl postSetGroupControllerMapper;
+
+  @Spy
+  private final CreateSetGroupControllerMapper postSetGroupControllerMapper =
+      Mappers.getMapper(CreateSetGroupControllerMapper.class);
 
   @Test
   void post() {
@@ -43,10 +44,8 @@ class CreateSetGroupControllerTest {
             expected.getWorkout().getId(), postSetGroupControllerMapper.map(request)))
         .thenReturn(expected);
 
-    final ResponseEntity<CreateSetGroupResponse> result =
-        createSetGroupController.execute(expected.getWorkout().getId(), request);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(createSetGroupController.execute(expected.getWorkout().getId(), request))
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
   }
 }

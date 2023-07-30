@@ -8,7 +8,6 @@ import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundE
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.application.UpdateSetGroupExerciseService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,12 +17,11 @@ public class UpdateSetGroupExerciseControllerImpl implements UpdateSetGroupExerc
   private final UpdateSetGroupExerciseService updateSetGroupExerciseService;
 
   @Override
-  public ResponseEntity<UpdateSetGroupExerciseResponse> execute(
+  public UpdateSetGroupExerciseResponse execute(
       final UUID setGroupId, final UpdateSetGroupExerciseRequest updateSetGroupExerciseRequest)
       throws EntityNotFoundException, IllegalAccessException, ExerciseNotFoundException {
-    return ResponseEntity.ok(
-        new UpdateSetGroupExerciseResponse(
-            updateSetGroupExerciseService.execute(
-                setGroupId, updateSetGroupExerciseRequest.getExerciseId())));
+    return new UpdateSetGroupExerciseResponse(
+        updateSetGroupExerciseService.execute(
+            setGroupId, updateSetGroupExerciseRequest.getExerciseId()));
   }
 }

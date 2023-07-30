@@ -10,10 +10,11 @@ import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.infrastructure.model.GetSetGroupsByExerciseResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "SetGroups", description = "API to manage setGroups")
 @RequestMapping(path = "${workoutsApiPrefix}/")
@@ -33,6 +34,7 @@ public interface GetSetGroupsByExerciseController {
         @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
       })
   @GetMapping("/users/{userId}/exercises/{exerciseId}/setGroups")
-  ResponseEntity<List<GetSetGroupsByExerciseResponse>> execute(
+  @ResponseStatus(HttpStatus.OK)
+  List<GetSetGroupsByExerciseResponse> execute(
       @PathVariable UUID userId, @PathVariable UUID exerciseId) throws IllegalAccessException;
 }

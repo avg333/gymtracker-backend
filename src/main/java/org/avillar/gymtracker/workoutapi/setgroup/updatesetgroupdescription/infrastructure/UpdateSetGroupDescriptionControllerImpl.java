@@ -7,7 +7,6 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.application.UpdateSetGroupDescriptionService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,13 +17,12 @@ public class UpdateSetGroupDescriptionControllerImpl
   private final UpdateSetGroupDescriptionService updateSetGroupDescriptionService;
 
   @Override
-  public ResponseEntity<UpdateSetGroupDescriptionResponse> execute(
+  public UpdateSetGroupDescriptionResponse execute(
       final UUID setGroupId,
       final UpdateSetGroupDescriptionRequest updateSetGroupDescriptionRequest)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        new UpdateSetGroupDescriptionResponse(
-            updateSetGroupDescriptionService.execute(
-                setGroupId, updateSetGroupDescriptionRequest.getDescription())));
+    return new UpdateSetGroupDescriptionResponse(
+        updateSetGroupDescriptionService.execute(
+            setGroupId, updateSetGroupDescriptionRequest.getDescription()));
   }
 }

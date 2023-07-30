@@ -7,46 +7,48 @@ import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.GetSetGroupsByExerciseService;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.model.GetSetGroupsByExerciseResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.infrastructure.mapper.GetSetGroupsByExerciseControllerMapperImpl;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.infrastructure.mapper.GetSetGroupsByExerciseControllerMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.infrastructure.model.GetSetGroupsByExerciseResponse;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetSetGroupsByExerciseControllerImplTest {
+
+  private static final int LIST_SIZE = 5;
 
   private final EasyRandom easyRandom = new EasyRandom();
 
   @InjectMocks private GetSetGroupsByExerciseControllerImpl getSetGroupsByExerciseControllerImpl;
 
   @Mock private GetSetGroupsByExerciseService getSetGroupsByExerciseService;
-  @Spy private GetSetGroupsByExerciseControllerMapperImpl getExerciseSetGroupsControllerMapper;
+
+  @Spy
+  private final GetSetGroupsByExerciseControllerMapper getExerciseSetGroupsControllerMapper =
+      Mappers.getMapper(GetSetGroupsByExerciseControllerMapper.class);
 
   @Test
   void getOk() {
     final UUID userId = UUID.randomUUID();
     final UUID exerciseId = UUID.randomUUID();
     final List<GetSetGroupsByExerciseResponseApplication> expected =
-        easyRandom.objects(GetSetGroupsByExerciseResponseApplication.class, 5).toList();
+        easyRandom.objects(GetSetGroupsByExerciseResponseApplication.class, LIST_SIZE).toList();
     expected.forEach(sg -> sg.setExerciseId(exerciseId));
 
     when(getSetGroupsByExerciseService.execute(userId, exerciseId)).thenReturn(expected);
 
-    final ResponseEntity<List<GetSetGroupsByExerciseResponse>> result =
+    final List<GetSetGroupsByExerciseResponse> result =
         getSetGroupsByExerciseControllerImpl.execute(userId, exerciseId);
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).hasSameSizeAs(expected);
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(result).hasSameSizeAs(expected);
+    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
   }
 }

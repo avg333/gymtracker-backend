@@ -7,7 +7,6 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.GetSetGroupService;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.mapper.GetSetGroupControllerMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.model.GetSetGroupResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,9 +17,8 @@ public class SetGroupControllerImpl implements SetGroupController {
   private final GetSetGroupControllerMapper getSetGroupControllerMapper;
 
   @Override
-  public ResponseEntity<GetSetGroupResponse> execute(final UUID setGroupId)
+  public GetSetGroupResponse execute(final UUID setGroupId)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        getSetGroupControllerMapper.map(getSetGroupService.execute(setGroupId)));
+    return getSetGroupControllerMapper.map(getSetGroupService.execute(setGroupId));
   }
 }

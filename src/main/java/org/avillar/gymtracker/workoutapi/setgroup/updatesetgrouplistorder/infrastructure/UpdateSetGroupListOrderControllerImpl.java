@@ -9,7 +9,6 @@ import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.applic
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.mapper.UpdateSetGroupListOrderControllerMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,12 +19,11 @@ public class UpdateSetGroupListOrderControllerImpl implements UpdateSetGroupList
   private final UpdateSetGroupListOrderControllerMapper updateSetGroupListOrderControllerMapper;
 
   @Override
-  public ResponseEntity<List<UpdateSetGroupListOrderResponse>> execute(
+  public List<UpdateSetGroupListOrderResponse> execute(
       final UUID setGroupId, final UpdateSetGroupListOrderRequest updateSetGroupListOrderRequest)
       throws EntityNotFoundException, IllegalAccessException {
-    return ResponseEntity.ok(
-        updateSetGroupListOrderControllerMapper.map(
-            updateSetGroupListOrderService.execute(
-                setGroupId, updateSetGroupListOrderRequest.getListOrder())));
+    return updateSetGroupListOrderControllerMapper.map(
+        updateSetGroupListOrderService.execute(
+            setGroupId, updateSetGroupListOrderRequest.getListOrder()));
   }
 }

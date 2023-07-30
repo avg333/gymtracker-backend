@@ -12,11 +12,12 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionResponse;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "SetGroups", description = "API to manage setGroups")
 @RequestMapping(path = "${workoutsApiPrefix}/")
@@ -37,7 +38,8 @@ public interface UpdateSetGroupDescriptionController {
         @ApiResponse(responseCode = "404", description = "SetGroup not found", content = @Content)
       })
   @PatchMapping("/setGroups/{setGroupId}/description")
-  ResponseEntity<UpdateSetGroupDescriptionResponse> execute(
+  @ResponseStatus(HttpStatus.OK)
+  UpdateSetGroupDescriptionResponse execute(
       @PathVariable UUID setGroupId,
       @Valid @RequestBody UpdateSetGroupDescriptionRequest updateSetGroupDescriptionRequest)
       throws EntityNotFoundException, IllegalAccessException;

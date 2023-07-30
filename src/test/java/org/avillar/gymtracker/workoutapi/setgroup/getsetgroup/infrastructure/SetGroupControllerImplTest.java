@@ -5,19 +5,17 @@ import static org.mockito.Mockito.when;
 
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.GetSetGroupService;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.model.GetSetGroupResponseApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.mapper.GetSetGroupControllerMapperImpl;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.model.GetSetGroupResponse;
+import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.mapper.GetSetGroupControllerMapper;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +26,10 @@ class SetGroupControllerImplTest {
   @InjectMocks private SetGroupControllerImpl setGroupControllerImpl;
 
   @Mock private GetSetGroupService getSetGroupService;
-  @Spy private GetSetGroupControllerMapperImpl getSetGroupControllerMapper;
+
+  @Spy
+  private final GetSetGroupControllerMapper getSetGroupControllerMapper =
+      Mappers.getMapper(GetSetGroupControllerMapper.class);
 
   @Test
   void getOk() {
@@ -37,10 +38,8 @@ class SetGroupControllerImplTest {
 
     when(getSetGroupService.execute(expected.getId())).thenReturn(expected);
 
-    final ResponseEntity<GetSetGroupResponse> result =
-        setGroupControllerImpl.execute(expected.getId());
-    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(result.getBody()).isNotNull();
-    assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(setGroupControllerImpl.execute(expected.getId()))
+        .usingRecursiveComparison()
+        .isEqualTo(expected);
   }
 }
