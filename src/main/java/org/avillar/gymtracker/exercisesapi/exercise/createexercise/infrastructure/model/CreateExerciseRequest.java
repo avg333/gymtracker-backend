@@ -39,7 +39,7 @@ public class CreateExerciseRequest {
 
   @Size(max = 10, message = "The muscleGroups must be less than 10")
   @Schema(description = "MuscleGroups identifiers with theirs weight coefficients")
-  private List<MuscleGroupExercises> muscleGroupExercises = new ArrayList<>();
+  private List<MuscleGroupExercises> muscleGroups = new ArrayList<>();
 
   @Data
   public static class MuscleGroupExercises {

@@ -2,6 +2,7 @@ package org.avillar.gymtracker.exercisesapi.exercise.deleteexercise.application;
 
 import jakarta.transaction.Transactional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.base.domain.BaseEntity;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
@@ -38,7 +39,9 @@ public class DeleteExerciseServiceImpl implements DeleteExerciseService {
 
     if (!exercise.getMuscleGroupExercises().isEmpty()) {
       muscleGroupExerciseDao.deleteAllById(
-          exercise.getMuscleGroupExercises().stream().map(BaseEntity::getId).toList());
+          exercise.getMuscleGroupExercises().stream()
+              .map(BaseEntity::getId)
+              .collect(Collectors.toSet()));
     }
     exerciseDao.deleteById(exerciseId);
   }

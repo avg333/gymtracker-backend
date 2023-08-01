@@ -66,7 +66,7 @@ class DeleteExerciseServiceImplTest {
         .deleteAllById(
             exercise.getMuscleGroupExercises().stream()
                 .map(BaseEntity::getId)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toSet()));
     verify(exerciseDao).deleteById(exercise.getId());
   }
 

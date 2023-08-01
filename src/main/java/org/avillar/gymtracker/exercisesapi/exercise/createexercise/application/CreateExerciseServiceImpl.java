@@ -64,7 +64,7 @@ public class CreateExerciseServiceImpl implements CreateExerciseService {
     authExercisesService.checkAccess(exercise, AuthOperations.CREATE);
 
     final Set<UUID> muscleGroupIds =
-        request.getMuscleGroupExercises().stream()
+        request.getMuscleGroups().stream()
             .map(MuscleGroupExercises::getMuscleGroupId)
             .collect(Collectors.toSet());
 
@@ -170,9 +170,9 @@ public class CreateExerciseServiceImpl implements CreateExerciseService {
       final List<MuscleGroup> muscleGroups,
       final CreateExerciseRequestApplication request) {
     final List<MuscleGroupExercise> muscleGroupExercises =
-        new ArrayList<>(request.getMuscleGroupExercises().size());
+        new ArrayList<>(request.getMuscleGroups().size());
 
-    for (MuscleGroupExercises mge : request.getMuscleGroupExercises()) {
+    for (MuscleGroupExercises mge : request.getMuscleGroups()) {
       final MuscleGroup mg =
           muscleGroups.stream()
               .filter(muscleGroup -> muscleGroup.getId().equals(mge.getMuscleGroupId()))

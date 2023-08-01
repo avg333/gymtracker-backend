@@ -18,7 +18,7 @@ public class CreateExerciseRequestApplication {
 
   private List<UUID> muscleSubGroupsIds;
 
-  private List<MuscleGroupExercises> muscleGroupExercises = new ArrayList<>();
+  private List<MuscleGroupExercises> muscleGroups = new ArrayList<>();
 
   @Data
   public static class MuscleGroupExercises {
