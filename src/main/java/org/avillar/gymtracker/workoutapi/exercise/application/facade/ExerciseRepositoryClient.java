@@ -12,4 +12,8 @@ public interface ExerciseRepositoryClient {
 
   List<GetExerciseResponseFacade> getExerciseByIds(Set<UUID> exerciseIds)
       throws ExerciseNotFoundException;
+
+  int incrementExerciseUses(UUID exerciseId) throws ExerciseNotFoundException;
+
+  int decrementExerciseUses(UUID exerciseId) throws ExerciseNotFoundException;
 }

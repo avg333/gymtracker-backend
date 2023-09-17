@@ -15,8 +15,12 @@ import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoun
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.exercise.checkexercisereadaccess.application.CheckExerciseReadAccessService;
+import org.avillar.gymtracker.exercisesapi.exercise.decrementexerciseuses.application.DecrementExerciseUsesService;
+import org.avillar.gymtracker.exercisesapi.exercise.decrementexerciseuses.application.model.DecrementExerciseUsesResponseApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.GetExercisesByIdsService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication;
+import org.avillar.gymtracker.exercisesapi.exercise.incrementexerciseuses.application.IncrementExerciseUsesService;
+import org.avillar.gymtracker.exercisesapi.exercise.incrementexerciseuses.application.model.IncrementExerciseUsesResponseApplication;
 import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException;
 import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException.AccessError;
 import org.avillar.gymtracker.workoutapi.exercise.application.mapper.GetExerciseFacadeMapper;
@@ -44,6 +48,8 @@ class ExerciseRepositoryClientImplTest {
 
   @Mock private CheckExerciseReadAccessService checkExerciseReadAccessService;
   @Mock private GetExercisesByIdsService getExercisesByIdsService;
+  @Mock private IncrementExerciseUsesService incrementExerciseUsesService;
+  @Mock private DecrementExerciseUsesService decrementExerciseUsesService;
 
   @Spy
   private final GetExerciseFacadeMapper getExerciseFacadeMapper =
@@ -130,6 +136,100 @@ class ExerciseRepositoryClientImplTest {
             ExerciseNotFoundException.class,
             () -> exerciseRepositoryClient.getExerciseByIds(exercisesIds));
     assertEquals(exerciseNoAccess.getId(), exception.getId());
+    assertEquals(AccessError.NOT_ACCESS, exception.getAccessError());
+  }
+
+  @Test
+  void incrementExerciseUsesOk() {
+    final IncrementExerciseUsesResponseApplication expected =
+        easyRandom.nextObject(IncrementExerciseUsesResponseApplication.class);
+    final UUID exerciseId = easyRandom.nextObject(UUID.class);
+
+    when(incrementExerciseUsesService.execute(exerciseId)).thenReturn(expected);
+
+    final int result =
+        assertDoesNotThrow(() -> exerciseRepositoryClient.incrementExerciseUses(exerciseId));
+    assertThat(result).isEqualTo(expected.getUses());
+  }
+
+  @Test
+  void incrementExerciseUsesNotFound() {
+    final UUID exerciseId = easyRandom.nextObject(UUID.class);
+
+    doThrow(new EntityNotFoundException(Exercise.class, exerciseId))
+        .when(incrementExerciseUsesService)
+        .execute(exerciseId);
+
+    final ExerciseNotFoundException exception =
+        assertThrows(
+            ExerciseNotFoundException.class,
+            () -> exerciseRepositoryClient.incrementExerciseUses(exerciseId));
+    assertEquals(exerciseId, exception.getId());
+    assertEquals(AccessError.NOT_FOUND, exception.getAccessError());
+  }
+
+  @Test
+  void incrementExerciseUsesNotAccess() {
+    final UUID exerciseId = easyRandom.nextObject(UUID.class);
+    final Exercise exercise = easyRandom.nextObject(Exercise.class);
+    exercise.setId(exerciseId);
+
+    doThrow(new IllegalAccessException(exercise, AuthOperations.READ, UUID.randomUUID()))
+        .when(incrementExerciseUsesService)
+        .execute(exerciseId);
+
+    final ExerciseNotFoundException exception =
+        assertThrows(
+            ExerciseNotFoundException.class,
+            () -> exerciseRepositoryClient.incrementExerciseUses(exerciseId));
+    assertEquals(exerciseId, exception.getId());
+    assertEquals(AccessError.NOT_ACCESS, exception.getAccessError());
+  }
+
+  @Test
+  void decrementExerciseUsesOk() {
+    final DecrementExerciseUsesResponseApplication expected =
+        easyRandom.nextObject(DecrementExerciseUsesResponseApplication.class);
+    final UUID exerciseId = easyRandom.nextObject(UUID.class);
+
+    when(decrementExerciseUsesService.execute(exerciseId)).thenReturn(expected);
+
+    final int result =
+        assertDoesNotThrow(() -> exerciseRepositoryClient.decrementExerciseUses(exerciseId));
+    assertThat(result).isEqualTo(expected.getUses());
+  }
+
+  @Test
+  void decrementExerciseUsesNotFound() {
+    final UUID exerciseId = easyRandom.nextObject(UUID.class);
+
+    doThrow(new EntityNotFoundException(Exercise.class, exerciseId))
+        .when(decrementExerciseUsesService)
+        .execute(exerciseId);
+
+    final ExerciseNotFoundException exception =
+        assertThrows(
+            ExerciseNotFoundException.class,
+            () -> exerciseRepositoryClient.decrementExerciseUses(exerciseId));
+    assertEquals(exerciseId, exception.getId());
+    assertEquals(AccessError.NOT_FOUND, exception.getAccessError());
+  }
+
+  @Test
+  void decrementExerciseUsesNotAccess() {
+    final UUID exerciseId = easyRandom.nextObject(UUID.class);
+    final Exercise exercise = easyRandom.nextObject(Exercise.class);
+    exercise.setId(exerciseId);
+
+    doThrow(new IllegalAccessException(exercise, AuthOperations.READ, UUID.randomUUID()))
+        .when(decrementExerciseUsesService)
+        .execute(exerciseId);
+
+    final ExerciseNotFoundException exception =
+        assertThrows(
+            ExerciseNotFoundException.class,
+            () -> exerciseRepositoryClient.decrementExerciseUses(exerciseId));
+    assertEquals(exerciseId, exception.getId());
     assertEquals(AccessError.NOT_ACCESS, exception.getAccessError());
   }
 

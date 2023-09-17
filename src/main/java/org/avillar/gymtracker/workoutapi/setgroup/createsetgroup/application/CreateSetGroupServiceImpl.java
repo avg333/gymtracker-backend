@@ -40,6 +40,7 @@ public class CreateSetGroupServiceImpl implements CreateSetGroupService {
     authWorkoutsService.checkAccess(setGroup, AuthOperations.CREATE);
 
     exerciseRepositoryClient.checkExerciseAccessById(setGroup.getExerciseId());
+    exerciseRepositoryClient.incrementExerciseUses(setGroup.getExerciseId());
 
     setGroupDao.save(setGroup);
 

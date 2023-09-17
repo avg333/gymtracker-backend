@@ -70,6 +70,8 @@ class CreateSetGroupServiceImplTest {
         .when(authWorkoutsService)
         .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE)); // FIXME Avoid any
     doNothing().when(exerciseRepositoryClient).checkExerciseAccessById(setGroup.getExerciseId());
+    when(exerciseRepositoryClient.incrementExerciseUses(setGroup.getExerciseId()))
+        .thenReturn(easyRandom.nextInt());
     when(setGroupDao.save(any(SetGroup.class))).thenAnswer(i -> i.getArguments()[0]);
 
     final CreateSetGroupResponseApplication result =
@@ -81,6 +83,8 @@ class CreateSetGroupServiceImplTest {
         .usingRecursiveComparison()
         .ignoringFields("id", "listOrder")
         .isEqualTo(setGroup); // FIXME
+    verify(exerciseRepositoryClient).checkExerciseAccessById(setGroup.getExerciseId());
+    verify(exerciseRepositoryClient).incrementExerciseUses(setGroup.getExerciseId());
     verify(setGroupDao).save(any(SetGroup.class)); // FIXME
   }
 
@@ -107,6 +111,9 @@ class CreateSetGroupServiceImplTest {
             () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
     assertEquals(createSetGroupRequestApplication.getExerciseId(), exception.getId());
     assertEquals(notFound, exception.getAccessError());
+    verify(exerciseRepositoryClient)
+        .checkExerciseAccessById(createSetGroupRequestApplication.getExerciseId());
+    verify(exerciseRepositoryClient, never()).incrementExerciseUses(any());
     verify(setGroupDao, never()).save(any());
   }
 
@@ -133,6 +140,9 @@ class CreateSetGroupServiceImplTest {
             () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
     assertEquals(createSetGroupRequestApplication.getExerciseId(), exception.getId());
     assertEquals(notAccess, exception.getAccessError());
+    verify(exerciseRepositoryClient)
+        .checkExerciseAccessById(createSetGroupRequestApplication.getExerciseId());
+    verify(exerciseRepositoryClient, never()).incrementExerciseUses(any());
     verify(setGroupDao, never()).save(any());
   }
 
@@ -150,6 +160,8 @@ class CreateSetGroupServiceImplTest {
                     workoutId, easyRandom.nextObject(CreateSetGroupRequestApplication.class)));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutId, exception.getId());
+    verify(exerciseRepositoryClient, never()).checkExerciseAccessById(any());
+    verify(exerciseRepositoryClient, never()).incrementExerciseUses(any());
     verify(setGroupDao, never()).save(any());
   }
 
@@ -175,6 +187,8 @@ class CreateSetGroupServiceImplTest {
     assertNull(exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(createOperation, exception.getAuthOperations());
+    verify(exerciseRepositoryClient, never()).checkExerciseAccessById(any());
+    verify(exerciseRepositoryClient, never()).incrementExerciseUses(any());
     verify(setGroupDao, never()).save(any());
   }
 }

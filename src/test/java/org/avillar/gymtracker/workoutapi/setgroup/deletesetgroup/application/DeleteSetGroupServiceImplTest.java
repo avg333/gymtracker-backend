@@ -21,6 +21,7 @@ import org.avillar.gymtracker.workoutapi.domain.Set;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
 import org.avillar.gymtracker.workoutapi.domain.Workout;
+import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +45,7 @@ class DeleteSetGroupServiceImplTest {
 
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Mock private EntitySorter entitySorter;
+  @Mock private ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Test
   void deleteOk() {
@@ -55,6 +57,8 @@ class DeleteSetGroupServiceImplTest {
     doNothing().when(authWorkoutsService).checkAccess(setGroupSecond, AuthOperations.DELETE);
     when(setGroupDao.getSetGroupsByWorkoutId(setGroupSecond.getWorkout().getId()))
         .thenReturn(setGroups);
+    when(exerciseRepositoryClient.decrementExerciseUses(setGroupSecond.getExerciseId()))
+        .thenReturn(easyRandom.nextInt());
 
     assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupSecond.getId()));
     verify(setGroupDao).deleteById(setGroupSecond.getId());
@@ -72,8 +76,11 @@ class DeleteSetGroupServiceImplTest {
     doNothing().when(authWorkoutsService).checkAccess(setGroupLast, AuthOperations.DELETE);
     when(setGroupDao.getSetGroupsByWorkoutId(setGroupLast.getWorkout().getId()))
         .thenReturn(setGroups);
+    when(exerciseRepositoryClient.decrementExerciseUses(setGroupLast.getExerciseId()))
+        .thenReturn(easyRandom.nextInt());
 
     assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupLast.getId()));
+    verify(exerciseRepositoryClient).decrementExerciseUses(setGroupLast.getExerciseId());
     verify(setGroupDao).deleteById(setGroupLast.getId());
     verify(entitySorter, never()).sortDelete(any(), any());
     verify(setGroupDao, never()).saveAll(any());
@@ -103,6 +110,7 @@ class DeleteSetGroupServiceImplTest {
             EntityNotFoundException.class, () -> deleteSetGroupService.execute(setGroupId));
     assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
     assertEquals(setGroupId, exception.getId());
+    verify(exerciseRepositoryClient, never()).decrementExerciseUses(any());
     verify(setGroupDao, never()).deleteById(any());
     verify(entitySorter, never()).sortDelete(any(), any());
     verify(setGroupDao, never()).saveAll(any());
@@ -126,6 +134,7 @@ class DeleteSetGroupServiceImplTest {
     assertEquals(setGroup.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(deleteOperation, exception.getAuthOperations());
+    verify(exerciseRepositoryClient, never()).decrementExerciseUses(any());
     verify(setGroupDao, never()).deleteById(any());
     verify(entitySorter, never()).sortDelete(any(), any());
     verify(setGroupDao, never()).saveAll(any());

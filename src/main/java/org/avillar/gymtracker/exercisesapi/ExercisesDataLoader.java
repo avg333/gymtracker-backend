@@ -221,6 +221,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             bar,
             new HashSet<>(),
+            new HashSet<>(),
             new HashSet<>());
     var pressBancaInclinado =
         new Exercise(
@@ -231,6 +232,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             bar,
             new HashSet<>(List.of(chestUpper)),
+            new HashSet<>(),
             new HashSet<>());
     var pressBancaDeclinado =
         new Exercise(
@@ -241,6 +243,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             bar,
             new HashSet<>(List.of(chestLower)),
+            new HashSet<>(),
             new HashSet<>());
     var pressMancuernas =
         new Exercise(
@@ -250,6 +253,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             adminId,
             false,
             dumbbell,
+            new HashSet<>(),
             new HashSet<>(),
             new HashSet<>());
     var pressMancuernasInclinado =
@@ -261,6 +265,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             dumbbell,
             new HashSet<>(List.of(chestUpper)),
+            new HashSet<>(),
             new HashSet<>());
     var pressMancuernasDeclinado =
         new Exercise(
@@ -271,6 +276,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             dumbbell,
             new HashSet<>(List.of(chestLower)),
+            new HashSet<>(),
             new HashSet<>());
     var pressMultipower =
         new Exercise(
@@ -280,6 +286,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             adminId,
             false,
             multipower,
+            new HashSet<>(),
             new HashSet<>(),
             new HashSet<>());
     var pressMultipowerInclinado =
@@ -291,6 +298,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             multipower,
             new HashSet<>(List.of(chestUpper)),
+            new HashSet<>(),
             new HashSet<>());
     var pressMultipowerDeclinado =
         new Exercise(
@@ -301,6 +309,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             multipower,
             new HashSet<>(List.of(chestLower)),
+            new HashSet<>(),
             new HashSet<>());
     var aperturasMancuernas =
         new Exercise(
@@ -311,6 +320,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             dumbbell,
             new HashSet<>(List.of(chestMiddle)),
+            new HashSet<>(),
             new HashSet<>());
     var aperturasMancuernasInclinado =
         new Exercise(
@@ -321,6 +331,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             dumbbell,
             new HashSet<>(List.of(chestUpper, chestMiddle)),
+            new HashSet<>(),
             new HashSet<>());
     var aperturasMancuernasDeclinado =
         new Exercise(
@@ -331,6 +342,7 @@ public class ExercisesDataLoader implements ApplicationRunner {
             false,
             dumbbell,
             new HashSet<>(List.of(chestLower, chestMiddle)),
+            new HashSet<>(),
             new HashSet<>());
     var exercises =
         List.of(

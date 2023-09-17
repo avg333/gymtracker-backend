@@ -47,4 +47,7 @@ public class Exercise extends BaseEntity {
 
   @OneToMany(mappedBy = "exercise", orphanRemoval = true, fetch = FetchType.LAZY)
   private Set<MuscleGroupExercise> muscleGroupExercises = new HashSet<>();
+
+  @OneToMany(mappedBy = "exercise", orphanRemoval = true)
+  private Set<ExerciseUses> exerciseUses = new HashSet<>();
 }

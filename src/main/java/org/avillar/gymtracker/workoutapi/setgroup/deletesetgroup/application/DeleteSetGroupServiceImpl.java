@@ -11,6 +11,7 @@ import org.avillar.gymtracker.common.sort.application.EntitySorter;
 import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
 import org.avillar.gymtracker.workoutapi.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
+import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +21,7 @@ public class DeleteSetGroupServiceImpl implements DeleteSetGroupService {
   private final SetGroupDao setGroupDao;
   private final AuthWorkoutsService authWorkoutsService;
   private final EntitySorter entitySorter;
+  private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
   @Transactional
@@ -28,6 +30,8 @@ public class DeleteSetGroupServiceImpl implements DeleteSetGroupService {
     final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.DELETE);
+
+    exerciseRepositoryClient.decrementExerciseUses(setGroup.getExerciseId());
 
     setGroupDao.deleteById(setGroupId);
 
