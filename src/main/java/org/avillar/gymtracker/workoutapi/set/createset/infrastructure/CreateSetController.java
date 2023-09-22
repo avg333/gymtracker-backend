@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Sets", description = "API to manage sets")
-@RequestMapping(path = "${workoutsApiPrefix}/")
+@RequestMapping(path = "${workoutsApiPrefix}/v1/")
 public interface CreateSetController {
 
   @Operation(summary = "API used to create a set")
@@ -39,6 +40,6 @@ public interface CreateSetController {
   @PostMapping("setGroups/{setGroupId}/sets")
   @ResponseStatus(HttpStatus.OK)
   CreateSetResponse execute(
-      @PathVariable UUID setGroupId, @RequestBody CreateSetRequest createSetRequest)
+      @PathVariable UUID setGroupId, @Valid @RequestBody CreateSetRequest createSetRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Sets", description = "API to manage sets")
-@RequestMapping(path = "${workoutsApiPrefix}/")
+@RequestMapping(path = "${workoutsApiPrefix}/v1/")
 public interface DeleteSetController {
 
   @Operation(summary = "API used to delete a set")

@@ -1,5 +1,7 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -11,16 +13,19 @@ public class UpdateSetDataRequest {
   private String description;
 
   @NotNull
-  @Size(max = 100, message = "The reps must be between 0 and 100")
+  @Min(value = 0, message = "The order must be between 0 and 100")
+  @Max(value = 100, message = "The order must be between 0 and 100")
   private Integer reps;
 
   @NotNull
-  @Size(max = 10, message = "The rir must be between 0 and 10")
+  @Min(value = 0, message = "The rir must be between 0 and 10")
+  @Max(value = 10, message = "The rir must be between 0 and 10")
   private Double rir;
 
   @NotNull
-  @Size(max = 1000, message = "The weight must be between 0 and 1000")
+  @Min(value = 0, message = "The weight must be between 0 and 1000")
+  @Max(value = 1000, message = "The weight must be between 0 and 1000")
   private Double weight;
 
-  private Boolean completed;
+  @NotNull private Boolean completed;
 }

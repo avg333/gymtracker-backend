@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Sets", description = "API to manage sets")
-@RequestMapping(path = "${workoutsApiPrefix}/")
+@RequestMapping(path = "${workoutsApiPrefix}/v1/")
 public interface UpdateSetDataController {
 
   @Operation(summary = "API used to update the set data")
@@ -39,6 +40,6 @@ public interface UpdateSetDataController {
   @PatchMapping("sets/{setId}")
   @ResponseStatus(HttpStatus.OK)
   UpdateSetDataResponse execute(
-      @PathVariable UUID setId, @RequestBody UpdateSetDataRequest updateSetDataRequest)
+      @PathVariable UUID setId, @Valid @RequestBody UpdateSetDataRequest updateSetDataRequest)
       throws EntityNotFoundException, IllegalAccessException;
 }
