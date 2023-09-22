@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponse;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +33,5 @@ public interface GetExercisesByFilterController {
   @GetMapping("exercises/filter")
   @ResponseStatus(HttpStatus.OK)
   List<GetExercisesByFilterResponse> execute(
-      @SpringQueryMap GetExercisesByFilterRequest getExercisesByFilterRequest);
+      GetExercisesByFilterRequest getExercisesByFilterRequest);
 }
