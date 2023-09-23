@@ -11,12 +11,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
 @RestControllerAdvice
 @Order( value = Ordered.HIGHEST_PRECEDENCE )
-public class AuthExceptionHandler extends ResponseEntityExceptionHandler {
+public class AuthExceptionHandler {
 
   private static final String MSG_ERROR_REGISTER_PROCESS_ERROR = "Error in the register process";
   private static final String MSG_AUTH_ERROR = "An error occurred during authentication";

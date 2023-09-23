@@ -6,15 +6,15 @@ import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccess
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
 @RestControllerAdvice
 @Order()
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class RestExceptionHandler {
 
   private static final String MSG_NOT_FOUND_ERROR = "Entity not found";
   private static final String MSG_NOT_PERMISSION_ERROR =
@@ -39,6 +39,21 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getCurrentUserId());
     return new ApiError(MSG_NOT_PERMISSION_ERROR, ex);
   }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ApiError handleValidationErrors(final MethodArgumentNotValidException ex) {
+    log.debug("Validation error: {}", ex.getLocalizedMessage());
+    return new ApiError(
+        ex.getBody().getDetail(),
+        ex,
+        ex.getBindingResult().getFieldErrors().stream()
+            .map(
+                fieldError ->
+                    new ApiError.ValidationError(
+                        fieldError.getField(), fieldError.getDefaultMessage()))
+            .toList());
+  } // TODO Test this
 
   @ExceptionHandler(RedisConnectionFailureException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -11,12 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
 @RestControllerAdvice
 @Order( value = Ordered.HIGHEST_PRECEDENCE )
-public class WorkoutExceptionHandler extends ResponseEntityExceptionHandler {
+public class WorkoutExceptionHandler {
 
   private static final String MSG_DUPLICATED_WORKOUT_DATE_ERROR =
       "There is already a workout on that date for that user";
