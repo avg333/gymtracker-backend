@@ -5,8 +5,10 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication(scanBasePackages = "org.avillar.gymtracker")
+@EnableFeignClients
 public class GymTrackerApplication {
 
   @Value("${spring.jpa.properties.hibernate.jdbc.time_zone}")

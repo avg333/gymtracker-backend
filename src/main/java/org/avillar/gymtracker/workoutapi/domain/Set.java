@@ -44,14 +44,6 @@ public class Set extends SortableEntity {
   @JoinColumn(name = "set_group_id", nullable = false)
   private SetGroup setGroup;
 
-  public Set(String description, Integer reps, Double rir, Double weight, SetGroup setGroup) {
-    this.description = description;
-    this.reps = reps;
-    this.rir = rir;
-    this.weight = weight;
-    this.setGroup = setGroup;
-  }
-
   public static Set clone(final Set set) {
     final Set newSet = new Set();
     newSet.setListOrder(set.getListOrder());

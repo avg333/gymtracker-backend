@@ -59,7 +59,7 @@ class DeleteWorkoutTest extends IntegrationBaseTest {
     setGroup.setListOrder(0);
     workoutDao.save(workout);
     workout.getSetGroups().add(setGroup);
-    final Set set = new Set(null, 1, 1.0, 1.0, setGroup);
+    final Set set = new Set(null, 1, 1.0, 1.0, new Date(), setGroup);
     set.setListOrder(0);
     setGroupDao.save(setGroup);
     setGroup.getSets().add(set);

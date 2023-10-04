@@ -130,16 +130,17 @@ public class WorkoutsDataLoader implements ApplicationRunner {
     setGroup.setListOrder(listOrder);
     int totalSets = MIN_EXERCISES + random.nextInt(MAX_EXERCISES - MIN_EXERCISES + 1);
     saveData.getSetGroups().add(setGroup);
+    var setRecords = generateSets(totalSets);
     for (int i = 0; i < totalSets; i++) {
-      createSet(setGroup, i, saveData);
+      createSet(setGroup, i, saveData, setRecords.get(i));
     }
   }
 
-  private void createSet(SetGroup setGroup, int listOrder, SaveData saveData) {
-    int reps = 3 + random.nextInt(18 - 3 + 1);
-    int rir = random.nextInt(3 + 1);
-    int weight = 10 + random.nextInt(150 - 10 + 1);
-    var set = new Set(null, reps, (double) rir, (double) weight, setGroup);
+  private void createSet(SetGroup setGroup, int listOrder, SaveData saveData, SetRecord setRecord) {
+    int reps = 3 + setRecord.reps();
+    double rir = (int) setRecord.rir();
+    double weight = (int) setRecord.weight();
+    var set = new Set(null, reps, rir, weight, new Date(), setGroup);
     set.setListOrder(listOrder);
     saveData.getSets().add(set);
   }
@@ -149,5 +150,29 @@ public class WorkoutsDataLoader implements ApplicationRunner {
     private final List<Workout> workouts = new ArrayList<>();
     private final List<SetGroup> setGroups = new ArrayList<>();
     private final List<Set> sets = new ArrayList<>();
+  }
+
+  public record SetRecord(int reps, double weight, double rir) {}
+
+  public List<SetRecord> generateSets(int numberOfSets) {
+    List<SetRecord> sets = new ArrayList<>();
+
+    for (int i = 0; i < numberOfSets; i++) {
+      int reps = i == 0 ? random.nextInt(10) + 1 : sets.get(i - 1).reps() + random.nextInt(3) - 1;
+      reps = reps <= 0 ? 1 : reps;
+
+      double weight =
+          i == 0
+              ? random.nextDouble() * 100
+              : sets.get(i - 1).weight() + (random.nextDouble() - 0.5) * 5;
+      weight = weight < 0 ? 0 : weight;
+
+      double previousRir = i == 0 ? random.nextDouble() * 5 : sets.get(i - 1).rir();
+      double rir = previousRir + (Math.random() - 0.5); // Variación pequeña en el rango [-0.5, 0.5]
+
+      sets.add(new SetRecord(reps, weight, rir));
+    }
+
+    return sets;
   }
 }
