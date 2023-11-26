@@ -5,57 +5,46 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.common.sort.application.EntitySorter;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.mapper.UpdateSetListOrderServiceMapper;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.model.UpdateSetListOrderResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ListOrderNotValidException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
+import org.avillar.gymtracker.workoutapi.common.sort.application.EntitySorter;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateSetListOrderServiceImpl implements UpdateSetListOrderService {
 
-  private final SetDao setDao;
+  private final SetFacade setFacade;
   private final EntitySorter entitySorter;
   private final AuthWorkoutsService authWorkoutsService;
-  private final UpdateSetListOrderServiceMapper updateSetListOrderServiceMapper;
 
   @Override
   @Transactional
-  public List<UpdateSetListOrderResponseApplication> execute(final UUID setId, final int listOrder)
-      throws EntityNotFoundException, IllegalAccessException {
-    final Set set = getSetFull(setId);
+  public List<Set> execute(final UUID setId, final int listOrder)
+      throws SetNotFoundException, WorkoutIllegalAccessException, ListOrderNotValidException {
+    final Set set = setFacade.getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);
 
-    final List<Set> sets = setDao.getSetsBySetGroupId(set.getSetGroup().getId());
+    final List<Set> sets = setFacade.getSetsBySetGroupId(set.getSetGroup().getId());
 
     final int oldPosition = set.getListOrder();
     final int newPosition = EntitySorter.getValidListOrder(listOrder, sets.size());
+    // TODO Change with validator
 
     if (oldPosition == newPosition) {
-      return updateSetListOrderServiceMapper.map(sets);
+      return sets;
     }
 
-    sets.stream()
-        .filter(s -> s.getId().equals(setId))
-        .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Set.class, setId))
-        .setListOrder(newPosition);
+    set.setListOrder(newPosition);
 
-    entitySorter.sortUpdate(sets, set, oldPosition);
-    setDao.saveAll(sets);
+    entitySorter.sortUpdate(sets, set);
 
-    return updateSetListOrderServiceMapper.map(sets); // FIXME Must return all the sets
-  }
-
-  private Set getSetFull(final UUID setId) {
-    return setDao.getSetFullById(setId).stream()
-        .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Set.class, setId));
+    return setFacade.saveSets(sets);
+    // FIXME Must return all the sets
   }
 }

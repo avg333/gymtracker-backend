@@ -1,14 +1,17 @@
 package org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutForDateAlreadyExistsException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.application.UpdateWorkoutDateService;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateRequest;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateResponse;
-import org.jeasy.random.EasyRandom;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -21,24 +24,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateWorkoutDateControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private UpdateWorkoutDateControllerImpl controller;
 
-  @InjectMocks private UpdateWorkoutDateControllerImpl updateWorkoutDateControllerImpl;
-
-  @Mock private UpdateWorkoutDateService updateWorkoutDateService;
+  @Mock private UpdateWorkoutDateService service;
 
   @Test
-  void updateWorkoutDate() {
+  void shouldUpdateDateSuccessfully()
+      throws WorkoutNotFoundException,
+          WorkoutIllegalAccessException,
+          WorkoutForDateAlreadyExistsException {
     final UUID workoutId = UUID.randomUUID();
-    final UpdateWorkoutDateRequest updateWorkoutDateRequest =
-        easyRandom.nextObject(UpdateWorkoutDateRequest.class);
+    final UpdateWorkoutDateRequest request = Instancio.create(UpdateWorkoutDateRequest.class);
+    final LocalDate response = Instancio.create(LocalDate.class);
 
-    when(updateWorkoutDateService.execute(workoutId, updateWorkoutDateRequest.getDate()))
-        .thenReturn(updateWorkoutDateRequest.getDate());
+    when(service.execute(workoutId, request.date())).thenReturn(response);
 
-    final UpdateWorkoutDateResponse response =
-        updateWorkoutDateControllerImpl.execute(workoutId, updateWorkoutDateRequest);
-    assertNotNull(response);
-    assertEquals(updateWorkoutDateRequest.getDate(), response.getDate());
+    final UpdateWorkoutDateResponse result = controller.execute(workoutId, request);
+    assertThat(result).isNotNull();
+    assertThat(result.date()).isEqualTo(response);
   }
 }

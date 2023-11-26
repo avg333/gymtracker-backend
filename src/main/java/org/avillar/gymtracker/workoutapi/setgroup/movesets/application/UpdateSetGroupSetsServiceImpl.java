@@ -4,14 +4,13 @@ import jakarta.transaction.Transactional;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.mapper.UpdateSetGroupSetsServiceMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.model.UpdateSetGroupSetsResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
 import org.springframework.stereotype.Service;
 
 // TODO Finish this
@@ -19,17 +18,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService {
 
-  private final SetGroupDao setGroupDao;
-  private final SetDao setDao;
+  private final SetGroupFacade setGroupFacade;
+  private final SetFacade setFacade;
   private final AuthWorkoutsService authWorkoutsService;
-  private final UpdateSetGroupSetsServiceMapper updateSetGroupSetsServiceMapper;
 
   @Override
   @Transactional
-  public UpdateSetGroupSetsResponseApplication execute(
-      final UUID setGroupDestinationId, final UUID setGroupSourceId) {
+  public List<Set> execute(final UUID setGroupDestinationId, final UUID setGroupSourceId)
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
     final List<SetGroup> setGroups =
-        setGroupDao.getSetGroupFullByIds(List.of(setGroupDestinationId, setGroupSourceId));
+        setGroupFacade.getSetGroupFullByIds(List.of(setGroupDestinationId, setGroupSourceId));
     final SetGroup setGroupSource = getSetGroupByIdFromCollection(setGroups, setGroupSourceId);
     final SetGroup setGroupDestination =
         getSetGroupByIdFromCollection(setGroups, setGroupDestinationId);
@@ -39,23 +37,23 @@ public class UpdateSetGroupSetsServiceImpl implements UpdateSetGroupSetsService 
 
     final List<Set> sets = new ArrayList<>(setGroupSource.getSets().size());
     for (final Set setDb : setGroupSource.getSets()) {
-      final Set set =
-          Set.clone(setDb);
+      final Set set = setDb.createCopy();
       set.setSetGroup(setGroupDestination);
       sets.add(set);
     }
 
-    setGroupDao.deleteById(setGroupSourceId);
-    setDao.saveAll(sets);
+    setGroupFacade.deleteSetGroup(setGroupSourceId);
+    setFacade.saveSets(sets);
 
-    return new UpdateSetGroupSetsResponseApplication(updateSetGroupSetsServiceMapper.map(sets));
+    return sets;
   }
 
   private SetGroup getSetGroupByIdFromCollection(
-      final Collection<SetGroup> setGroups, final UUID setGroupId) {
+      final Collection<SetGroup> setGroups, final UUID setGroupId)
+      throws SetGroupNotFoundException {
     return setGroups.stream()
-        .filter(setGroup -> Objects.equals(setGroup.getId(), setGroupId))
+        .filter(setGroup -> setGroup.getId().equals(setGroupId))
         .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
+        .orElseThrow(() -> new SetGroupNotFoundException(setGroupId));
   }
 }

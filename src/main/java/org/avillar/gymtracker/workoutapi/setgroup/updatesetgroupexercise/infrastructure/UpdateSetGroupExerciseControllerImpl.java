@@ -2,9 +2,9 @@ package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infras
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ExerciseUnavailableException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.application.UpdateSetGroupExerciseService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseResponse;
@@ -19,9 +19,11 @@ public class UpdateSetGroupExerciseControllerImpl implements UpdateSetGroupExerc
   @Override
   public UpdateSetGroupExerciseResponse execute(
       final UUID setGroupId, final UpdateSetGroupExerciseRequest updateSetGroupExerciseRequest)
-      throws EntityNotFoundException, IllegalAccessException, ExerciseNotFoundException {
+      throws SetGroupNotFoundException,
+          WorkoutIllegalAccessException,
+          ExerciseUnavailableException {
     return new UpdateSetGroupExerciseResponse(
         updateSetGroupExerciseService.execute(
-            setGroupId, updateSetGroupExerciseRequest.getExerciseId()));
+            setGroupId, updateSetGroupExerciseRequest.exerciseId()));
   }
 }

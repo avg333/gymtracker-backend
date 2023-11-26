@@ -1,9 +1,8 @@
 package org.avillar.gymtracker.authapi.login.application;
 
-import org.avillar.gymtracker.authapi.login.application.model.LoginRequestApplication;
-import org.avillar.gymtracker.authapi.login.application.model.LoginResponseApplication;
+import org.avillar.gymtracker.authapi.common.domain.UserApp;
 
 public interface LoginService {
 
-  LoginResponseApplication execute(LoginRequestApplication loginRequestApplication);
+  UserApp execute(UserApp userApp);
 }

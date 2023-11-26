@@ -1,6 +1,8 @@
 package org.avillar.gymtracker.authapi.register.infrastructure;
 
 import lombok.RequiredArgsConstructor;
+import org.avillar.gymtracker.authapi.common.exception.application.UsernameAlreadyExistsException;
+import org.avillar.gymtracker.authapi.common.exception.application.WrongRegisterCodeException;
 import org.avillar.gymtracker.authapi.register.application.RegisterService;
 import org.avillar.gymtracker.authapi.register.infrastructure.mapper.RegisterControllerMapper;
 import org.avillar.gymtracker.authapi.register.infrastructure.model.RegisterRequest;
@@ -15,8 +17,10 @@ public class RegisterControllerImpl implements RegisterController {
   private final RegisterControllerMapper registerControllerMapper;
 
   @Override
-  public RegisterResponse execute(final RegisterRequest registerRequest) {
+  public RegisterResponse execute(final RegisterRequest registerRequest)
+      throws WrongRegisterCodeException, UsernameAlreadyExistsException {
     return registerControllerMapper.map(
-        registerService.execute(registerControllerMapper.map(registerRequest)));
+        registerService.execute(
+            registerControllerMapper.map(registerRequest), registerRequest.registerCode()));
   }
 }

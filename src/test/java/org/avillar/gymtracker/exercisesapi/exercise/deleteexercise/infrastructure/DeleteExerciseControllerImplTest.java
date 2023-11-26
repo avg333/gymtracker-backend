@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 
 import java.util.UUID;
+import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.exercise.deleteexercise.application.DeleteExerciseService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +24,7 @@ class DeleteExerciseControllerImplTest {
   @Mock private DeleteExerciseService deleteExerciseService;
 
   @Test
-  void deleteOk() {
+  void deleteOk() throws EntityNotFoundException, IllegalAccessException {
     final UUID exerciseId = UUID.randomUUID();
 
     doNothing().when(deleteExerciseService).execute(exerciseId);

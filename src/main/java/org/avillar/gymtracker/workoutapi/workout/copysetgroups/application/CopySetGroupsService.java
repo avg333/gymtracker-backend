@@ -2,13 +2,13 @@ package org.avillar.gymtracker.workoutapi.workout.copysetgroups.application;
 
 import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.CopySetGroupsResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.CopySetGroupsServiceImpl.CopySetGroupsRequest;
 
 public interface CopySetGroupsService {
 
-  List<CopySetGroupsResponseApplication> execute(
-      UUID workoutDestinationId, UUID workoutSourceId, boolean sourceWorkout)
-      throws EntityNotFoundException, IllegalAccessException;
+  List<SetGroup> execute(UUID workoutDestinationId, CopySetGroupsRequest copySetGroupsRequest)
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException;
 }

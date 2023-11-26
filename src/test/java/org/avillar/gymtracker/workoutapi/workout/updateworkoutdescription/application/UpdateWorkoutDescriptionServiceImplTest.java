@@ -1,105 +1,115 @@
 package org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.application;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class UpdateWorkoutDescriptionServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.UPDATE;
 
   @InjectMocks private UpdateWorkoutDescriptionServiceImpl updateWorkoutDescriptionService;
 
-  @Mock private WorkoutDao workoutDao;
+  @Mock private WorkoutFacade workoutFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
   @Test
-  void postOk() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final String description = easyRandom.nextObject(String.class);
+  void shouldUpdateDescriptionSuccessfully()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
+    final String description = Instancio.create(String.class);
+    final Workout workout = Instancio.create(Workout.class);
+    final Workout savedWorkout = Instancio.create(Workout.class);
 
-    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
-    when(workoutDao.save(workout)).thenAnswer(i -> i.getArguments()[0]);
+    final ArgumentCaptor<Workout> workoutArgumentCaptor = ArgumentCaptor.forClass(Workout.class);
 
-    final String result = updateWorkoutDescriptionService.execute(workout.getId(), description);
-    assertEquals(description, result);
-    verify(workoutDao).save(workout);
+    when(workoutFacade.getWorkout(workout.getId())).thenReturn(workout);
+    doNothing().when(authWorkoutsService).checkAccess(workout, AUTH_OPERATIONS);
+    when(workoutFacade.saveWorkout(workoutArgumentCaptor.capture())).thenReturn(savedWorkout);
+
+    assertThat(updateWorkoutDescriptionService.execute(workout.getId(), description))
+        .isEqualTo(savedWorkout.getDescription());
+
+    final Workout workoutArgumentCaptorValue = workoutArgumentCaptor.getValue();
+    assertThat(workoutArgumentCaptorValue)
+        .isNotNull()
+        .usingRecursiveComparison()
+        .ignoringFields("description")
+        .isEqualTo(workout);
+    assertThat(workoutArgumentCaptorValue.getDescription()).isEqualTo(workout.getDescription());
+
+    verify(workoutFacade).saveWorkout(workoutArgumentCaptorValue);
   }
 
   @Test
-  void postSameDescription() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
+  void shouldNotUpdateDescriptionWhenSameAsBefore()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
+    final Workout workout = Instancio.create(Workout.class);
+    final String description = workout.getDescription();
 
-    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
-    Mockito.doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.UPDATE);
+    when(workoutFacade.getWorkout(workout.getId())).thenReturn(workout);
+    doNothing().when(authWorkoutsService).checkAccess(workout, AUTH_OPERATIONS);
 
-    assertEquals(
-        workout.getDescription(),
-        updateWorkoutDescriptionService.execute(workout.getId(), workout.getDescription()));
-    verify(workoutDao, never()).save(any());
+    assertThat(updateWorkoutDescriptionService.execute(workout.getId(), description))
+        .isEqualTo(description);
+
+    verify(workoutFacade, never()).saveWorkout(any());
   }
 
   @Test
-  void updateNotFound() {
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToUpdateWorkout()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
+    final String description = Instancio.create(String.class);
+    final Workout workout = Instancio.create(Workout.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
+
+    when(workoutFacade.getWorkout(workout.getId())).thenReturn(workout);
+    doThrow(exception).when(authWorkoutsService).checkAccess(workout, AUTH_OPERATIONS);
+
+    assertThatThrownBy(() -> updateWorkoutDescriptionService.execute(workout.getId(), description))
+        .isEqualTo(exception);
+
+    verify(workoutFacade, never()).saveWorkout(any());
+  }
+
+  @Test
+  void shouldThrowEntityNotFoundExceptionWhenGettingNonExistentWorkout()
+      throws WorkoutNotFoundException {
+    final String description = Instancio.create(String.class);
     final UUID workoutId = UUID.randomUUID();
-    final String description = easyRandom.nextObject(String.class);
+    final WorkoutNotFoundException exception =
+        ExceptionGenerator.generateWorkoutNotFoundException();
 
-    when(workoutDao.findById(workoutId))
-        .thenThrow(new EntityNotFoundException(Workout.class, workoutId));
+    doThrow(exception).when(workoutFacade).getWorkout(workoutId);
 
-    final EntityNotFoundException exception =
-        assertThrows(
-            EntityNotFoundException.class,
-            () -> updateWorkoutDescriptionService.execute(workoutId, description));
-    assertEquals(Workout.class.getSimpleName(), exception.getClassName());
-    assertEquals(workoutId, exception.getId());
-    verify(workoutDao, never()).save(any());
-  }
+    assertThatThrownBy(() -> updateWorkoutDescriptionService.execute(workoutId, description))
+        .isEqualTo(exception);
 
-  @Test
-  void updateNotPermission() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final UUID userId = UUID.randomUUID();
-    final String description = easyRandom.nextObject(String.class);
-    final AuthOperations updateOperation = AuthOperations.UPDATE;
-
-    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
-    doThrow(new IllegalAccessException(workout, updateOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(workout, updateOperation);
-
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class,
-            () -> updateWorkoutDescriptionService.execute(workout.getId(), description));
-    assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(workout.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(updateOperation, exception.getAuthOperations());
-    verify(workoutDao, never()).save(any());
+    verify(workoutFacade, never()).saveWorkout(any());
   }
 }

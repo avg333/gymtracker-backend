@@ -2,9 +2,9 @@ package org.avillar.gymtracker.exercisesapi.musclegroup.getallmusclegroupsbymusc
 
 import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.exercisesapi.musclegroup.getallmusclegroupsbymusclesupgroup.application.model.GetAllMuscleGroupsByMuscleSupGroupResponseApplication;
+import org.avillar.gymtracker.exercisesapi.common.domain.MuscleGroup;
 
 public interface GetAllMuscleGroupsByMuscleSupGroupService {
 
-  List<GetAllMuscleGroupsByMuscleSupGroupResponseApplication> execute(UUID muscleGroupId);
+  List<MuscleGroup> execute(UUID muscleGroupId);
 }

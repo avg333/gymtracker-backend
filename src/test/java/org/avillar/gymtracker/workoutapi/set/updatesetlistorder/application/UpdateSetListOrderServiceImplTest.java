@@ -1,101 +1,51 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.common.sort.application.EntitySorter;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.mapper.UpdateSetListOrderServiceMapper;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.model.UpdateSetListOrderResponseApplication;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ListOrderNotValidException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
+import org.avillar.gymtracker.workoutapi.common.sort.application.EntitySorter;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class UpdateSetListOrderServiceImplTest {
 
-  private static final int LIST_SIZE = 5;
-
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.UPDATE;
 
   @InjectMocks private UpdateSetListOrderServiceImpl updateSetListOrderService;
 
-  @Mock private SetDao setDao;
+  @Mock private SetFacade setFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
-  @Spy private EntitySorter entitySorter;
+  @Mock private EntitySorter entitySorter;
 
-  @Spy
-  private final UpdateSetListOrderServiceMapper updateSetListOrderServiceMapper =
-      Mappers.getMapper(UpdateSetListOrderServiceMapper.class);
-
-  @Test
-  void updateOk() {
-    final List<Set> sets = getSets();
-    final Set setFirst = sets.get(0);
-    final int newPosition = 3;
-
-    when(setDao.getSetFullById(setFirst.getId())).thenReturn(List.of(setFirst));
-    when(setDao.getSetsBySetGroupId(setFirst.getSetGroup().getId()))
-        .thenReturn(new ArrayList<>(sets));
-    doNothing().when(authWorkoutsService).checkAccess(setFirst, AuthOperations.UPDATE);
-
-    final List<UpdateSetListOrderResponseApplication> result =
-        updateSetListOrderService.execute(setFirst.getId(), newPosition);
-    //    assertThat(result).hasSameSizeAs(sets);// FIXME
-    //    assertThat(result)
-    //        .usingRecursiveComparison()
-    //        .ignoringFields("listOrder")
-    //        .isEqualTo(sets); // FIXME
-    //    verify(entitySorter).sortUpdate(sets, setFirst, 0);
-    //    verify(setDao).saveAll(sets);
-  }
-
-  @Test
-  void updateSameValue() {
-    final List<Set> sets = getSets();
-    final Set setLast = sets.get(sets.size() - 1);
-
-    when(setDao.getSetFullById(setLast.getId())).thenReturn(List.of(setLast));
-    when(setDao.getSetsBySetGroupId(setLast.getSetGroup().getId()))
-        .thenReturn(new ArrayList<>(sets));
-    doNothing().when(authWorkoutsService).checkAccess(setLast, AuthOperations.UPDATE);
-
-    final List<UpdateSetListOrderResponseApplication> result =
-        updateSetListOrderService.execute(setLast.getId(), setLast.getListOrder());
-    assertThat(result).hasSameSizeAs(sets);
-    assertThat(result).usingRecursiveComparison().isEqualTo(sets);
-    verify(entitySorter, never()).sortUpdate(any(), any(), anyInt());
-    verify(setDao, never()).saveAll(any());
-  }
-
-  private List<Set> getSets() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final List<Set> sets = easyRandom.objects(Set.class, LIST_SIZE).toList();
+  private static List<Set> getSets() {
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final List<Set> sets = Instancio.createList(Set.class);
     for (int i = 0; i < sets.size(); i++) {
       final Set set = sets.get(i);
       set.setListOrder(i);
@@ -105,37 +55,111 @@ class UpdateSetListOrderServiceImplTest {
   }
 
   @Test
-  void updateNotFound() {
-    final UUID setId = UUID.randomUUID();
+  void shouldUpdateSetListOrderWithReorderSuccessfully()
+      throws SetNotFoundException, WorkoutIllegalAccessException, ListOrderNotValidException {
+    final List<Set> sets = getSets();
+    final int listOrder = sets.size() - 1;
+    final Set firstSet = sets.get(0);
+    final List<Set> savedSets = getSets();
 
-    final EntityNotFoundException exception =
-        assertThrows(
-            EntityNotFoundException.class, () -> updateSetListOrderService.execute(setId, 1));
-    assertEquals(Set.class.getSimpleName(), exception.getClassName());
-    assertEquals(setId, exception.getId());
-    verify(entitySorter, never()).sortUpdate(any(), any(), anyInt());
-    verify(setDao, never()).saveAll(any());
+    final ArgumentCaptor<List<Set>> setsCaptorBeforeSort = ArgumentCaptor.forClass(List.class);
+    final ArgumentCaptor<Set> setCaptorBeforeSort = ArgumentCaptor.forClass(Set.class);
+    final ArgumentCaptor<List<Set>> setsCaptorBeforeSave = ArgumentCaptor.forClass(List.class);
+
+    when(setFacade.getSetFull(firstSet.getId())).thenReturn(firstSet);
+    doNothing().when(authWorkoutsService).checkAccess(firstSet, AUTH_OPERATIONS);
+    when(setFacade.getSetsBySetGroupId(firstSet.getSetGroup().getId())).thenReturn(sets);
+    doNothing()
+        .when(entitySorter)
+        .sortUpdate(setsCaptorBeforeSort.capture(), setCaptorBeforeSort.capture());
+    when(setFacade.saveSets(setsCaptorBeforeSave.capture())).thenReturn(savedSets);
+
+    assertThat(updateSetListOrderService.execute(firstSet.getId(), listOrder)).isEqualTo(savedSets);
+    // FIXME
+    final List<Set> setGroupsBeforeSort = setsCaptorBeforeSort.getValue();
+    assertThat(setGroupsBeforeSort).isEqualTo(sets);
+
+    final Set setBeforeSort = setCaptorBeforeSort.getValue();
+    assertThat(setBeforeSort)
+        .usingRecursiveComparison()
+        .ignoringFields("listOrder")
+        .isEqualTo(firstSet);
+    assertThat(setBeforeSort.getListOrder()).isEqualTo(listOrder);
+
+    final List<Set> setGroupsBeforeSave = setsCaptorBeforeSave.getValue();
+    assertThat(setGroupsBeforeSave).isEqualTo(setGroupsBeforeSort);
+
+    verify(entitySorter).sortUpdate(setGroupsBeforeSort, firstSet);
+    verify(setFacade).saveSets(setGroupsBeforeSave);
   }
 
   @Test
-  void updateNotPermission() {
-    final UUID userId = UUID.randomUUID();
-    final Set set = easyRandom.nextObject(Set.class);
-    final AuthOperations updateOperation = AuthOperations.UPDATE;
+  void shouldUpdateSetListOrderWithoutReorderSuccessfully()
+      throws SetNotFoundException, WorkoutIllegalAccessException, ListOrderNotValidException {
+    final List<Set> sets = getSets();
+    final Set lastSet = sets.get(sets.size() - 1);
+    final int listOrder = lastSet.getListOrder();
 
-    when(setDao.getSetFullById(set.getId())).thenReturn(List.of(set));
-    doThrow(new IllegalAccessException(set, updateOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(set, updateOperation);
+    when(setFacade.getSetFull(lastSet.getId())).thenReturn(lastSet);
+    doNothing().when(authWorkoutsService).checkAccess(lastSet, AUTH_OPERATIONS);
+    when(setFacade.getSetsBySetGroupId(lastSet.getSetGroup().getId())).thenReturn(sets);
 
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class, () -> updateSetListOrderService.execute(set.getId(), 1));
-    assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(set.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(updateOperation, exception.getAuthOperations());
-    verify(entitySorter, never()).sortUpdate(any(), any(), anyInt());
-    verify(setDao, never()).saveAll(any());
+    assertThat(updateSetListOrderService.execute(lastSet.getId(), listOrder)).isEqualTo(sets);
+
+    verify(entitySorter, never()).sortUpdate(any(), any());
+    verify(setFacade, never()).saveSets(any());
+  }
+
+  @Test
+  void shouldThrowListOrderNotValidExceptionWhenListOrderIsNotValid()
+      throws SetNotFoundException, WorkoutIllegalAccessException {
+    final List<Set> sets = getSets();
+    final Set lastSet = sets.get(sets.size() - 1);
+    final int listOrder = -1;
+    final ListOrderNotValidException exception =
+        new ListOrderNotValidException(listOrder, 0, sets.size());
+
+    when(setFacade.getSetFull(lastSet.getId())).thenReturn(lastSet);
+    doNothing().when(authWorkoutsService).checkAccess(lastSet, AUTH_OPERATIONS);
+    when(setFacade.getSetsBySetGroupId(lastSet.getSetGroup().getId())).thenReturn(sets);
+
+    assertThatThrownBy(() -> updateSetListOrderService.execute(lastSet.getId(), listOrder))
+        .isEqualTo(exception);
+
+    verify(entitySorter, never()).sortDelete(any(), any());
+    verify(setFacade, never()).saveSets(any());
+  }
+
+  @Test
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToUpdateSetListOrder()
+      throws SetNotFoundException, WorkoutIllegalAccessException {
+    final Set set = Instancio.create(Set.class);
+    final int listOrder = 0;
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
+
+    when(setFacade.getSetFull(set.getId())).thenReturn(set);
+    doThrow(exception).when(authWorkoutsService).checkAccess(set, AUTH_OPERATIONS);
+
+    assertThatThrownBy(() -> updateSetListOrderService.execute(set.getId(), listOrder))
+        .isEqualTo(exception);
+
+    verify(entitySorter, never()).sortDelete(any(), any());
+    verify(setFacade, never()).saveSets(any());
+  }
+
+  @Test
+  void shouldThrowSetNotFoundExceptionWhenSetNotFound() throws SetNotFoundException {
+    final UUID setId = UUID.randomUUID();
+    final int listOrder = 0;
+    final SetNotFoundException exception = ExceptionGenerator.generateSetNotFoundException();
+
+    doThrow(exception).when(setFacade).getSetFull(setId);
+
+    assertThatThrownBy(() -> updateSetListOrderService.execute(setId, listOrder))
+        .isEqualTo(exception);
+
+    verify(entitySorter, never()).sortDelete(any(), any());
+    verify(setFacade, never()).saveSets(any());
   }
 }

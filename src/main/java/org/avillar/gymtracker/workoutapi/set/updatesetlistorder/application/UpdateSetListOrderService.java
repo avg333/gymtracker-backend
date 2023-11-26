@@ -2,12 +2,13 @@ package org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application;
 
 import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.set.updatesetlistorder.application.model.UpdateSetListOrderResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ListOrderNotValidException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 
 public interface UpdateSetListOrderService {
 
-  List<UpdateSetListOrderResponseApplication> execute(UUID setId, int listOrder)
-      throws EntityNotFoundException, IllegalAccessException;
+  List<Set> execute(UUID setId, int listOrder)
+      throws SetNotFoundException, WorkoutIllegalAccessException, ListOrderNotValidException;
 }

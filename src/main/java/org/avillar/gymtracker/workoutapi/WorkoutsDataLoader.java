@@ -1,19 +1,26 @@
 package org.avillar.gymtracker.workoutapi;
 
-import java.util.*;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserDao;
-import org.avillar.gymtracker.exercisesapi.domain.Exercise;
-import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
+import org.avillar.gymtracker.authapi.common.adapter.repository.UserDao;
+import org.avillar.gymtracker.authapi.common.adapter.repository.model.UserEntity;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.ExerciseDao;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseEntity;
+import org.avillar.gymtracker.workoutapi.common.adapter.repository.set.SetDao;
+import org.avillar.gymtracker.workoutapi.common.adapter.repository.set.model.SetEntity;
+import org.avillar.gymtracker.workoutapi.common.adapter.repository.setgroup.SetGroupDao;
+import org.avillar.gymtracker.workoutapi.common.adapter.repository.setgroup.model.SetGroupEntity;
+import org.avillar.gymtracker.workoutapi.common.adapter.repository.workout.WorkoutDao;
+import org.avillar.gymtracker.workoutapi.common.adapter.repository.workout.model.WorkoutEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -42,7 +49,6 @@ public class WorkoutsDataLoader implements ApplicationRunner {
   private final SetDao setDao;
   private final WorkoutDao workoutDao;
 
-
   @Value("${spring.profiles.active}")
   private String activeProfile;
 
@@ -63,7 +69,7 @@ public class WorkoutsDataLoader implements ApplicationRunner {
     }
 
     log.info("Populating workouts micro...");
-    var userIds = userDao.findAll().stream().map(UserApp::getId).toList();
+    var userIds = userDao.findAll().stream().map(UserEntity::getId).toList();
     final SaveData saveData = createHeavyData(userIds);
     saveHeavyData(saveData);
     int totalInserts =
@@ -89,7 +95,7 @@ public class WorkoutsDataLoader implements ApplicationRunner {
 
   private SaveData createHeavyData(final List<UUID> userIds) {
     final SaveData saveData = new SaveData();
-    exerciseIds.addAll(exerciseDao.findAll().stream().map(Exercise::getId).toList());
+    exerciseIds.addAll(exerciseDao.findAll().stream().map(ExerciseEntity::getId).toList());
     log.info("\tCreating workouts for {} users...", userIds.size());
     for (var userId : userIds) {
       createWorkoutsForUser(userId, saveData);
@@ -102,18 +108,18 @@ public class WorkoutsDataLoader implements ApplicationRunner {
   private void createWorkoutsForUser(UUID userId, SaveData saveData) {
     final int days = 35;
     final Calendar c = Calendar.getInstance();
-    c.setTime(new Date());
+    c.setTime(new java.util.Date());
     c.add(Calendar.DATE, -days - 1);
     for (int i = 0; i < TOTAL_DIAS; i++) {
       c.add(Calendar.DATE, 1);
       if (random.nextDouble() < PROB_GO_TO_THE_GIM) {
-        createWorkout(userId, c.getTime(), saveData);
+        createWorkout(userId, new Date(c.getTime().getTime()), saveData);
       }
     }
   }
 
   private void createWorkout(UUID userId, Date date, SaveData saveData) {
-    var workout = new Workout(date, "", userId, new HashSet<>());
+    var workout = new WorkoutEntity(null, date, null, userId, new HashSet<>());
     int totalExercises = MIN_EXERCISES + random.nextInt(MAX_EXERCISES - MIN_EXERCISES + 1);
     saveData.getWorkouts().add(workout);
     for (int i = 0; i < totalExercises; i++) {
@@ -121,13 +127,14 @@ public class WorkoutsDataLoader implements ApplicationRunner {
     }
   }
 
-  private void createSetGroup(Workout workout, int listOrder, SaveData saveData) {
+  private void createSetGroup(WorkoutEntity workout, int listOrder, SaveData saveData) {
     UUID exerciseId =
         exerciseIds.isEmpty()
             ? UUID.randomUUID()
             : exerciseIds.get(random.nextInt(exerciseIds.size()));
-    var setGroup = new SetGroup(null, exerciseId, workout, new HashSet<>());
-    setGroup.setListOrder(listOrder);
+    var setGroup =
+        new SetGroupEntity(
+            null, listOrder, null, exerciseId, workout, new HashSet<>(), null, 3, 0, 1, 0, false);
     int totalSets = MIN_EXERCISES + random.nextInt(MAX_EXERCISES - MIN_EXERCISES + 1);
     saveData.getSetGroups().add(setGroup);
     var setRecords = generateSets(totalSets);
@@ -136,23 +143,23 @@ public class WorkoutsDataLoader implements ApplicationRunner {
     }
   }
 
-  private void createSet(SetGroup setGroup, int listOrder, SaveData saveData, SetRecord setRecord) {
+  private void createSet(
+      SetGroupEntity setGroup, int listOrder, SaveData saveData, SetRecord setRecord) {
     int reps = 3 + setRecord.reps();
     double rir = (int) setRecord.rir();
     double weight = (int) setRecord.weight();
-    var set = new Set(null, reps, rir, weight, new Date(), setGroup);
-    set.setListOrder(listOrder);
+    var set =
+        new SetEntity(
+            null,
+            listOrder,
+            null,
+            reps,
+            rir,
+            weight,
+            new Timestamp(new java.util.Date().getTime()),
+            setGroup);
     saveData.getSets().add(set);
   }
-
-  @Data
-  public static class SaveData {
-    private final List<Workout> workouts = new ArrayList<>();
-    private final List<SetGroup> setGroups = new ArrayList<>();
-    private final List<Set> sets = new ArrayList<>();
-  }
-
-  public record SetRecord(int reps, double weight, double rir) {}
 
   public List<SetRecord> generateSets(int numberOfSets) {
     List<SetRecord> sets = new ArrayList<>();
@@ -175,4 +182,13 @@ public class WorkoutsDataLoader implements ApplicationRunner {
 
     return sets;
   }
+
+  @Data
+  public static class SaveData {
+    private final List<WorkoutEntity> workouts = new ArrayList<>();
+    private final List<SetGroupEntity> setGroups = new ArrayList<>();
+    private final List<SetEntity> sets = new ArrayList<>();
+  }
+
+  public record SetRecord(int reps, double weight, double rir) {}
 }

@@ -2,15 +2,16 @@ package org.avillar.gymtracker;
 
 import java.util.List;
 import org.apache.commons.lang3.SystemUtils;
-import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserDao;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.authapi.common.adapter.repository.UserDao;
+import org.avillar.gymtracker.authapi.common.adapter.repository.model.UserEntity;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,13 +20,12 @@ import redis.embedded.RedisServer;
 @Execution(ExecutionMode.SAME_THREAD)
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase
 @TestInstance(Lifecycle.PER_CLASS)
 public abstract class IntegrationBaseTest {
 
   protected static final String USER_NAME_OK = "user_ok";
   protected static final String USER_NAME_KO = "user_ko";
-
-  protected final EasyRandom easyRandom = new EasyRandom();
 
   @Autowired protected MockMvc mockMvc;
   @Autowired protected UserDao userDao;
@@ -39,8 +39,8 @@ public abstract class IntegrationBaseTest {
     userDao.deleteAll();
     userDao.saveAll(
         List.of(
-            new UserApp(null, USER_NAME_OK, easyRandom.nextObject(String.class)),
-            new UserApp(null, USER_NAME_KO, easyRandom.nextObject(String.class))));
+            new UserEntity(null, USER_NAME_OK, Instancio.create(String.class)),
+            new UserEntity(null, USER_NAME_KO, Instancio.create(String.class))));
   }
 
   protected void deleteUsers() {

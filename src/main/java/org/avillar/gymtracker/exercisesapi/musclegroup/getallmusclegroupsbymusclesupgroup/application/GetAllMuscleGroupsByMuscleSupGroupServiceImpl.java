@@ -3,28 +3,19 @@ package org.avillar.gymtracker.exercisesapi.musclegroup.getallmusclegroupsbymusc
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupDao;
-import org.avillar.gymtracker.exercisesapi.musclegroup.getallmusclegroupsbymusclesupgroup.application.mapper.GetAllMuscleGroupsByMuscleSupGroupServiceMapper;
-import org.avillar.gymtracker.exercisesapi.musclegroup.getallmusclegroupsbymusclesupgroup.application.model.GetAllMuscleGroupsByMuscleSupGroupResponseApplication;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
+import org.avillar.gymtracker.exercisesapi.common.domain.MuscleGroup;
+import org.avillar.gymtracker.exercisesapi.common.facade.musclegroup.MuscleGroupFacade;
 import org.springframework.stereotype.Service;
 
 @Service
-@EnableCaching
 @RequiredArgsConstructor
 public class GetAllMuscleGroupsByMuscleSupGroupServiceImpl
     implements GetAllMuscleGroupsByMuscleSupGroupService {
 
-  private final MuscleGroupDao muscleGroupDao;
-  private final GetAllMuscleGroupsByMuscleSupGroupServiceMapper
-      getAllMuscleGroupsByMuscleSupGroupServiceMapper;
+  private final MuscleGroupFacade muscleGroupFacade;
 
-  @Cacheable(cacheNames = "muscleGroups")
   @Override
-  public List<GetAllMuscleGroupsByMuscleSupGroupResponseApplication> execute(
-      final UUID muscleSupGroupId) {
-    return getAllMuscleGroupsByMuscleSupGroupServiceMapper.map(
-        muscleGroupDao.getALlMuscleGroupsByMuscleSupGroupId(muscleSupGroupId));
+  public List<MuscleGroup> execute(final UUID muscleSupGroupId) {
+    return muscleGroupFacade.getAllMuscleGroupsByMuscleSupGroupId(muscleSupGroupId);
   }
 }

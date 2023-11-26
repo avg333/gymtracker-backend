@@ -1,47 +1,46 @@
 package org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.application;
 
-import java.util.Date;
+import static java.util.Objects.nonNull;
+
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkoutDateException;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutForDateAlreadyExistsException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateWorkoutDateServiceImpl implements UpdateWorkoutDateService {
 
-  private final WorkoutDao workoutDao;
+  private final WorkoutFacade workoutFacade;
   private final AuthWorkoutsService authWorkoutsService;
 
   @Override
-  public Date execute(final UUID workoutId, final Date date)
-      throws EntityNotFoundException, DuplicatedWorkoutDateException, IllegalAccessException {
+  public LocalDate execute(final UUID workoutId, final LocalDate date)
+      throws WorkoutNotFoundException,
+          WorkoutForDateAlreadyExistsException,
+          WorkoutIllegalAccessException {
 
-    final Workout workout =
-        workoutDao
-            .findById(workoutId)
-            .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
+    final Workout workout = workoutFacade.getWorkout(workoutId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.UPDATE);
 
-    if (workout.getDate().equals(date)) {
-      return workout.getDate();
+    if (nonNull(workout.getDate()) && workout.getDate().equals(date)) {
+      return date;
     }
 
-    if (workoutDao.existsWorkoutByUserAndDate(workout.getUserId(), date)) {
-      throw new DuplicatedWorkoutDateException(workout.getUserId(), date);
+    if (workoutFacade.existsWorkoutByUserAndDate(workout.getUserId(), date)) {
+      throw new WorkoutForDateAlreadyExistsException(workout.getUserId(), date);
     }
 
     workout.setDate(date);
 
-    workoutDao.save(workout);
-
-    return workout.getDate();
+    return workoutFacade.saveWorkout(workout).getDate();
   }
 }

@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -10,185 +10,150 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException;
-import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException.AccessError;
-import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.mapper.CreateSetGroupServiceMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupRequestApplication;
-import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.application.model.CreateSetGroupResponseApplication;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ExerciseUnavailableException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.facade.exercise.ExercisesFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class CreateSetGroupServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  // TODO Repasar
+
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.CREATE;
 
   @InjectMocks private CreateSetGroupServiceImpl createSetGroupService;
 
-  @Mock private SetGroupDao setGroupDao;
-  @Mock private WorkoutDao workoutDao;
+  @Mock private SetGroupFacade setGroupFacade;
+  @Mock private WorkoutFacade workoutFacade;
+  @Mock private ExercisesFacade exercisesFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
-  @Spy
-  private final CreateSetGroupServiceMapper postSetGroupServiceMapper =
-      Mappers.getMapper(CreateSetGroupServiceMapper.class);
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void shouldCreateSetGroupSuccessfully(final boolean increaseExerciseUsesError)
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException, ExerciseUnavailableException {
+    final Workout workout = Instancio.create(Workout.class);
+    final SetGroup mappedSetGroup = Instancio.create(SetGroup.class);
+    final SetGroup savedSetGroup = Instancio.create(SetGroup.class);
 
-  @Mock private ExerciseRepositoryClient exerciseRepositoryClient;
+    final ArgumentCaptor<SetGroup> setGroupCaptorBeforeAuth =
+        ArgumentCaptor.forClass(SetGroup.class);
+    final ArgumentCaptor<SetGroup> setGroupCaptorBeforeSave =
+        ArgumentCaptor.forClass(SetGroup.class);
 
-  @Test
-  void postOk() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final CreateSetGroupRequestApplication createSetGroupRequestApplication =
-        new CreateSetGroupRequestApplication();
-    createSetGroupRequestApplication.setExerciseId(setGroup.getExerciseId());
-    createSetGroupRequestApplication.setDescription(setGroup.getDescription());
-
-    when(workoutDao.getWorkoutWithSetGroupsById(setGroup.getWorkout().getId()))
-        .thenReturn(List.of(setGroup.getWorkout()));
+    when(workoutFacade.getWorkoutWithSetGroups(workout.getId())).thenReturn(workout);
     doNothing()
         .when(authWorkoutsService)
-        .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE)); // FIXME Avoid any
-    doNothing().when(exerciseRepositoryClient).checkExerciseAccessById(setGroup.getExerciseId());
-    when(exerciseRepositoryClient.incrementExerciseUses(setGroup.getExerciseId()))
-        .thenReturn(easyRandom.nextInt());
-    when(setGroupDao.save(any(SetGroup.class))).thenAnswer(i -> i.getArguments()[0]);
+        .checkAccess(setGroupCaptorBeforeAuth.capture(), eq(AUTH_OPERATIONS));
+    doNothing().when(exercisesFacade).checkExerciseAccessById(mappedSetGroup.getExerciseId());
+    if (increaseExerciseUsesError) {
+      doThrow(ExceptionGenerator.generateExerciseUnavailableException())
+          .when(exercisesFacade)
+          .incrementExerciseUses(workout.getUserId(), mappedSetGroup.getExerciseId());
+    } else {
+      when(exercisesFacade.incrementExerciseUses(
+              workout.getUserId(), mappedSetGroup.getExerciseId()))
+          .thenReturn(Instancio.create(Integer.class));
+    }
+    when(setGroupFacade.saveSetGroup(setGroupCaptorBeforeSave.capture())).thenReturn(savedSetGroup);
 
-    final CreateSetGroupResponseApplication result =
-        createSetGroupService.execute(
-            setGroup.getWorkout().getId(), createSetGroupRequestApplication);
-    // assertNotNull(result.getId()); TODO Fix .save
-    assertEquals(setGroup.getWorkout().getSetGroups().size(), result.getListOrder());
-    assertThat(result)
+    assertThat(createSetGroupService.execute(workout.getId(), mappedSetGroup))
+        .isEqualTo(savedSetGroup);
+
+    final SetGroup setGroupCaptorBeforeAuthValue = setGroupCaptorBeforeAuth.getValue();
+    assertThat(setGroupCaptorBeforeAuthValue)
+        .isNotNull()
         .usingRecursiveComparison()
-        .ignoringFields("id", "listOrder")
-        .isEqualTo(setGroup); // FIXME
-    verify(exerciseRepositoryClient).checkExerciseAccessById(setGroup.getExerciseId());
-    verify(exerciseRepositoryClient).incrementExerciseUses(setGroup.getExerciseId());
-    verify(setGroupDao).save(any(SetGroup.class)); // FIXME
+        .ignoringFields("workout", "listOrder")
+        .isEqualTo(mappedSetGroup);
+    assertThat(setGroupCaptorBeforeAuthValue.getWorkout()).isEqualTo(workout);
+    assertThat(setGroupCaptorBeforeAuthValue.getListOrder())
+        .isEqualTo(workout.getSetGroups().size());
+
+    final SetGroup setGroupCaptorBeforeSaveValue = setGroupCaptorBeforeSave.getValue();
+    assertThat(setGroupCaptorBeforeSaveValue).isEqualTo(setGroupCaptorBeforeAuthValue);
+
+    verify(exercisesFacade).checkExerciseAccessById(mappedSetGroup.getExerciseId());
+    verify(exercisesFacade)
+        .incrementExerciseUses(workout.getUserId(), mappedSetGroup.getExerciseId());
+    verify(setGroupFacade).saveSetGroup(setGroupCaptorBeforeSaveValue);
   }
 
   @Test
-  void exerciseNotFound() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final CreateSetGroupRequestApplication createSetGroupRequestApplication =
-        easyRandom.nextObject(CreateSetGroupRequestApplication.class);
-    final AccessError notFound = AccessError.NOT_FOUND;
+  void shouldThrowExerciseUnavailableExceptionWhenUserHasNoPermissionToUseExerciseOrNotExists()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException, ExerciseUnavailableException {
+    final Workout workout = Instancio.create(Workout.class);
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final ExerciseUnavailableException exception =
+        ExceptionGenerator.generateExerciseUnavailableException();
 
-    when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
-    doNothing()
-        .when(authWorkoutsService)
-        .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE));
-    doThrow(
-            new ExerciseNotFoundException(
-                createSetGroupRequestApplication.getExerciseId(), notFound))
-        .when(exerciseRepositoryClient)
-        .checkExerciseAccessById(createSetGroupRequestApplication.getExerciseId());
+    when(workoutFacade.getWorkoutWithSetGroups(workout.getId())).thenReturn(workout);
+    doNothing().when(authWorkoutsService).checkAccess(any(SetGroup.class), eq(AUTH_OPERATIONS));
+    doThrow(exception).when(exercisesFacade).checkExerciseAccessById(setGroup.getExerciseId());
 
-    final ExerciseNotFoundException exception =
-        assertThrows(
-            ExerciseNotFoundException.class,
-            () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
-    assertEquals(createSetGroupRequestApplication.getExerciseId(), exception.getId());
-    assertEquals(notFound, exception.getAccessError());
-    verify(exerciseRepositoryClient)
-        .checkExerciseAccessById(createSetGroupRequestApplication.getExerciseId());
-    verify(exerciseRepositoryClient, never()).incrementExerciseUses(any());
-    verify(setGroupDao, never()).save(any());
+    assertThatThrownBy(() -> createSetGroupService.execute(workout.getId(), setGroup))
+        .isEqualTo(exception);
+
+    verify(exercisesFacade).checkExerciseAccessById(setGroup.getExerciseId());
+    verify(exercisesFacade, never()).incrementExerciseUses(any(), any());
+    verify(setGroupFacade, never()).saveSetGroup(any());
   }
 
   @Test
-  void exerciseNotAccess() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final CreateSetGroupRequestApplication createSetGroupRequestApplication =
-        easyRandom.nextObject(CreateSetGroupRequestApplication.class);
-    final AccessError notAccess = AccessError.NOT_ACCESS;
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToCreateSetGroupInWorkout()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException, ExerciseUnavailableException {
+    final Workout workout = Instancio.create(Workout.class);
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
 
-    when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
-    doNothing()
-        .when(authWorkoutsService)
-        .checkAccess(any(SetGroup.class), eq(AuthOperations.CREATE));
-    doThrow(
-            new ExerciseNotFoundException(
-                createSetGroupRequestApplication.getExerciseId(), notAccess))
-        .when(exerciseRepositoryClient)
-        .checkExerciseAccessById(createSetGroupRequestApplication.getExerciseId());
+    when(workoutFacade.getWorkoutWithSetGroups(workout.getId())).thenReturn(workout);
+    doThrow(exception).when(authWorkoutsService).checkAccess(setGroup, AUTH_OPERATIONS);
 
-    final ExerciseNotFoundException exception =
-        assertThrows(
-            ExerciseNotFoundException.class,
-            () -> createSetGroupService.execute(workout.getId(), createSetGroupRequestApplication));
-    assertEquals(createSetGroupRequestApplication.getExerciseId(), exception.getId());
-    assertEquals(notAccess, exception.getAccessError());
-    verify(exerciseRepositoryClient)
-        .checkExerciseAccessById(createSetGroupRequestApplication.getExerciseId());
-    verify(exerciseRepositoryClient, never()).incrementExerciseUses(any());
-    verify(setGroupDao, never()).save(any());
+    assertThatThrownBy(() -> createSetGroupService.execute(workout.getId(), setGroup))
+        .isEqualTo(exception);
+
+    verify(exercisesFacade, never()).checkExerciseAccessById(any());
+    verify(exercisesFacade, never()).incrementExerciseUses(any(), any());
+    verify(setGroupFacade, never()).saveSetGroup(any());
   }
 
   @Test
-  void workoutNotFound() {
+  void shouldThrowWorkoutNotFoundExceptionWhenWorkoutIsNotFound()
+      throws WorkoutNotFoundException, ExerciseUnavailableException {
     final UUID workoutId = UUID.randomUUID();
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final WorkoutNotFoundException exception =
+        ExceptionGenerator.generateWorkoutNotFoundException();
 
-    when(workoutDao.getWorkoutWithSetGroupsById(workoutId)).thenReturn(Collections.emptyList());
+    doThrow(exception).when(workoutFacade).getWorkoutWithSetGroups(workoutId);
 
-    final EntityNotFoundException exception =
-        assertThrows(
-            EntityNotFoundException.class,
-            () ->
-                createSetGroupService.execute(
-                    workoutId, easyRandom.nextObject(CreateSetGroupRequestApplication.class)));
-    assertEquals(Workout.class.getSimpleName(), exception.getClassName());
-    assertEquals(workoutId, exception.getId());
-    verify(exerciseRepositoryClient, never()).checkExerciseAccessById(any());
-    verify(exerciseRepositoryClient, never()).incrementExerciseUses(any());
-    verify(setGroupDao, never()).save(any());
-  }
+    assertThatThrownBy(() -> createSetGroupService.execute(workoutId, setGroup))
+        .isEqualTo(exception);
 
-  @Test
-  void createNotPermission() {
-    final UUID userId = UUID.randomUUID();
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final AuthOperations createOperation = AuthOperations.CREATE;
-
-    when(workoutDao.getWorkoutWithSetGroupsById(workout.getId())).thenReturn(List.of(workout));
-    doThrow(new IllegalAccessException(new SetGroup(), createOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(any(SetGroup.class), eq(createOperation));
-
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class,
-            () ->
-                createSetGroupService.execute(
-                    workout.getId(),
-                    easyRandom.nextObject(CreateSetGroupRequestApplication.class)));
-    assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
-    assertNull(exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(createOperation, exception.getAuthOperations());
-    verify(exerciseRepositoryClient, never()).checkExerciseAccessById(any());
-    verify(exerciseRepositoryClient, never()).incrementExerciseUses(any());
-    verify(setGroupDao, never()).save(any());
+    verify(exercisesFacade, never()).checkExerciseAccessById(any());
+    verify(exercisesFacade, never()).incrementExerciseUses(any(), any());
+    verify(setGroupFacade, never()).saveSetGroup(any());
   }
 }

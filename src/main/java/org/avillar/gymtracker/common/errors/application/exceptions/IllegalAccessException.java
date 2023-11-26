@@ -4,28 +4,27 @@ import java.util.Objects;
 import java.util.UUID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.avillar.gymtracker.common.base.domain.BaseEntity;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class IllegalAccessException extends RuntimeException {
+public class IllegalAccessException extends Exception {
 
   private final String entityClassName;
   private final UUID entityId;
   private final AuthOperations authOperations;
   private final UUID currentUserId;
 
-  public <T extends BaseEntity, I extends BaseEntity> IllegalAccessException(
-      T entity, AuthOperations authOperations, UUID userId) {
+  public IllegalAccessException(
+      Class<?> className, UUID entityId, AuthOperations authOperations, UUID userId) {
     super(
         IllegalAccessException.generateMessage(
-            entity.getClass().getSimpleName(),
-            Objects.nonNull(entity.getId()) ? entity.getId().toString() : "",
+            className.getSimpleName(),
+            Objects.nonNull(entityId) ? entityId.toString() : "",
             authOperations.toString(),
             userId.toString()));
-    this.entityClassName = entity.getClass().getSimpleName();
-    this.entityId = entity.getId();
+    this.entityClassName = className.getSimpleName();
+    this.entityId = entityId;
     this.authOperations = authOperations;
     this.currentUserId = userId;
   }

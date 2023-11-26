@@ -2,12 +2,12 @@ package org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.UpdateSetDataService;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.mapper.UpdateSetDataControllerMapper;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequestDto;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponseDto;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,11 +18,11 @@ public class UpdateSetDataControllerImpl implements UpdateSetDataController {
   private final UpdateSetDataControllerMapper updateSetDataControllerMapper;
 
   @Override
-  public UpdateSetDataResponse execute(
-      final UUID setId, final UpdateSetDataRequest updateSetDataRequest)
-      throws EntityNotFoundException, IllegalAccessException {
+  public UpdateSetDataResponseDto execute(
+      final UUID setId, final UpdateSetDataRequestDto updateSetDataRequestDto)
+      throws SetNotFoundException, WorkoutIllegalAccessException {
     return updateSetDataControllerMapper.map(
         updateSetDataService.execute(
-            setId, updateSetDataControllerMapper.map(updateSetDataRequest)));
+            setId, updateSetDataControllerMapper.map(updateSetDataRequestDto)));
   }
 }

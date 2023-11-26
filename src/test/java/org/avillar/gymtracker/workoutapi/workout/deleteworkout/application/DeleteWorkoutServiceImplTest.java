@@ -1,26 +1,36 @@
 package org.avillar.gymtracker.workoutapi.workout.deleteworkout.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ExerciseUnavailableException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.facade.exercise.ExercisesFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.exercise.model.DeleteExerciseUsesRequestFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,56 +39,77 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DeleteWorkoutServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.DELETE;
 
   @InjectMocks private DeleteWorkoutServiceImpl deleteWorkoutService;
 
-  @Mock private WorkoutDao workoutDao;
+  @Mock private WorkoutFacade workoutFacade;
+  @Mock private ExercisesFacade exercisesFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
   @Test
-  void deleteOk() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
+  void shouldDeleteWorkoutSuccessfully()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException, ExerciseUnavailableException {
+    final Workout workout = Instancio.create(Workout.class);
+    final ArgumentCaptor<DeleteExerciseUsesRequestFacade> decrementExercisesUsesCaptor =
+        ArgumentCaptor.forClass(DeleteExerciseUsesRequestFacade.class);
 
-    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
-    doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.DELETE);
+    when(workoutFacade.getWorkoutWithSetGroups(workout.getId())).thenReturn(workout);
+    doNothing().when(authWorkoutsService).checkAccess(workout, AUTH_OPERATIONS);
+    doNothing()
+        .when(exercisesFacade)
+        .decrementExercisesUses(eq(workout.getUserId()), decrementExercisesUsesCaptor.capture());
 
     assertDoesNotThrow(() -> deleteWorkoutService.execute(workout.getId()));
-    verify(workoutDao).deleteById(workout.getId());
+
+    final List<UUID> exerciseIds =
+        workout.getSetGroups().stream()
+            .map(SetGroup::getExerciseId)
+            .filter(Objects::nonNull)
+            .toList();
+    final DeleteExerciseUsesRequestFacade captorValue = decrementExercisesUsesCaptor.getValue();
+    assertThat(captorValue).isNotNull();
+    assertThat(captorValue.getExerciseUses()).isNotNull().hasSameSizeAs(exerciseIds);
+    captorValue
+        .getExerciseUses()
+        .forEach(
+            exerciseUses -> {
+              assertThat(exerciseUses.getUses()).isEqualTo(1);
+              assertThat(exerciseIds).contains(exerciseUses.getExerciseId());
+            });
+
+    verify(workoutFacade).deleteWorkout(workout.getId());
+    verify(exercisesFacade).decrementExercisesUses(workout.getUserId(), captorValue);
   }
 
   @Test
-  void workoutNotFound() {
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToDeleteWorkout()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException, ExerciseUnavailableException {
+    final Workout workout = Instancio.create(Workout.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
+
+    when(workoutFacade.getWorkoutWithSetGroups(workout.getId())).thenReturn(workout);
+    doThrow(exception).when(authWorkoutsService).checkAccess(workout, AUTH_OPERATIONS);
+
+    assertThatThrownBy(() -> deleteWorkoutService.execute(workout.getId())).isEqualTo(exception);
+
+    verify(workoutFacade, never()).deleteWorkout(any());
+    verify(exercisesFacade, never()).decrementExercisesUses(any(), any());
+  }
+
+  @Test
+  void shouldThrowEntityNotFoundExceptionWhenGettingNonExistentWorkout()
+      throws WorkoutNotFoundException, ExerciseUnavailableException {
     final UUID workoutId = UUID.randomUUID();
+    final WorkoutNotFoundException exception =
+        ExceptionGenerator.generateWorkoutNotFoundException();
 
-    when(workoutDao.findById(workoutId))
-        .thenThrow(new EntityNotFoundException(Workout.class, workoutId));
+    doThrow(exception).when(workoutFacade).getWorkoutWithSetGroups(workoutId);
 
-    final EntityNotFoundException exception =
-        assertThrows(EntityNotFoundException.class, () -> deleteWorkoutService.execute(workoutId));
-    assertEquals(Workout.class.getSimpleName(), exception.getClassName());
-    assertEquals(workoutId, exception.getId());
-    verify(workoutDao, never()).deleteById(any());
-  }
+    assertThatThrownBy(() -> deleteWorkoutService.execute(workoutId)).isEqualTo(exception);
 
-  @Test
-  void deleteNotPermission() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final UUID userId = UUID.randomUUID();
-    final AuthOperations deleteOperation = AuthOperations.DELETE;
-
-    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
-    doThrow(new IllegalAccessException(workout, deleteOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(workout, deleteOperation);
-
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class, () -> deleteWorkoutService.execute(workout.getId()));
-    assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(workout.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(deleteOperation, exception.getAuthOperations());
-    verify(workoutDao, never()).deleteById(any());
+    verify(workoutFacade, never()).deleteWorkout(any());
+    verify(exercisesFacade, never()).decrementExercisesUses(any(), any());
   }
 }

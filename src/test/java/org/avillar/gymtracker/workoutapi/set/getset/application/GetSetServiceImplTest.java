@@ -1,87 +1,69 @@
 package org.avillar.gymtracker.workoutapi.set.getset.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.set.getset.application.mapper.GetSetServiceMapper;
-import org.avillar.gymtracker.workoutapi.set.getset.application.model.GetSetResponseApplication;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetSetServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.READ;
 
   @InjectMocks private GetSetServiceImpl getSetService;
 
-  @Mock private SetDao setDao;
+  @Mock private SetFacade setFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
-  @Spy
-  private final GetSetServiceMapper getSetServiceMapper =
-      Mappers.getMapper(GetSetServiceMapper.class);
-
   @Test
-  void getOk() {
-    final Set set = easyRandom.nextObject(Set.class);
+  void shouldGetSetSuccessfully() throws SetNotFoundException, WorkoutIllegalAccessException {
+    final Set set = Instancio.create(Set.class);
 
-    when(setDao.getSetFullById(set.getId())).thenReturn(List.of(set));
-    doNothing().when(authWorkoutsService).checkAccess(set, AuthOperations.READ);
+    when(setFacade.getSetFull(set.getId())).thenReturn(set);
+    doNothing().when(authWorkoutsService).checkAccess(set, AUTH_OPERATIONS);
 
-    final GetSetResponseApplication result = getSetService.execute(set.getId());
-    assertThat(result).usingRecursiveComparison().isEqualTo(set);
+    assertThat(getSetService.execute(set.getId())).isEqualTo(set);
   }
 
   @Test
-  void getNotFound() {
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToReadSet()
+      throws SetNotFoundException, WorkoutIllegalAccessException {
+    final Set set = Instancio.create(Set.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
+
+    when(setFacade.getSetFull(set.getId())).thenReturn(set);
+    doThrow(exception).when(authWorkoutsService).checkAccess(set, AUTH_OPERATIONS);
+
+    assertThatThrownBy(() -> getSetService.execute(set.getId())).isEqualTo(exception);
+  }
+
+  @Test
+  void shouldThrowSetNotFoundExceptionWhenSetIsNotFound() throws SetNotFoundException {
     final UUID setId = UUID.randomUUID();
+    final SetNotFoundException exception = ExceptionGenerator.generateSetNotFoundException();
 
-    when(setDao.getSetFullById(setId)).thenReturn(Collections.emptyList());
+    doThrow(exception).when(setFacade).getSetFull(setId);
 
-    final EntityNotFoundException exception =
-        assertThrows(EntityNotFoundException.class, () -> getSetService.execute(setId));
-    assertEquals(Set.class.getSimpleName(), exception.getClassName());
-    assertEquals(setId, exception.getId());
-  }
-
-  @Test
-  void getNotPermission() {
-    final UUID userId = UUID.randomUUID();
-    final Set set = easyRandom.nextObject(Set.class);
-    final AuthOperations readOperation = AuthOperations.READ;
-
-    when(setDao.getSetFullById(set.getId())).thenReturn(List.of(set));
-    doThrow(new IllegalAccessException(set, readOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(set, readOperation);
-
-    final IllegalAccessException exception =
-        assertThrows(IllegalAccessException.class, () -> getSetService.execute(set.getId()));
-    assertEquals(Set.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(set.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(readOperation, exception.getAuthOperations());
+    assertThatThrownBy(() -> getSetService.execute(setId)).isEqualTo(exception);
   }
 }

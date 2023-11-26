@@ -1,5 +1,6 @@
 package org.avillar.gymtracker.workoutapi.workout.copysetgroups.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -8,187 +9,189 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.NotImplementedException;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.mapper.CopySetGroupsServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.CopySetGroupsResponseApplication;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.CopySetGroupsServiceImpl.CopySetGroupsRequest;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.CopySetGroupsServiceImpl.CopySetGroupsRequest.Source;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class CopySetGroupsServiceImplTest {
 
-  private static final int LIST_SIZE = 5;
-
-  private final EasyRandom easyRandom = new EasyRandom();
-
   @InjectMocks private CopySetGroupsServiceImpl copySetGroupsService;
 
-  @Mock private WorkoutDao workoutDao;
-  @Mock private SetGroupDao setGroupDao;
-  @Mock private SetDao setDao;
+  @Mock private WorkoutFacade workoutFacade;
+  @Mock private SetGroupFacade setGroupFacade;
+  @Mock private SetFacade setFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
-  @Spy
-  private final CopySetGroupsServiceMapper copySetGroupsServiceMapper =
-      Mappers.getMapper(CopySetGroupsServiceMapper.class);
-
-  @Test
-  void copyOk() {
-    final Workout workoutDestination = getWorkout();
-    final Workout workoutSource = getWorkout();
-
-    when(workoutDao.getFullWorkoutByIds(List.of(workoutDestination.getId(), workoutSource.getId())))
-        .thenReturn(List.of(workoutDestination, workoutSource));
-    doNothing().when(authWorkoutsService).checkAccess(workoutDestination, AuthOperations.UPDATE);
-    doNothing().when(authWorkoutsService).checkAccess(workoutSource, AuthOperations.READ);
-
-    final List<CopySetGroupsResponseApplication> result =
-        copySetGroupsService.execute(workoutDestination.getId(), workoutSource.getId(), true);
-
-    // assertThat(result).hasSameSizeAs(expected); TODO Finish tests
-    // assertThat(result).usingRecursiveComparison().isEqualTo(expected);
-    verify(setGroupDao).saveAll(any());
-    verify(setDao).saveAll(any());
-  }
-
-  private Workout getWorkout() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, LIST_SIZE).toList();
+  private static Workout getWorkout() {
+    final Workout workout = Instancio.create(Workout.class);
+    final List<SetGroup> setGroups = Instancio.createList(SetGroup.class);
     for (int i = 0; i < setGroups.size(); i++) {
       final SetGroup setGroup = setGroups.get(i);
       setGroup.setListOrder(i);
       setGroup.setWorkout(workout);
-      final List<Set> sets = easyRandom.objects(Set.class, LIST_SIZE).toList();
+      final List<Set> sets = Instancio.createList(Set.class);
       for (int j = 0; j < sets.size(); j++) {
         final Set set = sets.get(j);
         set.setListOrder(j);
         set.setSetGroup(setGroup);
       }
-      setGroup.setSets(new HashSet<>(sets));
+      setGroup.setSets(sets);
     }
-    workout.setSetGroups(new HashSet<>(setGroups));
+    workout.setSetGroups(setGroups);
     return workout;
   }
 
   @Test
+  void copyOk() throws WorkoutIllegalAccessException, WorkoutNotFoundException {
+    final Workout workoutDestination = getWorkout();
+    final Workout workoutSource = getWorkout();
+    final CopySetGroupsRequest request =
+        CopySetGroupsRequest.builder().id(workoutSource.getId()).source(Source.WORKOUT).build();
+
+    when(workoutFacade.getFullWorkoutsByIds(
+            List.of(workoutDestination.getId(), workoutSource.getId())))
+        .thenReturn(List.of(workoutDestination, workoutSource));
+    doNothing().when(authWorkoutsService).checkAccess(workoutDestination, AuthOperations.UPDATE);
+    doNothing().when(authWorkoutsService).checkAccess(workoutSource, AuthOperations.READ);
+
+    final List<SetGroup> result = copySetGroupsService.execute(workoutDestination.getId(), request);
+
+    assertThat(result).isNotNull();
+    // assertThat(result).usingRecursiveComparison().isEqualTo(expected);TODO Finish tests
+    verify(setGroupFacade).saveSetGroups(any());
+    verify(setFacade).saveSets(any());
+  }
+
+  @Test
   void notImplemented() {
+    final UUID workoutSourceId = UUID.randomUUID();
+    final CopySetGroupsRequest request =
+        CopySetGroupsRequest.builder().id(UUID.randomUUID()).source(Source.SESSION).build();
+
     assertThrows(
         NotImplementedException.class,
-        () -> copySetGroupsService.execute(UUID.randomUUID(), UUID.randomUUID(), false));
-    verify(setGroupDao, never()).saveAll(any());
-    verify(setDao, never()).saveAll(any());
+        () -> copySetGroupsService.execute(workoutSourceId, request));
+    verify(setGroupFacade, never()).saveSetGroups(any());
+    verify(setFacade, never()).saveSets(any());
   }
 
   @Test
   void sourceNotFound() {
-    final Workout workoutDestination = easyRandom.nextObject(Workout.class);
+    final Workout workoutDestination = Instancio.create(Workout.class);
     final UUID workoutSourceId = UUID.randomUUID();
+    final CopySetGroupsRequest request =
+        CopySetGroupsRequest.builder().id(workoutSourceId).source(Source.WORKOUT).build();
 
-    when(workoutDao.getFullWorkoutByIds(List.of(workoutDestination.getId(), workoutSourceId)))
+    when(workoutFacade.getFullWorkoutsByIds(List.of(workoutDestination.getId(), workoutSourceId)))
         .thenReturn(List.of(workoutDestination));
 
     final EntityNotFoundException exception =
         assertThrows(
             EntityNotFoundException.class,
-            () -> copySetGroupsService.execute(workoutDestination.getId(), workoutSourceId, true));
+            () -> copySetGroupsService.execute(workoutDestination.getId(), request));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutSourceId, exception.getId());
-    verify(setGroupDao, never()).saveAll(any());
-    verify(setDao, never()).saveAll(any());
+    verify(setGroupFacade, never()).saveSetGroups(any());
+    verify(setFacade, never()).saveSets(any());
   }
 
   @Test
   void destinationNotFound() {
-    final Workout workoutSource = easyRandom.nextObject(Workout.class);
+    final Workout workoutSource = Instancio.create(Workout.class);
     final UUID workoutDestinationId = UUID.randomUUID();
+    final CopySetGroupsRequest request =
+        CopySetGroupsRequest.builder().id(workoutSource.getId()).source(Source.WORKOUT).build();
 
-    when(workoutDao.getFullWorkoutByIds(List.of(workoutDestinationId, workoutSource.getId())))
+    when(workoutFacade.getFullWorkoutsByIds(List.of(workoutDestinationId, workoutSource.getId())))
         .thenReturn(List.of(workoutSource));
 
     final EntityNotFoundException exception =
         assertThrows(
             EntityNotFoundException.class,
-            () -> copySetGroupsService.execute(workoutDestinationId, workoutSource.getId(), true));
+            () -> copySetGroupsService.execute(workoutDestinationId, request));
     assertEquals(Workout.class.getSimpleName(), exception.getClassName());
     assertEquals(workoutDestinationId, exception.getId());
-    verify(setGroupDao, never()).saveAll(any());
-    verify(setDao, never()).saveAll(any());
+    verify(setGroupFacade, never()).saveSetGroups(any());
+    verify(setFacade, never()).saveSets(any());
   }
 
   @Test
-  void destinationNotPermission() {
-    final Workout workoutDestination = easyRandom.nextObject(Workout.class);
-    final Workout workoutSource = easyRandom.nextObject(Workout.class);
+  void destinationNotPermission() throws WorkoutIllegalAccessException {
+    final Workout workoutDestination = Instancio.create(Workout.class);
+    final Workout workoutSource = Instancio.create(Workout.class);
     final UUID userId = UUID.randomUUID();
     final AuthOperations updateOperation = AuthOperations.UPDATE;
+    final CopySetGroupsRequest request =
+        CopySetGroupsRequest.builder().id(workoutSource.getId()).source(Source.WORKOUT).build();
 
-    when(workoutDao.getFullWorkoutByIds(List.of(workoutDestination.getId(), workoutSource.getId())))
+    when(workoutFacade.getFullWorkoutsByIds(
+            List.of(workoutDestination.getId(), workoutSource.getId())))
         .thenReturn(List.of(workoutDestination, workoutSource));
-    doThrow(new IllegalAccessException(workoutDestination, updateOperation, userId))
+    doThrow(new WorkoutIllegalAccessException(workoutDestination.getId(), updateOperation, userId))
         .when(authWorkoutsService)
         .checkAccess(workoutDestination, updateOperation);
 
-    final IllegalAccessException exception =
+    final WorkoutIllegalAccessException exception =
         assertThrows(
-            IllegalAccessException.class,
-            () ->
-                copySetGroupsService.execute(
-                    workoutDestination.getId(), workoutSource.getId(), true));
+            WorkoutIllegalAccessException.class,
+            () -> copySetGroupsService.execute(workoutDestination.getId(), request));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workoutDestination.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(updateOperation, exception.getAuthOperations());
-    verify(setGroupDao, never()).saveAll(any());
-    verify(setDao, never()).saveAll(any());
+    verify(setGroupFacade, never()).saveSetGroups(any());
+    verify(setFacade, never()).saveSets(any());
   }
 
   @Test
-  void sourceNotPermission() {
-    final Workout workoutDestination = easyRandom.nextObject(Workout.class);
-    final Workout workoutSource = easyRandom.nextObject(Workout.class);
+  void sourceNotPermission() throws WorkoutIllegalAccessException {
+    final Workout workoutDestination = Instancio.create(Workout.class);
+    final Workout workoutSource = Instancio.create(Workout.class);
     final UUID userId = UUID.randomUUID();
     final AuthOperations readOperation = AuthOperations.READ;
+    final CopySetGroupsRequest request =
+        CopySetGroupsRequest.builder().id(workoutSource.getId()).source(Source.WORKOUT).build();
 
-    when(workoutDao.getFullWorkoutByIds(List.of(workoutDestination.getId(), workoutSource.getId())))
+    when(workoutFacade.getFullWorkoutsByIds(
+            List.of(workoutDestination.getId(), workoutSource.getId())))
         .thenReturn(List.of(workoutDestination, workoutSource));
     doNothing().when(authWorkoutsService).checkAccess(workoutDestination, AuthOperations.UPDATE);
-    doThrow(new IllegalAccessException(workoutSource, readOperation, userId))
+    doThrow(new WorkoutIllegalAccessException(workoutSource.getId(), readOperation, userId))
         .when(authWorkoutsService)
         .checkAccess(workoutSource, readOperation);
 
-    final IllegalAccessException exception =
+    final WorkoutIllegalAccessException exception =
         assertThrows(
-            IllegalAccessException.class,
-            () ->
-                copySetGroupsService.execute(
-                    workoutDestination.getId(), workoutSource.getId(), true));
+            WorkoutIllegalAccessException.class,
+            () -> copySetGroupsService.execute(workoutDestination.getId(), request));
     assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
     assertEquals(workoutSource.getId(), exception.getEntityId());
     assertEquals(userId, exception.getCurrentUserId());
     assertEquals(readOperation, exception.getAuthOperations());
-    verify(setGroupDao, never()).saveAll(any());
-    verify(setDao, never()).saveAll(any());
+    verify(setGroupFacade, never()).saveSetGroups(any());
+    verify(setFacade, never()).saveSets(any());
   }
 }

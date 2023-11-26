@@ -1,10 +1,9 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import jakarta.validation.constraints.PositiveOrZero;
 
-@Data
-public class UpdateSetGroupListOrderRequest {
-
-  @NotNull private Integer listOrder;
-}
+public record UpdateSetGroupListOrderRequest(
+    @NotNull(message = "The list order must not be null")
+        @PositiveOrZero(message = "The list order must be a non-negative number")
+        Integer listOrder) {}

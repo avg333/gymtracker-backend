@@ -1,14 +1,14 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutsdateandid.infrastructure.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
+@Builder
 public class GetWorkoutsDateAndIdResponse {
 
-  private Map<Date, UUID> workoutsDateAndId;
+  private Map<LocalDate, UUID> workoutsDateAndId;
 }

@@ -1,14 +1,15 @@
 package org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.application.UpdateWorkoutDescriptionService;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionRequest;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionResponse;
-import org.jeasy.random.EasyRandom;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -21,26 +22,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateWorkoutDescriptionControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private UpdateWorkoutDescriptionControllerImpl controller;
 
-  @InjectMocks
-  private UpdateWorkoutDescriptionControllerImpl updateWorkoutDescriptionControllerImpl;
-
-  @Mock private UpdateWorkoutDescriptionService updateWorkoutDescriptionService;
+  @Mock private UpdateWorkoutDescriptionService service;
 
   @Test
-  void updateWorkoutDescription() {
+  void shouldUpdateDescriptionSuccessfully()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
     final UUID workoutId = UUID.randomUUID();
-    final UpdateWorkoutDescriptionRequest updateWorkoutDescriptionRequest =
-        easyRandom.nextObject(UpdateWorkoutDescriptionRequest.class);
+    final UpdateWorkoutDescriptionRequest request =
+        Instancio.create(UpdateWorkoutDescriptionRequest.class);
+    final String description = Instancio.create(String.class);
 
-    when(updateWorkoutDescriptionService.execute(
-            workoutId, updateWorkoutDescriptionRequest.getDescription()))
-        .thenReturn(updateWorkoutDescriptionRequest.getDescription());
+    when(service.execute(workoutId, request.description())).thenReturn(description);
 
-    final UpdateWorkoutDescriptionResponse result =
-        updateWorkoutDescriptionControllerImpl.execute(workoutId, updateWorkoutDescriptionRequest);
-    assertNotNull(result);
-    assertEquals(updateWorkoutDescriptionRequest.getDescription(), result.getDescription());
+    final UpdateWorkoutDescriptionResponse result = controller.execute(workoutId, request);
+    assertThat(result).isNotNull();
+    assertThat(result.description()).isEqualTo(description);
   }
 }

@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.common.sort.application.EntitySorter;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
+import org.avillar.gymtracker.workoutapi.common.sort.application.EntitySorter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,34 +17,32 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DeleteSetServiceImpl implements DeleteSetService {
 
-  private final SetDao setDao;
+  private final SetFacade setFacade;
   private final AuthWorkoutsService authWorkoutsService;
   private final EntitySorter entitySorter;
 
   @Override
   @Transactional
-  public void execute(final UUID setId) throws EntityNotFoundException, IllegalAccessException {
-    final Set set = getSetFull(setId);
+  public void execute(final UUID setId) throws SetNotFoundException, WorkoutIllegalAccessException {
+    final Set set = setFacade.getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.DELETE);
 
-    setDao.deleteById(setId);
+    final List<Set> sets = setFacade.getSetsBySetGroupId(set.getSetGroup().getId());
 
-    final List<Set> sets = setDao.getSetsBySetGroupId(set.getSetGroup().getId());
+    setFacade.deleteSet(setId);
 
-    if (set.getListOrder() != sets.size() - 1) {
-      reorderSets(sets, set);
+    if (!isSetDeletedLastSet(set, sets)) {
+      reorderSetGroupSets(sets, set);
     }
   }
 
-  private void reorderSets(final List<Set> sets, final Set set) {
+  private void reorderSetGroupSets(final List<Set> sets, final Set set) {
     entitySorter.sortDelete(sets, set);
-    setDao.saveAll(sets);
+    setFacade.saveSets(sets);
   }
 
-  private Set getSetFull(final UUID setId) {
-    return setDao.getSetFullById(setId).stream()
-        .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Set.class, setId));
+  private boolean isSetDeletedLastSet(final Set set, final List<Set> sets) {
+    return set.getListOrder() == sets.size() - 1;
   }
 }

@@ -3,6 +3,7 @@ package org.avillar.gymtracker.common.errors.infrastructure;
 import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.common.errors.infrastructure.model.ApiError;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;

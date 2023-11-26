@@ -1,12 +1,11 @@
 package org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application;
 
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.model.GetSetGroupResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 
 public interface GetSetGroupService {
 
-  GetSetGroupResponseApplication execute(UUID setGroupId)
-      throws EntityNotFoundException, IllegalAccessException;
+  SetGroup execute(UUID setGroupId) throws SetGroupNotFoundException, WorkoutIllegalAccessException;
 }

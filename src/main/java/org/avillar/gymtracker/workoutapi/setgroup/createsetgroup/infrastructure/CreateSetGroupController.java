@@ -1,16 +1,12 @@
 package org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.exception.application.ExerciseNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ExerciseUnavailableException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.setgroup.SetGroupControllerDocumentation.SetGroupControllerTag;
+import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.CreateSetGroupControllerDocumentation.Methods.CreateSetGroupDocumentation;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupResponse;
 import org.springframework.http.HttpStatus;
@@ -20,31 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Tag(name = "SetGroups", description = "API to manage setGroups")
-@RequestMapping(path = "${workoutsApiPrefix}/")
+@SetGroupControllerTag
+@RequestMapping(path = "${workoutsApiPrefix}/v1")
 public interface CreateSetGroupController {
 
-  @Operation(summary = "API used to create a setGroup")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "SetGroup created",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = CreateSetGroupResponse.class))
-            }),
-        @ApiResponse(
-            responseCode = "400",
-            description = "The exercise is not valid",
-            content = @Content),
-        @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
-        @ApiResponse(responseCode = "404", description = "Workout not found", content = @Content)
-      })
+  @CreateSetGroupDocumentation
   @PostMapping("/workouts/{workoutId}/setGroups")
   @ResponseStatus(HttpStatus.OK)
   CreateSetGroupResponse execute(
       @PathVariable UUID workoutId, @Valid @RequestBody CreateSetGroupRequest createSetGroupRequest)
-      throws EntityNotFoundException, IllegalAccessException, ExerciseNotFoundException;
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException, ExerciseUnavailableException;
 }

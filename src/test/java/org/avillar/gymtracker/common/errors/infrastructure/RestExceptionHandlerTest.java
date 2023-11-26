@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.adapter.repository.workout.model.WorkoutEntity;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -20,8 +20,6 @@ import org.springframework.data.redis.RedisConnectionFailureException;
 @ExtendWith(MockitoExtension.class)
 class RestExceptionHandlerTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
-
   @InjectMocks private RestExceptionHandler restExceptionHandler;
 
   @Test
@@ -29,18 +27,23 @@ class RestExceptionHandlerTest {
     assertEquals(
         "Entity not found",
         restExceptionHandler
-            .handleEntityNotFound(new EntityNotFoundException(Workout.class, UUID.randomUUID()))
+            .handleEntityNotFound(
+                new EntityNotFoundException(WorkoutEntity.class, "id", UUID.randomUUID()))
             .getMessage());
   }
 
   @Test
   void handleIllegalAccessException() {
+    WorkoutEntity workoutEntity = Instancio.create(WorkoutEntity.class);
     assertEquals(
         "You do not have permissions to access the resource",
         restExceptionHandler
             .handleIllegalAccessException(
                 new IllegalAccessException(
-                    easyRandom.nextObject(Workout.class), AuthOperations.READ, UUID.randomUUID()))
+                    WorkoutEntity.class,
+                    workoutEntity.getId(),
+                    AuthOperations.READ,
+                    UUID.randomUUID()))
             .getMessage());
   }
 
@@ -50,7 +53,7 @@ class RestExceptionHandlerTest {
         "Redis connection error",
         restExceptionHandler
             .handleRedisConnectionException(
-                new RedisConnectionFailureException(easyRandom.nextObject(String.class)))
+                new RedisConnectionFailureException(Instancio.create(String.class)))
             .getMessage());
   }
 

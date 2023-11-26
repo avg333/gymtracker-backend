@@ -1,12 +1,11 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application;
 
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.model.GetWorkoutSetGroupsResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 
 public interface GetWorkoutSetGroupsService {
 
-  GetWorkoutSetGroupsResponseApplication execute(UUID workoutId)
-      throws EntityNotFoundException, IllegalAccessException;
+  Workout execute(UUID workoutId) throws WorkoutNotFoundException, WorkoutIllegalAccessException;
 }

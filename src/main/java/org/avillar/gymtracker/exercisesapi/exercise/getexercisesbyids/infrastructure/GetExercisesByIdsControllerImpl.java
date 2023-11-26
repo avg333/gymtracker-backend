@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.GetExercisesByIdsService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.mapper.GetExercisesByIdsControllerMapper;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.model.GetExercisesByIdsResponseInfrastructure;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.model.GetExercisesByIdsResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +18,7 @@ public class GetExercisesByIdsControllerImpl implements GetExercisesByIdsControl
   private final GetExercisesByIdsControllerMapper getExercisesByIdsControllerMapper;
 
   @Override
-  public List<GetExercisesByIdsResponseInfrastructure> execute(final Set<UUID> exerciseIds)
+  public List<GetExercisesByIdsResponse> execute(final Set<UUID> exerciseIds)
       throws IllegalAccessException {
     return getExercisesByIdsControllerMapper.map(getExercisesByIdsService.execute(exerciseIds));
   }

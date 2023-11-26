@@ -1,39 +1,17 @@
 package org.avillar.gymtracker.exercisesapi.exercise.createexercise.application;
 
-import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.base.domain.BaseEntity;
-import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
-import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService;
-import org.avillar.gymtracker.exercisesapi.domain.Exercise;
-import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
-import org.avillar.gymtracker.exercisesapi.domain.LoadType;
-import org.avillar.gymtracker.exercisesapi.domain.LoadTypeDao;
-import org.avillar.gymtracker.exercisesapi.domain.MuscleGroup;
-import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupDao;
-import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupExercise;
-import org.avillar.gymtracker.exercisesapi.domain.MuscleGroupExerciseDao;
-import org.avillar.gymtracker.exercisesapi.domain.MuscleSubGroup;
-import org.avillar.gymtracker.exercisesapi.domain.MuscleSubGroupDao;
-import org.avillar.gymtracker.exercisesapi.exception.application.CreateExerciseException;
-import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.mapper.CreateExerciseApplicationMapper;
-import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.model.CreateExerciseRequestApplication;
-import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.model.CreateExerciseRequestApplication.MuscleGroupExercises;
-import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.model.CreateExerciseResponseApplication;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.ExerciseDao;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.LoadTypeDao;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.MuscleGroupDao;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.MuscleGroupExerciseDao;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.MuscleSubGroupDao;
+import org.avillar.gymtracker.exercisesapi.common.auth.application.AuthExercisesService;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponseDto.SetGroup.Exercise;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -49,8 +27,14 @@ public class CreateExerciseServiceImpl implements CreateExerciseService {
   private final MuscleGroupDao muscleGroupDao;
   private final MuscleGroupExerciseDao muscleGroupExerciseDao;
   private final AuthExercisesService authExercisesService;
-  private final CreateExerciseApplicationMapper createExerciseApplicationMapper;
 
+  @Override
+  public Exercise execute(final UUID userId, final Exercise exercise)
+      throws EntityNotFoundException, IllegalAccessException {
+    return null;
+  }
+}
+/*
   @Transactional
   @Override
   public CreateExerciseResponseApplication execute(
@@ -112,9 +96,7 @@ public class CreateExerciseServiceImpl implements CreateExerciseService {
   }
 
   private LoadType getLoadType(final UUID loadTypeId) {
-    return loadTypeDao
-        .findById(loadTypeId)
-        .orElseThrow(() -> new EntityNotFoundException(LoadType.class, loadTypeId));
+    return loadTypeDao.findById(loadTypeId).orElseThrow(() -> new RuntimeException()); // FIXME
   }
 
   private List<MuscleGroup> getMuscleGroups(final Set<UUID> muscleGroupsIds) {
@@ -125,8 +107,7 @@ public class CreateExerciseServiceImpl implements CreateExerciseService {
 
     if (muscleGroups.size() != muscleGroupsIds.size()) {
       final List<UUID> foundedIds = muscleGroups.stream().map(BaseEntity::getId).toList();
-      throw new EntityNotFoundException(
-          MuscleGroup.class, getMissedIds(muscleGroupsIds, foundedIds).get(FIRST));
+      throw new RuntimeException(); // FIXME
       // TODO Show all missed ids, not only the first one
     }
 
@@ -141,8 +122,7 @@ public class CreateExerciseServiceImpl implements CreateExerciseService {
 
     if (muscleSubGroups.size() != muscleSubGroupsIds.size()) {
       final List<UUID> foundedIds = muscleSubGroups.stream().map(BaseEntity::getId).toList();
-      throw new EntityNotFoundException(
-          MuscleGroup.class, getMissedIds(muscleSubGroupsIds, foundedIds).get(FIRST));
+      throw new RuntimeException(); // FIXME
       // TODO Show all missed ids, not only the first one
     }
 
@@ -168,7 +148,8 @@ public class CreateExerciseServiceImpl implements CreateExerciseService {
   private List<MuscleGroupExercise> createMuscleGroupExercises(
       final Exercise exercise,
       final List<MuscleGroup> muscleGroups,
-      final CreateExerciseRequestApplication request) {
+      final CreateExerciseRequestApplication request)
+      throws EntityNotFoundException {
     final List<MuscleGroupExercise> muscleGroupExercises =
         new ArrayList<>(request.getMuscleGroups().size());
 
@@ -189,4 +170,4 @@ public class CreateExerciseServiceImpl implements CreateExerciseService {
       final Collection<UUID> totalIds, final Collection<UUID> foundedIds) {
     return totalIds.stream().filter(uuid -> !foundedIds.contains(uuid)).toList();
   }
-}
+}*/

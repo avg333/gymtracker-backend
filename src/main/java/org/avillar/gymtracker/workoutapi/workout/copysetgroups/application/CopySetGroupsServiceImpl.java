@@ -7,52 +7,54 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.mapper.CopySetGroupsServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.CopySetGroupsResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.CopySetGroupsServiceImpl.CopySetGroupsRequest.Source;
 import org.springframework.stereotype.Service;
 
+// TODO Finish this
 @Service
 @RequiredArgsConstructor
 public class CopySetGroupsServiceImpl implements CopySetGroupsService {
 
-  private final WorkoutDao workoutDao;
-  private final SetGroupDao setGroupDao;
-  private final SetDao setDao;
+  private final WorkoutFacade workoutFacade;
+  private final SetGroupFacade setGroupFacade;
+  private final SetFacade setFacade;
   private final AuthWorkoutsService authWorkoutsService;
-  private final CopySetGroupsServiceMapper copySetGroupsServiceMapper;
 
   @Override
   @Transactional
-  public List<CopySetGroupsResponseApplication> execute(
-      final UUID workoutDestinationId, final UUID workoutSourceId, final boolean sourceWorkout)
-      throws EntityNotFoundException, IllegalAccessException {
+  public List<SetGroup> execute(
+      final UUID workoutDestinationId, final CopySetGroupsRequest copySetGroupsRequest)
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
 
-    if (!sourceWorkout) {
+    if (copySetGroupsRequest.getSource().equals(Source.SESSION)) {
       throw new NotImplementedException();
     }
 
     final List<Workout> workouts =
-        workoutDao.getFullWorkoutByIds(List.of(workoutDestinationId, workoutSourceId));
-    final Workout workoutSource = getWorkoutByIdFromCollection(workouts, workoutSourceId);
+        workoutFacade.getFullWorkoutsByIds(
+            List.of(workoutDestinationId, copySetGroupsRequest.getId()));
+    final Workout workoutSource =
+        getWorkoutByIdFromCollection(workouts, copySetGroupsRequest.getId());
     final Workout workoutDestination = getWorkoutByIdFromCollection(workouts, workoutDestinationId);
 
     authWorkoutsService.checkAccess(workoutDestination, AuthOperations.UPDATE);
     authWorkoutsService.checkAccess(workoutSource, AuthOperations.READ);
 
-    return copySetGroupsServiceMapper.map(
-        copySetGroupsToWorkout(workoutDestination, workoutSource.getSetGroups()));
+    return copySetGroupsToWorkout(workoutDestination, workoutSource.getSetGroups());
   }
 
   private List<SetGroup> copySetGroupsToWorkout(
@@ -62,28 +64,42 @@ public class CopySetGroupsServiceImpl implements CopySetGroupsService {
     final List<SetGroup> setGroups = new ArrayList<>(setGroupsSource.size());
     final List<Set> sets = new ArrayList<>();
     for (final SetGroup setGroupDb : setGroupsSource) {
-      final SetGroup setGroup = SetGroup.clone(setGroupDb);
+      final SetGroup setGroup = setGroupDb.createCopy();
       setGroup.setListOrder(setGroupDb.getListOrder() + listOrderOffset);
       setGroup.setWorkout(workout);
       setGroups.add(setGroup);
       for (final Set setDb : setGroupDb.getSets()) {
-        final Set set = Set.clone(setDb);
+        final Set set = setDb.createCopy();
         set.setSetGroup(setGroup);
         sets.add(set);
       }
     }
 
-    setGroupDao.saveAll(setGroups);
-    setDao.saveAll(sets);
+    setGroupFacade.saveSetGroups(setGroups);
+    setFacade.saveSets(sets);
 
     return Stream.concat(workout.getSetGroups().stream(), setGroups.stream()).toList();
   }
 
   private Workout getWorkoutByIdFromCollection(
-      final Collection<Workout> workouts, final UUID workoutId) {
+      final Collection<Workout> workouts, final UUID workoutId) throws WorkoutNotFoundException {
     return workouts.stream()
         .filter(workout -> Objects.equals(workout.getId(), workoutId))
         .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
+        .orElseThrow(() -> new WorkoutNotFoundException(workoutId));
+  }
+
+  @Getter
+  @Builder
+  public static class CopySetGroupsRequest {
+
+    private UUID id;
+
+    private Source source;
+
+    public enum Source {
+      WORKOUT,
+      SESSION
+    }
   }
 }

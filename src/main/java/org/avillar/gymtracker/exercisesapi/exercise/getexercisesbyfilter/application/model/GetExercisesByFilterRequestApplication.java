@@ -8,16 +8,16 @@ import lombok.Data;
 public class GetExercisesByFilterRequestApplication {
 
   private String name;
-  
+
   private String description;
-  
+
   private Boolean unilateral;
-  
+
   private List<UUID> loadTypeIds;
-  
+
   private List<UUID> muscleSupGroupIds;
-  
+
   private List<UUID> muscleGroupIds;
-  
+
   private List<UUID> muscleSubGroupIds;
 }

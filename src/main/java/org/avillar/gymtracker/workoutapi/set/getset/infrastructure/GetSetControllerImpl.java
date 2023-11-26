@@ -2,8 +2,8 @@ package org.avillar.gymtracker.workoutapi.set.getset.infrastructure;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.set.getset.application.GetSetService;
 import org.avillar.gymtracker.workoutapi.set.getset.infrastructure.mapper.GetSetControllerMapper;
 import org.avillar.gymtracker.workoutapi.set.getset.infrastructure.model.GetSetResponse;
@@ -18,7 +18,7 @@ public class GetSetControllerImpl implements GetSetController {
 
   @Override
   public GetSetResponse execute(final UUID setId)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws SetNotFoundException, WorkoutIllegalAccessException {
     return getSetControllerMapper.map(getSetService.execute(setId));
   }
 }

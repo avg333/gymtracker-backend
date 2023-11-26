@@ -6,68 +6,68 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
 import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.mapper.UpdateSetDataServiceMapper;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataRequestApplication;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataResponseApplication;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataRequest;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateSetDataServiceImpl implements UpdateSetDataService {
 
-  private final SetDao setDao;
+  private final SetFacade setFacade;
   private final AuthWorkoutsService authWorkoutsService;
   private final UpdateSetDataServiceMapper updateSetDataServiceMapper;
 
-  private static boolean isSameCompletedAt(final Boolean completed, final Date completedAt) {
-    return (!BooleanUtils.isTrue(completed) && completedAt == null)
-        || (BooleanUtils.isTrue(completed) && completedAt != null);
-  }
-
   @Override
-  @Transactional
-  public UpdateSetDataResponseApplication execute(
-      final UUID setId, final UpdateSetDataRequestApplication updateSetDataRequestApplication)
-      throws EntityNotFoundException, IllegalAccessException {
-    final Set set = getSetFull(setId);
+  public UpdateSetDataResponse execute(
+      final UUID setId, final UpdateSetDataRequest updateSetDataRequest)
+      throws SetNotFoundException, WorkoutIllegalAccessException {
+    final Set set = setFacade.getSetFull(setId);
 
     authWorkoutsService.checkAccess(set, AuthOperations.UPDATE);
 
-    final boolean sameDescription =
-        StringUtils.equals(set.getDescription(), updateSetDataRequestApplication.getDescription());
-    final boolean sameWeight = set.getWeight().equals(updateSetDataRequestApplication.getWeight());
-    final boolean sameRir = set.getRir().equals(updateSetDataRequestApplication.getRir());
-    final boolean sameReps = set.getReps().equals(updateSetDataRequestApplication.getReps());
-    final boolean sameCompletedAt =
-        isSameCompletedAt(updateSetDataRequestApplication.getCompleted(), set.getCompletedAt());
-    if (sameDescription && sameWeight && sameRir && sameReps && sameCompletedAt) {
+    if (isSameData(set, updateSetDataRequest)) {
       return updateSetDataServiceMapper.map(set);
     }
 
-    set.setDescription(updateSetDataRequestApplication.getDescription());
-    set.setWeight(updateSetDataRequestApplication.getWeight());
-    set.setReps(updateSetDataRequestApplication.getReps());
-    set.setRir(updateSetDataRequestApplication.getRir());
-    if (!BooleanUtils.isTrue(updateSetDataRequestApplication.getCompleted())) {
+    setRequestData(set, updateSetDataRequest);
+
+    return updateSetDataServiceMapper.map(setFacade.saveSet(set));
+  }
+
+  private void setRequestData(final Set set, final UpdateSetDataRequest updateSetDataRequest) {
+
+    set.setDescription(updateSetDataRequest.getDescription());
+    set.setWeight(updateSetDataRequest.getWeight());
+    set.setReps(updateSetDataRequest.getReps());
+    set.setRir(updateSetDataRequest.getRir());
+    if (!BooleanUtils.isTrue(updateSetDataRequest.getCompleted())) {
       set.setCompletedAt(null);
     } else if (set.getCompletedAt() == null) {
       set.setCompletedAt(new Date());
     }
-
-    setDao.save(set);
-
-    return updateSetDataServiceMapper.map(set);
   }
 
-  private Set getSetFull(final UUID setId) {
-    return setDao.getSetFullById(setId).stream()
-        .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Set.class, setId));
+  private boolean isSameData(final Set set, final UpdateSetDataRequest updateSetDataRequest) {
+
+    final boolean sameDescription =
+        StringUtils.equals(set.getDescription(), updateSetDataRequest.getDescription());
+    final boolean sameWeight = set.getWeight().equals(updateSetDataRequest.getWeight());
+    final boolean sameRir = set.getRir().equals(updateSetDataRequest.getRir());
+    final boolean sameReps = set.getReps().equals(updateSetDataRequest.getReps());
+    final boolean sameCompletedAt =
+        isSameCompletedAt(updateSetDataRequest.getCompleted(), set.getCompletedAt());
+    return sameDescription && sameWeight && sameRir && sameReps && sameCompletedAt;
+  }
+
+  private boolean isSameCompletedAt(final Boolean completed, final Date completedAt) {
+    return (!BooleanUtils.isTrue(completed) && completedAt == null)
+        || (BooleanUtils.isTrue(completed) && completedAt != null);
   }
 }

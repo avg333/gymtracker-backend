@@ -1,9 +1,13 @@
 package org.avillar.gymtracker.workoutapi.setgroup.movesets.application;
 
+import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.workoutapi.setgroup.movesets.application.model.UpdateSetGroupSetsResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 
 public interface UpdateSetGroupSetsService {
 
-  UpdateSetGroupSetsResponseApplication execute(UUID setGroupDestinationId, UUID setGroupSourceId);
+  List<Set> execute(UUID setGroupDestinationId, UUID setGroupSourceId)
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException;
 }

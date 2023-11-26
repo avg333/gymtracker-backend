@@ -5,54 +5,45 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ListOrderNotValidException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.UpdateSetGroupListOrderService;
-import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.model.UpdateSetGroupListOrderResponseApplication;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.mapper.UpdateSetGroupListOrderControllerMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderResponse;
-import org.jeasy.random.EasyRandom;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupListOrderControllerImplTest {
 
-  private static final int LIST_SIZE = 5;
+  @InjectMocks private UpdateSetGroupListOrderControllerImpl controller;
 
-  private final EasyRandom easyRandom = new EasyRandom();
-
-  @InjectMocks private UpdateSetGroupListOrderControllerImpl updateSetGroupListOrderControllerImpl;
-
-  @Mock private UpdateSetGroupListOrderService updateSetGroupListOrderService;
-
-  @Spy
-  private final UpdateSetGroupListOrderControllerMapper updateSetGroupListOrderControllerMapper =
-      Mappers.getMapper(UpdateSetGroupListOrderControllerMapper.class);
+  @Mock private UpdateSetGroupListOrderService service;
+  @Mock private UpdateSetGroupListOrderControllerMapper mapper;
 
   @Test
-  void updateSetGroupExercise() {
+  void shouldUpdateSetGroupListOrderWithReorderSuccessfully()
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException, ListOrderNotValidException {
     final UUID setGroupId = UUID.randomUUID();
-    final UpdateSetGroupListOrderRequest updateSetGroupListOrderRequest =
-        easyRandom.nextObject(UpdateSetGroupListOrderRequest.class);
+    final UpdateSetGroupListOrderRequest request =
+        Instancio.create(UpdateSetGroupListOrderRequest.class);
+    final List<SetGroup> response = Instancio.createList(SetGroup.class);
+    final List<UpdateSetGroupListOrderResponse> responseDto =
+        Instancio.createList(UpdateSetGroupListOrderResponse.class);
 
-    final List<UpdateSetGroupListOrderResponseApplication> expected =
-        easyRandom.objects(UpdateSetGroupListOrderResponseApplication.class, LIST_SIZE).toList();
+    when(service.execute(setGroupId, request.listOrder())).thenReturn(response);
+    when(mapper.map(response)).thenReturn(responseDto);
 
-    when(updateSetGroupListOrderService.execute(
-            setGroupId, updateSetGroupListOrderRequest.getListOrder()))
-        .thenReturn(expected);
-
-    final List<UpdateSetGroupListOrderResponse> result =
-        updateSetGroupListOrderControllerImpl.execute(setGroupId, updateSetGroupListOrderRequest);
-    assertThat(result).hasSameSizeAs(expected);
-    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(controller.execute(setGroupId, request)).isEqualTo(responseDto);
   }
 }

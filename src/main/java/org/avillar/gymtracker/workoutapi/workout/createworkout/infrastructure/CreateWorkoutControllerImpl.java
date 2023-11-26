@@ -2,8 +2,8 @@ package org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkoutDateException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutForDateAlreadyExistsException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.application.CreateWorkoutService;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.mapper.CreateWorkoutControllerMapper;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutRequest;
@@ -20,7 +20,7 @@ public class CreateWorkoutControllerImpl implements CreateWorkoutController {
   @Override
   public CreateWorkoutResponse execute(
       final UUID userId, final CreateWorkoutRequest createWorkoutRequest)
-      throws IllegalAccessException, DuplicatedWorkoutDateException {
+      throws WorkoutIllegalAccessException, WorkoutForDateAlreadyExistsException {
     return createWorkoutControllerMapper.map(
         createWorkoutService.execute(
             userId, createWorkoutControllerMapper.map(createWorkoutRequest)));

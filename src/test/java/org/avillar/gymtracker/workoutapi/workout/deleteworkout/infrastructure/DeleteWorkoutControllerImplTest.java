@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doNothing;
 
 import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.deleteworkout.application.DeleteWorkoutService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,16 +20,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DeleteWorkoutControllerImplTest {
 
-  @InjectMocks private DeleteWorkoutControllerImpl deleteWorkoutController;
+  @InjectMocks private DeleteWorkoutControllerImpl controller;
 
-  @Mock private DeleteWorkoutService deleteWorkoutService;
+  @Mock private DeleteWorkoutService service;
 
   @Test
-  void deleteWorkout() {
+  void shouldDeleteWorkoutSuccessfully()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
     final UUID workoutId = UUID.randomUUID();
 
-    doNothing().when(deleteWorkoutService).execute(workoutId);
+    doNothing().when(service).execute(workoutId);
 
-    assertNull(assertDoesNotThrow(() -> deleteWorkoutController.execute(workoutId)));
+    assertNull(assertDoesNotThrow(() -> controller.execute(workoutId)));
   }
 }

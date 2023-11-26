@@ -4,44 +4,40 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.GetNewSetDataService;
-import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.model.GetNewSetDataResponseApplication;
 import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.mapper.GetNewSetDataControllerMapper;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.set.getnewsetdata.infrastructure.model.GetNewSetDataResponse;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetNewSetDataControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private GetNewSetDataControllerImpl controller;
 
-  @InjectMocks private GetNewSetDataControllerImpl getNewSetDataControllerImpl;
-
-  @Mock private GetNewSetDataService getNewSetDataService;
-
-  @Spy
-  private final GetNewSetDataControllerMapper getNewSetDataControllerMapper =
-      Mappers.getMapper(GetNewSetDataControllerMapper.class);
+  @Mock private GetNewSetDataService service;
+  @Mock private GetNewSetDataControllerMapper mapper;
 
   @Test
-  void getOk() {
+  void shouldRetrieveNewSetDataSuccessfully()
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
     final UUID setId = UUID.randomUUID();
-    final GetNewSetDataResponseApplication expected =
-        easyRandom.nextObject(GetNewSetDataResponseApplication.class);
+    final Set response = Instancio.create(Set.class);
+    final GetNewSetDataResponse responseDto = Instancio.create(GetNewSetDataResponse.class);
 
-    when(getNewSetDataService.execute(setId)).thenReturn(expected);
+    when(service.execute(setId)).thenReturn(response);
+    when(mapper.map(response)).thenReturn(responseDto);
 
-    assertThat(getNewSetDataControllerImpl.execute(setId))
-        .usingRecursiveComparison()
-        .isEqualTo(expected);
+    assertThat(controller.execute(setId)).isEqualTo(responseDto);
   }
 }

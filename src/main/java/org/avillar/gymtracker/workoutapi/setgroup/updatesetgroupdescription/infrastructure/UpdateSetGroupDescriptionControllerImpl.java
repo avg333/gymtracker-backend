@@ -2,8 +2,8 @@ package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.inf
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.application.UpdateSetGroupDescriptionService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionResponse;
@@ -20,9 +20,9 @@ public class UpdateSetGroupDescriptionControllerImpl
   public UpdateSetGroupDescriptionResponse execute(
       final UUID setGroupId,
       final UpdateSetGroupDescriptionRequest updateSetGroupDescriptionRequest)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
     return new UpdateSetGroupDescriptionResponse(
         updateSetGroupDescriptionService.execute(
-            setGroupId, updateSetGroupDescriptionRequest.getDescription()));
+            setGroupId, updateSetGroupDescriptionRequest.description()));
   }
 }

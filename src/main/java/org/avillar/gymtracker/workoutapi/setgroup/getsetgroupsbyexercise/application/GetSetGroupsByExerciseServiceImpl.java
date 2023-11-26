@@ -4,38 +4,32 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.mapper.GetSetGroupsByExerciseServiceMapper;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.model.GetSetGroupsByExerciseResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class GetSetGroupsByExerciseServiceImpl implements GetSetGroupsByExerciseService {
 
-  private final SetGroupDao setGroupDao;
+  private final SetGroupFacade setGroupFacade;
   private final AuthWorkoutsService authWorkoutsService;
-  private final GetSetGroupsByExerciseServiceMapper getSetGroupsByExerciseServiceMapper;
 
   @Override
-  public List<GetSetGroupsByExerciseResponseApplication> execute(
-      final UUID userId, final UUID exerciseId) throws IllegalAccessException {
+  public List<SetGroup> execute(final UUID userId, final UUID exerciseId)
+      throws WorkoutIllegalAccessException {
 
     checkAccess(userId);
 
-    return getSetGroupsByExerciseServiceMapper.map(
-        setGroupDao.getSetGroupsFullByUserIdAndExerciseId(userId, exerciseId));
+    return setGroupFacade.getSetGroupsFullByUserIdAndExerciseId(userId, exerciseId);
   }
 
-  private void checkAccess(final UUID userId) {
-    final Workout workout = new Workout();
-    workout.setUserId(userId);
-    final SetGroup setGroup = new SetGroup();
-    setGroup.setWorkout(workout);
+  private void checkAccess(final UUID userId) throws WorkoutIllegalAccessException {
+    final Workout workout = Workout.builder().userId(userId).build();
+    final SetGroup setGroup = SetGroup.builder().workout(workout).build();
     authWorkoutsService.checkAccess(setGroup, AuthOperations.READ);
   }
 }

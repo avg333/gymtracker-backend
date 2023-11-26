@@ -1,15 +1,24 @@
 package org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper;
 
-import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetRequestApplication;
-import org.avillar.gymtracker.workoutapi.set.createset.application.model.CreateSetResponseApplication;
+import java.util.Date;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequest;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants.ComponentModel;
+import org.mapstruct.Named;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = ComponentModel.SPRING)
 public interface CreateSetControllerMapper {
 
-  CreateSetResponse map(CreateSetResponseApplication createSetResponseApplication);
+  CreateSetResponse map(Set set);
 
-  CreateSetRequestApplication map(CreateSetRequest createSetRequest);
+  @Mapping(target = "completedAt", source = "completed", qualifiedByName = "mapCompletedAt")
+  Set map(CreateSetRequest createSetRequest);
+
+  @Named("mapCompletedAt")
+  default Date mapCompletedAt(final Boolean completed) {
+    return Boolean.TRUE.equals(completed) ? new Date() : null;
+  }
 }

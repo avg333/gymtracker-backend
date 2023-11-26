@@ -2,8 +2,8 @@ package org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infra
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.application.UpdateWorkoutDescriptionService;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionRequest;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdescription.infrastructure.model.UpdateWorkoutDescriptionResponse;
@@ -17,9 +17,9 @@ public class UpdateWorkoutDescriptionControllerImpl implements UpdateWorkoutDesc
 
   public UpdateWorkoutDescriptionResponse execute(
       final UUID workoutId, final UpdateWorkoutDescriptionRequest updateWorkoutDescriptionRequest)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
     return new UpdateWorkoutDescriptionResponse(
         updateWorkoutDescriptionService.execute(
-            workoutId, updateWorkoutDescriptionRequest.getDescription()));
+            workoutId, updateWorkoutDescriptionRequest.description()));
   }
 }

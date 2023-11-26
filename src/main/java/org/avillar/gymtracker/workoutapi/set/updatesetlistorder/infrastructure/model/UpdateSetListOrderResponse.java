@@ -1,24 +1,22 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetlistorder.infrastructure.model;
 
+import static org.avillar.gymtracker.workoutapi.common.utils.Constants.ISO_8601_DATE_FORMAT;
+import static org.avillar.gymtracker.workoutapi.common.utils.Constants.UTC;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import java.util.UUID;
-import lombok.Data;
 
-@Data
-public class UpdateSetListOrderResponse {
+public record UpdateSetListOrderResponse(
+    UUID id,
+    Integer listOrder,
+    String description,
+    Integer reps,
+    Double rir,
+    Double weight,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ISO_8601_DATE_FORMAT, timezone = UTC)
+        Date completedAt,
+    SetGroup setGroup) {
 
-  private UUID id;
-  private Integer listOrder;
-  private String description;
-  private Integer reps;
-  private Double rir;
-  private Double weight;
-  private Date completedAt;
-  private SetGroup setGroup;
-
-  @Data
-  public static class SetGroup {
-
-    private UUID id;
-  }
+  public record SetGroup(UUID id) {}
 }

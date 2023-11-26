@@ -2,9 +2,9 @@ package org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructu
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkoutDateException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutForDateAlreadyExistsException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.application.UpdateWorkoutDateService;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateRequest;
 import org.avillar.gymtracker.workoutapi.workout.updateworkoutdate.infrastructure.model.UpdateWorkoutDateResponse;
@@ -19,8 +19,10 @@ public class UpdateWorkoutDateControllerImpl implements UpdateWorkoutDateControl
   @Override
   public UpdateWorkoutDateResponse execute(
       final UUID workoutId, final UpdateWorkoutDateRequest updateWorkoutDateRequest)
-      throws EntityNotFoundException, DuplicatedWorkoutDateException, IllegalAccessException {
+      throws WorkoutNotFoundException,
+          WorkoutForDateAlreadyExistsException,
+          WorkoutIllegalAccessException {
     return new UpdateWorkoutDateResponse(
-        updateWorkoutDateService.execute(workoutId, updateWorkoutDateRequest.getDate()));
+        updateWorkoutDateService.execute(workoutId, updateWorkoutDateRequest.date()));
   }
 }

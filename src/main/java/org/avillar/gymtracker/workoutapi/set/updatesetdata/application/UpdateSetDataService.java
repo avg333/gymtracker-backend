@@ -1,14 +1,13 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetdata.application;
 
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataRequestApplication;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataRequest;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.application.model.UpdateSetDataResponse;
 
 public interface UpdateSetDataService {
 
-  UpdateSetDataResponseApplication execute(
-      UUID setId, UpdateSetDataRequestApplication updateSetDataRequestApplication)
-      throws EntityNotFoundException, IllegalAccessException;
+  UpdateSetDataResponse execute(UUID setId, UpdateSetDataRequest updateSetDataRequest)
+      throws SetNotFoundException, WorkoutIllegalAccessException;
 }

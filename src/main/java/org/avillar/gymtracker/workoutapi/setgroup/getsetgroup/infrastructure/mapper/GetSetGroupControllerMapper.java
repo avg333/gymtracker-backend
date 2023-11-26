@@ -1,11 +1,12 @@
 package org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.mapper;
 
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.application.model.GetSetGroupResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
 import org.avillar.gymtracker.workoutapi.setgroup.getsetgroup.infrastructure.model.GetSetGroupResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants.ComponentModel;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = ComponentModel.SPRING)
 public interface GetSetGroupControllerMapper {
 
-  GetSetGroupResponse map(GetSetGroupResponseApplication getSetGroupResponseApplication);
+  GetSetGroupResponse map(SetGroup setGroup);
 }

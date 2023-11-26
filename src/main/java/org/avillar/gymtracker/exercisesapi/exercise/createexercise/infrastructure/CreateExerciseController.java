@@ -1,15 +1,11 @@
 package org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.exercisesapi.exercise.ExerciseControllerDocumentation.ExerciseControllerTag;
+import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.CreateExerciseControllerDocumentation.Methods.CreateDocumentation;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.model.CreateExerciseRequest;
 import org.avillar.gymtracker.exercisesapi.exercise.createexercise.infrastructure.model.CreateExerciseResponse;
 import org.springframework.http.HttpStatus;
@@ -19,24 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Tag(name = "Exercises", description = "API to manage Exercises")
-@RequestMapping(path = "${exercisesApiPrefix}")
+@ExerciseControllerTag
+@RequestMapping(path = "${exercisesApiPrefix}/v1")
 public interface CreateExerciseController {
 
-  @Operation(summary = "API used to create an exercise")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Exercise created",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = CreateExerciseResponse.class))
-            }),
-        @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
-        @ApiResponse(responseCode = "404", description = "SubEntity not found", content = @Content)
-      })
+  @CreateDocumentation
   @PostMapping("/users/{userId}/exercises")
   @ResponseStatus(HttpStatus.OK)
   CreateExerciseResponse execute(

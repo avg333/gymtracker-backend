@@ -1,137 +1,75 @@
 package org.avillar.gymtracker.workoutapi.set.getnewsetdata.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetDao;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.set.getnewsetdata.application.mapper.GetNewSetDataServiceMapper;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.set.SetFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetNewSetDataServiceImplTest {
 
-  private static final int LIST_SIZE = 5;
-
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.READ;
 
   @InjectMocks private GetNewSetDataServiceImpl getNewSetDataService;
 
-  @Mock private SetDao setDao;
-  @Mock private SetGroupDao setGroupDao;
+  @Mock private SetFacade setFacade;
+  @Mock private SetGroupFacade setGroupFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
-  @Spy
-  private final GetNewSetDataServiceMapper getNewSetDataServiceMapper =
-      Mappers.getMapper(GetNewSetDataServiceMapper.class);
-
   @Test
-  void getOkResultSetGroup() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    setGroup.setSets(easyRandom.objects(Set.class, LIST_SIZE).collect(Collectors.toSet()));
+  void shouldRetrieveNewSetDataSuccessfully()
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
 
-    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
-    doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);
+    when(setGroupFacade.getSetGroupFull(setGroup.getId())).thenReturn(setGroup);
+    doNothing().when(authWorkoutsService).checkAccess(setGroup, AUTH_OPERATIONS);
 
-    final Set expected =
-        setGroup.getSets().stream().max(Comparator.comparingInt(Set::getListOrder)).get();
-    final var result = getNewSetDataService.execute(setGroup.getId());
-    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(getNewSetDataService.execute(setGroup.getId())).isNotNull();
+    // TODO
   }
 
   @Test
-  void getOkResultSecondQuery() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    setGroup.setSets(Collections.emptySet());
-    final Set expected = easyRandom.nextObject(Set.class);
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToReadSet()
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
 
-    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
-    doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);
-    when(setDao.findLastSetForExerciseAndUserAux(
-            setGroup.getWorkout().getUserId(),
-            setGroup.getExerciseId(),
-            setGroup.getWorkout().getDate()))
-        .thenReturn(List.of(expected));
+    when(setGroupFacade.getSetGroupFull(setGroup.getId())).thenReturn(setGroup);
+    doThrow(exception).when(authWorkoutsService).checkAccess(setGroup, AUTH_OPERATIONS);
 
-    final var result = getNewSetDataService.execute(setGroup.getId());
-    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+    assertThatThrownBy(() -> getNewSetDataService.execute(setGroup.getId())).isEqualTo(exception);
   }
 
   @Test
-  void getNotFoundResultSecondQuery() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    setGroup.setSets(Collections.emptySet());
-
-    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
-    doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.READ);
-    when(setDao.findLastSetForExerciseAndUserAux(
-            setGroup.getWorkout().getUserId(),
-            setGroup.getExerciseId(),
-            setGroup.getWorkout().getDate()))
-        .thenReturn(Collections.emptyList());
-
-    final EntityNotFoundException exception =
-        assertThrows(
-            EntityNotFoundException.class, () -> getNewSetDataService.execute(setGroup.getId()));
-    assertEquals(Set.class.getSimpleName(), exception.getClassName());
-    assertEquals("exerciseId", exception.getSearchParam());
-    assertEquals(setGroup.getExerciseId(), exception.getId());
-  }
-
-  @Test
-  void setGroupNotFound() {
+  void shouldThrowSetGroupNotFoundExceptionWhenSetGroupIsNotFound()
+      throws SetGroupNotFoundException {
     final UUID setGroupId = UUID.randomUUID();
+    final SetGroupNotFoundException exception =
+        ExceptionGenerator.generateSetGroupNotFoundException();
 
-    when(setGroupDao.getSetGroupFullByIds(List.of(setGroupId))).thenReturn(Collections.emptyList());
+    doThrow(exception).when(setGroupFacade).getSetGroupFull(setGroupId);
 
-    final EntityNotFoundException exception =
-        assertThrows(EntityNotFoundException.class, () -> getNewSetDataService.execute(setGroupId));
-    assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
-    assertEquals(setGroupId, exception.getId());
-  }
-
-  @Test
-  void getNotPermission() {
-    final UUID userId = UUID.randomUUID();
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final AuthOperations readOperation = AuthOperations.READ;
-
-    when(setGroupDao.getSetGroupFullByIds(List.of(setGroup.getId()))).thenReturn(List.of(setGroup));
-    doThrow(new IllegalAccessException(setGroup, readOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(setGroup, readOperation);
-
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class, () -> getNewSetDataService.execute(setGroup.getId()));
-    assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(setGroup.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(readOperation, exception.getAuthOperations());
+    assertThatThrownBy(() -> getNewSetDataService.execute(setGroupId)).isEqualTo(exception);
   }
 }

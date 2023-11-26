@@ -3,51 +3,40 @@ package org.avillar.gymtracker.authapi.login.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import org.avillar.gymtracker.authapi.common.domain.UserApp;
 import org.avillar.gymtracker.authapi.login.application.LoginService;
-import org.avillar.gymtracker.authapi.login.application.model.LoginRequestApplication;
-import org.avillar.gymtracker.authapi.login.application.model.LoginResponseApplication;
 import org.avillar.gymtracker.authapi.login.infrastructure.mapper.LoginControllerMapper;
 import org.avillar.gymtracker.authapi.login.infrastructure.model.LoginRequest;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.authapi.login.infrastructure.model.LoginResponse;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class LoginControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
-
   @InjectMocks private LoginControllerImpl loginController;
 
   @Mock private LoginService loginService;
-
-  @Spy
-  private final LoginControllerMapper loginControllerMapper =
-      Mappers.getMapper(LoginControllerMapper.class);
+  @Mock private LoginControllerMapper loginControllerMapper;
 
   @Test
-  void loginOk() {
-    final LoginRequest request = easyRandom.nextObject(LoginRequest.class);
-    final LoginResponseApplication expected = easyRandom.nextObject(LoginResponseApplication.class);
+  void shouldLoginSuccessfullyAndReturnLoginData() {
+    final LoginRequest requestDto = Instancio.create(LoginRequest.class);
+    final UserApp request = Instancio.create(UserApp.class);
+    final UserApp response = Instancio.create(UserApp.class);
+    final LoginResponse responseDto = Instancio.create(LoginResponse.class);
 
-    final ArgumentCaptor<LoginRequestApplication> loginRequestApplicationCaptor =
-        ArgumentCaptor.forClass(LoginRequestApplication.class);
+    when(loginControllerMapper.map(requestDto)).thenReturn(request);
+    when(loginService.execute(request)).thenReturn(response);
+    when(loginControllerMapper.map(response)).thenReturn(responseDto);
 
-    when(loginService.execute(loginRequestApplicationCaptor.capture())).thenReturn(expected);
-
-    assertThat(loginController.execute(request)).usingRecursiveComparison().isEqualTo(expected);
-    assertThat(loginRequestApplicationCaptor.getValue())
-        .usingRecursiveComparison()
-        .isEqualTo(request);
-    // TODO Fix types
+    assertThat(loginController.execute(requestDto)).isEqualTo(responseDto);
   }
 }

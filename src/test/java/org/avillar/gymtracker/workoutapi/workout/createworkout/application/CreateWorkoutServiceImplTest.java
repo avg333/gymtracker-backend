@@ -1,7 +1,7 @@
 package org.avillar.gymtracker.workoutapi.workout.createworkout.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -12,99 +12,98 @@ import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkoutDateException;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.application.mapper.CreateWorkoutServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutRequestApplication;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutResponseApplication;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutForDateAlreadyExistsException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class CreateWorkoutServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.CREATE;
 
   @InjectMocks private CreateWorkoutServiceImpl createWorkoutService;
 
-  @Mock private WorkoutDao workoutDao;
+  @Mock private WorkoutFacade workoutFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
-  @Spy
-  private final CreateWorkoutServiceMapper createWorkoutServiceMapper =
-      Mappers.getMapper(CreateWorkoutServiceMapper.class);
-
   @Test
-  void createOk() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final CreateWorkoutRequestApplication createWorkoutRequestApplication =
-        new CreateWorkoutRequestApplication();
-    createWorkoutRequestApplication.setDate(workout.getDate());
-    createWorkoutRequestApplication.setDescription(workout.getDescription());
+  void shouldCreateWorkoutSuccessfully()
+      throws WorkoutForDateAlreadyExistsException, WorkoutIllegalAccessException {
+    final UUID userId = UUID.randomUUID();
+    final Workout newWorkout = Instancio.create(Workout.class);
+    final Workout savedWorkout = Instancio.create(Workout.class);
 
-    when(workoutDao.existsWorkoutByUserAndDate(workout.getUserId(), workout.getDate()))
-        .thenReturn(false);
+    final ArgumentCaptor<Workout> workoutArgumentCaptorBeforeAuth =
+        ArgumentCaptor.forClass(Workout.class);
+    final ArgumentCaptor<Workout> workoutArgumentCaptorBeforeSave =
+        ArgumentCaptor.forClass(Workout.class);
+
     doNothing()
         .when(authWorkoutsService)
-        .checkAccess(any(Workout.class), eq(AuthOperations.CREATE));
-    when(workoutDao.save(any(Workout.class))).thenAnswer(i -> i.getArguments()[0]);
+        .checkAccess(workoutArgumentCaptorBeforeAuth.capture(), eq(AUTH_OPERATIONS));
+    when(workoutFacade.existsWorkoutByUserAndDate(userId, newWorkout.getDate())).thenReturn(false);
+    when(workoutFacade.saveWorkout(workoutArgumentCaptorBeforeSave.capture()))
+        .thenReturn(savedWorkout);
 
-    final CreateWorkoutResponseApplication result =
-        createWorkoutService.execute(workout.getUserId(), createWorkoutRequestApplication);
-    // assertNotNull(result.getId()); TODO Fix .save
-    assertThat(result).usingRecursiveComparison().ignoringFields("id").isEqualTo(workout); // FIXME
-    verify(workoutDao).save(any(Workout.class));
+    assertThat(createWorkoutService.execute(userId, newWorkout)).isEqualTo(savedWorkout);
+
+    final Workout workoutBeforeAuth = workoutArgumentCaptorBeforeAuth.getValue();
+    assertThat(workoutBeforeAuth)
+        .isNotNull()
+        .usingRecursiveComparison()
+        .ignoringFields("userId")
+        .isEqualTo(newWorkout);
+    assertThat(workoutBeforeAuth.getUserId()).isEqualTo(userId);
+
+    assertThat(workoutArgumentCaptorBeforeSave.getValue()).isEqualTo(newWorkout);
+
+    verify(workoutFacade).existsWorkoutByUserAndDate(userId, newWorkout.getDate());
+    verify(workoutFacade).saveWorkout(newWorkout);
   }
 
   @Test
-  void createExistsWorkoutForTheUserInThatDate() {
+  void shouldThrowWorkoutForDateAlreadyExistsExceptionWhenDateIsAlreadyInUse()
+      throws WorkoutIllegalAccessException {
     final UUID userId = UUID.randomUUID();
-    final CreateWorkoutRequestApplication createWorkoutRequestApplication =
-        easyRandom.nextObject(CreateWorkoutRequestApplication.class);
+    final Workout newWorkout = Instancio.create(Workout.class);
+    final WorkoutForDateAlreadyExistsException exception =
+        new WorkoutForDateAlreadyExistsException(userId, newWorkout.getDate());
 
-    when(workoutDao.existsWorkoutByUserAndDate(userId, createWorkoutRequestApplication.getDate()))
-        .thenReturn(true);
+    doNothing().when(authWorkoutsService).checkAccess(newWorkout, AUTH_OPERATIONS);
+    when(workoutFacade.existsWorkoutByUserAndDate(userId, newWorkout.getDate())).thenReturn(true);
 
-    final DuplicatedWorkoutDateException exception =
-        assertThrows(
-            DuplicatedWorkoutDateException.class,
-            () -> createWorkoutService.execute(userId, createWorkoutRequestApplication));
-    assertEquals(createWorkoutRequestApplication.getDate(), exception.getWorkoutDate());
-    assertEquals(userId, exception.getUserId());
-    verify(workoutDao, never()).save(any());
+    assertThatThrownBy(() -> createWorkoutService.execute(userId, newWorkout)).isEqualTo(exception);
+
+    verify(workoutFacade).existsWorkoutByUserAndDate(userId, newWorkout.getDate());
+    verify(workoutFacade, never()).saveWorkout(any());
   }
 
   @Test
-  void createNotPermission() {
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToCreateWorkout()
+      throws WorkoutIllegalAccessException {
     final UUID userId = UUID.randomUUID();
-    final AuthOperations createOperation = AuthOperations.CREATE;
+    final Workout newWorkout = Instancio.create(Workout.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
 
-    doThrow(new IllegalAccessException(new Workout(), createOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(any(Workout.class), eq(createOperation));
+    doThrow(exception).when(authWorkoutsService).checkAccess(newWorkout, AUTH_OPERATIONS);
 
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class,
-            () ->
-                createWorkoutService.execute(
-                    userId, easyRandom.nextObject(CreateWorkoutRequestApplication.class)));
-    assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
-    assertNull(exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(createOperation, exception.getAuthOperations());
-    verify(workoutDao, never()).save(any());
+    assertThatThrownBy(() -> createWorkoutService.execute(userId, newWorkout)).isEqualTo(exception);
+
+    verify(workoutFacade, never()).existsWorkoutByUserAndDate(any(), any());
+    verify(workoutFacade, never()).saveWorkout(any());
   }
 }

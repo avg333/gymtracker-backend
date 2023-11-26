@@ -3,8 +3,9 @@ package org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infra
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ListOrderNotValidException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.application.UpdateSetGroupListOrderService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.mapper.UpdateSetGroupListOrderControllerMapper;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgrouplistorder.infrastructure.model.UpdateSetGroupListOrderRequest;
@@ -21,9 +22,9 @@ public class UpdateSetGroupListOrderControllerImpl implements UpdateSetGroupList
   @Override
   public List<UpdateSetGroupListOrderResponse> execute(
       final UUID setGroupId, final UpdateSetGroupListOrderRequest updateSetGroupListOrderRequest)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException, ListOrderNotValidException {
     return updateSetGroupListOrderControllerMapper.map(
         updateSetGroupListOrderService.execute(
-            setGroupId, updateSetGroupListOrderRequest.getListOrder()));
+            setGroupId, updateSetGroupListOrderRequest.listOrder()));
   }
 }

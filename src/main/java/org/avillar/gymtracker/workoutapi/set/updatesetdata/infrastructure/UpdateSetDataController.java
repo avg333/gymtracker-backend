@@ -1,17 +1,13 @@
 package org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequest;
-import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponse;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.set.SetControllerDocumentation.SetControllerTag;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.UpdateSetDataControllerDocumentation.Methods.UpdateSetDataDocumentation;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataRequestDto;
+import org.avillar.gymtracker.workoutapi.set.updatesetdata.infrastructure.model.UpdateSetDataResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,27 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Tag(name = "Sets", description = "API to manage sets")
+@SetControllerTag
 @RequestMapping(path = "${workoutsApiPrefix}/v1/")
 public interface UpdateSetDataController {
 
-  @Operation(summary = "API used to update the set data")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Set data updated",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = UpdateSetDataResponse.class))
-            }),
-        @ApiResponse(responseCode = "403", description = "Not authorized", content = @Content),
-        @ApiResponse(responseCode = "404", description = "Set not found", content = @Content)
-      })
+  @UpdateSetDataDocumentation
   @PatchMapping("sets/{setId}")
   @ResponseStatus(HttpStatus.OK)
-  UpdateSetDataResponse execute(
-      @PathVariable UUID setId, @Valid @RequestBody UpdateSetDataRequest updateSetDataRequest)
-      throws EntityNotFoundException, IllegalAccessException;
+  UpdateSetDataResponseDto execute(
+      @PathVariable UUID setId, @Valid @RequestBody UpdateSetDataRequestDto updateSetDataRequestDto)
+      throws SetNotFoundException, WorkoutIllegalAccessException;
 }

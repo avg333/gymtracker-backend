@@ -1,6 +1,7 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.application;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -8,20 +9,20 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,77 +31,75 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupDescriptionServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
-
   @InjectMocks private UpdateSetGroupDescriptionServiceImpl updateSetGroupDescriptionService;
 
-  @Mock private SetGroupDao setGroupDao;
+  @Mock private SetGroupFacade setGroupFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
   @Test
-  void updateOk() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final String description = easyRandom.nextObject(String.class);
+  void shouldUpdateDescriptionSuccessfully()
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final String description = Instancio.create(String.class);
+    final SetGroup updatedSetGroup = Instancio.create(SetGroup.class);
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    final ArgumentCaptor<SetGroup> setGroupArgumentCaptor = ArgumentCaptor.forClass(SetGroup.class);
+
+    when(setGroupFacade.getSetGroupWithWorkout(setGroup.getId())).thenReturn(setGroup);
     doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.UPDATE);
-    when(setGroupDao.save(setGroup)).thenAnswer(i -> i.getArguments()[0]);
+    when(setGroupFacade.saveSetGroup(setGroupArgumentCaptor.capture())).thenReturn(updatedSetGroup);
 
-    final String result = updateSetGroupDescriptionService.execute(setGroup.getId(), description);
-    assertEquals(description, result);
-    verify(setGroupDao).save(setGroup);
+    assertThat(updateSetGroupDescriptionService.execute(setGroup.getId(), description))
+        .isEqualTo(updatedSetGroup.getDescription());
+
+    final SetGroup capturedSetGroup = setGroupArgumentCaptor.getValue();
+    assertThat(capturedSetGroup.getDescription()).isEqualTo(description);
+
+    verify(setGroupFacade).saveSetGroup(capturedSetGroup);
   }
 
   @Test
-  void postSameDescription() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
+  void shouldNotUpdateDescriptionWhenSameAsBefore()
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final String description = setGroup.getDescription();
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
+    when(setGroupFacade.getSetGroupWithWorkout(setGroup.getId())).thenReturn(setGroup);
     doNothing().when(authWorkoutsService).checkAccess(setGroup, AuthOperations.UPDATE);
 
-    final String result =
-        updateSetGroupDescriptionService.execute(setGroup.getId(), setGroup.getDescription());
-    assertEquals(setGroup.getDescription(), result);
-    verify(setGroupDao, never()).save(any());
+    assertThat(updateSetGroupDescriptionService.execute(setGroup.getId(), description))
+        .isEqualTo(description);
+
+    verify(setGroupFacade, never()).saveSetGroup(any());
   }
 
   @Test
-  void updateNotFound() {
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToUpdateSetGroup()
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final String description = Instancio.create(String.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
+
+    when(setGroupFacade.getSetGroupWithWorkout(setGroup.getId())).thenReturn(setGroup);
+    doThrow(exception).when(authWorkoutsService).checkAccess(setGroup, AuthOperations.UPDATE);
+
+    assertThatThrownBy(
+            () -> updateSetGroupDescriptionService.execute(setGroup.getId(), description))
+        .isEqualTo(exception);
+  }
+
+  @Test
+  void shouldThrowSetGroupNotFoundExceptionWhenSetGroupIsNotFound()
+      throws SetGroupNotFoundException {
     final UUID setGroupId = UUID.randomUUID();
+    final String description = Instancio.create(String.class);
+    final SetGroupNotFoundException exception =
+        ExceptionGenerator.generateSetGroupNotFoundException();
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(Collections.emptyList());
+    doThrow(exception).when(setGroupFacade).getSetGroupWithWorkout(setGroupId);
 
-    final EntityNotFoundException exception =
-        assertThrows(
-            EntityNotFoundException.class,
-            () ->
-                updateSetGroupDescriptionService.execute(
-                    setGroupId, easyRandom.nextObject(String.class)));
-    assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
-    assertEquals(setGroupId, exception.getId());
-    verify(setGroupDao, never()).save(any());
-  }
-
-  @Test
-  void updateNotPermission() {
-    final UUID userId = UUID.randomUUID();
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final String description = easyRandom.nextObject(String.class);
-    final AuthOperations updateOperation = AuthOperations.UPDATE;
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
-    doThrow(new IllegalAccessException(setGroup, updateOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(setGroup, updateOperation);
-
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class,
-            () -> updateSetGroupDescriptionService.execute(setGroup.getId(), description));
-    assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(setGroup.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(updateOperation, exception.getAuthOperations());
-    verify(setGroupDao, never()).save(any());
+    assertThatThrownBy(() -> updateSetGroupDescriptionService.execute(setGroupId, description))
+        .isEqualTo(exception);
   }
 }

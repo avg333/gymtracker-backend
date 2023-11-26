@@ -1,14 +1,15 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.application.UpdateSetGroupDescriptionService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupdescription.infrastructure.model.UpdateSetGroupDescriptionResponse;
-import org.jeasy.random.EasyRandom;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -21,25 +22,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupDescriptionControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private UpdateSetGroupDescriptionControllerImpl controller;
 
-  @InjectMocks
-  private UpdateSetGroupDescriptionControllerImpl updateSetGroupDescriptionControllerImpl;
-
-  @Mock private UpdateSetGroupDescriptionService updateSetGroupDescriptionService;
+  @Mock private UpdateSetGroupDescriptionService service;
 
   @Test
-  void putSetGroup() {
+  void shouldUpdateDescriptionSuccessfully()
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
     final UUID workoutId = UUID.randomUUID();
-    final UpdateSetGroupDescriptionRequest expected =
-        easyRandom.nextObject(UpdateSetGroupDescriptionRequest.class);
+    final UpdateSetGroupDescriptionRequest request =
+        Instancio.create(UpdateSetGroupDescriptionRequest.class);
+    final String response = Instancio.create(String.class);
 
-    when(updateSetGroupDescriptionService.execute(workoutId, expected.getDescription()))
-        .thenReturn(expected.getDescription());
+    when(service.execute(workoutId, request.description())).thenReturn(response);
 
-    final UpdateSetGroupDescriptionResponse result =
-        updateSetGroupDescriptionControllerImpl.execute(workoutId, expected);
-    assertNotNull(result);
-    assertEquals(expected.getDescription(), result.getDescription());
+    final UpdateSetGroupDescriptionResponse result = controller.execute(workoutId, request);
+    assertThat(result).isNotNull();
+    assertThat(result.description()).isEqualTo(response);
   }
 }

@@ -1,32 +1,36 @@
 package org.avillar.gymtracker.workoutapi.setgroup.deletesetgroup.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.common.sort.application.EntitySorter;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Set;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Set;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ExerciseUnavailableException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.exercise.ExercisesFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
+import org.avillar.gymtracker.workoutapi.common.sort.application.EntitySorter;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,108 +39,133 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DeleteSetGroupServiceImplTest {
 
-  private static final int LIST_SIZE = 5;
-
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.DELETE;
 
   @InjectMocks private DeleteSetGroupServiceImpl deleteSetGroupService;
 
-  @Mock private SetGroupDao setGroupDao;
-
+  @Mock private SetGroupFacade setGroupFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
   @Mock private EntitySorter entitySorter;
-  @Mock private ExerciseRepositoryClient exerciseRepositoryClient;
+  @Mock private ExercisesFacade exercisesFacade;
 
-  @Test
-  void deleteOk() {
-    final List<SetGroup> setGroups = getSetGroups();
-    final SetGroup setGroupSecond = setGroups.get(1);
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupSecond.getId()))
-        .thenReturn(List.of(setGroupSecond));
-    doNothing().when(authWorkoutsService).checkAccess(setGroupSecond, AuthOperations.DELETE);
-    when(setGroupDao.getSetGroupsByWorkoutId(setGroupSecond.getWorkout().getId()))
-        .thenReturn(setGroups);
-    when(exerciseRepositoryClient.decrementExerciseUses(setGroupSecond.getExerciseId()))
-        .thenReturn(easyRandom.nextInt());
-
-    assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupSecond.getId()));
-    verify(setGroupDao).deleteById(setGroupSecond.getId());
-    verify(entitySorter).sortDelete(setGroups, setGroupSecond); // FIXM
-    verify(setGroupDao).saveAll(setGroups); // FIXME It must be called without the deleted SG
-  }
-
-  @Test
-  void deleteOkNoReorder() {
-    final List<SetGroup> setGroups = getSetGroups();
-    final SetGroup setGroupLast = setGroups.get(setGroups.size() - 1);
-
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupLast.getId()))
-        .thenReturn(List.of(setGroupLast));
-    doNothing().when(authWorkoutsService).checkAccess(setGroupLast, AuthOperations.DELETE);
-    when(setGroupDao.getSetGroupsByWorkoutId(setGroupLast.getWorkout().getId()))
-        .thenReturn(setGroups);
-    when(exerciseRepositoryClient.decrementExerciseUses(setGroupLast.getExerciseId()))
-        .thenReturn(easyRandom.nextInt());
-
-    assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupLast.getId()));
-    verify(exerciseRepositoryClient).decrementExerciseUses(setGroupLast.getExerciseId());
-    verify(setGroupDao).deleteById(setGroupLast.getId());
-    verify(entitySorter, never()).sortDelete(any(), any());
-    verify(setGroupDao, never()).saveAll(any());
-  }
-
-  private List<SetGroup> getSetGroups() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final List<SetGroup> setGroups = easyRandom.objects(SetGroup.class, LIST_SIZE).toList();
+  private static List<SetGroup> getSetGroups() {
+    final Workout workout = Instancio.create(Workout.class);
+    final List<SetGroup> setGroups = Instancio.createList(SetGroup.class);
     for (int i = 0; i < setGroups.size(); i++) {
       final SetGroup setGroup = setGroups.get(i);
       setGroup.setListOrder(i);
       setGroup.setWorkout(workout);
-      setGroup.setSets(easyRandom.objects(Set.class, LIST_SIZE).collect(Collectors.toSet()));
+      setGroup.setSets(Instancio.createList(Set.class));
       setGroup.getSets().forEach(set -> set.setSetGroup(setGroup));
     }
     return setGroups;
   }
 
   @Test
-  void deleteNotFound() {
-    final UUID setGroupId = UUID.randomUUID();
+  void shouldDeleteSetGroupSuccessfullyWithReorder()
+      throws SetGroupNotFoundException,
+          WorkoutIllegalAccessException,
+          ExerciseUnavailableException {
+    final List<SetGroup> setGroups = getSetGroups();
+    final List<SetGroup> setGroupsSaved = getSetGroups();
+    final SetGroup firstSetGroup = setGroups.get(0);
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroupId)).thenReturn(Collections.emptyList());
+    final ArgumentCaptor<List<SetGroup>> setGroupsBeforeOrderCaptor =
+        ArgumentCaptor.forClass(List.class);
+    final ArgumentCaptor<List<SetGroup>> setGroupsBeforeSaveCaptor =
+        ArgumentCaptor.forClass(List.class);
 
-    final EntityNotFoundException exception =
-        assertThrows(
-            EntityNotFoundException.class, () -> deleteSetGroupService.execute(setGroupId));
-    assertEquals(SetGroup.class.getSimpleName(), exception.getClassName());
-    assertEquals(setGroupId, exception.getId());
-    verify(exerciseRepositoryClient, never()).decrementExerciseUses(any());
-    verify(setGroupDao, never()).deleteById(any());
-    verify(entitySorter, never()).sortDelete(any(), any());
-    verify(setGroupDao, never()).saveAll(any());
+    when(setGroupFacade.getSetGroupWithWorkout(firstSetGroup.getId())).thenReturn(firstSetGroup);
+    doNothing().when(authWorkoutsService).checkAccess(firstSetGroup, AUTH_OPERATIONS);
+    when(exercisesFacade.decrementExerciseUses(
+            firstSetGroup.getWorkout().getUserId(), firstSetGroup.getExerciseId()))
+        .thenReturn(Instancio.create(Integer.class));
+    when(setGroupFacade.getSetGroupsByWorkoutId(firstSetGroup.getWorkout().getId()))
+        .thenReturn(setGroups);
+    doNothing().when(setGroupFacade).deleteSetGroup(firstSetGroup.getId());
+    doNothing()
+        .when(entitySorter)
+        .sortDelete(setGroupsBeforeOrderCaptor.capture(), eq(firstSetGroup));
+    when(setGroupFacade.saveSetGroups(setGroupsBeforeSaveCaptor.capture()))
+        .thenReturn(setGroupsSaved);
+
+    assertDoesNotThrow(() -> deleteSetGroupService.execute(firstSetGroup.getId()));
+
+    final List<SetGroup> setGroupsBeforeOrder = setGroupsBeforeOrderCaptor.getValue();
+    assertThat(setGroupsBeforeOrder).isNotNull().usingRecursiveComparison().isEqualTo(setGroups);
+    final List<SetGroup> setGroupsBeforeSave = setGroupsBeforeSaveCaptor.getValue();
+    assertThat(setGroupsBeforeSave)
+        .isNotNull()
+        .usingRecursiveComparison()
+        .isEqualTo(setGroupsBeforeOrder);
+
+    verify(exercisesFacade)
+        .decrementExerciseUses(
+            firstSetGroup.getWorkout().getUserId(), firstSetGroup.getExerciseId());
+    verify(setGroupFacade).deleteSetGroup(firstSetGroup.getId());
+    verify(entitySorter).sortDelete(setGroupsBeforeOrder, firstSetGroup);
+    verify(setGroupFacade).saveSetGroups(setGroupsBeforeSave);
   }
 
   @Test
-  void deleteNotPermission() {
-    final SetGroup setGroup = easyRandom.nextObject(SetGroup.class);
-    final UUID userId = UUID.randomUUID();
-    final AuthOperations deleteOperation = AuthOperations.DELETE;
+  void shouldDeleteSetGroupSuccessfullyWithoutReorder()
+      throws SetGroupNotFoundException,
+          WorkoutIllegalAccessException,
+          ExerciseUnavailableException {
+    final List<SetGroup> setGroups = getSetGroups();
+    final SetGroup setGroupLast = setGroups.get(setGroups.size() - 1);
 
-    when(setGroupDao.getSetGroupWithWorkoutById(setGroup.getId())).thenReturn(List.of(setGroup));
-    doThrow(new IllegalAccessException(setGroup, deleteOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(setGroup, deleteOperation);
+    when(setGroupFacade.getSetGroupWithWorkout(setGroupLast.getId())).thenReturn(setGroupLast);
+    doNothing().when(authWorkoutsService).checkAccess(setGroupLast, AUTH_OPERATIONS);
+    when(exercisesFacade.decrementExerciseUses(
+            setGroupLast.getWorkout().getUserId(), setGroupLast.getExerciseId()))
+        .thenReturn(Instancio.create(Integer.class));
+    when(setGroupFacade.getSetGroupsByWorkoutId(setGroupLast.getWorkout().getId()))
+        .thenReturn(setGroups);
 
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class, () -> deleteSetGroupService.execute(setGroup.getId()));
-    assertEquals(SetGroup.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(setGroup.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(deleteOperation, exception.getAuthOperations());
-    verify(exerciseRepositoryClient, never()).decrementExerciseUses(any());
-    verify(setGroupDao, never()).deleteById(any());
+    assertDoesNotThrow(() -> deleteSetGroupService.execute(setGroupLast.getId()));
+
+    verify(exercisesFacade)
+        .decrementExerciseUses(setGroupLast.getWorkout().getUserId(), setGroupLast.getExerciseId());
+    verify(setGroupFacade).deleteSetGroup(setGroupLast.getId());
     verify(entitySorter, never()).sortDelete(any(), any());
-    verify(setGroupDao, never()).saveAll(any());
+    verify(setGroupFacade, never()).saveSetGroup(any());
+  }
+
+  @Test
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToDeleteSetGroup()
+      throws SetGroupNotFoundException,
+          WorkoutIllegalAccessException,
+          ExerciseUnavailableException {
+    final SetGroup setGroup = Instancio.create(SetGroup.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
+
+    when(setGroupFacade.getSetGroupWithWorkout(setGroup.getId())).thenReturn(setGroup);
+    doThrow(exception).when(authWorkoutsService).checkAccess(setGroup, AUTH_OPERATIONS);
+
+    assertThatThrownBy(() -> deleteSetGroupService.execute(setGroup.getId())).isEqualTo(exception);
+
+    verify(exercisesFacade, never()).decrementExerciseUses(any(), any());
+    verify(setGroupFacade, never()).deleteSetGroup(any());
+    verify(entitySorter, never()).sortDelete(any(), any());
+    verify(setGroupFacade, never()).saveSetGroup(any());
+  }
+
+  @Test
+  void shouldThrowSetGroupNotFoundExceptionWhenSetGroupIsNotFound()
+      throws SetGroupNotFoundException, ExerciseUnavailableException {
+    final UUID setGroupId = UUID.randomUUID();
+    final SetGroupNotFoundException exception =
+        ExceptionGenerator.generateSetGroupNotFoundException();
+
+    doThrow(exception).when(setGroupFacade).getSetGroupWithWorkout(setGroupId);
+
+    assertThatThrownBy(() -> deleteSetGroupService.execute(setGroupId)).isEqualTo(exception);
+
+    verify(exercisesFacade, never()).decrementExerciseUses(any(), any());
+    verify(setGroupFacade, never()).deleteSetGroup(any());
+    verify(entitySorter, never()).sortDelete(any(), any());
+    verify(setGroupFacade, never()).saveSetGroup(any());
   }
 }

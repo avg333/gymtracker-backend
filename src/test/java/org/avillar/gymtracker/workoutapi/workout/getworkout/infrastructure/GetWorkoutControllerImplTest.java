@@ -1,46 +1,43 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.getworkout.application.GetWorkoutService;
-import org.avillar.gymtracker.workoutapi.workout.getworkout.application.model.GetWorkoutResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.mapper.GetWorkoutControllerMapper;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.workout.getworkout.infrastructure.model.GetWorkoutResponse;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private GetWorkoutControllerImpl controller;
 
-  @InjectMocks private GetWorkoutControllerImpl getWorkoutControllerImpl;
-
-  @Mock private GetWorkoutService getWorkoutServiceService;
-
-  @Spy
-  private final GetWorkoutControllerMapper getWorkoutSimpleControllerMapper =
-      Mappers.getMapper(GetWorkoutControllerMapper.class);
+  @Mock private GetWorkoutService service;
+  @Mock private GetWorkoutControllerMapper mapper;
 
   @Test
-  void get() {
-    final GetWorkoutResponseApplication expected =
-        easyRandom.nextObject(GetWorkoutResponseApplication.class);
+  void shouldGetWorkoutSuccessfully()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
+    final UUID workoutId = UUID.randomUUID();
+    final Workout response = Instancio.create(Workout.class);
+    final GetWorkoutResponse responseDto = Instancio.create(GetWorkoutResponse.class);
 
-    when(getWorkoutServiceService.execute(expected.getId())).thenReturn(expected);
+    when(service.execute(workoutId)).thenReturn(response);
+    when(mapper.map(response)).thenReturn(responseDto);
 
-    assertThat(getWorkoutControllerImpl.execute(expected.getId()))
-        .usingRecursiveComparison()
-        .isEqualTo(expected);
+    assertThat(controller.execute(workoutId)).isEqualTo(responseDto);
   }
 }

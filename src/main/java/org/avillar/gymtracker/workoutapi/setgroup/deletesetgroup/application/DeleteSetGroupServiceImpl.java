@@ -4,53 +4,60 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.common.sort.application.EntitySorter;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.SetGroup;
-import org.avillar.gymtracker.workoutapi.domain.SetGroupDao;
-import org.avillar.gymtracker.workoutapi.exercise.application.facade.ExerciseRepositoryClient;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ExerciseUnavailableException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.facade.exercise.ExercisesFacade;
+import org.avillar.gymtracker.workoutapi.common.facade.setgroup.SetGroupFacade;
+import org.avillar.gymtracker.workoutapi.common.sort.application.EntitySorter;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DeleteSetGroupServiceImpl implements DeleteSetGroupService {
 
-  private final SetGroupDao setGroupDao;
+  private final SetGroupFacade setGroupFacade;
+  private final ExercisesFacade exercisesFacade;
   private final AuthWorkoutsService authWorkoutsService;
   private final EntitySorter entitySorter;
-  private final ExerciseRepositoryClient exerciseRepositoryClient;
 
   @Override
   @Transactional
   public void execute(final UUID setGroupId)
-      throws EntityNotFoundException, IllegalAccessException {
-    final SetGroup setGroup = getSetGroupWithWorkout(setGroupId);
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
+    final SetGroup setGroup = setGroupFacade.getSetGroupWithWorkout(setGroupId);
 
     authWorkoutsService.checkAccess(setGroup, AuthOperations.DELETE);
 
-    exerciseRepositoryClient.decrementExerciseUses(setGroup.getExerciseId());
-
-    setGroupDao.deleteById(setGroupId);
+    try {
+      exercisesFacade.decrementExerciseUses(
+          setGroup.getWorkout().getUserId(), setGroup.getExerciseId());
+    } catch (ExerciseUnavailableException ex) {
+      log.error("Error decrementing exercise usage", ex);
+    }
 
     final List<SetGroup> setGroups =
-        setGroupDao.getSetGroupsByWorkoutId(setGroup.getWorkout().getId());
+        setGroupFacade.getSetGroupsByWorkoutId(setGroup.getWorkout().getId());
 
-    if (setGroup.getListOrder() != setGroups.size() - 1) {
-      reorderSetGroups(setGroups, setGroup);
+    setGroupFacade.deleteSetGroup(setGroupId);
+
+    if (!isSetGroupDeletedLastSetGroup(setGroup, setGroups)) {
+      reorderWorkoutSetGroups(setGroups, setGroup);
     }
   }
 
-  private void reorderSetGroups(final List<SetGroup> setGroups, final SetGroup setGroup) {
+  private void reorderWorkoutSetGroups(final List<SetGroup> setGroups, final SetGroup setGroup) {
     entitySorter.sortDelete(setGroups, setGroup);
-    setGroupDao.saveAll(setGroups);
+    setGroupFacade.saveSetGroups(setGroups);
   }
 
-  private SetGroup getSetGroupWithWorkout(final UUID setGroupId) {
-    return setGroupDao.getSetGroupWithWorkoutById(setGroupId).stream()
-        .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(SetGroup.class, setGroupId));
+  private boolean isSetGroupDeletedLastSetGroup(
+      final SetGroup setGroup, final List<SetGroup> setGroups) {
+    return setGroup.getListOrder() == setGroups.size() - 1;
   }
 }

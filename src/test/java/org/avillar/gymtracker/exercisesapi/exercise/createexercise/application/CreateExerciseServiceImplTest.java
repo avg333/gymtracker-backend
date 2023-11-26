@@ -1,36 +1,26 @@
 package org.avillar.gymtracker.exercisesapi.exercise.createexercise.application;
 
-import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService;
-import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
-import org.avillar.gymtracker.exercisesapi.exercise.createexercise.application.mapper.CreateExerciseApplicationMapper;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.ExerciseDao;
+import org.avillar.gymtracker.exercisesapi.common.auth.application.AuthExercisesService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class CreateExerciseServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
-
   @InjectMocks private CreateExerciseServiceImpl createExerciseService;
 
   @Mock private ExerciseDao exerciseDao;
   @Mock private AuthExercisesService authExercisesService;
 
-  @Spy
-  private final CreateExerciseApplicationMapper createExerciseApplicationMapper =
-      Mappers.getMapper(CreateExerciseApplicationMapper.class);
-
   @Test
-  void createOk() {}
+  void shouldCreateExerciseOk() {}
 
   @Test
   void createNotAccess() {}

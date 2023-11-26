@@ -1,15 +1,15 @@
 package org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.mapper;
 
-import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutRequestApplication;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutRequest;
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants.ComponentModel;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = ComponentModel.SPRING)
 public interface CreateWorkoutControllerMapper {
 
-  CreateWorkoutResponse map(CreateWorkoutResponseApplication createWorkoutResponseApplication);
+  CreateWorkoutResponse map(Workout workout);
 
-  CreateWorkoutRequestApplication map(CreateWorkoutRequest createWorkoutRequest);
+  Workout map(CreateWorkoutRequest createWorkoutRequest);
 }

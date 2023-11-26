@@ -1,12 +1,10 @@
 package org.avillar.gymtracker.authapi.register.infrastructure;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.avillar.gymtracker.authapi.AuthControllerDocumentation.AuthControllerTag;
+import org.avillar.gymtracker.authapi.common.exception.application.UsernameAlreadyExistsException;
+import org.avillar.gymtracker.authapi.common.exception.application.WrongRegisterCodeException;
+import org.avillar.gymtracker.authapi.register.infrastructure.RegisterControllerDocumentation.Methods.RegisterDocumentation;
 import org.avillar.gymtracker.authapi.register.infrastructure.model.RegisterRequest;
 import org.avillar.gymtracker.authapi.register.infrastructure.model.RegisterResponse;
 import org.springframework.http.HttpStatus;
@@ -15,23 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Tag(name = "Register", description = "API to manage Register")
+@AuthControllerTag
 @RequestMapping(path = "${authApiPrefix}")
 public interface RegisterController {
 
-  @Operation(summary = "API used to create a new user")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "User created",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = RegisterResponse.class))
-            })
-      })
+  @RegisterDocumentation
   @PostMapping("${authApiRegisterEndpoint}")
   @ResponseStatus(HttpStatus.OK)
-  RegisterResponse execute(@Valid @RequestBody RegisterRequest registerRequest);
+  RegisterResponse execute(@Valid @RequestBody RegisterRequest registerRequest)
+      throws WrongRegisterCodeException, UsernameAlreadyExistsException;
 }

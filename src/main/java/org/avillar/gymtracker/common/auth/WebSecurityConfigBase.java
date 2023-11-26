@@ -24,6 +24,7 @@ public abstract class WebSecurityConfigBase {
   private static final String ACTUATOR_HEALTH_ENDPOINT = "/actuator/health";
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtRequestFilter jwtRequestFilter;
+
   @Value("${authApiPrefix}")
   private String authApiPrefix;
 
@@ -60,7 +61,6 @@ public abstract class WebSecurityConfigBase {
         .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }
-
 
   private CorsConfigurationSource corsConfiguration() {
     final CorsConfiguration configuration = new CorsConfiguration();

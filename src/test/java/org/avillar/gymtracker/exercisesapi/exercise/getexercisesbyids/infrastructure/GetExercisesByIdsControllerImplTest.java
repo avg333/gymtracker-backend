@@ -6,52 +6,39 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.GetExercisesByIdsService;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.mapper.GetExercisesByIdsControllerMapper;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.model.GetExercisesByIdsResponseInfrastructure;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.infrastructure.model.GetExercisesByIdsResponse;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetExercisesByIdsControllerImplTest {
 
-  private static final int LIST_SIZE = 5;
-
-  private final EasyRandom easyRandom = new EasyRandom();
-
   @InjectMocks private GetExercisesByIdsControllerImpl getExercisesByIdsController;
 
   @Mock private GetExercisesByIdsService getExercisesByIdsService;
-
-  @Spy
-  private final GetExercisesByIdsControllerMapper getExercisesByIdsControllerMapper =
-      Mappers.getMapper(GetExercisesByIdsControllerMapper.class);
+  @Mock private GetExercisesByIdsControllerMapper getExercisesByIdsControllerMapper;
 
   @Test
-  void get() {
-    final List<GetExercisesByIdsResponseApplication> expected =
-        easyRandom.objects(GetExercisesByIdsResponseApplication.class, LIST_SIZE).toList();
-    final Set<UUID> request =
-        expected.stream()
-            .map(GetExercisesByIdsResponseApplication::getId)
-            .collect(Collectors.toSet());
+  void shouldGetExercisesByIdsSuccessfully() throws IllegalAccessException {
+    final Set<UUID> request = Instancio.createSet(UUID.class);
+    final List<Exercise> serviceResponse = Instancio.createList(Exercise.class);
+    final List<GetExercisesByIdsResponse> mapperResponse =
+        Instancio.createList(GetExercisesByIdsResponse.class);
 
-    when(getExercisesByIdsService.execute(request)).thenReturn(expected);
+    when(getExercisesByIdsService.execute(request)).thenReturn(serviceResponse);
+    when(getExercisesByIdsControllerMapper.map(serviceResponse)).thenReturn(mapperResponse);
 
-    final List<GetExercisesByIdsResponseInfrastructure> result =
-        getExercisesByIdsController.execute(request);
-    assertThat(result).hasSameSizeAs(expected);
-    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(getExercisesByIdsController.execute(request)).hasSameSizeAs(mapperResponse);
   }
 }

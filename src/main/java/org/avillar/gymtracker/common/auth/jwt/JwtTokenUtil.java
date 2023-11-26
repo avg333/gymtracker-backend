@@ -2,24 +2,26 @@ package org.avillar.gymtracker.common.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.io.Serializable;
-import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
+import javax.crypto.SecretKey;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+@Getter
 @Slf4j
 @Component
-public class JwtTokenUtil implements Serializable {
+public class JwtTokenUtil {
 
-  private static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+  private static final SecretKey KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
   @Value("${security.tokenType}")
   private String tokenType;
@@ -35,10 +37,6 @@ public class JwtTokenUtil implements Serializable {
         getIdFromToken(token), getUsernameFromToken(token), null, getAuthoritiesFromToken(token));
   }
 
-  public String getTokenType() {
-    return tokenType;
-  }
-
   private String getUsernameFromToken(final String token) {
     return getClaimFromToken(token, Claims::getSubject);
   }
@@ -49,19 +47,19 @@ public class JwtTokenUtil implements Serializable {
 
   private List<GrantedAuthority> getAuthoritiesFromToken(final String token) {
     Claims claims =
-        Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
+        Jwts.parser().verifyWith(getSignKey()).build().parseClaimsJws(token).getPayload();
 
     return (List<GrantedAuthority>) claims.get("authorities");
   }
 
   private <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
     return claimsResolver.apply(
-        Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody());
+        Jwts.parser().verifyWith(getSignKey()).build().parseClaimsJws(token).getPayload());
   }
 
   public boolean validateToken(final String token) {
     try {
-      Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
+      Jwts.parser().verifyWith(getSignKey()).build().parseClaimsJws(token);
       return getClaimFromToken(token, Claims::getExpiration)
           .after(new Date(System.currentTimeMillis()));
     } catch (Exception e) {
@@ -80,16 +78,16 @@ public class JwtTokenUtil implements Serializable {
 
   private String createToken(Map<String, Object> claims, final UserDetailsImpl userDetails) {
     return Jwts.builder()
-        .setClaims(claims)
-        .setSubject(userDetails.getUsername())
-        .setId(userDetails.getId().toString())
-        .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-        .signWith(getSignKey(), SignatureAlgorithm.HS256)
+        .claims(claims)
+        .subject(userDetails.getUsername())
+        .id(userDetails.getId().toString())
+        .issuedAt(new Date(System.currentTimeMillis()))
+        .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+        .signWith(getSignKey(), SIG.HS256)
         .compact();
   }
 
-  private Key getSignKey() {
+  private SecretKey getSignKey() {
     return StringUtils.isNotBlank(secret)
         ? Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
         : KEY;

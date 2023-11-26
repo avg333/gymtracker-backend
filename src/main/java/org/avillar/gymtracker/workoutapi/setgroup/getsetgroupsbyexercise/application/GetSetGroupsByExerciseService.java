@@ -2,11 +2,10 @@ package org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.applic
 
 import java.util.List;
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.setgroup.getsetgroupsbyexercise.application.model.GetSetGroupsByExerciseResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 
 public interface GetSetGroupsByExerciseService {
 
-  List<GetSetGroupsByExerciseResponseApplication> execute(UUID userId, UUID exerciseId)
-      throws IllegalAccessException;
+  List<SetGroup> execute(UUID userId, UUID exerciseId) throws WorkoutIllegalAccessException;
 }

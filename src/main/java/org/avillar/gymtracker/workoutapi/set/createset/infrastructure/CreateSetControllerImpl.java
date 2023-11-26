@@ -2,8 +2,8 @@ package org.avillar.gymtracker.workoutapi.set.createset.infrastructure;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.set.createset.application.CreateSetService;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.mapper.CreateSetControllerMapper;
 import org.avillar.gymtracker.workoutapi.set.createset.infrastructure.model.CreateSetRequest;
@@ -19,7 +19,7 @@ public class CreateSetControllerImpl implements CreateSetController {
 
   @Override
   public CreateSetResponse execute(final UUID setGroupId, final CreateSetRequest createSetRequest)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws SetGroupNotFoundException, WorkoutIllegalAccessException {
     return createSetControllerMapper.map(
         createSetService.execute(setGroupId, createSetControllerMapper.map(createSetRequest)));
   }

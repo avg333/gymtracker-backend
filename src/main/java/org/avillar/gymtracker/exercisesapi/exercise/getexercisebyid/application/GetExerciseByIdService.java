@@ -1,12 +1,12 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.application;
 
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.application.model.GetExerciseByIdResponseApplication;
+import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
+import org.avillar.gymtracker.exercisesapi.common.exception.application.ExerciseIllegalAccessException;
+import org.avillar.gymtracker.exercisesapi.common.exception.application.ExerciseNotFoundException;
 
 public interface GetExerciseByIdService {
 
-  GetExerciseByIdResponseApplication execute(UUID exerciseId)
-      throws EntityNotFoundException, IllegalAccessException;
+  Exercise execute(UUID exerciseId)
+      throws ExerciseNotFoundException, ExerciseIllegalAccessException;
 }

@@ -1,100 +1,63 @@
 package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import org.avillar.gymtracker.common.base.domain.BaseEntity;
-import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
 import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.exercisesapi.auth.application.AuthExercisesService;
-import org.avillar.gymtracker.exercisesapi.domain.Exercise;
-import org.avillar.gymtracker.exercisesapi.domain.ExerciseDao;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.mapper.GetExercisesByIdsServiceMapper;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyids.application.model.GetExercisesByIdsResponseApplication;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.exercisesapi.common.auth.application.AuthExercisesService;
+import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
+import org.avillar.gymtracker.exercisesapi.common.exception.application.ExerciseIllegalAccessException;
+import org.avillar.gymtracker.exercisesapi.common.facade.exercise.ExerciseFacade;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetExercisesByIdsServiceImplTest {
 
-  private static final int LIST_SIZE = 5;
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.READ;
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private GetExercisesByIdsServiceImpl getExercisesByIdsServiceImpl;
 
-  @InjectMocks private GetExercisesByIdsServiceImpl getExercisesByIdsService;
-
-  @Mock private ExerciseDao exerciseDao;
+  @Mock private ExerciseFacade exerciseFacade;
   @Mock private AuthExercisesService authExercisesService;
 
-  @Spy
-  private final GetExercisesByIdsServiceMapper getExercisesByIdsServiceMapper =
-      Mappers.getMapper(GetExercisesByIdsServiceMapper.class);
-
   @Test
-  void getOk() {
-    final List<Exercise> expected = easyRandom.objects(Exercise.class, LIST_SIZE).toList();
-    final Set<UUID> exercisesIds =
-        expected.stream().map(BaseEntity::getId).collect(Collectors.toSet());
-    final UUID userId = UUID.randomUUID();
-    expected.stream()
-        .filter(exercise -> exercise.getAccessType() == AccessTypeEnum.PRIVATE)
-        .forEach(exercise -> exercise.setOwner(userId));
+  void shouldGetExercisesByIdsSuccessfully() throws IllegalAccessException {
+    final List<UUID> exerciseIds = Instancio.createList(UUID.class);
+    final List<Exercise> exercises = Instancio.createList(Exercise.class);
 
-    when(exerciseDao.getFullExerciseByIds(exercisesIds)).thenReturn(expected);
-    doNothing().when(authExercisesService).checkAccess(expected, AuthOperations.READ);
+    when(exerciseFacade.getExercisesByIds(exerciseIds)).thenReturn(exercises);
+    doNothing().when(authExercisesService).checkAccess(exercises, AUTH_OPERATIONS);
 
-    final List<GetExercisesByIdsResponseApplication> result =
-        getExercisesByIdsService.execute(exercisesIds);
-    assertThat(result).hasSameSizeAs(expected);
-    assertThat(result)
-        .usingRecursiveComparison()
-        .ignoringFields("muscleGroups")
-        .isEqualTo(expected);
+    assertThat(getExercisesByIdsServiceImpl.execute(exerciseIds)).isEqualTo(exercises);
   }
 
   @Test
-  void getNotPermission() {
-    final List<Exercise> exercises = easyRandom.objects(Exercise.class, LIST_SIZE).toList();
-    final Set<UUID> exercisesIds =
-        exercises.stream().map(BaseEntity::getId).collect(Collectors.toSet());
-    final AuthOperations readOperation = AuthOperations.READ;
+  void shouldThrowExerciseIllegalAccessExceptionWhenUserHasNoPermissionToReadExercise()
+      throws ExerciseIllegalAccessException {
     final UUID userId = UUID.randomUUID();
-    exercises.stream()
-        .filter(exercise -> exercise.getAccessType() == AccessTypeEnum.PRIVATE)
-        .forEach(exercise -> exercise.setOwner(userId));
-    final Exercise exerciseNotPermission = exercises.get(3);
-    exerciseNotPermission.setAccessType(AccessTypeEnum.PRIVATE);
-    exerciseNotPermission.setOwner(UUID.randomUUID());
+    final List<UUID> exerciseIds = Instancio.createList(UUID.class);
+    final List<Exercise> exercises = Instancio.createList(Exercise.class);
+    final ExerciseIllegalAccessException exception =
+        new ExerciseIllegalAccessException(exerciseIds.get(0), AUTH_OPERATIONS, userId);
 
-    when(exerciseDao.getFullExerciseByIds(exercisesIds)).thenReturn(exercises);
-    doThrow(new IllegalAccessException(exerciseNotPermission, readOperation, userId))
-        .when(authExercisesService)
-        .checkAccess(exercises, readOperation);
+    when(exerciseFacade.getExercisesByIds(exerciseIds)).thenReturn(exercises);
+    doThrow(exception).when(authExercisesService).checkAccess(exercises, AUTH_OPERATIONS);
 
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class, () -> getExercisesByIdsService.execute(exercisesIds));
-    assertEquals(Exercise.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(exerciseNotPermission.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(readOperation, exception.getAuthOperations());
+    assertThatThrownBy(() -> getExercisesByIdsServiceImpl.execute(exerciseIds))
+        .isEqualTo(exception);
   }
 }

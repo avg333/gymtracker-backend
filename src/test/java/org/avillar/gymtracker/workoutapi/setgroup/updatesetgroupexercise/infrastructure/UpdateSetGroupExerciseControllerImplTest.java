@@ -1,14 +1,16 @@
 package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.exception.application.ExerciseUnavailableException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.SetGroupNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.application.UpdateSetGroupExerciseService;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseRequest;
 import org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infrastructure.model.UpdateSetGroupExerciseResponse;
-import org.jeasy.random.EasyRandom;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -21,24 +23,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UpdateSetGroupExerciseControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private UpdateSetGroupExerciseControllerImpl controller;
 
-  @InjectMocks private UpdateSetGroupExerciseControllerImpl updateSetGroupExerciseControllerImpl;
-
-  @Mock private UpdateSetGroupExerciseService updateSetGroupExerciseService;
+  @Mock private UpdateSetGroupExerciseService service;
 
   @Test
-  void updateSetGroupExercise() {
+  void shouldUpdateExerciseIdSuccessfully()
+      throws SetGroupNotFoundException,
+          WorkoutIllegalAccessException,
+          ExerciseUnavailableException {
     final UUID setGroupId = UUID.randomUUID();
-    final UpdateSetGroupExerciseRequest expected =
-        easyRandom.nextObject(UpdateSetGroupExerciseRequest.class);
+    final UpdateSetGroupExerciseRequest request =
+        Instancio.create(UpdateSetGroupExerciseRequest.class);
+    final UUID response = UUID.randomUUID();
 
-    when(updateSetGroupExerciseService.execute(setGroupId, expected.getExerciseId()))
-        .thenReturn(expected.getExerciseId());
+    when(service.execute(setGroupId, request.exerciseId())).thenReturn(response);
 
-    final UpdateSetGroupExerciseResponse result =
-        updateSetGroupExerciseControllerImpl.execute(setGroupId, expected);
-    assertNotNull(result);
-    assertEquals(expected.getExerciseId(), result.getExerciseId());
+    final UpdateSetGroupExerciseResponse result = controller.execute(setGroupId, request);
+    assertThat(result).isNotNull();
+    assertThat(result.exerciseId()).isEqualTo(response);
   }
 }

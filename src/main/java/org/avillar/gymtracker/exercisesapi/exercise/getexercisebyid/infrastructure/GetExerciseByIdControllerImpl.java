@@ -2,8 +2,8 @@ package org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.infrastruct
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
+import org.avillar.gymtracker.exercisesapi.common.exception.application.ExerciseIllegalAccessException;
+import org.avillar.gymtracker.exercisesapi.common.exception.application.ExerciseNotFoundException;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.application.GetExerciseByIdService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.infrastructure.mapper.GetExerciseByIdControllerMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisebyid.infrastructure.model.GetExerciseByIdResponse;
@@ -18,7 +18,7 @@ public class GetExerciseByIdControllerImpl implements GetExerciseByIdController 
 
   @Override
   public GetExerciseByIdResponse execute(final UUID exerciseId)
-      throws EntityNotFoundException, IllegalAccessException {
+      throws ExerciseNotFoundException, ExerciseIllegalAccessException {
     return getExerciseByIdControllerMapper.map(getExerciseByIdService.execute(exerciseId));
   }
 }

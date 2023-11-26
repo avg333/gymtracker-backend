@@ -2,6 +2,7 @@ package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infras
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.avillar.gymtracker.exercisesapi.common.exception.application.ExerciseIllegalAccessException;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.GetExercisesByFilterService;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.mapper.GetExercisesByFilterControllerMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
@@ -17,7 +18,8 @@ public class GetExercisesByFilterControllerImpl implements GetExercisesByFilterC
 
   @Override
   public List<GetExercisesByFilterResponse> execute(
-      final GetExercisesByFilterRequest getExercisesByFilterRequest) {
+      final GetExercisesByFilterRequest getExercisesByFilterRequest)
+      throws ExerciseIllegalAccessException {
     return getExercisesByFilterControllerMapper.map(
         getExercisesByFilterService.execute(
             getExercisesByFilterControllerMapper.map(getExercisesByFilterRequest)));

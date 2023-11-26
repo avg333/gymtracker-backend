@@ -1,14 +1,12 @@
 package org.avillar.gymtracker.workoutapi.workout.createworkout.application;
 
 import java.util.UUID;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.exception.application.DuplicatedWorkoutDateException;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutRequestApplication;
-import org.avillar.gymtracker.workoutapi.workout.createworkout.application.model.CreateWorkoutResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutForDateAlreadyExistsException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
 
 public interface CreateWorkoutService {
 
-  CreateWorkoutResponseApplication execute(
-      UUID userId, CreateWorkoutRequestApplication createWorkoutRequestApplication)
-      throws IllegalAccessException, DuplicatedWorkoutDateException;
+  Workout execute(UUID userId, Workout workout)
+      throws WorkoutIllegalAccessException, WorkoutForDateAlreadyExistsException;
 }

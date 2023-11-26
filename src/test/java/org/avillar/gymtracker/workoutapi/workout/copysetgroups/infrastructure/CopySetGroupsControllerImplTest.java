@@ -5,53 +5,46 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.domain.SetGroup;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.CopySetGroupsService;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.model.CopySetGroupsResponseApplication;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.application.CopySetGroupsServiceImpl.CopySetGroupsRequest;
 import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.mapper.CopySetGroupsControllerMapper;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsRequest;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsRequest.Source;
-import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponse;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsRequestDto;
+import org.avillar.gymtracker.workoutapi.workout.copysetgroups.infrastructure.model.CopySetGroupsResponseDto;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class CopySetGroupsControllerImplTest {
 
-  private static final int LIST_SIZE = 5;
+  @InjectMocks private CopySetGroupsControllerImpl controller;
 
-  private final EasyRandom easyRandom = new EasyRandom();
-
-  @InjectMocks private CopySetGroupsControllerImpl updateWorkoutSetGroupsController;
-
-  @Mock private CopySetGroupsService copySetGroupsService;
-
-  @Spy
-  private final CopySetGroupsControllerMapper updateWorkoutSetGroupsControllerMapper =
-      Mappers.getMapper(CopySetGroupsControllerMapper.class);
+  @Mock private CopySetGroupsService service;
+  @Mock private CopySetGroupsControllerMapper mapper;
 
   @Test
-  void copySetGroups() {
+  void shouldCopySetGroupsSuccessfully()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
     final UUID workoutDestinationId = UUID.randomUUID();
-    final CopySetGroupsRequest request = easyRandom.nextObject(CopySetGroupsRequest.class);
-    final List<CopySetGroupsResponseApplication> expected =
-        easyRandom.objects(CopySetGroupsResponseApplication.class, LIST_SIZE).toList();
+    final CopySetGroupsRequestDto requestDto = Instancio.create(CopySetGroupsRequestDto.class);
+    final CopySetGroupsRequest request = Instancio.create(CopySetGroupsRequest.class);
+    final List<SetGroup> response = Instancio.createList(SetGroup.class);
+    final List<CopySetGroupsResponseDto> expected =
+        Instancio.createList(CopySetGroupsResponseDto.class);
 
-    when(copySetGroupsService.execute(
-            workoutDestinationId, request.getId(), request.getSource() == Source.WORKOUT))
-        .thenReturn(expected);
+    when(mapper.map(requestDto)).thenReturn(request);
+    when(service.execute(workoutDestinationId, request)).thenReturn(response);
+    when(mapper.map(response)).thenReturn(expected);
 
-    final List<CopySetGroupsResponse> result =
-        updateWorkoutSetGroupsController.execute(workoutDestinationId, request);
-    assertThat(result).hasSameSizeAs(expected);
-    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+    assertThat(controller.execute(workoutDestinationId, requestDto)).isEqualTo(expected);
   }
 }

@@ -1,103 +1,94 @@
 package org.avillar.gymtracker.authapi.register.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.avillar.gymtracker.authapi.domain.UserApp;
-import org.avillar.gymtracker.authapi.domain.UserDao;
-import org.avillar.gymtracker.authapi.exception.application.UsernameAlreadyExistsException;
-import org.avillar.gymtracker.authapi.exception.application.WrongRegisterCodeException;
+import org.avillar.gymtracker.authapi.common.domain.UserApp;
+import org.avillar.gymtracker.authapi.common.exception.application.UserNotFoundException;
+import org.avillar.gymtracker.authapi.common.exception.application.UsernameAlreadyExistsException;
+import org.avillar.gymtracker.authapi.common.exception.application.WrongRegisterCodeException;
+import org.avillar.gymtracker.authapi.common.facade.user.UserFacade;
 import org.avillar.gymtracker.authapi.login.application.LoginService;
-import org.avillar.gymtracker.authapi.login.application.model.LoginRequestApplication;
-import org.avillar.gymtracker.authapi.login.application.model.LoginResponseApplication;
-import org.avillar.gymtracker.authapi.register.application.mapper.RegisterServiceMapper;
-import org.avillar.gymtracker.authapi.register.application.model.RegisterRequestApplication;
-import org.avillar.gymtracker.authapi.register.application.model.RegisterResponseApplication;
-import org.jeasy.random.EasyRandom;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class RegisterServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
-
   @InjectMocks private RegisterServiceImpl registerService;
 
-  @Mock private UserDao userDao;
+  @Mock private UserFacade userFacade;
   @Mock private LoginService loginService;
-
-  @Spy
-  private final RegisterServiceMapper registerServiceMapper =
-      Mappers.getMapper(RegisterServiceMapper.class);
+  @Mock private BCryptPasswordEncoder bCryptPasswordEncoder;
 
   @Test
-  void registerOk() {
-    final LoginResponseApplication expected = easyRandom.nextObject(LoginResponseApplication.class);
-    final RegisterRequestApplication request =
-        easyRandom.nextObject(RegisterRequestApplication.class);
-    request.setUsername(expected.getUsername());
-    ReflectionTestUtils.setField(registerService, "registerCode", request.getRegisterCode());
+  void shouldRegisterUserSuccessfullyAndReturnLoginData()
+      throws WrongRegisterCodeException, UsernameAlreadyExistsException, UserNotFoundException {
+    final UserApp requestUserApp = Instancio.create(UserApp.class);
+    final String registerCode = Instancio.create(String.class);
+    final String encodedPassword = Instancio.create(String.class);
+    final UserApp savedUserApp = Instancio.create(UserApp.class);
+    final UserApp loginResponse = Instancio.create(UserApp.class);
 
-    ArgumentCaptor<LoginRequestApplication> loginRequestApplicationCaptor =
-        ArgumentCaptor.forClass(LoginRequestApplication.class);
+    ReflectionTestUtils.setField(registerService, "registerCode", registerCode);
 
-    when(userDao.findByUsername(request.getUsername())).thenReturn(null);
-    when(userDao.save(any(UserApp.class))).thenAnswer(i -> i.getArguments()[0]);
-    when(loginService.execute(loginRequestApplicationCaptor.capture())).thenReturn(expected);
+    final ArgumentCaptor<UserApp> userAppCaptor = ArgumentCaptor.forClass(UserApp.class);
 
-    final RegisterResponseApplication result = registerService.execute(request);
-    assertThat(result).usingRecursiveComparison().isEqualTo(expected);
-    verify(userDao).save(any(UserApp.class));
-    assertThat(loginRequestApplicationCaptor.getValue())
-        .usingRecursiveComparison()
-        .isEqualTo(request);
+    doThrow(UserNotFoundException.class)
+        .when(userFacade)
+        .findByUsername(requestUserApp.getUsername());
+    when(bCryptPasswordEncoder.encode(requestUserApp.getPassword())).thenReturn(encodedPassword);
+    when(userFacade.saveUser(userAppCaptor.capture())).thenReturn(savedUserApp);
+    when(loginService.execute(requestUserApp)).thenReturn(loginResponse);
+
+    assertThat(registerService.execute(requestUserApp, registerCode)).isEqualTo(loginResponse);
+
+    final UserApp userAppBeforeSave = userAppCaptor.getValue();
+    assertThat(userAppBeforeSave).isNotNull();
+    assertThat(userAppBeforeSave.getUsername()).isEqualTo(requestUserApp.getUsername());
+    assertThat(userAppBeforeSave.getPassword()).isEqualTo(encodedPassword);
+
+    verify(userFacade).findByUsername(requestUserApp.getUsername());
+    verify(userFacade).saveUser(userAppBeforeSave);
+    verify(loginService).execute(requestUserApp);
   }
 
   @Test
-  void registerInvalidCode() {
-    final RegisterRequestApplication registerRequestApplication =
-        easyRandom.nextObject(RegisterRequestApplication.class);
-    ReflectionTestUtils.setField(
-        registerService, "registerCode", easyRandom.nextObject(String.class));
+  void shouldThrowUsernameAlreadyExistsExceptionWhenUsernameIsAlreadyOnUse()
+      throws UserNotFoundException {
+    final UserApp userApp = Instancio.create(UserApp.class);
+    final String registerCode = Instancio.create(String.class);
 
-    assertEquals(
-        "Wrong auth code!",
-        assertThrows(
-                WrongRegisterCodeException.class,
-                () -> registerService.execute(registerRequestApplication))
-            .getMessage());
+    ReflectionTestUtils.setField(registerService, "registerCode", registerCode);
+
+    when(userFacade.findByUsername(userApp.getUsername()))
+        .thenReturn(Instancio.create(UserApp.class));
+
+    assertThatThrownBy(() -> registerService.execute(userApp, registerCode))
+        .isInstanceOf(UsernameAlreadyExistsException.class);
   }
 
   @Test
-  void registerUsernameAlreadyExists() {
-    final RegisterRequestApplication registerRequestApplication =
-        easyRandom.nextObject(RegisterRequestApplication.class);
-    ReflectionTestUtils.setField(
-        registerService, "registerCode", registerRequestApplication.getRegisterCode());
+  void shouldThrowWrongRegisterCodeExceptionWhenRegisterCodeIsNotValid() {
+    final UserApp userApp = Instancio.create(UserApp.class);
+    final String registerCode = Instancio.create(String.class);
 
-    when(userDao.findByUsername(registerRequestApplication.getUsername()))
-        .thenReturn(easyRandom.nextObject(UserApp.class));
+    ReflectionTestUtils.setField(registerService, "registerCode", Instancio.create(String.class));
 
-    assertEquals(
-        "Username already exists",
-        assertThrows(
-                UsernameAlreadyExistsException.class,
-                () -> registerService.execute(registerRequestApplication))
-            .getMessage());
+    assertThatThrownBy(() -> registerService.execute(userApp, registerCode))
+        .isInstanceOf(WrongRegisterCodeException.class);
   }
 }

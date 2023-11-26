@@ -1,89 +1,72 @@
 package org.avillar.gymtracker.workoutapi.workout.getworkout.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
 import java.util.UUID;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.getworkout.application.mapper.GetWorkoutServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.getworkout.application.model.GetWorkoutResponseApplication;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
+import org.avillar.gymtracker.workoutapi.common.utils.ExceptionGenerator;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutServiceImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  private static final AuthOperations AUTH_OPERATIONS = AuthOperations.READ;
 
   @InjectMocks private GetWorkoutServiceImpl getWorkoutService;
 
-  @Mock private WorkoutDao workoutDao;
+  @Mock private WorkoutFacade workoutFacade;
   @Mock private AuthWorkoutsService authWorkoutsService;
 
-  @Spy
-  private final GetWorkoutServiceMapper getWorkoutServiceMapper =
-      Mappers.getMapper(GetWorkoutServiceMapper.class);
-
   @Test
-  void getOk() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
+  void shouldGetWorkoutSuccessfully()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
+    final Workout workout = Instancio.create(Workout.class);
 
-    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
-    doNothing().when(authWorkoutsService).checkAccess(workout, AuthOperations.READ);
+    when(workoutFacade.getWorkout(workout.getId())).thenReturn(workout);
+    doNothing().when(authWorkoutsService).checkAccess(workout, AUTH_OPERATIONS);
 
-    final GetWorkoutResponseApplication result = getWorkoutService.execute(workout.getId());
-    assertThat(result).usingRecursiveComparison().isEqualTo(workout);
+    assertThat(getWorkoutService.execute(workout.getId())).isEqualTo(workout);
   }
 
   @Test
-  void getNotFound() {
+  void shouldThrowWorkoutIllegalAccessExceptionWhenUserHasNoPermissionToReadWorkout()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
+    final Workout workout = Instancio.create(Workout.class);
+    final WorkoutIllegalAccessException exception =
+        ExceptionGenerator.generateWorkoutIllegalAccessException();
+
+    when(workoutFacade.getWorkout(workout.getId())).thenReturn(workout);
+    doThrow(exception).when(authWorkoutsService).checkAccess(workout, AUTH_OPERATIONS);
+
+    assertThatThrownBy(() -> getWorkoutService.execute(workout.getId())).isEqualTo(exception);
+  }
+
+  @Test
+  void shouldThrowEntityNotFoundExceptionWhenGettingNonExistentWorkout()
+      throws WorkoutNotFoundException {
     final UUID workoutId = UUID.randomUUID();
+    final WorkoutNotFoundException exception =
+        ExceptionGenerator.generateWorkoutNotFoundException();
 
-    when(workoutDao.findById(workoutId))
-        .thenThrow(new EntityNotFoundException(Workout.class, workoutId));
+    doThrow(exception).when(workoutFacade).getWorkout(workoutId);
 
-    final EntityNotFoundException exception =
-        assertThrows(EntityNotFoundException.class, () -> getWorkoutService.execute(workoutId));
-    assertEquals(Workout.class.getSimpleName(), exception.getClassName());
-    assertEquals(workoutId, exception.getId());
-  }
-
-  @Test
-  void getNotPermission() {
-    final Workout workout = easyRandom.nextObject(Workout.class);
-    final UUID userId = UUID.randomUUID();
-    final AuthOperations readOperation = AuthOperations.READ;
-
-    when(workoutDao.findById(workout.getId())).thenReturn(Optional.of(workout));
-    doThrow(new IllegalAccessException(workout, readOperation, userId))
-        .when(authWorkoutsService)
-        .checkAccess(workout, readOperation);
-
-    final IllegalAccessException exception =
-        assertThrows(
-            IllegalAccessException.class, () -> getWorkoutService.execute(workout.getId()));
-    assertEquals(Workout.class.getSimpleName(), exception.getEntityClassName());
-    assertEquals(workout.getId(), exception.getEntityId());
-    assertEquals(userId, exception.getCurrentUserId());
-    assertEquals(readOperation, exception.getAuthOperations());
+    assertThatThrownBy(() -> getWorkoutService.execute(workoutId)).isEqualTo(exception);
   }
 }

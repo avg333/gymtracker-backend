@@ -3,52 +3,43 @@ package org.avillar.gymtracker.authapi.register.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import org.avillar.gymtracker.authapi.common.domain.UserApp;
+import org.avillar.gymtracker.authapi.common.exception.application.UsernameAlreadyExistsException;
+import org.avillar.gymtracker.authapi.common.exception.application.WrongRegisterCodeException;
 import org.avillar.gymtracker.authapi.register.application.RegisterService;
-import org.avillar.gymtracker.authapi.register.application.model.RegisterRequestApplication;
-import org.avillar.gymtracker.authapi.register.application.model.RegisterResponseApplication;
 import org.avillar.gymtracker.authapi.register.infrastructure.mapper.RegisterControllerMapper;
 import org.avillar.gymtracker.authapi.register.infrastructure.model.RegisterRequest;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.authapi.register.infrastructure.model.RegisterResponse;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class RegisterControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
-
   @InjectMocks private RegisterControllerImpl registerController;
 
   @Mock private RegisterService registerService;
-
-  @Spy
-  private final RegisterControllerMapper registerControllerMapper =
-      Mappers.getMapper(RegisterControllerMapper.class);
+  @Mock private RegisterControllerMapper registerControllerMapper;
 
   @Test
-  void registerOk() {
-    final RegisterRequest request = easyRandom.nextObject(RegisterRequest.class);
-    final RegisterResponseApplication expected =
-        easyRandom.nextObject(RegisterResponseApplication.class);
+  void shouldRegisterUserSuccessfullyAndReturnLoginData()
+      throws WrongRegisterCodeException, UsernameAlreadyExistsException {
+    final RegisterRequest requestDto = Instancio.create(RegisterRequest.class);
+    final UserApp request = Instancio.create(UserApp.class);
+    final UserApp response = Instancio.create(UserApp.class);
+    final RegisterResponse responseDto = Instancio.create(RegisterResponse.class);
 
-    final ArgumentCaptor<RegisterRequestApplication> registerRequestApplicationCaptor =
-        ArgumentCaptor.forClass(RegisterRequestApplication.class);
+    when(registerControllerMapper.map(requestDto)).thenReturn(request);
+    when(registerService.execute(request, requestDto.registerCode())).thenReturn(response);
+    when(registerControllerMapper.map(response)).thenReturn(responseDto);
 
-    when(registerService.execute(registerRequestApplicationCaptor.capture())).thenReturn(expected);
-
-    assertThat(registerController.execute(request)).usingRecursiveComparison().isEqualTo(expected);
-    assertThat(registerRequestApplicationCaptor.getValue())
-        .usingRecursiveComparison()
-        .isEqualTo(request);
-    // TODO Fix types
+    assertThat(registerController.execute(requestDto)).isEqualTo(responseDto);
   }
 }

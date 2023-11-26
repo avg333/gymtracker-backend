@@ -2,10 +2,6 @@ package org.avillar.gymtracker.workoutapi.setgroup.updatesetgroupexercise.infras
 
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
-import lombok.Data;
 
-@Data
-public class UpdateSetGroupExerciseRequest {
-
-  @NotNull private UUID exerciseId;
-}
+public record UpdateSetGroupExerciseRequest(
+    @NotNull(message = "ExerciseId is required") UUID exerciseId) {}

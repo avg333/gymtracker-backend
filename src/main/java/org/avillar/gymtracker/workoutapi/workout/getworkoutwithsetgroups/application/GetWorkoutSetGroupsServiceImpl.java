@@ -3,36 +3,27 @@ package org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.applic
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.avillar.gymtracker.common.errors.application.AuthOperations;
-import org.avillar.gymtracker.common.errors.application.exceptions.EntityNotFoundException;
-import org.avillar.gymtracker.common.errors.application.exceptions.IllegalAccessException;
-import org.avillar.gymtracker.workoutapi.auth.application.AuthWorkoutsService;
-import org.avillar.gymtracker.workoutapi.domain.Workout;
-import org.avillar.gymtracker.workoutapi.domain.WorkoutDao;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.mapper.GetWorkoutSetGroupsServiceMapper;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutwithsetgroups.application.model.GetWorkoutSetGroupsResponseApplication;
+import org.avillar.gymtracker.workoutapi.common.auth.application.AuthWorkoutsService;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
+import org.avillar.gymtracker.workoutapi.common.facade.workout.WorkoutFacade;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class GetWorkoutSetGroupsServiceImpl implements GetWorkoutSetGroupsService {
 
-  private final WorkoutDao workoutDao;
+  private final WorkoutFacade workoutFacade;
   private final AuthWorkoutsService authWorkoutsService;
-  private final GetWorkoutSetGroupsServiceMapper getWorkoutSetGroupsServiceMapper;
 
   @Override
-  public GetWorkoutSetGroupsResponseApplication execute(final UUID workoutId)
-      throws EntityNotFoundException, IllegalAccessException {
-    final Workout workout = getWorkoutWithSetGroups(workoutId);
+  public Workout execute(final UUID workoutId)
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
+    final Workout workout = workoutFacade.getWorkoutWithSetGroups(workoutId);
 
     authWorkoutsService.checkAccess(workout, AuthOperations.READ);
 
-    return getWorkoutSetGroupsServiceMapper.map(workout);
-  }
-
-  private Workout getWorkoutWithSetGroups(final UUID workoutId) {
-    return workoutDao.getWorkoutWithSetGroupsById(workoutId).stream()
-        .findAny()
-        .orElseThrow(() -> new EntityNotFoundException(Workout.class, workoutId));
+    return workout;
   }
 }

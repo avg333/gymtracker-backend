@@ -3,43 +3,42 @@ package org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructu
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+import org.avillar.gymtracker.workoutapi.common.domain.Workout;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutIllegalAccessException;
+import org.avillar.gymtracker.workoutapi.common.exception.application.WorkoutNotFoundException;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.GetWorkoutDetailsService;
-import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.application.model.GetWorkoutDetailsResponseApplication;
 import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.mapper.GetWorkoutDetailsControllerMapper;
-import org.jeasy.random.EasyRandom;
+import org.avillar.gymtracker.workoutapi.workout.getworkoutdetails.infrastructure.model.GetWorkoutDetailsResponseDto;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
 @ExtendWith(MockitoExtension.class)
 class GetWorkoutDetailsControllerImplTest {
 
-  private final EasyRandom easyRandom = new EasyRandom();
+  @InjectMocks private GetWorkoutDetailsControllerImpl controller;
 
-  @InjectMocks private GetWorkoutDetailsControllerImpl getWorkoutDetailsControllerImpl;
-
-  @Mock private GetWorkoutDetailsService getWorkoutDetailsService;
-
-  @Spy
-  private final GetWorkoutDetailsControllerMapper getWorkoutControllerMapper =
-      Mappers.getMapper(GetWorkoutDetailsControllerMapper.class);
+  @Mock private GetWorkoutDetailsService service;
+  @Mock private GetWorkoutDetailsControllerMapper mapper;
 
   @Test
-  void get() {
-    final GetWorkoutDetailsResponseApplication expected =
-        easyRandom.nextObject(GetWorkoutDetailsResponseApplication.class);
+  void shouldGetWorkoutDetailsSuccessfully()
+      throws WorkoutNotFoundException, WorkoutIllegalAccessException {
+    final UUID workoutId = UUID.randomUUID();
+    final Workout response = Instancio.create(Workout.class);
+    final GetWorkoutDetailsResponseDto responseDto =
+        Instancio.create(GetWorkoutDetailsResponseDto.class);
 
-    when(getWorkoutDetailsService.execute(expected.getId())).thenReturn(expected);
+    when(service.execute(workoutId)).thenReturn(response);
+    when(mapper.map(response)).thenReturn(responseDto);
 
-    assertThat(getWorkoutDetailsControllerImpl.execute(expected.getId()))
-        .usingRecursiveComparison()
-        .isEqualTo(expected);
+    assertThat(controller.execute(workoutId)).isEqualTo(responseDto);
   }
 }
