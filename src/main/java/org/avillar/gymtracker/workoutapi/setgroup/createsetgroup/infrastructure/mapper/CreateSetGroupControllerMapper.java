@@ -5,8 +5,9 @@ import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.
 import org.avillar.gymtracker.workoutapi.setgroup.createsetgroup.infrastructure.model.CreateSetGroupResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = ComponentModel.SPRING)
+@Mapper(componentModel = ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CreateSetGroupControllerMapper {
 
   CreateSetGroupResponse map(SetGroup setGroup);

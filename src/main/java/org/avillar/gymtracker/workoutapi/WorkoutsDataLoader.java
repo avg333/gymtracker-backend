@@ -175,7 +175,7 @@ public class WorkoutsDataLoader implements ApplicationRunner {
       weight = weight < 0 ? 0 : weight;
 
       double previousRir = i == 0 ? random.nextDouble() * 5 : sets.get(i - 1).rir();
-      double rir = previousRir + (Math.random() - 0.5); // Variación pequeña en el rango [-0.5, 0.5]
+      double rir = previousRir + (Math.random() - 0.5);
 
       sets.add(new SetRecord(reps, weight, rir));
     }

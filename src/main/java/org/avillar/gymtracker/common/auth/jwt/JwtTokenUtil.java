@@ -3,7 +3,6 @@ package org.avillar.gymtracker.common.auth.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.util.*;
@@ -21,7 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenUtil {
 
-  private static final SecretKey KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+  private static final String USER_ID_KEY = "userId";
+  private static final String AUTHORITIES_KEY = "authorities";
+
+  private static final SecretKey KEY = SIG.HS256.key().build();
 
   @Value("${security.tokenType}")
   private String tokenType;
@@ -46,20 +48,18 @@ public class JwtTokenUtil {
   }
 
   private List<GrantedAuthority> getAuthoritiesFromToken(final String token) {
-    Claims claims =
-        Jwts.parser().verifyWith(getSignKey()).build().parseClaimsJws(token).getPayload();
 
-    return (List<GrantedAuthority>) claims.get("authorities");
+    return getClaimFromToken(
+        token, claims -> (List<GrantedAuthority>) claims.get(AUTHORITIES_KEY, List.class));
   }
 
   private <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
     return claimsResolver.apply(
-        Jwts.parser().verifyWith(getSignKey()).build().parseClaimsJws(token).getPayload());
+        Jwts.parser().verifyWith(getSignKey()).build().parseSignedClaims(token).getPayload());
   }
 
   public boolean validateToken(final String token) {
     try {
-      Jwts.parser().verifyWith(getSignKey()).build().parseClaimsJws(token);
       return getClaimFromToken(token, Claims::getExpiration)
           .after(new Date(System.currentTimeMillis()));
     } catch (Exception e) {
@@ -70,8 +70,8 @@ public class JwtTokenUtil {
 
   public String generateToken(final UserDetailsImpl userDetails) {
     final Map<String, Object> claims = new HashMap<>();
-    claims.put("userId", userDetails.getId());
-    claims.put("authorities", userDetails.getAuthorities());
+    claims.put(USER_ID_KEY, userDetails.getId());
+    claims.put(AUTHORITIES_KEY, userDetails.getAuthorities());
 
     return createToken(claims, userDetails);
   }

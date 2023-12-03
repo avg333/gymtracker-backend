@@ -5,8 +5,9 @@ import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.mo
 import org.avillar.gymtracker.workoutapi.workout.createworkout.infrastructure.model.CreateWorkoutResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = ComponentModel.SPRING)
+@Mapper(componentModel = ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CreateWorkoutControllerMapper {
 
   CreateWorkoutResponse map(Workout workout);

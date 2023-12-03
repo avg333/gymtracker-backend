@@ -31,7 +31,7 @@ public class IllegalAccessException extends Exception {
 
   private static String generateMessage(
       String className, String entityId, String operation, String currentUserId) {
-    return "Ilegal "
+    return "Illegal "
         + operation
         + " to entity "
         + className
