@@ -25,10 +25,7 @@ class SettingsFacadeMapperTest {
     assertThat(result.getSelectedIncrement()).isEqualTo(source.getSelectedIncrement());
     assertThat(result.getSelectedBar()).isEqualTo(source.getSelectedBar());
     if (source.getSelectedPlates() != null) {
-      assertThat(result.getSelectedPlates())
-          .hasSize(source.getSelectedPlates().size())
-          .usingRecursiveComparison()
-          .isEqualTo(source.getSelectedPlates());
+      assertThat(result.getSelectedPlates()).containsExactlyElementsOf(source.getSelectedPlates());
     } else {
       assertThat(result.getSelectedPlates()).isNull();
     }
@@ -50,10 +47,7 @@ class SettingsFacadeMapperTest {
     assertThat(result.getSelectedIncrement()).isEqualTo(source.getSelectedIncrement());
     assertThat(result.getSelectedBar()).isEqualTo(source.getSelectedBar());
     if (source.getSelectedPlates() != null) {
-      assertThat(result.getSelectedPlates())
-          .hasSize(source.getSelectedPlates().size())
-          .usingRecursiveComparison()
-          .isEqualTo(source.getSelectedPlates());
+      assertThat(result.getSelectedPlates()).containsExactlyElementsOf(source.getSelectedPlates());
     } else {
       assertThat(result.getSelectedPlates()).isNull();
     }

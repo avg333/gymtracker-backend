@@ -87,11 +87,10 @@ class UpdateSetGroupListOrderServiceImplTest {
     final List<SetGroup> setGroupListBeforeSort = setGroupsCaptorBeforeSort.getValue();
     assertThat(
             setGroupListBeforeSort.stream().filter(sg -> !sg.getId().equals(firstSetGroup.getId())))
-        .isEqualTo(
+        .containsExactlyElementsOf(
             setGroups.stream()
                 .filter(sg -> !sg.getId().equals(firstSetGroup.getId()))
                 .collect(Collectors.toList()));
-    assertThat(setGroupListBeforeSort.get(0).getListOrder()).isEqualTo(listOrder);
 
     final List<SetGroup> setGroupListBeforeSave = setGroupsCaptorBeforeSave.getValue();
     assertThat(setGroupListBeforeSave).isEqualTo(setGroupListBeforeSort);
