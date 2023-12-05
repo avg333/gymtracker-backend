@@ -39,6 +39,6 @@ class GetExercisesByIdsControllerImplTest {
     when(getExercisesByIdsService.execute(request)).thenReturn(serviceResponse);
     when(getExercisesByIdsControllerMapper.map(serviceResponse)).thenReturn(mapperResponse);
 
-    assertThat(getExercisesByIdsController.execute(request)).hasSameSizeAs(mapperResponse);
+    assertThat(getExercisesByIdsController.execute(request)).isEqualTo(mapperResponse);
   }
 }

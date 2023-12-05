@@ -11,6 +11,8 @@ import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 
 @Execution(ExecutionMode.CONCURRENT)
@@ -19,9 +21,18 @@ class GetExerciseByIdControllerMapperTest {
   private final GetExerciseByIdControllerMapper mapper =
       Mappers.getMapper(GetExerciseByIdControllerMapper.class);
 
-  @Test
-  void shouldMapExerciseToGetExerciseByIdResponseResponse() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void shouldMapExerciseToGetExerciseByIdResponseResponse(final boolean hasNulls) {
     final Exercise source = Instancio.create(Exercise.class);
+    source.getMuscleSubGroups().add(null);
+    source.getMuscleGroupExercises().add(null);
+
+    if (!hasNulls) {
+      source.setLoadType(null);
+      source.setMuscleSubGroups(null);
+      source.setMuscleGroupExercises(null);
+    }
 
     final GetExerciseByIdResponse result = mapper.map(source);
     assertThat(result).isNotNull();
@@ -64,6 +75,11 @@ class GetExerciseByIdControllerMapperTest {
   }
 
   void checkMuscleSubGroup(GetExerciseByIdResponse.MuscleSubGroup result, MuscleSubGroup source) {
+    if (source == null) {
+      assertThat(result).isNull();
+      return;
+    }
+
     assertThat(result).isNotNull();
     assertThat(result.id()).isEqualTo(source.getId());
     assertThat(result.name()).isEqualTo(source.getName());
@@ -78,6 +94,11 @@ class GetExerciseByIdControllerMapperTest {
   }
 
   void checkMuscleGroup(GetExerciseByIdResponse.MuscleGroup result, MuscleGroupExercise source) {
+    if (source == null) {
+      assertThat(result).isNull();
+      return;
+    }
+
     assertThat(result).isNotNull();
     assertThat(result.id()).isEqualTo(source.getId());
     assertThat(result.weight()).isEqualTo(source.getWeight());

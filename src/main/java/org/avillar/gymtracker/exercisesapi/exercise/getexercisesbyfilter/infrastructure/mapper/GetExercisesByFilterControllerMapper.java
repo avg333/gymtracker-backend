@@ -2,7 +2,7 @@ package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infras
 
 import java.util.List;
 import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterRequestApplication;
+import org.avillar.gymtracker.exercisesapi.common.facade.exercise.GetExercisesFilter;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponse;
 import org.mapstruct.Mapper;
@@ -13,6 +13,5 @@ public interface GetExercisesByFilterControllerMapper {
 
   List<GetExercisesByFilterResponse> map(List<Exercise> exercises);
 
-  GetExercisesByFilterRequestApplication map(
-      GetExercisesByFilterRequest getExercisesByFilterRequest);
+  GetExercisesFilter map(GetExercisesByFilterRequest getExercisesByFilterRequest);
 }

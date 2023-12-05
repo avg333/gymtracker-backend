@@ -1,8 +1,11 @@
 package org.avillar.gymtracker.exercisesapi.common.facade.exercise.mapper;
 
+import java.util.UUID;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseEntity;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseSearchCriteria;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.LoadTypeEntity;
 import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
+import org.avillar.gymtracker.exercisesapi.common.facade.exercise.GetExercisesFilter;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,5 +32,19 @@ public class ExerciseFacadeMapperImpl implements ExerciseFacadeMapper {
     // TODO Finish mapping
 
     return exerciseEntity;
+  }
+
+  @Override
+  public ExerciseSearchCriteria map(
+      final UUID userId, final GetExercisesFilter getExercisesFilter) {
+    return new ExerciseSearchCriteria(
+        userId,
+        getExercisesFilter.getName(),
+        getExercisesFilter.getDescription(),
+        getExercisesFilter.getUnilateral(),
+        getExercisesFilter.getLoadTypeIds(),
+        getExercisesFilter.getMuscleSubGroupIds(),
+        getExercisesFilter.getMuscleSupGroupIds(),
+        getExercisesFilter.getMuscleGroupIds());
   }
 }

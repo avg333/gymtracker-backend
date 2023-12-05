@@ -1,13 +1,16 @@
 package org.avillar.gymtracker.exercisesapi.exercise.createexercise.application;
 
-import org.avillar.gymtracker.exercisesapi.common.adapter.repository.ExerciseDao;
-import org.avillar.gymtracker.exercisesapi.common.auth.application.AuthExercisesService;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.UUID;
+import org.apache.commons.lang3.NotImplementedException;
+import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @Execution(ExecutionMode.CONCURRENT)
@@ -16,15 +19,13 @@ class CreateExerciseServiceImplTest {
 
   @InjectMocks private CreateExerciseServiceImpl createExerciseService;
 
-  @Mock private ExerciseDao exerciseDao;
-  @Mock private AuthExercisesService authExercisesService;
-
   @Test
-  void shouldCreateExerciseOk() {}
+  void shouldThrowNotImplementedException() {
+    final Exercise exercise = Instancio.create(Exercise.class);
+    final UUID userId = Instancio.create(UUID.class);
 
-  @Test
-  void createNotAccess() {}
-
-  @Test
-  void createNotFound() {}
+    assertThatThrownBy(() -> createExerciseService.execute(userId, exercise))
+        .isNotNull()
+        .isInstanceOf(NotImplementedException.class);
+  }
 }

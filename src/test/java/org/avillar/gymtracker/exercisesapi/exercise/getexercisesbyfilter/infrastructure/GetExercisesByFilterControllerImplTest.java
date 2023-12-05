@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.common.exception.application.ExerciseIllegalAccessException;
+import org.avillar.gymtracker.exercisesapi.common.facade.exercise.GetExercisesFilter;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.GetExercisesByFilterService;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterRequestApplication;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.mapper.GetExercisesByFilterControllerMapper;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterRequest;
 import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.infrastructure.model.GetExercisesByFilterResponse;
@@ -32,8 +32,7 @@ class GetExercisesByFilterControllerImplTest {
   @Test
   void shouldGetExercisesByFilterSuccessfully() throws ExerciseIllegalAccessException {
     final GetExercisesByFilterRequest request = Instancio.create(GetExercisesByFilterRequest.class);
-    final GetExercisesByFilterRequestApplication serviceRequest =
-        Instancio.create(GetExercisesByFilterRequestApplication.class);
+    final GetExercisesFilter serviceRequest = Instancio.create(GetExercisesFilter.class);
     final List<Exercise> serviceResponse = Instancio.createList(Exercise.class);
     final List<GetExercisesByFilterResponse> mapperResponse =
         Instancio.createList(GetExercisesByFilterResponse.class);

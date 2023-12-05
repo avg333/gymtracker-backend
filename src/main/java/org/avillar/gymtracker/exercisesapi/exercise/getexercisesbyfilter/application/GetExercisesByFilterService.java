@@ -3,11 +3,10 @@ package org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.applic
 import java.util.List;
 import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
 import org.avillar.gymtracker.exercisesapi.common.exception.application.ExerciseIllegalAccessException;
-import org.avillar.gymtracker.exercisesapi.exercise.getexercisesbyfilter.application.model.GetExercisesByFilterRequestApplication;
+import org.avillar.gymtracker.exercisesapi.common.facade.exercise.GetExercisesFilter;
 
 public interface GetExercisesByFilterService {
 
-  List<Exercise> execute(
-      GetExercisesByFilterRequestApplication getExercisesByFilterRequestApplication)
+  List<Exercise> execute(GetExercisesFilter getExercisesByFilterRequestApplication)
       throws ExerciseIllegalAccessException;
 }

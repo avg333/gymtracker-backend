@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 public record GetExercisesByFilterRequest(
-    // TODO Add schema
     String name,
     String description,
     Boolean unilateral,

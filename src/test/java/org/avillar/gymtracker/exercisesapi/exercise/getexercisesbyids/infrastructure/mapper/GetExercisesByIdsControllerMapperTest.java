@@ -23,9 +23,15 @@ class GetExercisesByIdsControllerMapperTest {
   @Test
   void shouldMapExerciseToGetExerciseByIdResponseResponse() {
     final List<Exercise> source = Instancio.createList(Exercise.class);
+    source.add(null);
+    source.get(0).getMuscleSubGroups().add(null);
+    source.get(0).getMuscleGroupExercises().add(null);
+    source.get(1).setLoadType(null);
+    source.get(1).setMuscleSubGroups(null);
+    source.get(1).setMuscleGroupExercises(null);
 
     final List<GetExercisesByIdsResponse> result = mapper.map(source);
-    assertThat(result).isNotNull().hasSize(source.size());
+    assertThat(result).isNotNull().hasSameSizeAs(source);
 
     for (int i = 0; i < source.size(); i++) {
       checkExercise(result.get(i), source.get(i));
@@ -77,6 +83,11 @@ class GetExercisesByIdsControllerMapperTest {
   }
 
   void checkMuscleSubGroup(GetExercisesByIdsResponse.MuscleSubGroup result, MuscleSubGroup source) {
+    if (source == null) {
+      assertThat(result).isNull();
+      return;
+    }
+
     assertThat(result).isNotNull();
     assertThat(result.id()).isEqualTo(source.getId());
     assertThat(result.name()).isEqualTo(source.getName());
@@ -91,6 +102,11 @@ class GetExercisesByIdsControllerMapperTest {
   }
 
   void checkMuscleGroup(GetExercisesByIdsResponse.MuscleGroup result, MuscleGroupExercise source) {
+    if (source == null) {
+      assertThat(result).isNull();
+      return;
+    }
+
     assertThat(result).isNotNull();
     assertThat(result.id()).isEqualTo(source.getId());
     assertThat(result.weight()).isEqualTo(source.getWeight());
