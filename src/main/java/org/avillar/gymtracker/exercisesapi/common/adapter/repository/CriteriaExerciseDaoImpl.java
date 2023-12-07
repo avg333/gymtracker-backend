@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseSearchCriteria;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseUsesEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.MuscleGroupEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.MuscleGroupExerciseEntity;
 import org.springframework.stereotype.Repository;
@@ -32,7 +34,7 @@ public class CriteriaExerciseDaoImpl implements CriteriaExerciseDao {
         criteriaBuilder.createQuery(ExerciseEntity.class);
     final Root<ExerciseEntity> root = criteriaQuery.from(ExerciseEntity.class);
 
-    applyJoins(root);
+    applyJoins(root, criteria.userId());
 
     final List<Predicate> predicates = createPredicates(criteria, root);
 
@@ -41,7 +43,7 @@ public class CriteriaExerciseDaoImpl implements CriteriaExerciseDao {
     return entityManager.createQuery(criteriaQuery).getResultList();
   }
 
-  private static void applyJoins(Root<ExerciseEntity> root) {
+  private void applyJoins(Root<ExerciseEntity> root, UUID userId) {
     final Join<ExerciseEntity, MuscleGroupExerciseEntity> mgeJoin =
         root.join("muscleGroupExercises", JoinType.LEFT);
     final Join<MuscleGroupExerciseEntity, MuscleGroupEntity> mgJoin =
@@ -49,6 +51,11 @@ public class CriteriaExerciseDaoImpl implements CriteriaExerciseDao {
     mgJoin.join("muscleSupGroups", JoinType.LEFT);
     root.join("muscleSubGroups", JoinType.LEFT);
     root.join("loadType", JoinType.LEFT);
+    //Join<ExerciseEntity, ExerciseUsesEntity> usesJoin = root.join("exerciseUses", JoinType.LEFT);
+   // usesJoin.on(entityManager.getCriteriaBuilder().equal(usesJoin.get("userId"), userId));
+    Fetch<ExerciseEntity, ExerciseUsesEntity> fetch = root.fetch("exerciseUses", JoinType.LEFT);
+    Join<ExerciseEntity, ExerciseUsesEntity> usesJoin = (Join<ExerciseEntity, ExerciseUsesEntity>) fetch;
+    usesJoin.on(entityManager.getCriteriaBuilder().equal(usesJoin.get("userId"), userId));
   }
 
   private List<Predicate> createPredicates(

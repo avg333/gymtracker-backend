@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mapstruct.factory.Mappers;
+import org.springframework.util.CollectionUtils;
 
 @Execution(ExecutionMode.CONCURRENT)
 class GetExercisesByFilterControllerMapperTest {
@@ -39,6 +40,13 @@ class GetExercisesByFilterControllerMapperTest {
       assertThat(result.get(i).name()).isEqualTo(source.get(i).getName());
       assertThat(result.get(i).description()).isEqualTo(source.get(i).getDescription());
       assertThat(result.get(i).unilateral()).isEqualTo(source.get(i).getUnilateral());
+
+      if (CollectionUtils.isEmpty(source.get(i).getExerciseUses())) {
+        assertThat(result.get(i).uses()).isNull();
+      } else {
+        assertThat(result.get(i).uses())
+            .isEqualTo(source.get(i).getExerciseUses().get(0).getUses());
+      }
     }
   }
 

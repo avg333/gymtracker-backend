@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseEntity;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseUsesEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.LoadTypeEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.MuscleGroupEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.MuscleGroupExerciseEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.MuscleSubGroupEntity;
 import org.avillar.gymtracker.exercisesapi.common.domain.Exercise;
+import org.avillar.gymtracker.exercisesapi.common.domain.ExerciseUses;
 import org.avillar.gymtracker.exercisesapi.common.domain.LoadType;
 import org.avillar.gymtracker.exercisesapi.common.domain.MuscleGroup;
 import org.avillar.gymtracker.exercisesapi.common.domain.MuscleGroupExercise;
@@ -40,10 +42,31 @@ public class ExerciseEntityFacadeMapperImpl implements ExerciseEntityFacadeMappe
         .description(exerciseEntity.getDescription())
         .accessType(exerciseEntity.getAccessType())
         .owner(exerciseEntity.getOwner())
+        .exerciseUses(mapExerciseUses(exerciseEntity.getExerciseUses()))
         .unilateral(exerciseEntity.getUnilateral())
         .loadType(mapLoadType(exerciseEntity.getLoadType()))
         .muscleSubGroups(mapMuscleSubGroups(exerciseEntity.getMuscleSubGroups()))
         .muscleGroupExercises(mapMuscleGroupExercises(exerciseEntity.getMuscleGroupExercises()))
+        .build();
+  }
+
+  private List<ExerciseUses> mapExerciseUses(Collection<ExerciseUsesEntity> exerciseUsesEntities) {
+    if (exerciseUsesEntities == null || !Hibernate.isInitialized(exerciseUsesEntities)) {
+      return null;
+    }
+
+    return exerciseUsesEntities.stream().map(this::mapExerciseUses).collect(Collectors.toList());
+  }
+
+  private ExerciseUses mapExerciseUses(ExerciseUsesEntity exerciseUsesEntity) {
+    if (exerciseUsesEntity == null || !Hibernate.isInitialized(exerciseUsesEntity)) {
+      return null;
+    }
+
+    return ExerciseUses.builder()
+        .id(exerciseUsesEntity.getId())
+        .uses(exerciseUsesEntity.getUses())
+        .userId(exerciseUsesEntity.getUserId())
         .build();
   }
 

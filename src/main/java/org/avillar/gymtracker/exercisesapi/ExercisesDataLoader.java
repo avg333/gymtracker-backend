@@ -1,18 +1,24 @@
 package org.avillar.gymtracker.exercisesapi;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.avillar.gymtracker.authapi.common.adapter.repository.UserDao;
+import org.avillar.gymtracker.authapi.common.adapter.repository.model.UserEntity;
 import org.avillar.gymtracker.common.errors.application.AccessTypeEnum;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.ExerciseDao;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.ExerciseUsesDao;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.LoadTypeDao;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.MuscleGroupDao;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.MuscleGroupExerciseDao;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.MuscleSubGroupDao;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.MuscleSupGroupDao;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseEntity;
+import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.ExerciseUsesEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.LoadTypeEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.MuscleGroupEntity;
 import org.avillar.gymtracker.exercisesapi.common.adapter.repository.model.MuscleGroupExerciseEntity;
@@ -28,6 +34,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ExercisesDataLoader implements ApplicationRunner {
 
+  private final UserDao userDao;
+  private final ExerciseUsesDao exerciseUsesDao;
   private final LoadTypeDao loadTypeDao;
   private final MuscleSupGroupDao muscleSupGroupDao;
   private final MuscleGroupDao muscleGroupDao;
@@ -428,11 +436,28 @@ public class ExercisesDataLoader implements ApplicationRunner {
     muscleGroupExerciseDao.saveAll(exercisesMuscleGroups);
     log.info("\tInserting {} exercises-muscleGroups", exercisesMuscleGroups.size());
 
+    populateExerciseUses();
+
     return loadTypes.size()
         + muscleSupGroups.size()
         + muscleGroups.size()
         + muscleSubGroups.size()
         + exercises.size()
         + exercisesMuscleGroups.size();
+  }
+
+  private void populateExerciseUses() {
+    List<ExerciseEntity> exercises = exerciseDao.findAll();
+    List<UserEntity> users = userDao.findAll();
+    List<ExerciseUsesEntity> exerciseUses = new ArrayList<>();
+    for (ExerciseEntity exercise : exercises) {
+      for (UserEntity user : users) {
+        int randomPositiveInt = ThreadLocalRandom.current().nextInt(0, 100);
+        exerciseUses.add(new ExerciseUsesEntity(null, randomPositiveInt, user.getId(), exercise));
+      }
+    }
+    log.info("\tInserting {} exerciseUses...", exerciseUses.size());
+    exerciseUsesDao.saveAll(exerciseUses);
+    log.info("\tInserting {} exerciseUses", exerciseUses.size());
   }
 }

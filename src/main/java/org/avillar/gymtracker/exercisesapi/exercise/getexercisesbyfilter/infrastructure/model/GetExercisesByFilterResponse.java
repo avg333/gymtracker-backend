@@ -8,5 +8,6 @@ public record GetExercisesByFilterResponse(
     @Schema(description = "Exercise name", example = "bench press") String name,
     @Schema(description = "Exercise description", example = "barbell flat press")
         String description,
+    @Schema(description = "Exercise uses", example = "21") Integer uses,
     @Schema(description = "Exercise is executed unilaterally", example = "false")
         boolean unilateral) {}
